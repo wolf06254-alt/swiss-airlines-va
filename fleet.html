@@ -1,71 +1,170 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Флот — Swiss Airlines VA</title>
+<title>Swiss Airlines VA — Fleet</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
+<style>
+:root{--red:#E30613;--red-glow:rgba(227,6,19,0.35);--bg:#0a0a0f;--bg2:#141428;--glass:rgba(255,255,255,0.04);--glass-border:rgba(255,255,255,0.08);--text:#f0f0f5;--text2:#a0a0b8;}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;cursor:none}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-thumb{background:var(--red);border-radius:4px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+
+.cursor{position:fixed;width:20px;height:20px;border:2px solid var(--red);border-radius:50%;pointer-events:none;z-index:9999;transition:transform .15s,background .15s;transform:translate(-50%,-50%)}
+.cursor-dot{position:fixed;width:6px;height:6px;background:var(--red);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%)}
+
+.particle-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+.glass{background:var(--glass);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border:1px solid var(--glass-border);box-shadow:0 8px 32px rgba(0,0,0,0.25)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:16px 40px;display:flex;justify-content:space-between;align-items:center;transition:all .3s}
+nav.scrolled{background:rgba(10,10,15,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--glass-border)}
+nav .logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.4rem;letter-spacing:-0.5px;display:flex;align-items:center;gap:10px}
+nav .logo span{color:var(--red);font-weight:800}
+nav ul{display:flex;gap:28px;list-style:none}
+nav ul a{color:var(--text2);text-decoration:none;font-weight:500;font-size:0.9rem;transition:color .2s;position:relative}
+nav ul a:hover{color:var(--text)}
+nav ul a::after{content:'';position:absolute;bottom:-6px;left:0;width:0;height:2px;background:var(--red);transition:width .3s}
+nav ul a:hover::after{width:100%}
+nav .login-btn{background:transparent;border:1px solid var(--red);color:var(--red);padding:6px 18px;border-radius:6px;font-weight:600;font-size:0.85rem;cursor:none;transition:all .2s}
+nav .login-btn:hover{background:var(--red);color:#fff;box-shadow:0 0 20px var(--red-glow)}
+
+.page-header{padding:140px 40px 60px;text-align:center;position:relative;background:radial-gradient(ellipse at 50% 30%,rgba(227,6,19,0.06) 0%,transparent 60%),linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%)}
+.page-header h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:700}
+.page-header p{color:var(--text2);max-width:560px;margin:16px auto 0;line-height:1.6}
+
+.section{padding:60px 40px;max-width:1200px;margin:0 auto}
+.filters{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:32px;justify-content:center}
+.filter-btn{background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);color:var(--text2);padding:8px 18px;border-radius:8px;font-size:0.85rem;cursor:none;transition:all .2s}
+.filter-btn.active,.filter-btn:hover{background:var(--red);color:#fff;border-color:var(--red);box-shadow:0 0 15px var(--red-glow)}
+
+.fleet-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}
+.fleet-card{position:relative;border-radius:16px;overflow:hidden;padding:24px;transition:all .3s}
+.fleet-card:hover{transform:translateY(-6px);border-color:rgba(227,6,19,0.3);box-shadow:0 20px 60px rgba(0,0,0,0.4)}
+.fleet-card .badge{position:absolute;top:16px;right:16px;background:rgba(227,6,19,0.15);color:var(--red);border:1px solid rgba(227,6,19,0.3);padding:4px 12px;border-radius:20px;font-size:0.75rem;font-weight:600}
+.fleet-card .badge.maintenance{background:rgba(255,165,0,0.15);color:orange;border-color:rgba(255,165,0,0.3)}
+.fleet-card h3{font-family:'Space Grotesk',sans-serif;font-size:1.2rem;font-weight:600;margin-bottom:8px}
+.fleet-card .meta{color:var(--text2);font-size:0.85rem;margin-bottom:16px}
+.fleet-card .stats{display:flex;gap:20px;flex-wrap:wrap}
+.fleet-card .stats div{font-size:0.8rem;color:var(--text2)}
+.fleet-card .stats div strong{color:var(--text);display:block;font-size:1rem;font-weight:600}
+.fleet-card .visual{width:100%;height:100px;border-radius:10px;background:linear-gradient(135deg,rgba(227,6,19,0.08),rgba(20,20,40,0.6));margin-bottom:16px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:var(--red);opacity:0.8}
+
+.footer{margin-top:80px;border-top:1px solid var(--glass-border);padding:60px 40px 40px;text-align:center}
+.footer .logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.3rem;margin-bottom:16px}
+.footer .logo span{color:var(--red)}
+.footer p{color:var(--text2);font-size:0.85rem;max-width:500px;margin:0 auto 24px;line-height:1.6}
+.footer .socials{display:flex;gap:16px;justify-content:center;margin-bottom:32px}
+.footer .socials a{width:40px;height:40px;border-radius:10px;border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;color:var(--text2);text-decoration:none;transition:all .2s}
+.footer .socials a:hover{color:var(--red);border-color:var(--red);box-shadow:0 0 15px var(--red-glow)}
+.footer .copy{color:var(--text2);font-size:0.75rem;opacity:0.6}
+
+.modal{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);z-index:200;display:none;justify-content:center;align-items:center}
+.modal.show{display:flex}
+.modal-box{background:var(--bg);border:1px solid var(--glass-border);border-radius:16px;padding:32px;max-width:360px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.5);position:relative}
+.modal-box h3{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;margin-bottom:20px}
+.modal-box input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:0.95rem;margin-bottom:12px;outline:none;transition:border .2s}
+.modal-box input:focus{border-color:var(--red)}
+.modal-box button{width:100%;background:var(--red);color:#fff;border:none;padding:12px;border-radius:8px;font-weight:600;cursor:none;transition:all .2s}
+.modal-box button:hover{box-shadow:0 0 20px var(--red-glow)}
+.modal-box .err{color:var(--red);font-size:0.8rem;margin-top:-8px;margin-bottom:10px}
+.modal-box .close{position:absolute;top:16px;right:16px;color:var(--text2);background:none;border:none;font-size:1.2rem;cursor:none}
+.admin-link{display:none;color:var(--red);font-size:0.85rem;margin-top:12px;text-decoration:none}
+.admin-link.show{display:block}
+
+@media(max-width:768px){
+  nav{padding:14px 20px}
+  nav ul{display:none}
+  .section{padding:60px 20px}
+  .page-header{padding:120px 20px 40px}
+}
+</style>
 </head>
 <body>
-<canvas id="particles"></canvas>
-<nav class="navbar">
-  <div class="container nav-inner">
-    <a href="index.html" class="logo"><div class="logo-icon">+</div> Swiss Airlines VA</a>
-    <div class="nav-links">
-      <a href="index.html" data-i18n="nav_home">Главная</a>
-      <a href="fleet.html" class="active" data-i18n="nav_fleet">Флот</a>
-      <a href="routes.html" data-i18n="nav_routes">Маршруты</a>
-      <a href="map.html" data-i18n="nav_map">Карта</a>
-      <a href="events.html" data-i18n="nav_events">События</a>
-      <a href="history.html" data-i18n="nav_history">История</a>
-      <a href="patent.html" data-i18n="nav_patent">Патент</a>
-      <a href="apply.html" data-i18n="nav_apply">Анкета</a>
-      <a href="contacts.html" data-i18n="nav_contacts">Контакты</a>
-      <a href="login.html" data-i18n="nav_admin">Админ</a>
-      <button class="lang-btn" id="langToggle">EN</button>
-    </div>
-  </div>
+<canvas class="particle-canvas" id="particles"></canvas>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-dot" id="cursor-dot"></div>
+
+<nav id="nav">
+  <div class="logo"><i class="fa-solid fa-plane-up"></i> Swiss <span>VA</span></div>
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="fleet.html">Fleet</a></li>
+    <li><a href="routes.html">Routes</a></li>
+    <li><a href="map.html">Map</a></li>
+    <li><a href="events.html">Events</a></li>
+    <li><a href="history.html">History</a></li>
+  </ul>
+  <button class="login-btn" id="loginBtn">Login</button>
 </nav>
 
+<div class="page-header">
+  <h1 data-aos="fade-up">Our Fleet</h1>
+  <p data-aos="fade-up" data-aos-delay="100">Modern, efficient, and Swiss — every aircraft in our lineup is ready to take you across the globe.</p>
+</div>
+
 <section class="section">
-  <div class="container">
-    <h1 class="section-title" data-i18n="fleet_title">Флот Swiss Airlines</h1>
-    <p class="section-subtitle" data-i18n="fleet_desc">Реальные самолёты, реальные характеристики. От A220 до B777-300ER.</p>
-    <div id="fleetGrid" class="cards-grid"></div>
+  <div class="filters" data-aos="fade-up">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="Narrow-body">Narrow-body</button>
+    <button class="filter-btn" data-filter="Wide-body">Wide-body</button>
+    <button class="filter-btn" data-filter="Regional">Regional</button>
   </div>
+  <div class="fleet-grid" id="fleetGrid"></div>
 </section>
 
-<footer class="footer">
-  <div class="container"><p data-i18n="footer">© 2026 Swiss Airlines VA. Все права защищены. PTFS.</p></div>
-</footer>
+<div class="footer">
+  <div class="logo">Swiss <span>VA</span></div>
+  <p>Swiss Airlines Virtual Airline for PTFS. Premium flight simulation with Swiss precision.</p>
+  <div class="socials">
+    <a href="https://discord.gg/6YA8t7GJr" target="_blank"><i class="fa-brands fa-discord"></i></a>
+    <a href="#"><i class="fa-brands fa-twitter"></i></a>
+    <a href="#"><i class="fa-brands fa-youtube"></i></a>
+  </div>
+  <div class="copy">© 2026 Swiss Airlines VA. All rights reserved.</div>
+</div>
 
-<script src="i18n.js"></script>
-<script src="script.js"></script>
+<div class="modal" id="loginModal">
+  <div class="modal-box">
+    <button class="close" id="closeModal">×</button>
+    <h3>Admin Login</h3>
+    <input type="text" id="userInput" placeholder="Username">
+    <input type="password" id="passInput" placeholder="Password">
+    <div class="err" id="loginErr"></div>
+    <button id="doLogin">Login</button>
+    <a href="admin.html" class="admin-link" id="adminLink">Go to Admin Panel</a>
+  </div>
+</div>
+
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', async () => {
-  try {
-    const res = await fetch('/api/fleet');
-    const data = await res.json();
-    const grid = document.getElementById('fleetGrid');
-    grid.innerHTML = data.map(a => `
-      <div class="card reveal">
-        <div class="card-icon" style="font-size:2.5rem;">✈</div>
-        <h3>${a.model}</h3>
-        <p style="color:#888;margin:0.25rem 0 0.75rem;">${a.category}</p>
-        <div class="meta-list">
-          <div class="meta-item"><span data-i18n="fleet_capacity">Пассажиры</span><b>${a.capacity}</b></div>
-          <div class="meta-item"><span data-i18n="fleet_range">Дальность</span><b>${a.range_km} km</b></div>
-          <div class="meta-item"><span data-i18n="fleet_speed">Скорость</span><b>${a.speed_kmh} km/h</b></div>
-          <div class="meta-item"><span data-i18n="fleet_status">Статус</span><b class="${a.status==='active'?'green':a.status==='maintenance'?'orange':'red'}">${a.status}</b></div>
-        </div>
-        <p style="color:#aaa;font-size:0.9rem;margin-top:0.75rem;">${a.description}</p>
-      </div>
-    `).join('');
-    observeReveal();
-  } catch (e) { toast('Ошибка загрузки флота'); }
-});
+AOS.init({duration:800,once:true});
+const cursor=document.getElementById('cursor'),cursorDot=document.getElementById('cursor-dot');
+document.addEventListener('mousemove',e=>{cursor.style.left=e.clientX+'px';cursor.style.top=e.clientY+'px';cursorDot.style.left=e.clientX+'px';cursorDot.style.top=e.clientY+'px';});
+document.querySelectorAll('a,button,.fleet-card,.filter-btn').forEach(el=>{el.addEventListener('mouseenter',()=>{cursor.style.transform='translate(-50%,-50%) scale(1.6)';cursor.style.background='rgba(227,6,19,0.15)';});el.addEventListener('mouseleave',()=>{cursor.style.transform='translate(-50%,-50%) scale(1)';cursor.style.background='transparent';});});
+
+const canvas=document.getElementById('particles'),ctx=canvas.getContext('2d');let W,H,particles=[];function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}window.addEventListener('resize',resize);resize();class Particle{constructor(){this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-0.5)*0.4;this.vy=(Math.random()-0.5)*0.4;this.size=Math.random()*2+1;this.alpha=Math.random()*0.5+0.2;}update(){this.x+=this.vx;this.y+=this.vy;if(this.x<0||this.x>W)this.vx*=-1;if(this.y<0||this.y>H)this.vy*=-1;}draw(){ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2);ctx.fillStyle=`rgba(227,6,19,${this.alpha})`;ctx.fill();}}
+for(let i=0;i<70;i++)particles.push(new Particle());(function anim(){ctx.clearRect(0,0,W,H);particles.forEach(p=>{p.update();p.draw();});for(let i=0;i<particles.length;i++)for(let j=i+1;j<particles.length;j++){const dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<120){ctx.beginPath();ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(particles[j].x,particles[j].y);ctx.strokeStyle=`rgba(227,6,19,${0.15*(1-d/120)})`;ctx.stroke();}}requestAnimationFrame(anim);})();
+window.addEventListener('scroll',()=>{if(window.scrollY>60)document.getElementById('nav').classList.add('scrolled');else document.getElementById('nav').classList.remove('scrolled');});
+
+let allFleet=[];
+function renderFleet(filter){const grid=document.getElementById('fleetGrid');grid.innerHTML='';const data=filter==='all'?allFleet:allFleet.filter(a=>a.type===filter);data.forEach((a,i)=>{const div=document.createElement('div');div.className='glass fleet-card';div.setAttribute('data-aos','fade-up');div.setAttribute('data-aos-delay',(i%3)*100);div.innerHTML=`<div class="badge ${a.status==='Maintenance'?'maintenance':''}">${a.status}</div><div class="visual"><i class="fa-solid fa-plane-up"></i></div><h3>${a.aircraft}</h3><div class="meta">${a.type} · ${a.registration}</div><div class="stats"><div><strong>${a.capacity}</strong>Seats</div><div><strong>${a.range}</strong>km Range</div></div>`;grid.appendChild(div);});AOS.refresh();}
+fetch('/api/fleet').then(r=>r.json()).then(d=>{allFleet=d;renderFleet('all');});
+
+document.querySelectorAll('.filter-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderFleet(btn.dataset.filter);});});
+
+const loginBtn=document.getElementById('loginBtn'),loginModal=document.getElementById('loginModal'),closeModal=document.getElementById('closeModal'),doLogin=document.getElementById('doLogin'),loginErr=document.getElementById('loginErr'),adminLink=document.getElementById('adminLink');
+loginBtn.addEventListener('click',()=>loginModal.classList.add('show'));
+closeModal.addEventListener('click',()=>loginModal.classList.remove('show'));
+loginModal.addEventListener('click',e=>{if(e.target===loginModal)loginModal.classList.remove('show');});
+doLogin.addEventListener('click',()=>{const u=document.getElementById('userInput').value,p=document.getElementById('passInput').value;fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})}).then(r=>r.json()).then(d=>{if(d.success){loginErr.textContent='';loginBtn.textContent='Admin';adminLink.classList.add('show');loginModal.classList.remove('show');}else{loginErr.textContent='Invalid credentials';}});});
+fetch('/api/me').then(r=>r.json()).then(d=>{if(d.loggedIn&&d.user.role==='admin'){loginBtn.textContent='Admin';adminLink.classList.add('show');}});
 </script>
 </body>
 </html>

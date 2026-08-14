@@ -1,394 +1,233 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Анкета — Swiss Airlines</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      background: #f5f5f5; color: #1a1a1a; line-height: 1.5;
-    }
-    .top-header {
-      background: #0d0d0d; color: #fff; padding: 12px 40px;
-      display: flex; align-items: center; justify-content: space-between;
-      font-size: 13px; letter-spacing: 0.3px; flex-wrap: wrap; gap: 10px;
-    }
-    .logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; }
-    .logo span { color: #e30613; font-size: 18px; }
-    .logo-sub { font-size: 10px; opacity: 0.7; font-weight: 400; letter-spacing: 1px; }
-    .nav { display: flex; gap: 28px; align-items: center; flex-wrap: wrap; }
-    .nav a { color: #fff; text-decoration: none; opacity: 0.85; transition: opacity 0.2s; display: flex; align-items: center; gap: 6px; }
-    .nav a:hover { opacity: 1; }
-    .btn-join {
-      background: #e30613; color: #fff; padding: 8px 18px; border-radius: 4px;
-      text-decoration: none; font-weight: 600; font-size: 12px; display: flex; align-items: center; gap: 6px;
-    }
-    .hero {
-      position: relative; background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 40%, #8b0000 100%);
-      color: #fff; padding: 50px 40px 60px; overflow: hidden; min-height: 340px;
-    }
-    .hero-content { position: relative; z-index: 2; max-width: 520px; }
-    .hero h1 { font-size: 14px; font-weight: 500; letter-spacing: 2px; margin-bottom: 8px; opacity: 0.9; }
-    .hero h2 { font-size: 42px; font-weight: 800; line-height: 1.1; margin-bottom: 12px; }
-    .hero h2 span { color: #e30613; }
-    .hero-desc { font-size: 15px; opacity: 0.9; margin-bottom: 28px; max-width: 420px; }
-    .features { display: flex; flex-wrap: wrap; gap: 18px 28px; font-size: 12px; }
-    .feature { display: flex; align-items: center; gap: 8px; opacity: 0.95; }
-    .feature-icon { width: 28px; height: 28px; background: rgba(255,255,255,0.12); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; }
-    .plane-deco { position: absolute; right: 5%; top: 50%; transform: translateY(-50%); font-size: 120px; opacity: 0.15; z-index: 1; }
-    .form-wrapper {
-      max-width: 860px; margin: -30px auto 60px; background: #fff; border-radius: 12px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.12); padding: 40px 45px 50px; position: relative; z-index: 5;
-    }
-    .question { display: flex; gap: 20px; margin-bottom: 32px; padding-bottom: 28px; border-bottom: 1px solid #eee; }
-    .question:last-of-type { border-bottom: none; margin-bottom: 10px; }
-    .q-number {
-      flex-shrink: 0; width: 48px; height: 48px; background: #111; color: #fff; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; position: relative;
-    }
-    .q-number .icon {
-      position: absolute; bottom: -2px; right: -2px; width: 20px; height: 20px;
-      background: #e30613; border-radius: 50%; font-size: 11px; display: flex; align-items: center; justify-content: center;
-    }
-    .q-body { flex: 1; }
-    .q-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
-    .q-title .req { color: #e30613; }
-    .q-desc { font-size: 13px; color: #666; margin-bottom: 12px; line-height: 1.45; }
-    input[type="text"], input[type="number"], textarea {
-      width: 100%; padding: 11px 14px; border: 1px solid #ddd; border-radius: 8px;
-      font-size: 14px; transition: border-color 0.2s; font-family: inherit;
-    }
-    input:focus, textarea:focus { outline: none; border-color: #e30613; box-shadow: 0 0 0 3px rgba(227,6,19,0.1); }
-    textarea { min-height: 90px; resize: vertical; }
-    .two-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .field-label { font-size: 12px; color: #888; margin-bottom: 5px; display: block; }
-    .options { display: flex; flex-wrap: wrap; gap: 10px 18px; }
-    .option { display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; }
-    .option input { width: 17px; height: 17px; accent-color: #e30613; }
-    .note-box { background: #fff5f5; border: 1px solid #ffd0d0; border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #b30000; display: flex; align-items: center; gap: 8px; margin-top: 10px; }
-    .submit-area { text-align: center; margin-top: 20px; }
-    .btn-submit {
-      background: #e30613; color: #fff; border: none; padding: 14px 48px;
-      font-size: 15px; font-weight: 700; border-radius: 8px; cursor: pointer;
-      display: inline-flex; align-items: center; gap: 10px; transition: background 0.2s, transform 0.15s;
-    }
-    .btn-submit:hover { background: #c00510; transform: translateY(-1px); }
-    .btn-submit:disabled { background: #999; cursor: not-allowed; transform: none; }
-    .security-note { margin-top: 14px; font-size: 12px; color: #999; display: flex; align-items: center; justify-content: center; gap: 6px; }
-    .footer {
-      background: #0d0d0d; color: #fff; padding: 22px 40px;
-      display: flex; justify-content: space-between; align-items: center; font-size: 13px;
-    }
-    .footer-logo { display: flex; align-items: center; gap: 8px; font-weight: 700; }
-    .footer-right { opacity: 0.8; letter-spacing: 0.5px; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Swiss Airlines VA — Home</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
+<style>
+:root{--red:#E30613;--red-glow:rgba(227,6,19,0.35);--bg:#0a0a0f;--bg2:#141428;--glass:rgba(255,255,255,0.04);--glass-border:rgba(255,255,255,0.08);--text:#f0f0f5;--text2:#a0a0b8;}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;cursor:none}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-thumb{background:var(--red);border-radius:4px}
+::-webkit-scrollbar-track{background:var(--bg2)}
 
-    /* Toast notifications */
-    .toast-container { position: fixed; top: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; }
-    .toast {
-      background: #fff; border-radius: 8px; padding: 14px 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-      display: flex; align-items: center; gap: 10px; min-width: 280px; font-size: 14px;
-      animation: slideIn 0.3s ease, fadeOut 0.3s ease 4.7s forwards;
-    }
-    .toast.success { border-left: 4px solid #22c55e; }
-    .toast.error { border-left: 4px solid #e30613; }
-    .toast.info { border-left: 4px solid #3b82f6; }
-    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-    @keyframes fadeOut { to { opacity: 0; transform: translateX(100%); } }
+.cursor{position:fixed;width:20px;height:20px;border:2px solid var(--red);border-radius:50%;pointer-events:none;z-index:9999;transition:transform .15s,background .15s;transform:translate(-50%,-50%)}
+.cursor-dot{position:fixed;width:6px;height:6px;background:var(--red);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%)}
 
-    /* Success modal */
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; align-items: center; justify-content: center; }
-    .modal-overlay.active { display: flex; }
-    .modal { background: #fff; border-radius: 16px; padding: 40px; max-width: 420px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
-    .modal-icon { font-size: 60px; margin-bottom: 16px; }
-    .modal h3 { font-size: 22px; margin-bottom: 10px; }
-    .modal p { color: #666; font-size: 14px; margin-bottom: 24px; }
-    .modal-btn { background: #e30613; color: #fff; border: none; padding: 12px 32px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; }
-    .modal-btn:hover { background: #c00510; }
+.particle-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
 
-    @media (max-width: 700px) {
-      .top-header { flex-direction: column; gap: 12px; padding: 14px 20px; }
-      .nav { flex-wrap: wrap; justify-content: center; gap: 14px; }
-      .hero { padding: 40px 20px 50px; }
-      .hero h2 { font-size: 32px; }
-      .form-wrapper { margin: -20px 15px 40px; padding: 28px 20px 40px; }
-      .question { flex-direction: column; gap: 12px; }
-      .two-cols { grid-template-columns: 1fr; }
-      .footer { flex-direction: column; gap: 12px; text-align: center; }
-    }
-  </style>
+.glass{background:var(--glass);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border:1px solid var(--glass-border);box-shadow:0 8px 32px rgba(0,0,0,0.25)}
+.glass-strong{background:rgba(10,10,15,0.7);backdrop-filter:blur(30px);border:1px solid var(--glass-border)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:16px 40px;display:flex;justify-content:space-between;align-items:center;transition:all .3s}
+nav.scrolled{background:rgba(10,10,15,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--glass-border)}
+nav .logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.4rem;letter-spacing:-0.5px;display:flex;align-items:center;gap:10px}
+nav .logo span{color:var(--red);font-weight:800}
+nav ul{display:flex;gap:28px;list-style:none}
+nav ul a{color:var(--text2);text-decoration:none;font-weight:500;font-size:0.9rem;transition:color .2s;position:relative}
+nav ul a:hover{color:var(--text)}
+nav ul a::after{content:'';position:absolute;bottom:-6px;left:0;width:0;height:2px;background:var(--red);transition:width .3s}
+nav ul a:hover::after{width:100%}
+nav .login-btn{background:transparent;border:1px solid var(--red);color:var(--red);padding:6px 18px;border-radius:6px;font-weight:600;font-size:0.85rem;cursor:none;transition:all .2s}
+nav .login-btn:hover{background:var(--red);color:#fff;box-shadow:0 0 20px var(--red-glow)}
+
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;position:relative;padding:120px 20px 80px;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 20%,rgba(227,6,19,0.08) 0%,transparent 60%),radial-gradient(ellipse at 70% 80%,rgba(20,20,40,0.8) 0%,transparent 60%),linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);z-index:-1}
+.hero h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(2.5rem,6vw,5rem);font-weight:700;line-height:1.05;letter-spacing:-2px;max-width:900px}
+.hero h1 span{color:var(--red);display:inline-block}
+.hero p{font-size:1.15rem;color:var(--text2);max-width:560px;margin-top:24px;line-height:1.6}
+.hero-btns{display:flex;gap:16px;margin-top:40px}
+.btn-primary{background:var(--red);color:#fff;padding:14px 32px;border-radius:8px;font-weight:600;text-decoration:none;box-shadow:0 0 30px var(--red-glow);transition:all .2s;border:none;cursor:none}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 50px rgba(227,6,19,0.5)}
+.btn-secondary{background:transparent;color:var(--text);border:1px solid var(--glass-border);padding:14px 32px;border-radius:8px;font-weight:600;text-decoration:none;transition:all .2s;cursor:none}
+.btn-secondary:hover{border-color:var(--red);color:var(--red)}
+
+.hero-stats{display:flex;gap:48px;margin-top:64px;flex-wrap:wrap;justify-content:center}
+.hero-stat{text-align:center}
+.hero-stat .num{font-family:'Space Grotesk',sans-serif;font-size:2.4rem;font-weight:700;color:var(--red);text-shadow:0 0 20px var(--red-glow)}
+.hero-stat .label{font-size:0.85rem;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-top:6px}
+
+.section{padding:100px 40px;position:relative;max-width:1200px;margin:0 auto}
+.section-title{font-family:'Space Grotesk',sans-serif;font-size:2.2rem;font-weight:700;margin-bottom:16px;position:relative;display:inline-block}
+.section-title::after{content:'';position:absolute;bottom:-8px;left:0;width:60px;height:3px;background:var(--red);box-shadow:0 0 10px var(--red-glow)}
+.section-sub{color:var(--text2);max-width:600px;margin-bottom:48px;line-height:1.6}
+
+.fleet-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}
+.fleet-card{position:relative;border-radius:16px;overflow:hidden;padding:24px;transition:all .3s}
+.fleet-card:hover{transform:translateY(-6px);border-color:rgba(227,6,19,0.3);box-shadow:0 20px 60px rgba(0,0,0,0.4)}
+.fleet-card .badge{position:absolute;top:16px;right:16px;background:rgba(227,6,19,0.15);color:var(--red);border:1px solid rgba(227,6,19,0.3);padding:4px 12px;border-radius:20px;font-size:0.75rem;font-weight:600}
+.fleet-card h3{font-family:'Space Grotesk',sans-serif;font-size:1.2rem;font-weight:600;margin-bottom:8px}
+.fleet-card .meta{color:var(--text2);font-size:0.85rem;margin-bottom:16px}
+.fleet-card .stats{display:flex;gap:20px;flex-wrap:wrap}
+.fleet-card .stats div{font-size:0.8rem;color:var(--text2)}
+.fleet-card .stats div strong{color:var(--text);display:block;font-size:1rem;font-weight:600}
+
+.featured-routes{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.route-card{display:flex;align-items:center;gap:16px;padding:20px;border-radius:12px;transition:all .2s}
+.route-card:hover{border-color:rgba(227,6,19,0.3);transform:translateX(4px)}
+.route-card .icon{background:rgba(227,6,19,0.1);color:var(--red);width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.route-card .info{flex:1}
+.route-card .info h4{font-weight:600;margin-bottom:4px;font-size:1rem}
+.route-card .info p{color:var(--text2);font-size:0.85rem}
+.route-card .arrow{color:var(--text2);font-size:0.9rem}
+
+.events-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.event-card{border-radius:16px;overflow:hidden;padding:24px;transition:all .3s;position:relative}
+.event-card:hover{transform:translateY(-4px);border-color:rgba(227,6,19,0.25)}
+.event-card .date{font-size:0.75rem;color:var(--red);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.event-card h4{font-weight:600;margin-bottom:8px;font-size:1.05rem}
+.event-card p{color:var(--text2);font-size:0.85rem;line-height:1.5}
+.event-card .tag{display:inline-block;margin-top:14px;background:rgba(255,255,255,0.05);padding:4px 12px;border-radius:20px;font-size:0.75rem;color:var(--text2)}
+
+.footer{margin-top:80px;border-top:1px solid var(--glass-border);padding:60px 40px 40px;text-align:center}
+.footer .logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.3rem;margin-bottom:16px}
+.footer .logo span{color:var(--red)}
+.footer p{color:var(--text2);font-size:0.85rem;max-width:500px;margin:0 auto 24px;line-height:1.6}
+.footer .socials{display:flex;gap:16px;justify-content:center;margin-bottom:32px}
+.footer .socials a{width:40px;height:40px;border-radius:10px;border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;color:var(--text2);text-decoration:none;transition:all .2s}
+.footer .socials a:hover{color:var(--red);border-color:var(--red);box-shadow:0 0 15px var(--red-glow)}
+.footer .copy{color:var(--text2);font-size:0.75rem;opacity:0.6}
+
+.modal{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);z-index:200;display:none;justify-content:center;align-items:center}
+.modal.show{display:flex}
+.modal-box{background:var(--bg);border:1px solid var(--glass-border);border-radius:16px;padding:32px;max-width:360px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.5)}
+.modal-box h3{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;margin-bottom:20px}
+.modal-box input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:0.95rem;margin-bottom:12px;outline:none;transition:border .2s}
+.modal-box input:focus{border-color:var(--red)}
+.modal-box button{width:100%;background:var(--red);color:#fff;border:none;padding:12px;border-radius:8px;font-weight:600;cursor:none;transition:all .2s}
+.modal-box button:hover{box-shadow:0 0 20px var(--red-glow)}
+.modal-box .err{color:var(--red);font-size:0.8rem;margin-top:-8px;margin-bottom:10px}
+.modal-box .close{position:absolute;top:16px;right:16px;color:var(--text2);background:none;border:none;font-size:1.2rem;cursor:none}
+.admin-link{display:none;color:var(--red);font-size:0.85rem;margin-top:12px;text-decoration:none}
+.admin-link.show{display:block}
+
+@media(max-width:768px){
+  nav{padding:14px 20px}
+  nav ul{display:none}
+  .hero h1{font-size:2.2rem}
+  .section{padding:80px 20px}
+  .hero-btns{flex-direction:column}
+  .hero-stats{gap:28px}
+}
+</style>
 </head>
 <body>
-  <div class="toast-container" id="toastContainer"></div>
 
-  <header class="top-header">
-    <div class="logo">
-      <span>✚</span>
-      <div>
-        SWISSAIRPTFS
-        <div class="logo-sub">VIRTUAL AIRLINE</div>
-      </div>
-    </div>
-    <nav class="nav">
-      <a href="index.html">🏠 ГЛАВНАЯ</a>
-      <a href="https://discord.gg/6YA8t7GJr" target="_blank">🔗 DISCORD</a>
-      <a href="login.html">🔐 АДМИН-ПАНЕЛЬ</a>
-    </nav>
-  </header>
+<canvas class="particle-canvas" id="particles"></canvas>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-dot" id="cursor-dot"></div>
 
-  <section class="hero">
-    <div class="hero-content">
-      <h1>АНКЕТА В</h1>
-      <h2>SWISS<span>AIR</span>PTFS</h2>
-      <p class="hero-desc">
-        <strong>СТАНЬ ЧАСТЬЮ НАШЕЙ КОМАНДЫ!</strong><br>
-        Заполни анкету и сделай первый шаг к карьере в нашей виртуальной авиакомпании.
-      </p>
-      <div class="features">
-        <div class="feature"><div class="feature-icon">🌐</div> МЕЖДУНАРОДНАЯ<br>СЕТЬ МАРШРУТОВ</div>
-        <div class="feature"><div class="feature-icon">✈️</div> СОВРЕМЕННЫЙ<br>ФЛОТ</div>
-        <div class="feature"><div class="feature-icon">🎧</div> ПОДДЕРЖКА<br>24/7</div>
-        <div class="feature"><div class="feature-icon">👥</div> ДРУЖНЫЙ<br>КОЛЛЕКТИВ</div>
-        <div class="feature"><div class="feature-icon">🛡️</div> ПРОФЕССИОНАЛЬНЫЙ<br>ПОДХОД</div>
-      </div>
-    </div>
-    <div class="plane-deco">✈️</div>
-  </section>
+<nav id="nav">
+  <div class="logo"><i class="fa-solid fa-plane-up"></i> Swiss <span>VA</span></div>
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="fleet.html">Fleet</a></li>
+    <li><a href="routes.html">Routes</a></li>
+    <li><a href="map.html">Map</a></li>
+    <li><a href="events.html">Events</a></li>
+    <li><a href="history.html">History</a></li>
+  </ul>
+  <button class="login-btn" id="loginBtn">Login</button>
+</nav>
 
-  <div class="form-wrapper">
-    <form id="anketaForm">
-      <!-- 01 -->
-      <div class="question">
-        <div class="q-number">01<span class="icon">👤</span></div>
-        <div class="q-body">
-          <div class="q-title">Имя пилота в Roblox <span class="req">*</span></div>
-          <div class="q-desc">Под каким именем ты выполняешь полёты в PTFS? Это имя будет отображаться в списках экипажей и при общении.</div>
-          <input type="text" name="roblox_name" placeholder="Пример: Крутойенот" required>
-        </div>
-      </div>
-
-      <!-- 02 -->
-      <div class="question">
-        <div class="q-number">02<span class="icon">🎂</span></div>
-        <div class="q-body">
-          <div class="q-title">Возраст персонажа и реальный возраст <span class="req">*</span></div>
-          <div class="q-desc">Возраст персонажа нужен для лора, а реальный возраст — для соблюдения правил сообщества и распределения ролей.</div>
-          <div class="two-cols">
-            <div>
-              <label class="field-label">👤 Возраст персонажа (для лора)</label>
-              <input type="text" name="char_age" placeholder="Пример: 25" required>
-            </div>
-            <div>
-              <label class="field-label">📅 Твой реальный возраст</label>
-              <input type="text" name="real_age" placeholder="Пример: 14" required>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 03 -->
-      <div class="question">
-        <div class="q-number">03<span class="icon">✈️</span></div>
-        <div class="q-body">
-          <div class="q-title">Твой опыт в авиации <span class="req">*</span></div>
-          <div class="q-desc">Расскажи о своём опыте в PTFS, других авиационных играх или симуляторах. Какие самолёты предпочитаешь? Любишь короткие или дальние рейсы?</div>
-          <textarea name="experience" placeholder="Твой ответ..." required></textarea>
-        </div>
-      </div>
-
-      <!-- 04 -->
-      <div class="question">
-        <div class="q-number">04<span class="icon">💼</span></div>
-        <div class="q-body">
-          <div class="q-title">Кем ты хочешь быть в Swiss Airlines? <span class="req">*</span></div>
-          <div class="q-desc">Можно выбрать несколько вариантов.</div>
-          <div class="options">
-            <label class="option"><input type="checkbox" name="role" value="Капитан"> Капитан (Captain)</label>
-            <label class="option"><input type="checkbox" name="role" value="Второй пилот"> Второй пилот (First Officer)</label>
-            <label class="option"><input type="checkbox" name="role" value="Диспетчер УВД"> Диспетчер УВД (ATC)</label>
-            <label class="option"><input type="checkbox" name="role" value="Бортпроводник"> Бортпроводник (Cabin Crew)</label>
-            <label class="option"><input type="checkbox" name="role" value="Наземная служба"> Наземная служба (Ground Service)</label>
-            <label class="option"><input type="checkbox" name="role" value="Агент регистрации"> Агент регистрации (Check-in Agent)</label>
-          </div>
-        </div>
-      </div>
-
-      <!-- 05 -->
-      <div class="question">
-        <div class="q-number">05<span class="icon">🕐</span></div>
-        <div class="q-body">
-          <div class="q-title">Когда ты обычно онлайн? <span class="req">*</span></div>
-          <div class="q-desc">Укажи дни недели и примерное время по МСК, когда ты чаще всего играешь.</div>
-          <input type="text" name="online_time" placeholder="Пример: Пн, Ср, Пт с 18:00 до 22:00 (МСК)" required>
-        </div>
-      </div>
-
-      <!-- 06 -->
-      <div class="question">
-        <div class="q-number">06<span class="icon">❤️</span></div>
-        <div class="q-body">
-          <div class="q-title">Почему именно Swiss Airlines? <span class="req">*</span></div>
-          <div class="q-desc">Расскажи, что тебе нравится: флот, маршруты, атмосфера, оформление, реализм, правила или что-то другое.</div>
-          <textarea name="why_swiss" placeholder="Твой ответ..." required></textarea>
-        </div>
-      </div>
-
-      <!-- 07 -->
-      <div class="question">
-        <div class="q-number">07<span class="icon">🛡️</span></div>
-        <div class="q-body">
-          <div class="q-title">Готов ли ты соблюдать правила? <span class="req">*</span></div>
-          <div class="q-desc">Согласен ли ты соблюдать правила авиакомпании и уважительно относиться к инструкторам и другим участникам?</div>
-          <div class="options">
-            <label class="option"><input type="radio" name="rules" value="Да" required> Да, я согласен</label>
-            <label class="option"><input type="radio" name="rules" value="Нет"> Нет, не согласен</label>
-          </div>
-        </div>
-      </div>
-
-      <!-- 08 -->
-      <div class="question">
-        <div class="q-number">08<span class="icon">📖</span></div>
-        <div class="q-body">
-          <div class="q-title">Готов ли ты выучить наш упрощённый ФРО? <span class="req">*</span></div>
-          <div class="q-desc">Насколько хорошо ты знаешь авиационную фразеологию?</div>
-          <div class="options">
-            <label class="option"><input type="radio" name="fro" value="Хорошо знаю" required> Хорошо знаю</label>
-            <label class="option"><input type="radio" name="fro" value="Есть базовые знания"> Есть базовые знания</label>
-            <label class="option"><input type="radio" name="fro" value="Пока не знаю"> Пока не знаю, но хочу научиться</label>
-          </div>
-        </div>
-      </div>
-
-      <!-- 09 -->
-      <div class="question">
-        <div class="q-number">09<span class="icon">⏱️</span></div>
-        <div class="q-body">
-          <div class="q-title">Сколько минут ты налетал в PTFS? <span class="req">*</span></div>
-          <div class="q-desc">Укажи общее количество минут полётов. Если у тебя меньше 1000 минут, ты автоматически начнёшь обучение в Академии Swiss Airlines.</div>
-          <input type="text" name="flight_minutes" placeholder="Пример: 1520" required>
-          <div class="note-box">
-            🎓 Менее 1000 минут = Академия пилотов
-          </div>
-        </div>
-      </div>
-
-      <!-- 10 -->
-      <div class="question">
-        <div class="q-number">10<span class="icon">✈️</span></div>
-        <div class="q-body">
-          <div class="q-title">Telegram <span class="req">*</span></div>
-          <div class="q-desc">Напиши свой Telegram (@username), чтобы мы могли быстро связаться с тобой.</div>
-          <input type="text" name="telegram" placeholder="Пример: @krutoyenot" required>
-        </div>
-      </div>
-
-      <!-- 11 -->
-      <div class="question">
-        <div class="q-number">💬</div>
-        <div class="q-body">
-          <div class="q-title">Есть ли что-нибудь, что ты хотел бы рассказать о себе? <span style="color:#999;font-weight:400">(необязательно)</span></div>
-          <textarea name="about" placeholder="Твой ответ..."></textarea>
-        </div>
-      </div>
-
-      <div class="submit-area">
-        <button type="submit" class="btn-submit" id="submitBtn">
-          ✈️ ОТПРАВИТЬ АНКЕТУ
-        </button>
-        <div class="security-note">
-          🔒 Никогда не передавайте пароли через формы.
-        </div>
-      </div>
-    </form>
+<div class="hero">
+  <div class="hero-bg"></div>
+  <h1 data-aos="fade-up">Swiss Precision.<br><span>Global Reach.</span></h1>
+  <p data-aos="fade-up" data-aos-delay="100">Experience virtual aviation at its finest. Swiss Airlines VA brings premium flight simulation to the skies of PTFS.</p>
+  <div class="hero-btns" data-aos="fade-up" data-aos-delay="200">
+    <a href="fleet.html" class="btn-primary">Explore Fleet</a>
+    <a href="https://discord.gg/6YA8t7GJr" target="_blank" class="btn-secondary"><i class="fa-brands fa-discord"></i> Join Discord</a>
   </div>
-
-  <!-- Success Modal -->
-  <div class="modal-overlay" id="successModal">
-    <div class="modal">
-      <div class="modal-icon">✅</div>
-      <h3>Анкета отправлена!</h3>
-      <p>Мы получили твою заявку. Наша команда рассмотрит её в ближайшее время и свяжется с тобой через Telegram.</p>
-      <button class="modal-btn" onclick="closeModal()">Понятно!</button>
-    </div>
+  <div class="hero-stats" data-aos="fade-up" data-aos-delay="300">
+    <div class="hero-stat"><div class="num" id="statFleet">0</div><div class="label">Aircraft</div></div>
+    <div class="hero-stat"><div class="num" id="statRoutes">0</div><div class="label">Routes</div></div>
+    <div class="hero-stat"><div class="num" id="statEvents">0</div><div class="label">Events</div></div>
   </div>
+</div>
 
-  <footer class="footer">
-    <div class="footer-logo">
-      <span style="color:#e30613">✚</span>
-      SWISSAIRPTFS
-      <span style="opacity:0.6;font-weight:400;font-size:11px;margin-left:6px;">VIRTUAL AIRLINE</span>
-    </div>
-    <div class="footer-right">
-      FLY TOGETHER. FLY SWISS.
-    </div>
-  </footer>
+<section class="section">
+  <h2 class="section-title" data-aos="fade-right">Fleet Preview</h2>
+  <p class="section-sub" data-aos="fade-right">Our modern and diverse fleet connects Switzerland to the world.</p>
+  <div class="fleet-grid" id="fleetPreview"></div>
+  <div style="text-align:center;margin-top:32px"><a href="fleet.html" class="btn-secondary">View Full Fleet</a></div>
+</section>
 
-  <script>
-    function showToast(message, type = 'info') {
-      const container = document.getElementById('toastContainer');
-      const toast = document.createElement('div');
-      toast.className = `toast ${type}`;
-      toast.innerHTML = `<span>${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span> ${message}`;
-      container.appendChild(toast);
-      setTimeout(() => toast.remove(), 5000);
-    }
+<section class="section">
+  <h2 class="section-title" data-aos="fade-right">Popular Routes</h2>
+  <p class="section-sub" data-aos="fade-right">From Zurich to global destinations — our most flown routes.</p>
+  <div class="featured-routes" id="routePreview"></div>
+  <div style="text-align:center;margin-top:32px"><a href="routes.html" class="btn-secondary">All Routes</a></div>
+</section>
 
-    function closeModal() {
-      document.getElementById('successModal').classList.remove('active');
-      document.getElementById('anketaForm').reset();
-    }
+<section class="section">
+  <h2 class="section-title" data-aos="fade-right">Upcoming Events</h2>
+  <p class="section-sub" data-aos="fade-right">Join the community for tours, challenges, and group flights.</p>
+  <div class="events-row" id="eventsPreview"></div>
+  <div style="text-align:center;margin-top:32px"><a href="events.html" class="btn-secondary">All Events</a></div>
+</section>
 
-    document.getElementById('anketaForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const btn = document.getElementById('submitBtn');
-      btn.disabled = true;
-      btn.innerHTML = '⏳ Отправка...';
+<div class="footer">
+  <div class="logo">Swiss <span>VA</span></div>
+  <p>Swiss Airlines Virtual Airline for PTFS. Premium flight simulation with Swiss precision.</p>
+  <div class="socials">
+    <a href="https://discord.gg/6YA8t7GJr" target="_blank"><i class="fa-brands fa-discord"></i></a>
+    <a href="#"><i class="fa-brands fa-twitter"></i></a>
+    <a href="#"><i class="fa-brands fa-youtube"></i></a>
+  </div>
+  <div class="copy">© 2026 Swiss Airlines VA. All rights reserved.</div>
+</div>
 
-      const formData = new FormData(this);
-      const data = {};
-      
-      // Collect all text values
-      for (const [key, value] of formData.entries()) {
-        if (data[key]) {
-          if (Array.isArray(data[key])) {
-            data[key].push(value);
-          } else {
-            data[key] = [data[key], value];
-          }
-        } else {
-          data[key] = value;
-        }
-      }
+<div class="modal" id="loginModal">
+  <div class="modal-box" style="position:relative">
+    <button class="close" id="closeModal">×</button>
+    <h3>Admin Login</h3>
+    <input type="text" id="userInput" placeholder="Username">
+    <input type="password" id="passInput" placeholder="Password">
+    <div class="err" id="loginErr"></div>
+    <button id="doLogin">Login</button>
+    <a href="admin.html" class="admin-link" id="adminLink">Go to Admin Panel</a>
+  </div>
+</div>
 
-      // Convert arrays to comma-separated for checkboxes
-      if (Array.isArray(data.role)) {
-        data.role = data.role.join(', ');
-      }
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+<script>
+AOS.init({duration:800,once:true});
 
-      try {
-        const response = await fetch('/api/submit', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
-        });
+const cursor=document.getElementById('cursor'),cursorDot=document.getElementById('cursor-dot');
+document.addEventListener('mousemove',e=>{cursor.style.left=e.clientX+'px';cursor.style.top=e.clientY+'px';cursorDot.style.left=e.clientX+'px';cursorDot.style.top=e.clientY+'px';});
+document.querySelectorAll('a,button,.fleet-card,.route-card,.event-card').forEach(el=>{el.addEventListener('mouseenter',()=>{cursor.style.transform='translate(-50%,-50%) scale(1.6)';cursor.style.background='rgba(227,6,19,0.15)';});el.addEventListener('mouseleave',()=>{cursor.style.transform='translate(-50%,-50%) scale(1)';cursor.style.background='transparent';});});
 
-        const result = await response.json();
+const canvas=document.getElementById('particles'),ctx=canvas.getContext('2d');
+let W,H,particles=[];
+function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}
+window.addEventListener('resize',resize);resize();
+class Particle{constructor(){this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-0.5)*0.4;this.vy=(Math.random()-0.5)*0.4;this.size=Math.random()*2+1;this.alpha=Math.random()*0.5+0.2;}update(){this.x+=this.vx;this.y+=this.vy;if(this.x<0||this.x>W)this.vx*=-1;if(this.y<0||this.y>H)this.vy*=-1;}draw(){ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2);ctx.fillStyle=`rgba(227,6,19,${this.alpha})`;ctx.fill();}}
+for(let i=0;i<70;i++)particles.push(new Particle());
+(function anim(){ctx.clearRect(0,0,W,H);particles.forEach(p=>{p.update();p.draw();});for(let i=0;i<particles.length;i++)for(let j=i+1;j<particles.length;j++){const dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<120){ctx.beginPath();ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(particles[j].x,particles[j].y);ctx.strokeStyle=`rgba(227,6,19,${0.15*(1-d/120)})`;ctx.stroke();}}requestAnimationFrame(anim);})();
 
-        if (response.ok && result.success) {
-          document.getElementById('successModal').classList.add('active');
-          showToast('Анкета успешно отправлена!', 'success');
-        } else {
-          showToast(result.error || 'Ошибка при отправке анкеты', 'error');
-        }
-      } catch (err) {
-        showToast('Сервер недоступен. Попробуй позже.', 'error');
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = '✈️ ОТПРАВИТЬ АНКЕТУ';
-      }
-    });
-  </script>
+window.addEventListener('scroll',()=>{if(window.scrollY>60)document.getElementById('nav').classList.add('scrolled');else document.getElementById('nav').classList.remove('scrolled');});
+
+fetch('/api/stats').then(r=>r.json()).then(d=>{animateNum('statFleet',d.fleet);animateNum('statRoutes',d.routes);animateNum('statEvents',d.events);});
+function animateNum(id,target){const el=document.getElementById(id);let c=0;const step=Math.max(1,Math.floor(target/40));const iv=setInterval(()=>{c+=step;if(c>=target){c=target;clearInterval(iv);}el.textContent=c;},30);}
+
+fetch('/api/fleet').then(r=>r.json()).then(d=>{const container=document.getElementById('fleetPreview');d.slice(0,3).forEach(a=>{const div=document.createElement('div');div.className='glass fleet-card';div.innerHTML=`<div class="badge">${a.status}</div><h3>${a.aircraft}</h3><div class="meta">${a.type} · ${a.registration}</div><div class="stats"><div><strong>${a.capacity}</strong>Seats</div><div><strong>${a.range}</strong>km Range</div></div>`;container.appendChild(div);});});
+
+fetch('/api/routes').then(r=>r.json()).then(d=>{const container=document.getElementById('routePreview');const popular=['Zurich','New York JFK','Los Angeles','Tokyo NRT','Singapore','London LHR','Dubai','Chicago ORD'];d.filter(r=>popular.includes(r.destination)||popular.includes(r.origin)).slice(0,5).forEach(r=>{const div=document.createElement('div');div.className='glass route-card';div.innerHTML=`<div class="icon"><i class="fa-solid fa-plane"></i></div><div class="info"><h4>${r.origin} → ${r.destination}</h4><p>${r.flight_number} · ${r.duration} · ${r.aircraft_type}</p></div><div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>`;container.appendChild(div);});});
+
+fetch('/api/events').then(r=>r.json()).then(d=>{const container=document.getElementById('eventsPreview');d.slice(0,3).forEach(e=>{const div=document.createElement('div');div.className='glass event-card';div.innerHTML=`<div class="date">${e.event_date}</div><h4>${e.title}</h4><p>${e.description}</p><span class="tag">${e.event_type}</span>`;container.appendChild(div);});});
+
+const loginBtn=document.getElementById('loginBtn'),loginModal=document.getElementById('loginModal'),closeModal=document.getElementById('closeModal'),doLogin=document.getElementById('doLogin'),loginErr=document.getElementById('loginErr'),adminLink=document.getElementById('adminLink');
+loginBtn.addEventListener('click',()=>loginModal.classList.add('show'));
+closeModal.addEventListener('click',()=>loginModal.classList.remove('show'));
+loginModal.addEventListener('click',e=>{if(e.target===loginModal)loginModal.classList.remove('show');});
+doLogin.addEventListener('click',()=>{const u=document.getElementById('userInput').value,p=document.getElementById('passInput').value;fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})}).then(r=>r.json()).then(d=>{if(d.success){loginErr.textContent='';loginBtn.textContent='Admin';adminLink.classList.add('show');loginModal.classList.remove('show');}else{loginErr.textContent='Invalid credentials';}});});
+fetch('/api/me').then(r=>r.json()).then(d=>{if(d.loggedIn&&d.user.role==='admin'){loginBtn.textContent='Admin';adminLink.classList.add('show');}});
+</script>
 </body>
 </html>

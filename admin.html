@@ -1,460 +1,174 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Панель управления — Swiss Airlines</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      background: #f5f5f5; color: #1a1a1a; line-height: 1.5;
-    }
-    .admin-header {
-      background: #0d0d0d; color: #fff; padding: 14px 30px;
-      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
-    }
-    .admin-header .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px; }
-    .admin-header .logo span { color: #e30613; font-size: 20px; }
-    .admin-header .actions { display: flex; gap: 10px; align-items: center; }
-    .btn {
-      padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;
-      border: none; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
-    }
-    .btn-primary { background: #e30613; color: #fff; }
-    .btn-primary:hover { background: #c00510; }
-    .btn-secondary { background: #333; color: #fff; }
-    .btn-secondary:hover { background: #555; }
-    .btn-success { background: #22c55e; color: #fff; }
-    .btn-success:hover { background: #16a34a; }
-    .btn-danger { background: #ef4444; color: #fff; }
-    .btn-danger:hover { background: #dc2626; }
-    .btn-sm { padding: 6px 12px; font-size: 12px; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Swiss Airlines VA — Admin Panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root{--red:#E30613;--red-glow:rgba(227,6,19,0.35);--bg:#0a0a0f;--bg2:#141428;--glass:rgba(255,255,255,0.04);--glass-border:rgba(255,255,255,0.08);--text:#f0f0f5;--text2:#a0a0b8;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-thumb{background:var(--red);border-radius:4px}
+::-webkit-scrollbar-track{background:var(--bg2)}
 
-    .container { max-width: 1400px; margin: 0 auto; padding: 30px; }
-    .stats-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;
-    }
-    .stat-card {
-      background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-      display: flex; align-items: center; gap: 16px;
-    }
-    .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
-    .stat-icon.blue { background: #eff6ff; }
-    .stat-icon.yellow { background: #fffbeb; }
-    .stat-icon.green { background: #f0fdf4; }
-    .stat-icon.red { background: #fef2f2; }
-    .stat-value { font-size: 28px; font-weight: 800; }
-    .stat-label { font-size: 13px; color: #888; margin-top: 2px; }
+.glass{background:var(--glass);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border:1px solid var(--glass-border);box-shadow:0 8px 32px rgba(0,0,0,0.25)}
 
-    .filters {
-      background: #fff; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px;
-      display: flex; gap: 12px; align-items: center; flex-wrap: wrap; box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    }
-    .filters label { font-size: 13px; font-weight: 600; color: #555; }
-    .filters select, .filters input {
-      padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; font-family: inherit;
-    }
-    .filters select:focus, .filters input:focus { outline: none; border-color: #e30613; }
+.admin-layout{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+.sidebar{background:var(--bg2);border-right:1px solid var(--glass-border);padding:24px;display:flex;flex-direction:column}
+.sidebar .logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.3rem;margin-bottom:32px;display:flex;align-items:center;gap:10px}
+.sidebar .logo span{color:var(--red)}
+.sidebar nav{display:flex;flex-direction:column;gap:4px;flex:1}
+.sidebar nav a{color:var(--text2);text-decoration:none;padding:10px 14px;border-radius:8px;font-size:0.9rem;font-weight:500;transition:all .2s;display:flex;align-items:center;gap:10px}
+.sidebar nav a:hover,.sidebar nav a.active{color:var(--text);background:rgba(227,6,19,0.08)}
+.sidebar nav a i{width:20px;text-align:center}
+.sidebar .logout{margin-top:auto;background:transparent;border:1px solid var(--glass-border);color:var(--text2);padding:10px;border-radius:8px;cursor:pointer;font-weight:600;transition:all .2s}
+.sidebar .logout:hover{border-color:var(--red);color:var(--red)}
 
-    .table-card {
-      background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); overflow: hidden;
-    }
-    .table-header {
-      padding: 20px 24px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
-    }
-    .table-header h2 { font-size: 18px; font-weight: 700; }
-    .table-header .count { font-size: 13px; color: #888; }
+.main{padding:32px 40px;max-width:1200px;width:100%}
+.main h1{font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700;margin-bottom:24px}
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.top-bar h2{font-family:'Space Grotesk',sans-serif;font-size:1.2rem;font-weight:600}
+.top-bar .btn{background:var(--red);color:#fff;border:none;padding:8px 18px;border-radius:8px;font-weight:600;font-size:0.85rem;cursor:pointer;transition:all .2s}
+.top-bar .btn:hover{box-shadow:0 0 20px var(--red-glow)}
+.top-bar .btn.outline{background:transparent;border:1px solid var(--glass-border);color:var(--text);margin-left:8px}
+.top-bar .btn.outline:hover{border-color:var(--red);color:var(--red)}
 
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    thead th {
-      background: #fafafa; padding: 12px 16px; text-align: left; font-weight: 600; font-size: 12px;
-      color: #888; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #eee;
-    }
-    tbody td { padding: 14px 16px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
-    tbody tr:hover { background: #fafafa; }
-    tbody tr:last-child td { border-bottom: none; }
+.table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--glass-border)}
+table{width:100%;border-collapse:collapse;font-size:0.9rem}
+th,td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--glass-border)}
+th{color:var(--text2);font-weight:600;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.5px;background:rgba(255,255,255,0.02)}
+tr:hover td{background:rgba(255,255,255,0.02)}
+.actions{display:flex;gap:8px}
+.actions button{background:none;border:none;color:var(--text2);cursor:pointer;padding:4px 8px;border-radius:4px;transition:all .2s}
+.actions button:hover{color:var(--red);background:rgba(227,6,19,0.08)}
 
-    .badge {
-      display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 20px;
-      font-size: 12px; font-weight: 600;
-    }
-    .badge-pending { background: #fffbeb; color: #b45309; }
-    .badge-approved { background: #f0fdf4; color: #15803d; }
-    .badge-rejected { background: #fef2f2; color: #b91c1c; }
+.modal{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);z-index:200;display:none;justify-content:center;align-items:center}
+.modal.show{display:flex}
+.modal-box{background:var(--bg);border:1px solid var(--glass-border);border-radius:16px;padding:32px;max-width:480px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.5);position:relative}
+.modal-box h3{font-family:'Space Grotesk',sans-serif;font-size:1.2rem;margin-bottom:20px}
+.modal-box label{display:block;font-size:0.8rem;color:var(--text2);margin-bottom:4px;margin-top:12px}
+.modal-box input,.modal-box textarea,.modal-box select{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:0.95rem;outline:none;transition:border .2s}
+.modal-box input:focus,.modal-box textarea:focus,.modal-box select:focus{border-color:var(--red)}
+.modal-box textarea{min-height:80px;resize:vertical}
+.modal-box .btns{display:flex;gap:10px;margin-top:20px}
+.modal-box .btns button{flex:1;padding:10px;border-radius:8px;font-weight:600;cursor:pointer;border:none}
+.modal-box .btns .save{background:var(--red);color:#fff}
+.modal-box .btns .cancel{background:transparent;border:1px solid var(--glass-border);color:var(--text2)}
+.modal-box .close{position:absolute;top:16px;right:16px;color:var(--text2);background:none;border:none;font-size:1.2rem;cursor:pointer}
 
-    .applicant-name { font-weight: 700; color: #1a1a1a; }
-    .applicant-telegram { font-size: 12px; color: #888; }
-    .applicant-date { font-size: 12px; color: #aaa; }
+.login-screen{position:fixed;inset:0;background:var(--bg);z-index:300;display:flex;align-items:center;justify-content:center}
+.login-box{background:var(--bg2);border:1px solid var(--glass-border);border-radius:16px;padding:40px;max-width:360px;width:90%;text-align:center}
+.login-box .logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.4rem;margin-bottom:8px}
+.login-box .logo span{color:var(--red)}
+.login-box p{color:var(--text2);font-size:0.85rem;margin-bottom:24px}
+.login-box input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:8px;padding:12px 14px;color:var(--text);font-size:0.95rem;margin-bottom:12px;outline:none}
+.login-box input:focus{border-color:var(--red)}
+.login-box button{width:100%;background:var(--red);color:#fff;border:none;padding:12px;border-radius:8px;font-weight:600;cursor:pointer;margin-top:8px}
+.login-box .err{color:var(--red);font-size:0.8rem;margin-top:8px}
 
-    .detail-row { display: none; }
-    .detail-row.active { display: table-row; }
-    .detail-cell { background: #fafafa; padding: 20px 24px; }
-    .detail-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;
-    }
-    .detail-item { background: #fff; border: 1px solid #eee; border-radius: 8px; padding: 12px 14px; }
-    .detail-item-label { font-size: 11px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-    .detail-item-value { font-size: 13px; color: #1a1a1a; line-height: 1.5; }
-    .detail-item-value pre { font-family: inherit; white-space: pre-wrap; word-wrap: break-word; margin: 0; }
-
-    .detail-actions { display: flex; gap: 10px; margin-top: 16px; justify-content: flex-end; }
-
-    .empty-state { text-align: center; padding: 60px 20px; }
-    .empty-state-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
-    .empty-state h3 { font-size: 18px; color: #555; margin-bottom: 6px; }
-    .empty-state p { font-size: 14px; color: #888; }
-
-    .toast-container { position: fixed; top: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; }
-    .toast {
-      background: #fff; border-radius: 8px; padding: 14px 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-      display: flex; align-items: center; gap: 10px; min-width: 280px; font-size: 14px;
-      animation: slideIn 0.3s ease, fadeOut 0.3s ease 4.7s forwards;
-    }
-    .toast.success { border-left: 4px solid #22c55e; }
-    .toast.error { border-left: 4px solid #e30613; }
-    .toast.info { border-left: 4px solid #3b82f6; }
-    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-    @keyframes fadeOut { to { opacity: 0; transform: translateX(100%); } }
-
-    @media (max-width: 900px) {
-      .container { padding: 16px; }
-      .stats-grid { grid-template-columns: repeat(2, 1fr); }
-      .table-header { padding: 16px; }
-      thead { display: none; }
-      tbody, tr, td { display: block; width: 100%; }
-      tbody td { position: relative; padding-left: 40%; border-bottom: 1px solid #f0f0f0; }
-      tbody td::before {
-        content: attr(data-label); position: absolute; left: 16px; top: 14px;
-        font-size: 11px; font-weight: 600; color: #888; text-transform: uppercase;
-      }
-      .detail-cell { padding: 16px; }
-      .detail-grid { grid-template-columns: 1fr; }
-    }
-  </style>
+@media(max-width:768px){
+  .admin-layout{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .main{padding:20px}
+}
+</style>
 </head>
 <body>
-  <div class="toast-container" id="toastContainer"></div>
 
-  <header class="admin-header">
-    <div class="logo">
-      <span>✚</span>
-      <div>SWISSAIRPTFS <span style="opacity:0.6;font-size:13px;font-weight:400">— Панель управления</span></div>
-    </div>
-    <div class="actions">
-      <a href="index.html" class="btn btn-secondary">🏠 Главная</a>
-      <button class="btn btn-primary" onclick="logout()">🚪 Выйти</button>
-    </div>
-  </header>
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <div class="logo">Swiss <span>VA</span></div>
+    <p>Admin access required</p>
+    <input type="text" id="loginUser" placeholder="Username">
+    <input type="password" id="loginPass" placeholder="Password">
+    <button id="loginAction">Login</button>
+    <div class="err" id="loginError"></div>
+  </div>
+</div>
 
-  <div class="container">
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-icon blue">📨</div>
-        <div>
-          <div class="stat-value" id="statTotal">0</div>
-          <div class="stat-label">Всего анкет</div>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon yellow">⏳</div>
-        <div>
-          <div class="stat-value" id="statPending">0</div>
-          <div class="stat-label">Ожидают проверки</div>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon green">✅</div>
-        <div>
-          <div class="stat-value" id="statApproved">0</div>
-          <div class="stat-label">Одобрено</div>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon red">❌</div>
-        <div>
-          <div class="stat-value" id="statRejected">0</div>
-          <div class="stat-label">Отклонено</div>
-        </div>
-      </div>
-    </div>
+<div class="admin-layout" id="adminLayout" style="display:none">
+  <aside class="sidebar">
+    <div class="logo"><i class="fa-solid fa-plane-up"></i> Swiss <span>VA</span></div>
+    <nav>
+      <a href="#" class="active" data-section="fleet"><i class="fa-solid fa-plane"></i> Fleet</a>
+      <a href="#" data-section="routes"><i class="fa-solid fa-route"></i> Routes</a>
+      <a href="#" data-section="events"><i class="fa-solid fa-calendar-days"></i> Events</a>
+      <a href="#" data-section="timeline"><i class="fa-solid fa-clock-rotate-left"></i> Timeline</a>
+      <a href="#" data-section="staff"><i class="fa-solid fa-users"></i> Staff</a>
+    </nav>
+    <button class="logout" id="logoutBtn"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</button>
+  </aside>
+  <main class="main">
+    <h1>Admin Panel</h1>
+    <div id="sectionContent"></div>
+  </main>
+</div>
 
-    <div class="filters">
-      <label>Фильтр:</label>
-      <select id="statusFilter" onchange="loadApplications()">
-        <option value="all">Все статусы</option>
-        <option value="pending">⏳ Ожидают</option>
-        <option value="approved">✅ Одобрены</option>
-        <option value="rejected">❌ Отклонены</option>
-      </select>
-      <input type="text" id="searchFilter" placeholder="Поиск по имени или Telegram..." oninput="loadApplications()" style="min-width:200px">
-      <button class="btn btn-primary btn-sm" onclick="loadApplications()">🔄 Обновить</button>
-    </div>
-
-    <div class="table-card">
-      <div class="table-header">
-        <h2>📋 Заявки кандидатов</h2>
-        <span class="count" id="tableCount">Загрузка...</span>
-      </div>
-      <div id="tableContainer">
-        <div class="empty-state">
-          <div class="empty-state-icon">⏳</div>
-          <h3>Загрузка заявок...</h3>
-          <p>Пожалуйста, подождите</p>
-        </div>
-      </div>
+<div class="modal" id="editModal">
+  <div class="modal-box">
+    <button class="close" id="closeEdit">×</button>
+    <h3 id="editTitle">Edit</h3>
+    <div id="editFields"></div>
+    <div class="btns">
+      <button class="save" id="saveBtn">Save</button>
+      <button class="cancel" id="cancelBtn">Cancel</button>
     </div>
   </div>
+</div>
 
-  <script>
-    let applications = [];
-    let expandedId = null;
+<script>
+let currentSection='fleet',currentId=null;
+const loginScreen=document.getElementById('loginScreen'),adminLayout=document.getElementById('adminLayout'),sectionContent=document.getElementById('sectionContent'),editModal=document.getElementById('editModal'),editFields=document.getElementById('editFields');
 
-    function showToast(message, type = 'info') {
-      const container = document.getElementById('toastContainer');
-      const toast = document.createElement('div');
-      toast.className = `toast ${type}`;
-      toast.innerHTML = `<span>${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span> ${message}`;
-      container.appendChild(toast);
-      setTimeout(() => toast.remove(), 5000);
-    }
+fetch('/api/me').then(r=>r.json()).then(d=>{if(d.loggedIn&&d.user.role==='admin'){loginScreen.style.display='none';adminLayout.style.display='grid';loadSection('fleet');}else{loginScreen.style.display='flex';adminLayout.style.display='none';}});
 
-    async function checkAuth() {
-      try {
-        const res = await fetch('/api/me');
-        const data = await res.json();
-        if (!data.isAdmin) {
-          window.location.href = 'login.html';
-        }
-      } catch {
-        window.location.href = 'login.html';
-      }
-    }
+document.getElementById('loginAction').addEventListener('click',()=>{const u=document.getElementById('loginUser').value,p=document.getElementById('loginPass').value;fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})}).then(r=>r.json()).then(d=>{if(d.success){loginScreen.style.display='none';adminLayout.style.display='grid';loadSection('fleet');}else{document.getElementById('loginError').textContent='Invalid credentials';}});});
+document.getElementById('logoutBtn').addEventListener('click',()=>{fetch('/api/logout',{method:'POST'}).then(()=>location.reload());});
 
-    async function logout() {
-      await fetch('/api/logout', { method: 'POST' });
-      window.location.href = 'login.html';
-    }
+document.querySelectorAll('.sidebar nav a').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();document.querySelectorAll('.sidebar nav a').forEach(x=>x.classList.remove('active'));a.classList.add('active');loadSection(a.dataset.section);});});
 
-    async function loadStats() {
-      try {
-        const res = await fetch('/api/stats');
-        const data = await res.json();
-        document.getElementById('statTotal').textContent = data.total || 0;
-        document.getElementById('statPending').textContent = data.pending || 0;
-        document.getElementById('statApproved').textContent = data.approved || 0;
-        document.getElementById('statRejected').textContent = data.rejected || 0;
-      } catch (err) {
-        console.error('Stats error:', err);
-      }
-    }
+const fields={
+  fleet:['aircraft','type','registration','capacity','range','status','image'],
+  routes:['flight_number','origin','destination','distance','duration','aircraft_type','days','status'],
+  events:['title','description','event_date','event_type','location','image'],
+  timeline:['year','title','description','icon'],
+  staff:['name','role','department','discord','image','bio']
+};
 
-    function getStatusBadge(status) {
-      if (status === 'approved') return '<span class="badge badge-approved">✅ Одобрено</span>';
-      if (status === 'rejected') return '<span class="badge badge-rejected">❌ Отклонено</span>';
-      return '<span class="badge badge-pending">⏳ На рассмотрении</span>';
-    }
+function loadSection(section){
+  currentSection=section;
+  fetch('/api/'+section).then(r=>r.json()).then(data=>{
+    let html='<div class="top-bar"><h2>'+section.charAt(0).toUpperCase()+section.slice(1)+'</h2><button class="btn" onclick="openAdd()">+ Add</button></div>';
+    if(!data.length){html+='<p style="color:var(--text2)">No records yet.</p>';sectionContent.innerHTML=html;return;}
+    html+='<div class="table-wrap"><table><thead><tr>';
+    fields[section].forEach(f=>html+='<th>'+f.replace(/_/g,' ')+'</th>');
+    html+='<th>Actions</th></tr></thead><tbody>';
+    data.forEach(row=>{
+      html+='<tr>';
+      fields[section].forEach(f=>html+='<td>'+(row[f]||'')+'</td>');
+      html+='<td class="actions"><button onclick="openEdit('+row.id+')"><i class="fa-solid fa-pen"></i></button><button onclick="deleteItem('+row.id+')"><i class="fa-solid fa-trash"></i></button></td></tr>';
+    });
+    html+='</tbody></table></div>';
+    sectionContent.innerHTML=html;
+  });
+}
 
-    function formatDate(dateStr) {
-      if (!dateStr) return '-';
-      const d = new Date(dateStr);
-      return d.toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-    }
+function openAdd(){currentId=null;document.getElementById('editTitle').textContent='Add '+currentSection;buildFields({});editModal.classList.add('show');}
+function openEdit(id){currentId=id;fetch('/api/'+currentSection+'/'+id).then(r=>r.json()).then(row=>{document.getElementById('editTitle').textContent='Edit '+currentSection;buildFields(row);editModal.classList.add('show');});}
+function buildFields(row){editFields.innerHTML='';fields[currentSection].forEach(f=>{const label=document.createElement('label');label.textContent=f.replace(/_/g,' ');const inp=document.createElement(f==='description'||f==='bio'?'textarea':'input');inp.className='field-'+f;inp.value=row[f]||'';editFields.appendChild(label);editFields.appendChild(inp);});}
 
-    function toggleDetail(id) {
-      const row = document.getElementById('detail-' + id);
-      if (expandedId === id) {
-        row.classList.remove('active');
-        expandedId = null;
-      } else {
-        if (expandedId) {
-          const prev = document.getElementById('detail-' + expandedId);
-          if (prev) prev.classList.remove('active');
-        }
-        row.classList.add('active');
-        expandedId = id;
-      }
-    }
-
-    function renderTable() {
-      const statusFilter = document.getElementById('statusFilter').value;
-      const searchFilter = document.getElementById('searchFilter').value.toLowerCase();
-
-      let filtered = applications;
-      if (statusFilter !== 'all') {
-        filtered = filtered.filter(a => a.status === statusFilter);
-      }
-      if (searchFilter) {
-        filtered = filtered.filter(a =>
-          (a.roblox_name && a.roblox_name.toLowerCase().includes(searchFilter)) ||
-          (a.telegram && a.telegram.toLowerCase().includes(searchFilter))
-        );
-      }
-
-      document.getElementById('tableCount').textContent = `Показано: ${filtered.length} из ${applications.length}`;
-
-      if (filtered.length === 0) {
-        document.getElementById('tableContainer').innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-icon">📭</div>
-            <h3>Нет заявок</h3>
-            <p>Пока нет анкет с выбранным фильтром</p>
-          </div>`;
-        return;
-      }
-
-      let html = `<table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Кандидат</th>
-            <th>Роли</th>
-            <th>Telegram</th>
-            <th>Дата</th>
-            <th>Статус</th>
-            <th>Действия</th>
-          </tr>
-        </thead>
-        <tbody>`;
-
-      for (const app of filtered) {
-        html += `
-          <tr onclick="toggleDetail(${app.id})" style="cursor:pointer">
-            <td data-label="ID">#${app.id}</td>
-            <td data-label="Кандидат">
-              <div class="applicant-name">${app.roblox_name}</div>
-              <div class="applicant-telegram">🎂 ${app.char_age || '-'} | 📅 ${app.real_age || '-'}</div>
-            </td>
-            <td data-label="Роли">${app.role || '-'}</td>
-            <td data-label="Telegram">${app.telegram || '-'}</td>
-            <td data-label="Дата">${formatDate(app.submitted_at)}</td>
-            <td data-label="Статус">${getStatusBadge(app.status)}</td>
-            <td data-label="Действия">
-              <button class="btn btn-success btn-sm" onclick="event.stopPropagation();updateStatus(${app.id}, 'approved')">✅</button>
-              <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();updateStatus(${app.id}, 'rejected')">❌</button>
-              <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();deleteApp(${app.id})">🗑️</button>
-            </td>
-          </tr>
-          <tr class="detail-row" id="detail-${app.id}">
-            <td colspan="7" class="detail-cell">
-              <div class="detail-grid">
-                <div class="detail-item">
-                  <div class="detail-item-label">Имя в Roblox</div>
-                  <div class="detail-item-value">${app.roblox_name}</div>
-                </div>
-                <div class="detail-item">
-                  <div class="detail-item-label">Telegram</div>
-                  <div class="detail-item-value">${app.telegram}</div>
-                </div>
-                <div class="detail-item">
-                  <div class="detail-item-label">Возраст персонажа</div>
-                  <div class="detail-item-value">${app.char_age || '-'}</div>
-                </div>
-                <div class="detail-item">
-                  <div class="detail-item-label">Реальный возраст</div>
-                  <div class="detail-item-value">${app.real_age || '-'}</div>
-                </div>
-                <div class="detail-item">
-                  <div class="detail-item-label">Роли</div>
-                  <div class="detail-item-value">${app.role || '-'}</div>
-                </div>
-                <div class="detail-item">
-                  <div class="detail-item-label">Время онлайн</div>
-                  <div class="detail-item-value">${app.online_time || '-'}</div>
-                </div>
-                <div class="detail-item">
-                  <div class="detail-item-label">Налёт (мин)</div>
-                  <div class="detail-item-value">${app.flight_minutes || '-'}</div>
-                </div>
-                <div class="detail-item">
-                  <div class="detail-item-label">Правила</div>
-                  <div class="detail-item-value">${app.rules || '-'}</div>
-                </div>
-                <div class="detail-item">
-                  <div class="detail-item-label">ФРО</div>
-                  <div class="detail-item-value">${app.fro || '-'}</div>
-                </div>
-                <div class="detail-item">
-                  <div class="detail-item-label">Опыт</div>
-                  <div class="detail-item-value"><pre>${app.experience || '-'}</pre></div>
-                </div>
-                <div class="detail-item">
-                  <div class="detail-item-label">Почему Swiss Airlines</div>
-                  <div class="detail-item-value"><pre>${app.why_swiss || '-'}</pre></div>
-                </div>
-                <div class="detail-item">
-                  <div class="detail-item-label">О себе</div>
-                  <div class="detail-item-value"><pre>${app.about || '-'}</pre></div>
-                </div>
-              </div>
-              <div class="detail-actions">
-                <button class="btn btn-success" onclick="updateStatus(${app.id}, 'approved')">✅ ОДОБРИТЬ</button>
-                <button class="btn btn-danger" onclick="updateStatus(${app.id}, 'rejected')">❌ ОТКЛОНИТЬ</button>
-                <button class="btn btn-secondary" onclick="deleteApp(${app.id})">🗑️ УДАЛИТЬ</button>
-              </div>
-            </td>
-          </tr>`;
-      }
-
-      html += '</tbody></table>';
-      document.getElementById('tableContainer').innerHTML = html;
-    }
-
-    async function loadApplications() {
-      try {
-        const res = await fetch('/api/applications');
-        if (!res.ok) throw new Error('Unauthorized');
-        applications = await res.json();
-        renderTable();
-        loadStats();
-      } catch (err) {
-        if (err.message === 'Unauthorized') {
-          window.location.href = 'login.html';
-        } else {
-          showToast('Ошибка загрузки заявок', 'error');
-        }
-      }
-    }
-
-    async function updateStatus(id, status) {
-      try {
-        const res = await fetch(`/api/applications/${id}/status`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ status })
-        });
-        const data = await res.json();
-        if (data.success) {
-          showToast(status === 'approved' ? 'Заявка одобрена!' : 'Заявка отклонена', 'success');
-          loadApplications();
-        } else {
-          showToast(data.error || 'Ошибка', 'error');
-        }
-      } catch {
-        showToast('Ошибка сервера', 'error');
-      }
-    }
-
-    async function deleteApp(id) {
-      if (!confirm('Точно удалить эту анкету? Действие нельзя отменить.')) return;
-      try {
-        const res = await fetch(`/api/applications/${id}`, { method: 'DELETE' });
-        const data = await res.json();
-        if (data.success) {
-          showToast('Анкета удалена', 'success');
-          loadApplications();
-        } else {
-          showToast(data.error || 'Ошибка', 'error');
-        }
-      } catch {
-        showToast('Ошибка сервера', 'error');
-      }
-    }
-
-    checkAuth();
-    loadApplications();
-    // Auto-refresh every 60 seconds
-    setInterval(loadApplications, 60000);
-  </script>
+document.getElementById('closeEdit').addEventListener('click',()=>editModal.classList.remove('show'));
+document.getElementById('cancelBtn').addEventListener('click',()=>editModal.classList.remove('show'));
+document.getElementById('saveBtn').addEventListener('click',()=>{
+  const payload={};fields[currentSection].forEach(f=>{payload[f]=document.querySelector('.field-'+f).value;});
+  const url=currentId?'/api/'+currentSection+'/'+currentId:'/api/'+currentSection;
+  fetch(url,{method:currentId?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).then(r=>r.json()).then(()=>{editModal.classList.remove('show');loadSection(currentSection);});
+});
+function deleteItem(id){if(!confirm('Delete this record?'))return;fetch('/api/'+currentSection+'/'+id,{method:'DELETE'}).then(()=>loadSection(currentSection));}
+</script>
 </body>
 </html>
