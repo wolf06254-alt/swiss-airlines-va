@@ -27,7 +27,7 @@
       --header-border: #d4d4d4;
     }
     [data-theme="dark"] {
-      --bg: #0f0f0f; --text: #f0f0f0; --card: #1a1a1a; --border: #333333;
+      --bg: #0f0f0f; --text: #f0f0f0; --card: #1a1a1a; --border: #333333; --black: #f0f0f0;
       --gray-100: #1a1a1a; --gray-300: #444444; --gray-500: #888888; --gray-700: #a0a0a0; --gray-900: #e0e0e0;
       --header-bg: #0a0a0a; --header-text: #ffffff; --header-link: #888888; --header-border: #4a4a4a;
     }
@@ -335,7 +335,7 @@
         'app-detail-role': 'Роль', 'app-detail-online': 'Время онлайн', 'app-detail-flights': 'Налёт',
         'app-detail-experience': 'Опыт', 'app-detail-why': 'Почему Swiss', 'app-detail-about': 'О себе',
         'btn-edit': 'Изменить', 'btn-delete': 'Удалить', 'confirm-delete': 'Удалить событие?',
-        'cat-wide-body': 'Широкофюзеляжный', 'cat-cargo': 'Грузовой', 'cat-regional': 'Региональный',
+        'cat-wide-body': 'Широкофюзеляжный', 'cat-narrow-body': 'Узкофюзеляжный', 'cat-cargo': 'Грузовой', 'cat-regional': 'Региональный',
         'error-load': 'Ошибка загрузки'
       },
       en: {
@@ -368,7 +368,7 @@
         'app-detail-role': 'Role', 'app-detail-online': 'Online time', 'app-detail-flights': 'Flight time',
         'app-detail-experience': 'Experience', 'app-detail-why': 'Why Swiss', 'app-detail-about': 'About',
         'btn-edit': 'Edit', 'btn-delete': 'Delete', 'confirm-delete': 'Delete event?',
-        'cat-wide-body': 'Wide-body', 'cat-cargo': 'Cargo', 'cat-regional': 'Regional',
+        'cat-wide-body': 'Wide-body', 'cat-narrow-body': 'Narrow-body', 'cat-cargo': 'Cargo', 'cat-regional': 'Regional',
         'error-load': 'Loading error'
       }
     };
@@ -405,7 +405,7 @@
     function escapeHtml(str){ if(!str) return str; return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
     function formatDate(d){ if(!d) return '—'; return new Date(d).toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
     function getStatusText(s){ const m={new:t('status-new'),review:t('status-review'),accepted:t('status-accepted'),rejected:t('status-rejected'),upcoming:t('status-upcoming'),past:t('status-past'),active:t('status-active'),inactive:t('status-inactive')}; return m[s]||s; }
-    function getCategoryText(c){ const m={'wide-body':t('cat-wide-body'),'cargo':t('cat-cargo'),'regional':t('cat-regional')}; return m[c]||c; }
+    function getCategoryText(c){ const m={'wide-body':t('cat-wide-body'),'narrow-body':t('cat-narrow-body'),'cargo':t('cat-cargo'),'regional':t('cat-regional')}; return m[c]||c; }
 
     function switchTab(tab) {
       currentTab = tab;
@@ -551,9 +551,17 @@
     // ============ FLEET (static) ============
     function loadFleet() {
       fleetData = [
-        { id: 1, model: 'Swiss Airlines', manufacturer: 'Boeing', category: 'wide-body', capacity: '350', range_km: '14000', speed_kmh: '900', status: 'active', description: 'Флагман дальних маршрутов' },
-        { id: 2, model: 'Boeing 747 Cargo', manufacturer: 'Boeing', category: 'cargo', capacity: '—', range_km: '8000', speed_kmh: '850', status: 'active', description: 'Грузовые перевозки' },
-        { id: 3, model: 'ATR', manufacturer: 'ATR', category: 'regional', capacity: '72', range_km: '1500', speed_kmh: '500', status: 'active', description: 'Региональные рейсы' }
+        { id:1, model:'Airbus A220-100', manufacturer:'Airbus', category:'regional', capacity:'125', range_km:'5460', speed_kmh:'829', status:'active' },
+        { id:2, model:'Airbus A220-300', manufacturer:'Airbus', category:'regional', capacity:'145', range_km:'6297', speed_kmh:'829', status:'active' },
+        { id:3, model:'Airbus A320-200', manufacturer:'Airbus', category:'narrow-body', capacity:'174', range_km:'6100', speed_kmh:'840', status:'active' },
+        { id:4, model:'Airbus A320neo', manufacturer:'Airbus', category:'narrow-body', capacity:'180', range_km:'6500', speed_kmh:'833', status:'active' },
+        { id:5, model:'Airbus A321-100', manufacturer:'Airbus', category:'narrow-body', capacity:'219', range_km:'5950', speed_kmh:'833', status:'active' },
+        { id:6, model:'Airbus A321neo', manufacturer:'Airbus', category:'narrow-body', capacity:'220', range_km:'7400', speed_kmh:'833', status:'active' },
+        { id:7, model:'Airbus A330-300', manufacturer:'Airbus', category:'wide-body', capacity:'236', range_km:'11750', speed_kmh:'871', status:'active' },
+        { id:8, model:'Airbus A340-300', manufacturer:'Airbus', category:'wide-body', capacity:'219', range_km:'13200', speed_kmh:'875', status:'active' },
+        { id:9, model:'Airbus A350-900', manufacturer:'Airbus', category:'wide-body', capacity:'219', range_km:'15000', speed_kmh:'903', status:'active' },
+        { id:10, model:'Boeing 777-300ER', manufacturer:'Boeing', category:'wide-body', capacity:'340', range_km:'13649', speed_kmh:'905', status:'active' },
+        { id:11, model:'Boeing 747-400F', manufacturer:'Boeing', category:'cargo', capacity:'—', range_km:'8240', speed_kmh:'913', status:'active' }
       ];
       document.getElementById('fleetLoading').style.display='none';
       renderFleet();

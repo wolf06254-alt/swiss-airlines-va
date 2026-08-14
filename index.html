@@ -58,6 +58,7 @@
       --text: #f0f0f0;
       --card: #1a1a1a;
       --border: #333333;
+      --black: #f0f0f0;
       --gray-100: #1a1a1a;
       --gray-500: #888888;
       --header-bg: rgba(10,10,10,0.92);
@@ -674,32 +675,7 @@
     .modal-btn { background: var(--swiss-red); color: white; border: none; padding: 14px 40px; font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all 0.3s; }
     .modal-btn:hover { background: var(--swiss-red-dark); transform: translateY(-2px); }
 
-    .fleet-showcase { padding: 80px 40px; background: var(--gray-100); }
-    .fleet-showcase-label { font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--swiss-red); margin-bottom: 16px; text-align: center; }
-    .fleet-showcase h2 { font-size: clamp(28px, 4vw, 48px); font-weight: 800; letter-spacing: -1px; text-align: center; margin-bottom: 16px; color: var(--text); }
-    .fleet-showcase-desc { text-align: center; color: var(--gray-500); max-width: 600px; margin: 0 auto 48px; font-size: 15px; }
-    .fleet-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
-    .aircraft-card { background: var(--bg); border: 1px solid var(--gray-300); overflow: hidden; transition: all 0.4s var(--transition); position: relative; }
-    .aircraft-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.12); border-color: var(--swiss-red); }
-    .aircraft-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--swiss-red); transform: scaleX(0); transform-origin: left; transition: transform 0.4s var(--transition); }
-    .aircraft-card:hover::before { transform: scaleX(1); }
-    .card-visual { background: var(--gray-100); padding: 30px 20px; text-align: center; position: relative; overflow: hidden; }
-    .card-visual::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: var(--gray-300); }
-    .plane-icon { font-size: 48px; display: inline-block; transition: transform 0.4s var(--transition); }
-    .aircraft-card:hover .plane-icon { transform: scale(1.1) translateY(-5px); }
-    .plane-code { position: absolute; top: 12px; right: 12px; font-size: 10px; font-weight: 700; letter-spacing: 1px; color: var(--gray-500); background: var(--bg); padding: 3px 8px; border: 1px solid var(--gray-300); }
-    .plane-badge { position: absolute; top: 12px; left: 12px; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 3px 8px; }
-    .badge-narrow { background: var(--swiss-red); color: var(--white); }
-    .badge-wide { background: var(--gray-900); color: var(--white); }
-    .badge-regional { background: var(--gray-500); color: var(--white); }
-    .badge-cargo { background: var(--gray-700); color: var(--white); }
-    .card-info { padding: 20px; }
-    .card-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.3px; color: var(--text); }
-    .card-type { font-size: 11px; color: var(--gray-500); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 12px; }
-    .card-specs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .spec { display: flex; flex-direction: column; }
-    .spec-label { font-size: 10px; color: var(--gray-500); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 2px; }
-    .spec-value { font-size: 13px; font-weight: 600; color: var(--text); }
+
     /* ===== RESPONSIVE ===== */
     @media (max-width: 768px) {
       .top-header { padding: 0 20px; height: 56px; }
@@ -710,8 +686,7 @@
       .features-strip { gap: 20px; }
       .dash-grid { grid-template-columns: repeat(2, 1fr); }
       .dash-cards { grid-template-columns: 1fr; }
-      .fleet-grid { grid-template-columns: 1fr; }
-      .fleet-showcase { padding: 60px 20px; }
+
       .info-grid { grid-template-columns: 1fr; }
       .form-section { padding: 60px 20px; }
       .question { padding: 28px 24px; }
@@ -759,13 +734,6 @@
       <div class="feature-item" data-i18n="feature-3"><div class="dot"></div>24/7 поддержка</div>
       <div class="feature-item" data-i18n="feature-4"><div class="dot"></div>Обучение пилотов</div>
     </div>
-  </section>
-
-  <section class="fleet-showcase">
-    <div class="fleet-showcase-label" data-i18n="fleet-label">Наш флот</div>
-    <h2 data-i18n="fleet-title">Современные лайнеры <span style="color:var(--swiss-red);">Swiss Airlines</span></h2>
-    <p class="fleet-showcase-desc" data-i18n="fleet-desc">Каждый самолёт тщательно подобран для комфорта и реализма полётов в PTFS. Загрузка флота…</p>
-    <div id="fleet-showcase-grid" class="fleet-grid"></div>
   </section>
 
   <section class="info-section">
@@ -1196,7 +1164,7 @@
       ru: {
         'hero-label': 'Виртуальная авиакомпания', 'hero-title': 'Стань частью<br><span>Swiss Airlines</span>', 'hero-desc': 'Заполни анкету и сделай первый шаг к карьере пилота в нашей виртуальной авиакомпании. Международные маршруты, современный флот и дружная команда.',
         'feature-1': 'Международные рейсы', 'feature-2': 'Современный флот', 'feature-3': '24/7 поддержка', 'feature-4': 'Обучение пилотов',
-        'fleet-label': 'Наш флот', 'fleet-title': 'Современные лайнеры <span style="color:var(--swiss-red);">Swiss Airlines</span>', 'fleet-desc': 'Каждый самолёт тщательно подобран для комфорта и реализма полётов в PTFS.',
+
         'info-1-title': 'Международные рейсы', 'info-1-desc': 'Летай по маршрутам по всему миру в PTFS. Реалистичные маршруты, точные процедуры захода на посадку.',
         'info-2-title': 'Современный флот', 'info-2-desc': 'Работаем на современных лайнерах. Постоянное обновление парка и добавление новых моделей.',
         'info-3-title': 'Академия пилотов', 'info-3-desc': 'Обучение новичков с нуля. Опытные инструкторы помогут освоить все тонкости виртуальной авиации.',
@@ -1221,7 +1189,7 @@
       en: {
         'hero-label': 'Virtual Airline', 'hero-title': 'Become part of<br><span>Swiss Airlines</span>', 'hero-desc': 'Fill out the application and take the first step towards a pilot career in our virtual airline. International routes, modern fleet and a friendly team.',
         'feature-1': 'International Flights', 'feature-2': 'Modern Fleet', 'feature-3': '24/7 Support', 'feature-4': 'Pilot Training',
-        'fleet-label': 'Our Fleet', 'fleet-title': 'Modern liners <span style="color:var(--swiss-red);">Swiss Airlines</span>', 'fleet-desc': 'Every aircraft is carefully selected for comfort and realism of flights in PTFS.',
+
         'info-1-title': 'International Flights', 'info-1-desc': 'Fly routes around the world in PTFS. Realistic routes, precise landing procedures.',
         'info-2-title': 'Modern Fleet', 'info-2-desc': 'We operate modern liners. Constant fleet updates and addition of new models.',
         'info-3-title': 'Pilot Academy', 'info-3-desc': 'Training beginners from scratch. Experienced instructors will help you master all the nuances of virtual aviation.',
@@ -1275,32 +1243,7 @@
       applyLang();
     })();
 
-    async function loadFleetShowcase() {
-      const container = document.getElementById('fleet-showcase-grid');
-      const desc = document.querySelector('.fleet-showcase-desc');
-      try {
-        const res = await fetch('/api/fleet');
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        const fleet = await res.json();
-        if (!fleet.length) { container.innerHTML = '<div style="text-align:center;color:var(--gray-500);padding:40px;">Флот пока пуст.</div>'; return; }
-        const badgeMap = { 'narrow-body': 'badge-narrow', 'wide-body': 'badge-wide', 'regional': 'badge-regional', 'cargo': 'badge-cargo' };
-        const labelMap = { 'narrow-body': 'Narrow-body', 'wide-body': 'Wide-body', 'regional': 'Regional', 'cargo': 'Cargo' };
-        let html = '';
-        fleet.forEach((f, idx) => {
-          const badge = badgeMap[f.category] || 'badge-regional';
-          const label = labelMap[f.category] || f.category;
-          const delay = idx % 3 === 1 ? 'delay-1' : idx % 3 === 2 ? 'delay-2' : '';
-          html += '<div class="aircraft-card animate-on-scroll ' + delay + '">\n            <div class="card-visual">\n              <span class="plane-badge ' + badge + '">' + escapeHtml(label) + '</span>\n              <span class="plane-code">' + escapeHtml(f.model || '') + '</span>\n              <div class="plane-icon">✈️</div>\n            </div>\n            <div class="card-info">\n              <div class="card-name">' + escapeHtml(f.model) + '</div>\n              <div class="card-type">' + escapeHtml(f.category || '—') + '</div>\n              <div class="card-specs">\n                <div class="spec"><span class="spec-label">Passengers</span><span class="spec-value">' + escapeHtml(f.capacity || '—') + '</span></div>\n                <div class="spec"><span class="spec-label">Range</span><span class="spec-value">' + escapeHtml(f.range_km ? f.range_km + ' km' : '—') + '</span></div>\n                <div class="spec"><span class="spec-label">Cruise</span><span class="spec-value">' + escapeHtml(f.speed_kmh ? f.speed_kmh + ' km/h' : '—') + '</span></div>\n                <div class="spec"><span class="spec-label">Status</span><span class="spec-value">' + escapeHtml(f.status || '—') + '</span></div>\n              </div>\n            </div>\n          </div>';
-        });
-        container.innerHTML = html;
-        container.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
-        if (desc) desc.textContent = (i18n[document.documentElement.getAttribute('lang')||'ru'] || i18n.ru)['fleet-desc'];
-      } catch (e) {
-        container.innerHTML = '<div style="text-align:center;color:var(--gray-500);padding:40px;">Не удалось загрузить флот.</div>';
-      }
-    }
 
-    loadFleetShowcase();
   </script>
 </body>
 </html>

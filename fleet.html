@@ -55,8 +55,6 @@
     @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
     @keyframes stripeMove { from { background-position: 0 0; } to { background-position: 40px 0; } }
     @keyframes pulseDot { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.5; } }
-    @keyframes wingFlap { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(2deg); } }
-    @keyframes counter { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
     .animate-on-scroll { opacity: 0; transform: translateY(30px); transition: opacity 0.8s var(--transition), transform 0.8s var(--transition); }
     .animate-on-scroll.visible { opacity: 1; transform: translateY(0); }
@@ -124,9 +122,10 @@
     .badge-narrow { background: var(--swiss-red); color: var(--white); }
     .badge-wide { background: var(--gray-900); color: var(--white); }
     .badge-regional { background: var(--gray-500); color: var(--white); }
+    .badge-cargo { background: var(--gray-700); color: var(--white); }
 
     .card-info { padding: 24px; }
-    .card-name { font-size: 20px; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.3px; }
+    .card-name { font-size: 20px; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.3px; color: var(--text); }
     .card-type { font-size: 12px; color: var(--gray-500); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 16px; }
     .card-specs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .spec { display: flex; flex-direction: column; }
@@ -134,16 +133,6 @@
     .spec-value { font-size: 14px; font-weight: 600; color: var(--text); }
     .card-route { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--gray-200); font-size: 12px; color: var(--gray-500); }
     .card-route strong { color: var(--text); }
-
-    .coming-soon { border: 2px dashed var(--gray-300); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 30px; text-align: center; min-height: 320px; }
-    .coming-soon:hover { border-color: var(--swiss-red); box-shadow: none; transform: none; }
-    .coming-soon:hover::before { transform: scaleX(0); }
-    .cs-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
-    .cs-title { font-size: 16px; font-weight: 700; color: var(--gray-500); margin-bottom: 8px; }
-    .cs-text { font-size: 13px; color: var(--gray-500); }
-
-    .loading { text-align: center; padding: 40px; color: var(--gray-500); font-size: 14px; }
-    .error { text-align: center; padding: 40px; color: var(--swiss-red); font-size: 14px; }
 
     .footer { background: var(--black); padding: 48px 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 24px; position: relative; overflow: hidden; }
     .footer::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: repeating-linear-gradient(90deg, var(--swiss-red) 0, var(--swiss-red) 25px, transparent 25px, transparent 35px); opacity: 0.5; animation: stripeMove 2s linear infinite; }
@@ -176,14 +165,14 @@
       <div>SWISS AIRLINES</div>
     </a>
     <nav class="nav">
-      <a href="index.html">Главная</a>
-      <a href="fleet.html" class="active">Флот</a>
-      <a href="routes.html">Маршруты</a>
-      <a href="map.html">Карта</a>
-      <a href="events.html">События</a>
-      <a href="history.html">История</a>
+      <a href="index.html" data-i18n="nav-home">Главная</a>
+      <a href="fleet.html" class="active" data-i18n="nav-fleet">Флот</a>
+      <a href="routes.html" data-i18n="nav-routes">Маршруты</a>
+      <a href="map.html" data-i18n="nav-map">Карта</a>
+      <a href="events.html" data-i18n="nav-events">События</a>
+      <a href="history.html" data-i18n="nav-history">История</a>
       <a href="https://discord.gg/6YA8t7GJr" target="_blank">Discord</a>
-      <a href="login.html">Вход</a>
+      <a href="login.html" data-i18n="nav-login">Вход</a>
     </nav>
     <div class="controls">
       <button class="lang-toggle" id="langToggle" onclick="toggleLang()">EN</button>
@@ -193,38 +182,36 @@
 
   <section class="hero">
     <div class="hero-plane">✈️</div>
-    <div class="hero-label">Swiss Airlines Virtual</div>
-    <h1>Наш флот<br><span>Swiss Airlines</span></h1>
-    <p class="hero-desc">Современные лайнеры для международных и региональных рейсов. Каждый самолёт тщательно подобран для комфорта и реализма полётов в PTFS.</p>
+    <div class="hero-label" data-i18n="hero-label">Swiss Airlines Virtual</div>
+    <h1 data-i18n="hero-title">Наш флот<br><span>Swiss Airlines</span></h1>
+    <p class="hero-desc" data-i18n="hero-desc">Современные лайнеры для международных и региональных рейсов. Каждый самолёт тщательно подобран для комфорта и реализма полётов в PTFS.</p>
   </section>
 
   <section class="stats-bar">
     <div class="stat-item animate-on-scroll">
-      <div class="stat-number" id="stat-models">—</div>
-      <div class="stat-label">Моделей</div>
+      <div class="stat-number" id="stat-models">11</div>
+      <div class="stat-label" data-i18n="stat-models">Моделей</div>
     </div>
     <div class="stat-item animate-on-scroll delay-1">
-      <div class="stat-number" id="stat-aircraft">—</div>
-      <div class="stat-label">Воздушных судов</div>
+      <div class="stat-number" id="stat-aircraft">96</div>
+      <div class="stat-label" data-i18n="stat-aircraft">Воздушных судов</div>
     </div>
     <div class="stat-item animate-on-scroll delay-2">
       <div class="stat-number">5</div>
-      <div class="stat-label">Стран</div>
+      <div class="stat-label" data-i18n="stat-countries">Стран</div>
     </div>
     <div class="stat-item animate-on-scroll delay-3">
       <div class="stat-number">∞</div>
-      <div class="stat-label">Впечатлений</div>
+      <div class="stat-label" data-i18n="stat-impressions">Впечатлений</div>
     </div>
   </section>
 
   <section class="filter-section" id="filter-section">
-    <button class="filter-btn active" data-filter="all">Все</button>
+    <button class="filter-btn active" data-filter="all" data-i18n="filter-all">Все</button>
   </section>
 
   <section class="fleet-section">
-    <div id="fleet-container">
-      <div class="loading">Загрузка флота…</div>
-    </div>
+    <div id="fleet-container"></div>
   </section>
 
   <footer class="footer">
@@ -233,31 +220,39 @@
       <div>SWISS AIRLINES</div>
     </div>
     <div class="footer-links">
-      <a href="index.html">Главная</a>
-      <a href="fleet.html">Флот</a>
-      <a href="routes.html">Маршруты</a>
-      <a href="map.html">Карта</a>
-      <a href="events.html">События</a>
-      <a href="history.html">История</a>
+      <a href="index.html" data-i18n="nav-home">Главная</a>
+      <a href="fleet.html" data-i18n="nav-fleet">Флот</a>
+      <a href="routes.html" data-i18n="nav-routes">Маршруты</a>
+      <a href="map.html" data-i18n="nav-map">Карта</a>
+      <a href="events.html" data-i18n="nav-events">События</a>
+      <a href="history.html" data-i18n="nav-history">История</a>
       <a href="https://discord.gg/6YA8t7GJr" target="_blank">Discord</a>
-      <a href="login.html">Админ</a>
-      <a href="patent.html">Патент</a>
+      <a href="login.html" data-i18n="nav-admin">Админ</a>
+      <a href="patent.html" data-i18n="nav-patent">Патент</a>
     </div>
     <div class="footer-right">
-      <div style="font-size:11px;color:var(--gray-500);margin-bottom:4px;">Неофициальный виртуальный патент № SW-VA-001 от 10.08.26 · <a href="patent.html" style="color:var(--swiss-red);text-decoration:none;">Подробнее →</a></div>
-      <div>Fly Together. Fly Swiss.</div>
+      <div style="font-size:11px;color:var(--gray-500);margin-bottom:4px;" data-i18n="footer-patent-text">Неофициальный виртуальный патент № SW-VA-001 от 10.08.26</div>
+      <div data-i18n="footer-slogan">Fly Together. Fly Swiss.</div>
     </div>
   </footer>
 
   <script>
-    
-    const API_BASE = '';
-    let fleetData = [
-      { model: 'Swiss Airlines', manufacturer: 'Boeing', category: 'wide-body', capacity: '350', range_km: '14000', speed_kmh: '900', status: 'active', description: 'Long-haul flagship' },
-      { model: 'Boeing 747 Cargo', manufacturer: 'Boeing', category: 'cargo', capacity: '0', range_km: '8000', speed_kmh: '850', status: 'active', description: 'Freight operations' },
-      { model: 'ATR', manufacturer: 'ATR', category: 'regional', capacity: '72', range_km: '1500', speed_kmh: '500', status: 'active', description: 'Regional connections' }
-    ];
     function escapeHtml(str){ if(!str) return str; return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
+
+    const fleetData = [
+      { model: 'Airbus A220-100', manufacturer: 'Airbus', category: 'narrow-body', capacity: '125', range_km: '5460', speed_kmh: '829', count: 9, status: 'active', description_ru: 'Региональные и ближнемагистральные рейсы', description_en: 'Regional and short-haul routes' },
+      { model: 'Airbus A220-300', manufacturer: 'Airbus', category: 'narrow-body', capacity: '145', range_km: '6297', speed_kmh: '829', count: 21, status: 'active', description_ru: 'Среднемагистральные маршруты Европы', description_en: 'European medium-haul routes' },
+      { model: 'Airbus A320-200', manufacturer: 'Airbus', category: 'narrow-body', capacity: '174', range_km: '6150', speed_kmh: '840', count: 10, status: 'active', description_ru: 'Популярные европейские направления', description_en: 'Popular European destinations' },
+      { model: 'Airbus A320neo', manufacturer: 'Airbus', category: 'narrow-body', capacity: '180', range_km: '6500', speed_kmh: '833', count: 11, status: 'active', description_ru: 'Новое поколение, экономичные рейсы', description_en: 'Next-gen, fuel-efficient flights' },
+      { model: 'Airbus A321-100', manufacturer: 'Airbus', category: 'narrow-body', capacity: '200', range_km: '5950', speed_kmh: '840', count: 6, status: 'active', description_ru: 'Высокопоточные маршруты', description_en: 'High-traffic routes' },
+      { model: 'Airbus A321neo', manufacturer: 'Airbus', category: 'narrow-body', capacity: '220', range_km: '7400', speed_kmh: '833', count: 7, status: 'active', description_ru: 'Увеличенная дальность, тихие кабины', description_en: 'Extended range, quiet cabins' },
+      { model: 'Airbus A330-300', manufacturer: 'Airbus', category: 'wide-body', capacity: '295', range_km: '11750', speed_kmh: '871', count: 14, status: 'active', description_ru: 'Дальнемагистральный флагман', description_en: 'Long-haul flagship' },
+      { model: 'Airbus A340-300', manufacturer: 'Airbus', category: 'wide-body', capacity: '219', range_km: '13700', speed_kmh: '881', count: 4, status: 'active', description_ru: 'Сверхдальние рейсы', description_en: 'Ultra-long-haul routes' },
+      { model: 'Airbus A350-900', manufacturer: 'Airbus', category: 'wide-body', capacity: '315', range_km: '15000', speed_kmh: '903', count: 2, status: 'active', description_ru: 'Новейший дальнемагистральный лайнер', description_en: 'Latest long-haul liner' },
+      { model: 'Boeing 777-300ER', manufacturer: 'Boeing', category: 'wide-body', capacity: '340', range_km: '13649', speed_kmh: '905', count: 12, status: 'active', description_ru: 'Интерконтинентальные маршруты', description_en: 'Intercontinental routes' },
+      { model: 'Boeing 747-400F Cargo', manufacturer: 'Boeing', category: 'cargo', capacity: '—', range_km: '8200', speed_kmh: '920', count: 2, status: 'active', description_ru: 'Грузовые перевозки по всему миру', description_en: 'Worldwide cargo operations' }
+    ];
+
     let currentFilter = 'all';
 
     const observer = new IntersectionObserver((entries) => {
@@ -265,25 +260,72 @@
     }, { threshold: 0.1 });
     document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
 
+    const i18n = {
+      ru: {
+        'hero-label': 'Swiss Airlines Virtual',
+        'hero-title': 'Наш флот<br><span>Swiss Airlines</span>',
+        'hero-desc': 'Современные лайнеры для международных и региональных рейсов. Каждый самолёт тщательно подобран для комфорта и реализма полётов в PTFS.',
+        'nav-home': 'Главная', 'nav-fleet': 'Флот', 'nav-routes': 'Маршруты', 'nav-map': 'Карта', 'nav-events': 'События', 'nav-history': 'История', 'nav-login': 'Вход', 'nav-admin': 'Админ', 'nav-patent': 'Патент',
+        'stat-models': 'Моделей', 'stat-aircraft': 'Воздушных судов', 'stat-countries': 'Стран', 'stat-impressions': 'Впечатлений',
+        'filter-all': 'Все',
+        'cat-narrow-body': 'Узкофюзеляжный', 'cat-wide-body': 'Широкофюзеляжный', 'cat-regional': 'Региональный', 'cat-cargo': 'Грузовой',
+        'spec-passengers': 'Пассажиры', 'spec-range': 'Дальность', 'spec-speed': 'Крейсерская', 'spec-status': 'Статус', 'spec-count': 'В парке',
+        'spec-active': 'Активен', 'spec-km': 'км', 'spec-kmh': 'км/ч',
+        'route-label': 'Основные маршруты:',
+        'footer-patent-text': 'Неофициальный виртуальный патент № SW-VA-001 от 10.08.26',
+        'footer-slogan': 'Fly Together. Fly Swiss.'
+      },
+      en: {
+        'hero-label': 'Swiss Airlines Virtual',
+        'hero-title': 'Our Fleet<br><span>Swiss Airlines</span>',
+        'hero-desc': 'Modern liners for international and regional flights. Every aircraft is carefully selected for comfort and realism of flights in PTFS.',
+        'nav-home': 'Home', 'nav-fleet': 'Fleet', 'nav-routes': 'Routes', 'nav-map': 'Map', 'nav-events': 'Events', 'nav-history': 'History', 'nav-login': 'Login', 'nav-admin': 'Admin', 'nav-patent': 'Patent',
+        'stat-models': 'Models', 'stat-aircraft': 'Aircraft', 'stat-countries': 'Countries', 'stat-impressions': 'Impressions',
+        'filter-all': 'All',
+        'cat-narrow-body': 'Narrow-body', 'cat-wide-body': 'Wide-body', 'cat-regional': 'Regional', 'cat-cargo': 'Cargo',
+        'spec-passengers': 'Passengers', 'spec-range': 'Range', 'spec-speed': 'Cruise', 'spec-status': 'Status', 'spec-count': 'In fleet',
+        'spec-active': 'Active', 'spec-km': 'km', 'spec-kmh': 'km/h',
+        'route-label': 'Key routes:',
+        'footer-patent-text': 'Unofficial virtual patent No. SW-VA-001 dated 10.08.26',
+        'footer-slogan': 'Fly Together. Fly Swiss.'
+      }
+    };
+
+    function t(key) {
+      const lang = document.documentElement.getAttribute('lang') || 'ru';
+      return (i18n[lang] && i18n[lang][key]) || (i18n.ru[key]) || key;
+    }
+
+    function applyLang() {
+      const lang = document.documentElement.getAttribute('lang') || 'ru';
+      const dict = i18n[lang] || i18n.ru;
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        if (dict[key]) el.innerHTML = dict[key];
+      });
+      loadFleet();
+    }
+
     const badgeMap = { 'narrow-body': 'badge-narrow', 'wide-body': 'badge-wide', 'regional': 'badge-regional', 'cargo': 'badge-cargo' };
-    const labelMap = { 'narrow-body': 'Narrow-body', 'wide-body': 'Wide-body', 'regional': 'Regional', 'cargo': 'Cargo' };
 
     function loadFleet() {
       const container = document.getElementById('fleet-container');
       const types = [...new Set(fleetData.map(f => f.category).filter(Boolean))];
       const filterSection = document.getElementById('filter-section');
-      filterSection.innerHTML = '<button class="filter-btn active" data-filter="all">Все</button>';
-      types.forEach(t => {
+
+      const filterAllText = t('filter-all');
+      filterSection.innerHTML = '<button class="filter-btn' + (currentFilter === 'all' ? ' active' : '') + '" data-filter="all">' + escapeHtml(filterAllText) + '</button>';
+      types.forEach(cat => {
         const btn = document.createElement('button');
-        btn.className = 'filter-btn';
-        btn.dataset.filter = t;
-        btn.textContent = labelMap[t] || t;
+        btn.className = 'filter-btn' + (currentFilter === cat ? ' active' : '');
+        btn.dataset.filter = cat;
+        btn.textContent = t('cat-' + cat) || cat;
         filterSection.appendChild(btn);
       });
       bindFilters();
 
       document.getElementById('stat-models').textContent = fleetData.length;
-      document.getElementById('stat-aircraft').textContent = fleetData.length;
+      document.getElementById('stat-aircraft').textContent = fleetData.reduce((s, f) => s + (f.count || 0), 0);
 
       renderFleet();
     }
@@ -302,28 +344,30 @@
     function renderFleet() {
       const container = document.getElementById('fleet-container');
       const filtered = currentFilter === 'all' ? fleetData : fleetData.filter(f => f.category === currentFilter);
+      const lang = document.documentElement.getAttribute('lang') || 'ru';
       let html = '<div class="fleet-grid">';
       filtered.forEach((f, idx) => {
         const badge = badgeMap[f.category] || 'badge-regional';
-        const label = labelMap[f.category] || f.category;
+        const catLabel = t('cat-' + f.category) || f.category;
+        const desc = lang === 'en' ? (f.description_en || f.description_ru) : f.description_ru;
         const delay = idx % 3 === 1 ? 'delay-1' : idx % 3 === 2 ? 'delay-2' : '';
         html += `
         <div class="aircraft-card animate-on-scroll ${delay}" data-category="${escapeHtml(f.category)}">
           <div class="card-visual">
-            <span class="plane-badge ${badge}">${escapeHtml(label)}</span>
+            <span class="plane-badge ${badge}">${escapeHtml(catLabel)}</span>
             <span class="plane-code">${escapeHtml(f.model || '')}</span>
-            <div class="plane-icon">${escapeHtml('✈️')}</div>
+            <div class="plane-icon">✈️</div>
           </div>
           <div class="card-info">
             <div class="card-name">${escapeHtml(f.model)}</div>
-            <div class="card-type">${escapeHtml(f.category || '—')}</div>
+            <div class="card-type">${escapeHtml(catLabel)}</div>
             <div class="card-specs">
-              <div class="spec"><span class="spec-label">Пассажиры</span><span class="spec-value">${escapeHtml(f.capacity || '—')}</span></div>
-              <div class="spec"><span class="spec-label">Дальность</span><span class="spec-value">${escapeHtml(f.range_km + ' км' || '—')}</span></div>
-              <div class="spec"><span class="spec-label">Крейсерская</span><span class="spec-value">${escapeHtml(f.speed_kmh + ' км/ч' || '—')}</span></div>
-              <div class="spec"><span class="spec-label">Высота</span><span class="spec-value">${escapeHtml(f.status || '—')}</span></div>
+              <div class="spec"><span class="spec-label">${escapeHtml(t('spec-passengers'))}</span><span class="spec-value">${escapeHtml(f.capacity || '—')}</span></div>
+              <div class="spec"><span class="spec-label">${escapeHtml(t('spec-range'))}</span><span class="spec-value">${escapeHtml(f.range_km + ' ' + t('spec-km'))}</span></div>
+              <div class="spec"><span class="spec-label">${escapeHtml(t('spec-speed'))}</span><span class="spec-value">${escapeHtml(f.speed_kmh + ' ' + t('spec-kmh'))}</span></div>
+              <div class="spec"><span class="spec-label">${escapeHtml(t('spec-count'))}</span><span class="spec-value">${escapeHtml(String(f.count || '—'))}</span></div>
             </div>
-            <div class="card-route"><strong>Основные маршруты:</strong> ${escapeHtml(f.description || '—')}</div>
+            <div class="card-route"><strong>${escapeHtml(t('route-label'))}</strong> ${escapeHtml(desc || '—')}</div>
           </div>
         </div>`;
       });
@@ -340,20 +384,21 @@
       document.getElementById('themeToggle').textContent = next === 'dark' ? '☀️' : '🌙';
     }
     function toggleLang() {
-      const current = document.documentElement.getAttribute('lang') || 'en';
-      const next = current === 'en' ? 'ru' : 'en';
+      const current = document.documentElement.getAttribute('lang') || 'ru';
+      const next = current === 'ru' ? 'en' : 'ru';
       document.documentElement.setAttribute('lang', next);
       localStorage.setItem('swiss-lang', next);
-      document.getElementById('langToggle').textContent = next === 'en' ? 'EN' : 'RU';
+      document.getElementById('langToggle').textContent = next === 'ru' ? 'RU' : 'EN';
+      applyLang();
     }
     (function() {
       const savedTheme = localStorage.getItem('swiss-theme');
       if (savedTheme) { document.documentElement.setAttribute('data-theme', savedTheme); document.getElementById('themeToggle').textContent = savedTheme === 'dark' ? '☀️' : '🌙'; }
-      const savedLang = localStorage.getItem('swiss-lang');
-      if (savedLang) { document.documentElement.setAttribute('lang', savedLang); document.getElementById('langToggle').textContent = savedLang === 'en' ? 'EN' : 'RU'; }
+      const savedLang = localStorage.getItem('swiss-lang') || 'ru';
+      document.documentElement.setAttribute('lang', savedLang);
+      document.getElementById('langToggle').textContent = savedLang === 'ru' ? 'RU' : 'EN';
+      applyLang();
     })();
-
-    loadFleet();
   </script>
 </body>
 </html>
