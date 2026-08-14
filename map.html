@@ -3,198 +3,80 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Swiss Airlines VA — Карта маршрутов</title>
+<title>Карта — Swiss Airlines VA</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="style.css">
 <style>
-:root{--red:#E30613;--red-glow:rgba(227,6,19,0.35);--bg:#0a0a0f;--bg2:#141428;--glass:rgba(255,255,255,0.04);--glass-border:rgba(255,255,255,0.08);--text:#f0f0f5;--text2:#a0a0b8;}
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;cursor:none}
-::-webkit-scrollbar{width:8px}
-::-webkit-scrollbar-thumb{background:var(--red);border-radius:4px}
-::-webkit-scrollbar-track{background:var(--bg2)}
-
-.cursor{position:fixed;width:20px;height:20px;border:2px solid var(--red);border-radius:50%;pointer-events:none;z-index:9999;transition:transform .15s,background .15s;transform:translate(-50%,-50%)}
-.cursor-dot{position:fixed;width:6px;height:6px;background:var(--red);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%)}
-
-.glass{background:var(--glass);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border:1px solid var(--glass-border);box-shadow:0 8px 32px rgba(0,0,0,0.25)}
-
-nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:16px 40px;display:flex;justify-content:space-between;align-items:center;transition:all .3s}
-nav.scrolled{background:rgba(10,10,15,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--glass-border)}
-nav .logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.4rem;letter-spacing:-0.5px;display:flex;align-items:center;gap:10px}
-nav .logo span{color:var(--red);font-weight:800}
-nav ul{display:flex;gap:28px;list-style:none}
-nav ul a{color:var(--text2);text-decoration:none;font-weight:500;font-size:0.9rem;transition:color .2s;position:relative}
-nav ul a:hover{color:var(--text)}
-nav ul a::after{content:'';position:absolute;bottom:-6px;left:0;width:0;height:2px;background:var(--red);transition:width .3s}
-nav ul a:hover::after{width:100%}
-nav .login-btn{background:transparent;border:1px solid var(--red);color:var(--red);padding:6px 18px;border-radius:6px;font-weight:600;font-size:0.85rem;cursor:none;transition:all .2s}
-nav .login-btn:hover{background:var(--red);color:#fff;box-shadow:0 0 20px var(--red-glow)}
-
-.page-header{padding:120px 40px 30px;text-align:center;position:relative;background:radial-gradient(ellipse at 50% 30%,rgba(227,6,19,0.06) 0%,transparent 60%),linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%)}
-.page-header h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:700}
-.page-header p{color:var(--text2);max-width:560px;margin:16px auto 0;line-height:1.6}
-
-.map-wrap{position:relative;padding:0 40px 60px;max-width:1200px;margin:0 auto}
-#map{height:65vh;border-radius:16px;overflow:hidden;border:1px solid var(--glass-border);box-shadow:0 20px 60px rgba(0,0,0,0.4);z-index:1}
-.map-legend{position:absolute;bottom:80px;right:60px;z-index:10;padding:14px 18px;border-radius:12px;max-width:220px}
-.map-legend h4{font-size:0.85rem;margin-bottom:8px;font-weight:600}
-.map-legend div{display:flex;align-items:center;gap:8px;font-size:0.8rem;color:var(--text2);margin-bottom:4px}
-.map-legend .dot{width:10px;height:10px;border-radius:50%}
-
-.footer{margin-top:40px;border-top:1px solid var(--glass-border);padding:60px 40px 40px;text-align:center}
-.footer .logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.3rem;margin-bottom:16px}
-.footer .logo span{color:var(--red)}
-.footer p{color:var(--text2);font-size:0.85rem;max-width:500px;margin:0 auto 24px;line-height:1.6}
-.footer .socials{display:flex;gap:16px;justify-content:center;margin-bottom:32px}
-.footer .socials a{width:40px;height:40px;border-radius:10px;border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;color:var(--text2);text-decoration:none;transition:all .2s}
-.footer .socials a:hover{color:var(--red);border-color:var(--red);box-shadow:0 0 15px var(--red-glow)}
-.footer .copy{color:var(--text2);font-size:0.75rem;opacity:0.6}
-
-.modal{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);z-index:2000;display:none;justify-content:center;align-items:center}
-.modal.show{display:flex}
-.modal-box{background:var(--bg);border:1px solid var(--glass-border);border-radius:16px;padding:32px;max-width:360px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.5);position:relative}
-.modal-box h3{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;margin-bottom:20px}
-.modal-box input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:0.95rem;margin-bottom:12px;outline:none;transition:border .2s}
-.modal-box input:focus{border-color:var(--red)}
-.modal-box button{width:100%;background:var(--red);color:#fff;border:none;padding:12px;border-radius:8px;font-weight:600;cursor:none;transition:all .2s}
-.modal-box button:hover{box-shadow:0 0 20px var(--red-glow)}
-.modal-box .err{color:var(--red);font-size:0.8rem;margin-top:-8px;margin-bottom:10px}
-.modal-box .close{position:absolute;top:16px;right:16px;color:var(--text2);background:none;border:none;font-size:1.2rem;cursor:none}
-.admin-link{display:none;color:var(--red);font-size:0.85rem;margin-top:12px;text-decoration:none}
-.admin-link.show{display:block}
-
-.leaflet-popup-content-wrapper{background:rgba(10,10,15,0.95);backdrop-filter:blur(10px);border:1px solid var(--glass-border);color:var(--text);border-radius:12px}
-.leaflet-popup-tip{background:rgba(10,10,15,0.95);border:1px solid var(--glass-border)}
-.leaflet-container a.leaflet-popup-close-button{color:var(--text2)}
-.leaflet-container .leaflet-control-attribution{background:rgba(10,10,15,0.8);color:var(--text2)}
-.leaflet-container .leaflet-control-attribution a{color:var(--text2)}
-.leaflet-tile{filter:invert(1) hue-rotate(180deg) brightness(0.6) contrast(1.2)}
-
-@media(max-width:768px){
-  nav{padding:14px 20px}
-  nav ul{display:none}
-  .map-wrap{padding:0 20px 40px}
-  .map-legend{display:none}
-  .page-header{padding:100px 20px 20px}
-}
+  #map { width:100%; height:600px; border-radius:12px; border:1px solid #222; }
+  .leaflet-popup-content-wrapper { background:#1a1a1a; color:#fff; border:1px solid #333; }
+  .leaflet-popup-tip { background:#1a1a1a; }
 </style>
 </head>
 <body>
-<div class="cursor" id="cursor"></div>
-<div class="cursor-dot" id="cursor-dot"></div>
-
-<nav id="nav">
-  <div class="logo"><i class="fa-solid fa-plane-up"></i> Swiss <span>VA</span></div>
-  <ul>
-    <li><a href="index.html">Главная</a></li>
-    <li><a href="fleet.html">Флот</a></li>
-    <li><a href="routes.html">Маршруты</a></li>
-    <li><a href="map.html">Карта</a></li>
-    <li><a href="events.html">События</a></li>
-    <li><a href="history.html">История</a></li>
-    <li><a href="apply.html">Анкета</a></li>
-    <li><a href="contact.html">Контакты</a></li>
-  </ul>
-  <button class="login-btn" id="loginBtn">Вход</button>
+<canvas id="particles"></canvas>
+<nav class="navbar">
+  <div class="container nav-inner">
+    <a href="index.html" class="logo"><div class="logo-icon">+</div> Swiss Airlines VA</a>
+    <div class="nav-links">
+      <a href="index.html" data-i18n="nav_home">Главная</a>
+      <a href="fleet.html" data-i18n="nav_fleet">Флот</a>
+      <a href="routes.html" data-i18n="nav_routes">Маршруты</a>
+      <a href="map.html" class="active" data-i18n="nav_map">Карта</a>
+      <a href="events.html" data-i18n="nav_events">События</a>
+      <a href="history.html" data-i18n="nav_history">История</a>
+      <a href="patent.html" data-i18n="nav_patent">Патент</a>
+      <a href="apply.html" data-i18n="nav_apply">Анкета</a>
+      <a href="contacts.html" data-i18n="nav_contacts">Контакты</a>
+      <a href="login.html" data-i18n="nav_admin">Админ</a>
+      <button class="lang-btn" id="langToggle">EN</button>
+    </div>
+  </div>
 </nav>
 
-<div class="page-header">
-  <h1>Карта маршрутов</h1>
-  <p>Изучите нашу глобальную сеть из Цюриха и Женевы в направления на всех шести континентах.</p>
-</div>
-
-<div class="map-wrap">
-  <div id="map"></div>
-  <div class="glass map-legend">
-    <h4>Легенда</h4>
-    <div><div class="dot" style="background:var(--red)"></div> Хаб Цюрих</div>
-    <div><div class="dot" style="background:#a0a0b8"></div> Направление</div>
-    <div><div class="dot" style="background:var(--red);width:24px;height:2px;border-radius:0"></div> Маршрут</div>
+<section class="section">
+  <div class="container">
+    <h1 class="section-title" data-i18n="map_title">Карта маршрутов</h1>
+    <p class="section-subtitle" data-i18n="map_desc">Интерактивная карта всех направлений Swiss Airlines VA.</p>
+    <div id="map"></div>
   </div>
-</div>
+</section>
 
-<div class="footer">
-  <div class="logo">Swiss <span>VA</span></div>
-  <p>Виртуальная авиакомпания Swiss Airlines для PTFS. Премиальный авиасимулятор с швейцарской точностью.</p>
-  <div class="socials">
-    <a href="https://discord.gg/6YA8t7GJr" target="_blank"><i class="fa-brands fa-discord"></i></a>
-    <a href="#"><i class="fa-brands fa-twitter"></i></a>
-    <a href="#"><i class="fa-brands fa-youtube"></i></a>
-  </div>
-  <div class="copy">© 2026 Swiss Airlines VA. Все права защищены.</div>
-</div>
+<footer class="footer">
+  <div class="container"><p data-i18n="footer">© 2026 Swiss Airlines VA. Все права защищены. PTFS.</p></div>
+</footer>
 
-<div class="modal" id="loginModal">
-  <div class="modal-box">
-    <button class="close" id="closeModal">×</button>
-    <h3>Вход для администратора</h3>
-    <input type="text" id="userInput" placeholder="Логин">
-    <input type="password" id="passInput" placeholder="Пароль">
-    <div class="err" id="loginErr"></div>
-    <button id="doLogin">Войти</button>
-    <a href="admin.html" class="admin-link" id="adminLink">Панель администратора</a>
-  </div>
-</div>
-
+<script src="i18n.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="script.js"></script>
 <script>
-const cursor=document.getElementById('cursor'),cursorDot=document.getElementById('cursor-dot');
-document.addEventListener('mousemove',e=>{cursor.style.left=e.clientX+'px';cursor.style.top=e.clientY+'px';cursorDot.style.left=e.clientX+'px';cursorDot.style.top=e.clientY+'px';});
-document.querySelectorAll('a,button').forEach(el=>{el.addEventListener('mouseenter',()=>{cursor.style.transform='translate(-50%,-50%) scale(1.6)';cursor.style.background='rgba(227,6,19,0.15)';});el.addEventListener('mouseleave',()=>{cursor.style.transform='translate(-50%,-50%) scale(1)';cursor.style.background='transparent';});});
-window.addEventListener('scroll',()=>{if(window.scrollY>60)document.getElementById('nav').classList.add('scrolled');else document.getElementById('nav').classList.remove('scrolled');});
+document.addEventListener('DOMContentLoaded', async () => {
+  const map = L.map('map').setView([30, 10], 2);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    subdomains: 'abcd', maxZoom: 19
+  }).addTo(map);
 
-const airports={
-  'Zurich':[47.4647,8.5492],'Geneva':[46.2370,6.1084],'New York JFK':[40.6413,-73.7781],'Chicago ORD':[41.9742,-87.9073],'Los Angeles':[33.9416,-118.4085],
-  'Miami':[25.7959,-80.2870],'Sao Paulo':[-23.4356,-46.4731],'Dubai':[25.2532,55.3657],'Tokyo NRT':[35.7647,140.3864],
-  'Singapore':[1.3644,103.9915],'Shanghai':[31.1443,121.8083],'Boston':[42.3656,-71.0096],'Hong Kong':[22.3080,113.9185],
-  'Johannesburg':[-26.1392,28.2460],'Mumbai':[19.0896,72.8656],'Bangkok':[13.6900,100.7501],'Madrid':[40.4983,-3.5676],
-  'London LHR':[51.4700,-0.4543],'Paris CDG':[49.0097,2.5479],'Frankfurt':[50.0379,8.5622],'Amsterdam':[52.3105,4.7683],
-  'Rome FCO':[41.8003,12.2389],'Barcelona':[41.2971,2.0785],'Vienna':[48.1103,16.5697],'Prague':[50.1008,14.2632],
-  'Athens':[37.9364,23.9445],'Istanbul':[41.2751,28.7519],'Cairo':[30.1219,31.4056],'Tel Aviv':[32.0094,34.8827],
-  'Stockholm':[59.6519,17.9186],'Oslo':[60.1939,11.1004],'Copenhagen':[55.6180,12.6561],'Lisbon':[38.7756,-9.1354],
-  'Dublin':[53.4264,-6.2499],'Edinburgh':[55.9508,-3.3615],'Lugano':[46.0042,8.9106],
-  'Innsbruck':[47.2576,11.3519],'Rovaniemi':[66.5618,25.8308],'Denver':[39.8561,-104.6737],
-  'San Francisco':[37.6213,-122.3790],'Seattle':[47.4502,-122.3088],'Washington IAD':[38.9531,-77.4565],
-  'Toronto':[43.6777,-79.6248],'Vancouver':[49.1967,-123.1815],'Mexico City':[19.4363,-99.0721],
-  'Delhi':[28.5562,77.1000],'Sydney':[-33.9399,151.1753],'Melbourne':[-37.6733,144.8430],'Auckland':[-37.0080,174.7917],
-  'Sao Paulo GRU':[-23.4356,-46.4731],'Buenos Aires':[-34.8222,-58.5358],'Cape Town':[-33.9715,18.6021],
-  'Moscow':[55.4103,37.9023],'Warsaw':[52.1657,20.9671],'Budapest':[47.4298,19.2611],'Zagreb':[45.7409,16.0677]
-};
-
-const map=L.map('map',{zoomControl:false}).setView([30,10],2);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{maxZoom:19}).addTo(map);
-L.control.zoom({position:'bottomright'}).addTo(map);
-
-const redIcon=L.divIcon({className:'custom-marker',html:`<div style="width:14px;height:14px;background:#E30613;border-radius:50%;border:2px solid #fff;box-shadow:0 0 10px rgba(227,6,19,0.5);"></div>`,iconSize:[14,14],iconAnchor:[7,7]});
-const greyIcon=L.divIcon({className:'custom-marker',html:`<div style="width:10px;height:10px;background:#a0a0b8;border-radius:50%;border:2px solid #fff;box-shadow:0 0 6px rgba(160,160,184,0.4);"></div>`,iconSize:[10,10],iconAnchor:[5,5]});
-
-L.marker([47.4647,8.5492],{icon:redIcon}).addTo(map).bindPopup('<b>Цюрих (ZRH)</b><br>Хаб Swiss Airlines VA');
-L.marker([46.2370,6.1084],{icon:redIcon}).addTo(map).bindPopup('<b>Женева (GVA)</b><br>Хаб Swiss Airlines VA');
-
-fetch('/api/routes').then(r=>r.json()).then(routes=>{
-  const seen=new Set();
-  routes.forEach(r=>{
-    const dest=r.destination;
-    if(airports[dest]&&!seen.has(dest)){
-      seen.add(dest);
-      L.marker(airports[dest],{icon:greyIcon}).addTo(map).bindPopup(`<b>${dest}</b><br>${r.flight_number} · ${r.duration}`);
+  try {
+    const res = await fetch('/api/routes');
+    const routes = await res.json();
+    const seen = new Set();
+    for (const r of routes) {
+      if (!seen.has(r.origin_code)) {
+        seen.add(r.origin_code);
+        L.circleMarker([r.origin_lat, r.origin_lon], { radius: 6, color: '#D32F2F', fillColor: '#D32F2F', fillOpacity: 0.9 }).addTo(map)
+          .bindPopup(`<strong>${r.origin}</strong> (${r.origin_code})`);
+      }
+      if (!seen.has(r.destination_code)) {
+        seen.add(r.destination_code);
+        L.circleMarker([r.dest_lat, r.dest_lon], { radius: 4, color: '#888', fillColor: '#888', fillOpacity: 0.7 }).addTo(map)
+          .bindPopup(`<strong>${r.destination}</strong> (${r.destination_code})`);
+      }
+      L.polyline([[r.origin_lat, r.origin_lon], [r.dest_lat, r.dest_lon]], { color: '#D32F2F', weight: 1, opacity: 0.5 }).addTo(map);
     }
-    if(airports[dest]&&airports[r.origin]){
-      L.polyline([airports[r.origin],airports[dest]],{color:'#E30613',weight:1,opacity:0.35,dashArray:'4,6'}).addTo(map);
-    }
-  });
+  } catch (e) { toast('Ошибка загрузки карты'); }
 });
-
-const loginBtn=document.getElementById('loginBtn'),loginModal=document.getElementById('loginModal'),closeModal=document.getElementById('closeModal'),doLogin=document.getElementById('doLogin'),loginErr=document.getElementById('loginErr'),adminLink=document.getElementById('adminLink');
-loginBtn.addEventListener('click',()=>loginModal.classList.add('show'));
-closeModal.addEventListener('click',()=>loginModal.classList.remove('show'));
-loginModal.addEventListener('click',e=>{if(e.target===loginModal)loginModal.classList.remove('show');});
-doLogin.addEventListener('click',()=>{const u=document.getElementById('userInput').value,p=document.getElementById('passInput').value;fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})}).then(r=>r.json()).then(d=>{if(d.success){loginErr.textContent='';loginBtn.textContent='Админ';adminLink.classList.add('show');loginModal.classList.remove('show');}else{loginErr.textContent='Неверные учетные данные';}});});
-fetch('/api/me').then(r=>r.json()).then(d=>{if(d.loggedIn&&d.user.role==='admin'){loginBtn.textContent='Админ';adminLink.classList.add('show');}});
 </script>
 </body>
 </html>

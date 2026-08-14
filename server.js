@@ -1,609 +1,352 @@
 require('dotenv').config();
 const express = require('express');
-const session = require('express-session');
-const bcrypt = require('bcryptjs');
 const sqlite3 = require('sqlite3').verbose();
+const session = require('express-session');
+const crypto = require('crypto');
 const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const ADMIN_USER = process.env.ADMIN_USER || 'Gregory';
-const ADMIN_PASS = process.env.ADMIN_PASS || '123789';
+const ADMIN_USER = process.env.ADMIN_USERNAME || 'Gregory';
+const ADMIN_PASS = process.env.ADMIN_PASSWORD || '123789';
+const SESSION_SECRET = process.env.SESSION_SECRET || 'swiss-secret-2026';
+
+const tokens = new Map();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname)));
-
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'swiss-v2-secret-key',
+  secret: SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false, maxAge: 24*60*60*1000 }
+  cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 }
 }));
 
-const db = new sqlite3.Database(path.join(__dirname, 'database.sqlite'));
+app.use(express.static(path.join(__dirname)));
 
-function initDB() {
-  db.exec(`
-    DROP TABLE IF EXISTS fleet;
-    DROP TABLE IF EXISTS routes;
-    DROP TABLE IF EXISTS events;
-    DROP TABLE IF EXISTS timeline;
-    DROP TABLE IF EXISTS staff;
-    DROP TABLE IF EXISTS users;
-    DROP TABLE IF EXISTS applications;
-    DROP TABLE IF EXISTS contacts;
+const db = new sqlite3.Database(path.join(__dirname, 'database.sqlite'), (err) => {
+  if (err) console.error('DB error:', err);
+  else console.log('SQLite connected');
+});
 
-    CREATE TABLE fleet (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      aircraft TEXT NOT NULL,
-      type TEXT NOT NULL,
-      registration TEXT NOT NULL,
-      capacity INTEGER NOT NULL,
-      range INTEGER NOT NULL,
-      status TEXT NOT NULL DEFAULT 'Active',
-      image TEXT,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
-
-    CREATE TABLE routes (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      flight_number TEXT NOT NULL,
-      origin TEXT NOT NULL,
-      destination TEXT NOT NULL,
-      distance INTEGER NOT NULL,
-      duration TEXT NOT NULL,
-      aircraft_type TEXT NOT NULL,
-      days TEXT NOT NULL,
-      status TEXT NOT NULL DEFAULT 'Active',
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
-
-    CREATE TABLE events (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      title TEXT NOT NULL,
-      description TEXT,
-      event_date TEXT NOT NULL,
-      event_type TEXT NOT NULL,
-      location TEXT,
-      image TEXT,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
-
-    CREATE TABLE timeline (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      year INTEGER NOT NULL,
-      title TEXT NOT NULL,
-      description TEXT NOT NULL,
-      icon TEXT,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
-
-    CREATE TABLE staff (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL,
-      role TEXT NOT NULL,
-      department TEXT NOT NULL,
-      discord TEXT,
-      image TEXT,
-      bio TEXT,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
-
-    CREATE TABLE users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      username TEXT NOT NULL UNIQUE,
-      password TEXT NOT NULL,
-      role TEXT NOT NULL DEFAULT 'user',
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
-
-    CREATE TABLE applications (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      callsign TEXT NOT NULL,
-      discord TEXT NOT NULL,
-      email TEXT NOT NULL,
-      age TEXT NOT NULL,
-      experience TEXT,
-      ptfs_hours TEXT,
-      why_join TEXT NOT NULL,
-      status TEXT NOT NULL DEFAULT 'pending',
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
-
-    CREATE TABLE contacts (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL,
-      email TEXT NOT NULL,
-      subject TEXT NOT NULL,
-      message TEXT NOT NULL,
-      status TEXT NOT NULL DEFAULT 'new',
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
-  `);
+function dbRun(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    db.run(sql, params, function(err) {
+      if (err) reject(err);
+      else resolve({ id: this.lastID, changes: this.changes });
+    });
+  });
 }
 
-function seedData() {
-  const fleet = [
-    ['Airbus A220-100','Narrow-body','HB-JBA',125,3350,'Active','a220'],
-    ['Airbus A220-300','Narrow-body','HB-JCB',145,3350,'Active','a220'],
-    ['Airbus A320-200','Narrow-body','HB-IJL',168,3200,'Active','a320'],
-    ['Airbus A320neo','Narrow-body','HB-JDA',180,3700,'Active','a320'],
-    ['Airbus A321-100','Narrow-body','HB-IOH',200,3500,'Active','a321'],
-    ['Airbus A321-200','Narrow-body','HB-IOK',210,3700,'Active','a321'],
-    ['Airbus A321neo','Narrow-body','HB-JPA',220,4000,'Active','a321'],
-    ['Airbus A330-300','Wide-body','HB-JHL',236,11300,'Active','a330'],
-    ['Airbus A340-300','Wide-body','HB-JMF',219,13700,'Active','a340'],
-    ['Airbus A350-900','Wide-body','HB-JCA',325,15000,'Active','a350'],
-    ['Boeing 777-300ER','Wide-body','HB-JND',340,14600,'Active','b777'],
-    ['Boeing 747-8F','Cargo','HB-JQA',0,14800,'Active','b747f'],
-    ['ATR 72-600','Regional','HB-ACB',72,900,'Active','atr72']
-  ];
-  fleet.forEach(row => {
-    db.run('INSERT INTO fleet (aircraft, type, registration, capacity, range, status, image) VALUES (?,?,?,?,?,?,?)', row);
+function dbAll(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    db.all(sql, params, (err, rows) => {
+      if (err) reject(err);
+      else resolve(rows);
+    });
   });
-
-  const routes = [
-    ['LX14','Zurich (ZRH)','New York JFK (JFK)',6500,'8h 45m','Airbus A330-300','Daily','Active'],
-    ['LX18','Zurich (ZRH)','Chicago ORD (ORD)',7100,'9h 30m','Boeing 777-300ER','Daily','Active'],
-    ['LX40','Zurich (ZRH)','Los Angeles (LAX)',9500,'11h 20m','Airbus A340-300','Daily','Active'],
-    ['LX52','Zurich (ZRH)','Boston (BOS)',6200,'8h 20m','Airbus A330-300','Daily','Active'],
-    ['LX64','Zurich (ZRH)','Miami (MIA)',8100,'10h 15m','Airbus A330-300','Mon Wed Fri Sat','Active'],
-    ['LX92','Zurich (ZRH)','Sao Paulo (GRU)',10000,'11h 50m','Airbus A350-900','Mon Thu Sat','Active'],
-    ['LX178','Zurich (ZRH)','Tokyo Narita (NRT)',9600,'11h 30m','Airbus A350-900','Daily','Active'],
-    ['LX188','Zurich (ZRH)','Shanghai (PVG)',9200,'11h 45m','Airbus A340-300','Mon Wed Fri','Active'],
-    ['LX138','Zurich (ZRH)','Singapore (SIN)',10500,'12h 15m','Airbus A350-900','Daily','Active'],
-    ['LX280','Zurich (ZRH)','Hong Kong (HKG)',9200,'11h 30m','Airbus A350-900','Daily','Active'],
-    ['LX220','Zurich (ZRH)','Johannesburg (JNB)',5400,'10h 35m','Airbus A330-300','Mon Wed Fri','Active'],
-    ['LX362','Zurich (ZRH)','Bangkok (BKK)',8900,'10h 50m','Airbus A350-900','Daily','Active'],
-    ['LX302','Zurich (ZRH)','Mumbai (BOM)',4250,'7h 45m','Airbus A320neo','Tue Thu Sat','Active'],
-    ['LX242','Zurich (ZRH)','Dubai (DXB)',2960,'6h 10m','Airbus A220-300','Daily','Active'],
-    ['LX622','Zurich (ZRH)','Cairo (CAI)',2700,'3h 45m','Airbus A320neo','Tue Thu Sat','Active'],
-    ['LX642','Zurich (ZRH)','Tel Aviv (TLV)',2800,'3h 50m','Airbus A320neo','Mon Wed Fri Sun','Active'],
-    ['LX412','Zurich (ZRH)','Madrid (MAD)',1250,'2h 15m','Airbus A220-300','Daily','Active'],
-    ['LX432','Zurich (ZRH)','London Heathrow (LHR)',800,'1h 40m','Airbus A320neo','Daily','Active'],
-    ['LX452','Zurich (ZRH)','Paris CDG (CDG)',490,'1h 15m','Airbus A220-300','Daily','Active'],
-    ['LX472','Zurich (ZRH)','Frankfurt (FRA)',300,'1h 00m','Airbus A320neo','Daily','Active'],
-    ['LX482','Zurich (ZRH)','Amsterdam (AMS)',600,'1h 35m','Airbus A220-300','Daily','Active'],
-    ['LX502','Zurich (ZRH)','Rome FCO (FCO)',740,'1h 35m','Airbus A320neo','Daily','Active'],
-    ['LX522','Zurich (ZRH)','Barcelona (BCN)',830,'1h 45m','Airbus A320neo','Daily','Active'],
-    ['LX542','Zurich (ZRH)','Vienna (VIE)',630,'1h 15m','Airbus A220-300','Daily','Active'],
-    ['LX562','Zurich (ZRH)','Prague (PRG)',580,'1h 20m','Airbus A220-300','Daily','Active'],
-    ['LX582','Zurich (ZRH)','Athens (ATH)',1700,'2h 45m','Airbus A320neo','Mon Wed Fri Sun','Active'],
-    ['LX602','Zurich (ZRH)','Istanbul (IST)',1750,'2h 50m','Airbus A321neo','Daily','Active'],
-    ['LX662','Zurich (ZRH)','Stockholm (ARN)',1230,'2h 15m','Airbus A220-300','Daily','Active'],
-    ['LX682','Zurich (ZRH)','Oslo (OSL)',1250,'2h 20m','Airbus A220-300','Daily','Active'],
-    ['LX702','Zurich (ZRH)','Copenhagen (CPH)',950,'1h 50m','Airbus A220-300','Daily','Active'],
-    ['LX722','Zurich (ZRH)','Lisbon (LIS)',1750,'2h 50m','Airbus A320neo','Daily','Active'],
-    ['LX742','Zurich (ZRH)','Dublin (DUB)',1240,'2h 15m','Airbus A220-300','Daily','Active'],
-    ['LX762','Zurich (ZRH)','Edinburgh (EDI)',1250,'2h 20m','Airbus A220-300','Mon Thu Sat','Active'],
-    ['LX782','Zurich (ZRH)','Geneva (GVA)',230,'0h 50m','Airbus A220-100','Daily','Active'],
-    ['LX802','Zurich (ZRH)','Lugano (LUG)',170,'0h 45m','ATR 72-600','Daily','Active'],
-    ['LX822','Geneva (GVA)','London Heathrow (LHR)',760,'1h 35m','Airbus A320neo','Daily','Active'],
-    ['LX842','Geneva (GVA)','Paris CDG (CDG)',420,'1h 10m','Airbus A220-300','Daily','Active'],
-    ['LX862','Geneva (GVA)','Barcelona (BCN)',650,'1h 30m','Airbus A320neo','Daily','Active'],
-    ['LX882','Geneva (GVA)','Madrid (MAD)',1050,'2h 00m','Airbus A220-300','Daily','Active'],
-    ['LX902','Geneva (GVA)','Rome FCO (FCO)',720,'1h 30m','Airbus A320neo','Daily','Active'],
-    ['LX922','Geneva (GVA)','Frankfurt (FRA)',470,'1h 10m','Airbus A320neo','Daily','Active'],
-    ['LX942','Geneva (GVA)','Munich (MUC)',510,'1h 15m','Airbus A220-300','Daily','Active'],
-    ['LX962','Geneva (GVA)','Vienna (VIE)',820,'1h 40m','Airbus A220-300','Daily','Active'],
-    ['LX982','Geneva (GVA)','Amsterdam (AMS)',710,'1h 40m','Airbus A320neo','Daily','Active']
-  ];
-  routes.forEach(row => {
-    db.run('INSERT INTO routes (flight_number, origin, destination, distance, duration, aircraft_type, days, status) VALUES (?,?,?,?,?,?,?,?)', row);
-  });
-
-  const events = [
-    ['Юбилей Swiss VA','Празднуем 3-й год существования! Особые групповые полеты и призы.','2026-09-15','Anniversary','Аэропорт Цюрих','anniversary'],
-    ['Тур по Швейцарским Альпам','Полеты над Альпами с эксклюзивными ливреями.','2026-10-05','Tour','Женева — Лугано','tour'],
-    ['Ночной Fly-In Цюрих','Ночное мероприятие с ATC и призами.','2026-11-12','Fly-In','Аэропорт Цюрих','flyin'],
-    ['Рождественский Специальный Рейс','Праздничный полет в Лапландию.','2026-12-20','Special','Цюрих — Рованиеми','christmas'],
-    ['Новогодний Групповой Полет','Встречаем новый год трансатлантическим перелетом.','2027-01-01','Group Flight','Цюрих — Нью-Йорк','newyear'],
-    ['Expo Партнерских VA','Совместное мероприятие с партнерскими авиакомпаниями.','2026-09-28','Expo','Discord','expo'],
-    ['Swiss Precision Challenge','Посадочный челлендж в Инсбруке.','2026-10-22','Challenge','Инсбрук','challenge'],
-    ['Европейский Тур — Этап 1','Первый этап тура по столицам Европы.','2026-11-05','Tour','Цюрих — Вена','tour']
-  ];
-  events.forEach(row => {
-    db.run('INSERT INTO events (title, description, event_date, event_type, location, image) VALUES (?,?,?,?,?,?)', row);
-  });
-
-  const timeline = [
-    [1931,'Основание Swissair','Swissair создана 26 марта 1931 года слиянием Balair и Ad Astra Aero. Первая европейская авиакомпания с Lockheed Orion.','plane'],
-    [1932,'Первые европейские рейсы','Swissair становится первой европейской авиакомпанией, использующей Lockheed Orion для регулярных рейсов.','flight'],
-    [1949,'Трансатлантические рейсы','Начало регулярных рейсов между Швейцарией и Нью-Йорком.','globe'],
-    [1950,'Рейсы в Южную Америку','Открытие маршрутов в Южную Америку.','map'],
-    [1971,'Эра Boeing 747','Boeing 747-257B (HB-IGA) официально вступает в флот Swissair — новая эра дальнемагистральных перелетов.','jet'],
-    [1981,'Первый Airbus A310','Swissair получает первый Airbus A310 — начало эры Airbus.','plane'],
-    [1995,'Флот Airbus A320','Ввод в эксплуатацию Airbus A320 — модернизация европейского флота.','plane'],
-    [2001,'Банкротство Swissair','Swissair объявляет банкротство в октябре 2001 года с долгом $7.9 млрд. Конец эпохи.','times'],
-    [2002,'Рождение SWISS','Swiss International Air Lines (SWISS) создана на базе Crossair. Первый рейс 31 марта 2002 года из Базеля в Цюрих.','rocket'],
-    [2004,'Отказ от oneworld','SWISS отказывается от вступления в альянс oneworld из-за напряженности с British Airways.','times'],
-    [2005,'Партнерство с Lufthansa','Lufthansa приобретает 11% акций SWISS, начинается интеграция в группу.','handshake'],
-    [2006,'Star Alliance','SWISS вступает в Star Alliance и программу Miles & More.','star'],
-    [2007,'Полное поглощение','Lufthansa завершает поглощение SWISS. Авиакомпания становится частью Lufthansa Group.','building'],
-    [2008,'Приобретение Edelweiss','SWISS приобретает Edelweiss Air — дочернюю авиакомпанию для чартерных рейсов.','plane'],
-    [2011,'Новый бренд','SWISS обновляет ливрею: красные заглавные буквы на фюзеляже, удаление списка языков.','paint'],
-    [2015,'Swiss Global Airlines','Региональная дочерняя компания переименована в Swiss Global Airlines, начинает эксплуатацию Boeing 777.','jet'],
-    [2018,'Объединение с основной компанией','Swiss Global Airlines объединена с основной SWISS после нового трудового соглашения.','building'],
-    [2022,'20-летие SWISS','SWISS отмечает 20-летие с момента первого рейса 31 марта 2002 года.','anniversary'],
-    [2023,'Заказ A350-900','SWISS заказывает Airbus A350-900 для замены устаревших A340 к 2025 году.','plane']
-  ];
-  timeline.forEach(row => {
-    db.run('INSERT INTO timeline (year, title, description, icon) VALUES (?,?,?,?)', row);
-  });
-
-  const staff = [
-    ['Gregory','CEO','Management','Gregory','gregory','Основатель и CEO Swiss Airlines VA. Страстный авиатор и поклонник швейцарской точности.'],
-    ['Marco','COO','Operations','Marco','marco','Операционный директор, управляющий ежедневными полетами и планированием маршрутов.'],
-    ['Elena','Chief Pilot','Flight Operations','Elena','elena','Главный пилот с более чем 500 выполненными рейсами.'],
-    ['Lucas','Fleet Manager','Technical','Lucas','lucas','Ответственный за техническое обслуживание флота и закупку самолетов.'],
-    ['Sophie','Events Coordinator','Events','Sophie','sophie','Организатор всех мероприятий, туров и активностей сообщества.'],
-    ['Hans','Community Manager','Community','Hans','hans','Управляет Discord и присутствием в социальных сетях.']
-  ];
-  staff.forEach(row => {
-    db.run('INSERT INTO staff (name, role, department, discord, image, bio) VALUES (?,?,?,?,?,?)', row);
-  });
-
-  const hash = bcrypt.hashSync(ADMIN_PASS, 10);
-  db.run('INSERT INTO users (username, password, role) VALUES (?,?,?)', [ADMIN_USER, hash, 'admin']);
 }
 
-function setupAuth() {
-  const hash = bcrypt.hashSync(ADMIN_PASS, 10);
-  db.run('INSERT OR IGNORE INTO users (username, password, role) VALUES (?,?,?)', [ADMIN_USER, hash, 'admin']);
+async function initDB() {
+  await dbRun(`CREATE TABLE IF NOT EXISTS applications (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL, age INTEGER, platform TEXT, username TEXT, discord TEXT,
+    country TEXT, experience TEXT, hours TEXT, motivation TEXT,
+    status TEXT DEFAULT 'Новая', created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+
+  await dbRun(`CREATE TABLE IF NOT EXISTS fleet (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    model TEXT NOT NULL, manufacturer TEXT, category TEXT, capacity TEXT,
+    range_km INTEGER, speed_kmh INTEGER, status TEXT DEFAULT 'active',
+    description TEXT, image_url TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+
+  await dbRun(`CREATE TABLE IF NOT EXISTS routes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    origin TEXT NOT NULL, origin_code TEXT, destination TEXT NOT NULL, destination_code TEXT,
+    distance_km INTEGER, duration_min INTEGER, aircraft_type TEXT, frequency TEXT,
+    notes TEXT, active INTEGER DEFAULT 1,
+    origin_lat REAL, origin_lon REAL, dest_lat REAL, dest_lon REAL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+
+  await dbRun(`CREATE TABLE IF NOT EXISTS events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL, date TEXT, description TEXT, image_url TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+
+  await dbRun(`CREATE TABLE IF NOT EXISTS timeline (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    year INTEGER, title TEXT, description TEXT, icon TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+
+  console.log('DB tables ready');
+  await seedData();
 }
 
+async function seedData() {
+  const fleetCount = await dbAll('SELECT COUNT(*) as c FROM fleet');
+  if (fleetCount[0].c === 0) {
+    const fleet = [
+      ['Airbus A220-100','Airbus','Региональный','125','3350','829','active','Региональный самолёт для коротких маршрутов по Европе.',''],
+      ['Airbus A220-300','Airbus','Региональный','145','3350','829','active','Увеличенная версия A220 для плотных европейских направлений.',''],
+      ['Airbus A319','Airbus','Узкофюзеляжный','138','6800','828','active','Классический европейский самолёт средней дальности.',''],
+      ['Airbus A320neo','Airbus','Узкофюзеляжный','180','6300','828','active','Новое поколение A320 с топливной эффективностью на 15% выше.',''],
+      ['Airbus A321neo','Airbus','Узкофюзеляжный','219','7400','828','active','Удлинённая версия A320neo для высоких нагрузок.',''],
+      ['Airbus A330-300','Airbus','Широкофюзеляжный','236','11300','871','active','Дальнемагистральный широкофюзеляжник для трансатлантики.',''],
+      ['Airbus A340-300','Airbus','Широкофюзеляжный','219','13700','871','active','Классический четырёхдвигательный лайнер для дальних рейсов.',''],
+      ['Boeing 777-300ER','Boeing','Широкофюзеляжный','340','13650','892','active','Флагман дальнемагистрального флота Swiss.',''],
+      ['Boeing 787-9','Boeing','Широкофюзеляжный','290','14010','903','active','Сверхэффективный Dreamliner для дальних маршрутов.',''],
+      ['Bombardier CS100','Bombardier','Региональный','108','3100','828','active','Компактный региональный самолёт для небольших аэропортов.','']
+    ];
+    for (const f of fleet) {
+      await dbRun(`INSERT INTO fleet (model,manufacturer,category,capacity,range_km,speed_kmh,status,description,image_url) VALUES (?,?,?,?,?,?,?,?,?)`, f);
+    }
+    console.log('Fleet seeded');
+  }
+
+  const routesCount = await dbAll('SELECT COUNT(*) as c FROM routes');
+  if (routesCount[0].c === 0) {
+    const routes = [
+      ['Цюрих','ZRH','Женева','GVA',230,55,'A220-100','Ежедневно','Внутренний рейс',47.4647,8.5492,46.2380,6.1089],
+      ['Цюрих','ZRH','Лондон','LHR',788,110,'A320neo','Ежедневно','Основной европейский хаб',47.4647,8.5492,51.4700,-0.4543],
+      ['Цюрих','ZRH','Париж','CDG',478,85,'A220-300','Ежедневно','Популярное направление',47.4647,8.5492,49.0097,2.5479],
+      ['Цюрих','ZRH','Амстердам','AMS',603,95,'A320neo','Ежедневно','Европейский хаб',47.4647,8.5492,52.3105,4.7683],
+      ['Цюрих','ZRH','Франкфурт','FRA',285,60,'A220-100','Ежедневно','Короткий рейс',47.4647,8.5492,50.0379,8.5622],
+      ['Цюрих','ZRH','Мюнхен','MUC',261,55,'A220-100','Ежедневно','Близкий сосед',47.4647,8.5492,48.3538,11.7861],
+      ['Цюрих','ZRH','Вена','VIE',604,95,'A320neo','Ежедневно','Австрийское направление',47.4647,8.5492,48.1103,16.5697],
+      ['Цюрих','ZRH','Милан','MXP',203,50,'A220-100','Ежедневно','Итальянский рейс',47.4647,8.5492,45.6301,8.7231],
+      ['Цюрих','ZRH','Рим','FCO',700,105,'A320neo','Ежедневно','В Италию',47.4647,8.5492,41.8003,12.2389],
+      ['Цюрих','ZRH','Мадрид','MAD',1236,155,'A321neo','Ежедневно','Испанское направление',47.4647,8.5492,40.4983,-3.5676],
+      ['Цюрих','ZRH','Лиссабон','LIS',1723,185,'A321neo','Ежедневно','Португалия',47.4647,8.5492,38.7756,-9.1354],
+      ['Цюрих','ZRH','Брюссель','BRU',483,80,'A220-300','Ежедневно','Бельгия',47.4647,8.5492,50.9010,4.4844],
+      ['Цюрих','ZRH','Прага','PRG',560,90,'A220-300','Ежедневно','Чехия',47.4647,8.5492,50.1008,14.2632],
+      ['Цюрих','ZRH','Берлин','BER',669,100,'A320neo','Ежедневно','Немецкая столица',47.4647,8.5492,52.3667,13.5033],
+      ['Цюрих','ZRH','Копенгаген','CPH',959,120,'A320neo','Ежедневно','Дания',47.4647,8.5492,55.6180,12.6560],
+      ['Цюрих','ZRH','Стокгольм','ARN',1496,155,'A321neo','Ежедневно','Швеция',47.4647,8.5492,59.6519,17.9186],
+      ['Цюрих','ZRH','Осло','OSL',1420,150,'A321neo','Ежедневно','Норвегия',47.4647,8.5492,60.1939,11.1004],
+      ['Цюрих','ZRH','Хельсинки','HEL',1777,175,'A321neo','Ежедневно','Финляндия',47.4647,8.5492,60.3172,24.9633],
+      ['Цюрих','ZRH','Дубай','DXB',4770,330,'B777-300ER','Ежедневно','Ближний Восток',47.4647,8.5492,25.2532,55.3657],
+      ['Цюрих','ZRH','Тель-Авив','TLV',2814,245,'A330-300','Ежедневно','Израиль',47.4647,8.5492,32.0055,34.8854],
+      ['Цюрих','ZRH','Нью-Йорк','JFK',6342,510,'B777-300ER','Ежедневно','Трансатлантика',47.4647,8.5492,40.6413,-73.7781],
+      ['Цюрих','ZRH','Майами','MIA',7885,640,'B777-300ER','Ежедневно','США — юг',47.4647,8.5492,25.7959,-80.2870],
+      ['Цюрих','ZRH','Лос-Анджелес','LAX',9539,750,'B787-9','Ежедневно','США — запад',47.4647,8.5492,33.9416,-118.4085],
+      ['Цюрих','ZRH','Сан-Франциско','SFO',9360,740,'B787-9','Ежедневно','Калифорния',47.4647,8.5492,37.6213,-122.3790],
+      ['Цюрих','ZRH','Бостон','BOS',5992,485,'A330-300','Ежедневно','США — восток',47.4647,8.5492,42.3656,-71.0096],
+      ['Цюрих','ZRH','Сингапур','SIN',10328,795,'B787-9','Ежедневно','Дальний Восток',47.4647,8.5492,1.3644,103.9915],
+      ['Цюрих','ZRH','Бангкок','BKK',9094,715,'B777-300ER','Ежедневно','Таиланд',47.4647,8.5492,13.6900,100.7501],
+      ['Цюрих','ZRH','Токио','NRT',9572,755,'B787-9','Ежедневно','Япония',47.4647,8.5492,35.7647,140.3864],
+      ['Цюрих','ZRH','Пекин','PEK',8005,650,'A340-300','Ежедневно','Китай',47.4647,8.5492,40.0799,116.6031],
+      ['Цюрих','ZRH','Шанхай','PVG',8922,710,'A340-300','Ежедневно','Китай',47.4647,8.5492,31.1443,121.8083],
+      ['Цюрих','ZRH','Мумбаи','BOM',6486,525,'A330-300','Ежедневно','Индия',47.4647,8.5492,19.0896,72.8656],
+      ['Женева','GVA','Лондон','LHR',755,105,'A220-300','Ежедневно','Из Женевы',46.2380,6.1089,51.4700,-0.4543],
+      ['Женева','GVA','Париж','CDG',411,75,'A220-100','Ежедневно','Из Женевы',46.2380,6.1089,49.0097,2.5479]
+    ];
+    for (const r of routes) {
+      await dbRun(`INSERT INTO routes (origin,origin_code,destination,destination_code,distance_km,duration_min,aircraft_type,frequency,notes,active,origin_lat,origin_lon,dest_lat,dest_lon) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`, r);
+    }
+    console.log('Routes seeded');
+  }
+
+  const eventsCount = await dbAll('SELECT COUNT(*) as c FROM events');
+  if (eventsCount[0].c === 0) {
+    const events = [
+      ['Групповой полёт: Цюрих — Нью-Йорк','2026-08-20','Совместный трансатлантический рейс на B777-300ER. Приглашаются все пилоты VA.',''],
+      ['Тренировка: Посадка в Женеве','2026-08-25','Практика захода на посадку в сложных метеоусловиях.',''],
+      ['Ивент: Swiss Precision Challenge','2026-09-05','Соревнование по точности приземления. Призы за топ-3.',''],
+      ['Групповой полёт: Европейский тур','2026-09-12','Цепочка рейсов по 5 европейским столицам за один день.',''],
+      ['Специальный рейс: День авиации','2026-09-27','Праздничный рейс с эксклюзивным расписанием и ливреями.',''],
+      ['Ночной полёт: Цюрих — Дубай','2026-10-10','Ночной вылет с полной процедурой FMC и VATSIM.',''],
+      ['Турнир: Crosswind Masters','2026-10-18','Соревнование по посадке с боковым ветром.',''],
+      ['Групповой полёт: Тихоокеанский маршрут','2026-11-01','Дальний рейс Цюрих — Лос-Анджелес в составе каравана.','']
+    ];
+    for (const e of events) {
+      await dbRun(`INSERT INTO events (title,date,description,image_url) VALUES (?,?,?,?)`, e);
+    }
+    console.log('Events seeded');
+  }
+
+  const timelineCount = await dbAll('SELECT COUNT(*) as c FROM timeline');
+  if (timelineCount[0].c === 0) {
+    const timeline = [
+      [2023,'Основание VA','Gregory основал Swiss Airlines VA для PTFS. Первые 5 пилотов присоединились к проекту.','🛫'],
+      [2023,'Первый рейс','Выполнен первый официальный рейс Цюрих — Женева. Начало операционной деятельности.','✈️'],
+      [2024,'Расширение флота','Флот пополнился Airbus A320neo и Boeing 777-300ER. Открыты 15 новых направлений.','📈'],
+      [2024,'Discord-сообщество','Запущен официальный Discord-сервер. Более 50 активных участников за первый месяц.','💬'],
+      [2025,'Международные рейсы','Открыты трансатлантические направления: Нью-Йорк, Бостон, Майами.','🌍'],
+      [2025,'100 пилотов','Swiss Airlines VA достигла отметки в 100 активных пилотов. Введена система званий.','🎖️'],
+      [2026,'Азиатское направление','Запущены регулярные рейсы в Сингапур, Токио и Бангкок.','🌏'],
+      [2026,'Обновление сайта','Запущен новый сайт с интерактивной картой маршрутов, админ-панелью и полным каталогом флота.','🚀']
+    ];
+    for (const t of timeline) {
+      await dbRun(`INSERT INTO timeline (year,title,description,icon) VALUES (?,?,?,?)`, t);
+    }
+    console.log('Timeline seeded');
+  }
+}
+
+function requireAuth(req, res, next) {
+  if (req.session && req.session.authenticated) return next();
+  const auth = req.headers['authorization'] || '';
+  const m = auth.match(/^Bearer\s+(.+)$/i);
+  if (m && tokens.has(m[1])) return next();
+  return res.status(401).json({ error: 'Unauthorized' });
+}
+
+// Auth
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body;
-  db.get('SELECT * FROM users WHERE username = ?', [username], (err, user) => {
-    if (err) return res.status(500).json({ error: err.message });
-    if (!user) return res.status(401).json({ error: 'Неверные учетные данные' });
-    if (!bcrypt.compareSync(password, user.password)) return res.status(401).json({ error: 'Неверные учетные данные' });
-    req.session.userId = user.id;
-    req.session.role = user.role;
-    res.json({ success: true, role: user.role });
-  });
+  if (username === ADMIN_USER && password === ADMIN_PASS) {
+    req.session.authenticated = true;
+    const token = crypto.randomBytes(32).toString('hex');
+    tokens.set(token, true);
+    return res.json({ success: true, token });
+  }
+  res.status(401).json({ success: false, error: 'Invalid credentials' });
 });
 
 app.post('/api/logout', (req, res) => {
+  const auth = req.headers['authorization'] || '';
+  const m = auth.match(/^Bearer\s+(.+)$/i);
+  if (m) tokens.delete(m[1]);
   req.session.destroy();
   res.json({ success: true });
 });
 
 app.get('/api/me', (req, res) => {
-  if (!req.session.userId) return res.json({ loggedIn: false });
-  db.get('SELECT id, username, role FROM users WHERE id = ?', [req.session.userId], (err, user) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ loggedIn: true, user });
-  });
+  const auth = req.headers['authorization'] || '';
+  const m = auth.match(/^Bearer\s+(.+)$/i);
+  const ok = (req.session && req.session.authenticated) || (m && tokens.has(m[1]));
+  res.json({ authenticated: !!ok });
 });
 
-function requireAdmin(req, res, next) {
-  if (!req.session.userId || req.session.role !== 'admin') {
-    return res.status(403).json({ error: 'Доступ запрещен' });
+// Applications
+app.get('/api/applications', requireAuth, async (req, res) => {
+  const rows = await dbAll('SELECT * FROM applications ORDER BY created_at DESC');
+  res.json(rows);
+});
+app.post('/api/applications', async (req, res) => {
+  const { name, age, platform, username, discord, country, experience, hours, motivation } = req.body;
+  try {
+    const result = await dbRun(
+      `INSERT INTO applications (name,age,platform,username,discord,country,experience,hours,motivation) VALUES (?,?,?,?,?,?,?,?,?)`,
+      [name, age, platform, username, discord, country, experience, hours, motivation]
+    );
+    res.json({ success: true, id: result.id });
+  } catch (e) { res.status(500).json({ success: false, error: e.message }); }
+});
+app.patch('/api/applications/:id/status', requireAuth, async (req, res) => {
+  await dbRun('UPDATE applications SET status=? WHERE id=?', [req.body.status, req.params.id]);
+  res.json({ success: true });
+});
+app.delete('/api/applications/:id', requireAuth, async (req, res) => {
+  await dbRun('DELETE FROM applications WHERE id=?', [req.params.id]);
+  res.json({ success: true });
+});
+app.get('/api/applications/export', requireAuth, async (req, res) => {
+  const rows = await dbAll('SELECT * FROM applications ORDER BY created_at DESC');
+  const headers = ['ID','Name','Age','Platform','Username','Discord','Country','Experience','Hours','Motivation','Status','Date'];
+  const lines = [headers.join(';')];
+  for (const r of rows) {
+    lines.push([r.id, `"${(r.name||'').replace(/"/g,'""')}"`, r.age, `"${(r.platform||'').replace(/"/g,'""')}"`,
+      `"${(r.username||'').replace(/"/g,'""')}"`, `"${(r.discord||'').replace(/"/g,'""')}"`,
+      `"${(r.country||'').replace(/"/g,'""')}"`, `"${(r.experience||'').replace(/"/g,'""')}"`,
+      `"${(r.hours||'').replace(/"/g,'""')}"`, `"${(r.motivation||'').replace(/"/g,'""')}"`,
+      r.status||'Новая', r.created_at].join(';'));
   }
-  next();
-}
-
-function requireAuth(req, res, next) {
-  if (!req.session.userId) return res.status(401).json({ error: 'Требуется авторизация' });
-  next();
-}
-
-app.get('/api/fleet', (req, res) => {
-  db.all('SELECT * FROM fleet ORDER BY id', [], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
-  });
-});
-app.get('/api/fleet/:id', (req, res) => {
-  db.get('SELECT * FROM fleet WHERE id = ?', [req.params.id], (err, row) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(row);
-  });
-});
-app.post('/api/fleet', requireAdmin, (req, res) => {
-  const { aircraft, type, registration, capacity, range, status, image } = req.body;
-  db.run('INSERT INTO fleet (aircraft, type, registration, capacity, range, status, image) VALUES (?,?,?,?,?,?,?)',
-    [aircraft, type, registration, capacity, range, status || 'Active', image || ''],
-    function(err) {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({ id: this.lastID });
-    });
-});
-app.put('/api/fleet/:id', requireAdmin, (req, res) => {
-  const { aircraft, type, registration, capacity, range, status, image } = req.body;
-  db.run('UPDATE fleet SET aircraft=?, type=?, registration=?, capacity=?, range=?, status=?, image=? WHERE id=?',
-    [aircraft, type, registration, capacity, range, status, image, req.params.id],
-    function(err) {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({ updated: this.changes });
-    });
-});
-app.delete('/api/fleet/:id', requireAdmin, (req, res) => {
-  db.run('DELETE FROM fleet WHERE id=?', [req.params.id], function(err) {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ deleted: this.changes });
-  });
+  res.setHeader('Content-Type','text/csv; charset=utf-8');
+  res.setHeader('Content-Disposition','attachment; filename=applications.csv');
+  res.send('\uFEFF'+lines.join('\n'));
 });
 
-app.get('/api/routes', (req, res) => {
-  db.all('SELECT * FROM routes ORDER BY id', [], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
-  });
+// Fleet CRUD
+app.get('/api/fleet', async (req, res) => {
+  const rows = await dbAll('SELECT * FROM fleet ORDER BY id');
+  res.json(rows);
 });
-app.get('/api/routes/:id', (req, res) => {
-  db.get('SELECT * FROM routes WHERE id = ?', [req.params.id], (err, row) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(row);
-  });
+app.post('/api/fleet', requireAuth, async (req, res) => {
+  const { model, manufacturer, category, capacity, range_km, speed_kmh, status, description, image_url } = req.body;
+  const result = await dbRun(`INSERT INTO fleet (model,manufacturer,category,capacity,range_km,speed_kmh,status,description,image_url) VALUES (?,?,?,?,?,?,?,?,?)`,
+    [model, manufacturer, category, capacity, range_km, speed_kmh, status, description, image_url]);
+  res.json({ success: true, id: result.id });
 });
-app.post('/api/routes', requireAdmin, (req, res) => {
-  const { flight_number, origin, destination, distance, duration, aircraft_type, days, status } = req.body;
-  db.run('INSERT INTO routes (flight_number, origin, destination, distance, duration, aircraft_type, days, status) VALUES (?,?,?,?,?,?,?,?)',
-    [flight_number, origin, destination, distance, duration, aircraft_type, days, status || 'Active'],
-    function(err) {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({ id: this.lastID });
-    });
+app.patch('/api/fleet/:id', requireAuth, async (req, res) => {
+  const { model, manufacturer, category, capacity, range_km, speed_kmh, status, description, image_url } = req.body;
+  await dbRun(`UPDATE fleet SET model=?,manufacturer=?,category=?,capacity=?,range_km=?,speed_kmh=?,status=?,description=?,image_url=? WHERE id=?`,
+    [model, manufacturer, category, capacity, range_km, speed_kmh, status, description, image_url, req.params.id]);
+  res.json({ success: true });
 });
-app.put('/api/routes/:id', requireAdmin, (req, res) => {
-  const { flight_number, origin, destination, distance, duration, aircraft_type, days, status } = req.body;
-  db.run('UPDATE routes SET flight_number=?, origin=?, destination=?, distance=?, duration=?, aircraft_type=?, days=?, status=? WHERE id=?',
-    [flight_number, origin, destination, distance, duration, aircraft_type, days, status, req.params.id],
-    function(err) {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({ updated: this.changes });
-    });
-});
-app.delete('/api/routes/:id', requireAdmin, (req, res) => {
-  db.run('DELETE FROM routes WHERE id=?', [req.params.id], function(err) {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ deleted: this.changes });
-  });
+app.delete('/api/fleet/:id', requireAuth, async (req, res) => {
+  await dbRun('DELETE FROM fleet WHERE id=?', [req.params.id]);
+  res.json({ success: true });
 });
 
-app.get('/api/events', (req, res) => {
-  db.all('SELECT * FROM events ORDER BY event_date', [], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
-  });
+// Routes CRUD
+app.get('/api/routes', async (req, res) => {
+  const rows = await dbAll('SELECT * FROM routes ORDER BY id');
+  res.json(rows);
 });
-app.get('/api/events/:id', (req, res) => {
-  db.get('SELECT * FROM events WHERE id = ?', [req.params.id], (err, row) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(row);
-  });
+app.post('/api/routes', requireAuth, async (req, res) => {
+  const { origin, origin_code, destination, destination_code, distance_km, duration_min, aircraft_type, frequency, notes, active, origin_lat, origin_lon, dest_lat, dest_lon } = req.body;
+  const result = await dbRun(`INSERT INTO routes (origin,origin_code,destination,destination_code,distance_km,duration_min,aircraft_type,frequency,notes,active,origin_lat,origin_lon,dest_lat,dest_lon) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+    [origin, origin_code, destination, destination_code, distance_km, duration_min, aircraft_type, frequency, notes, active?1:0, origin_lat, origin_lon, dest_lat, dest_lon]);
+  res.json({ success: true, id: result.id });
 });
-app.post('/api/events', requireAdmin, (req, res) => {
-  const { title, description, event_date, event_type, location, image } = req.body;
-  db.run('INSERT INTO events (title, description, event_date, event_type, location, image) VALUES (?,?,?,?,?,?)',
-    [title, description, event_date, event_type, location, image || ''],
-    function(err) {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({ id: this.lastID });
-    });
+app.patch('/api/routes/:id', requireAuth, async (req, res) => {
+  const { origin, origin_code, destination, destination_code, distance_km, duration_min, aircraft_type, frequency, notes, active, origin_lat, origin_lon, dest_lat, dest_lon } = req.body;
+  await dbRun(`UPDATE routes SET origin=?,origin_code=?,destination=?,destination_code=?,distance_km=?,duration_min=?,aircraft_type=?,frequency=?,notes=?,active=?,origin_lat=?,origin_lon=?,dest_lat=?,dest_lon=? WHERE id=?`,
+    [origin, origin_code, destination, destination_code, distance_km, duration_min, aircraft_type, frequency, notes, active?1:0, origin_lat, origin_lon, dest_lat, dest_lon, req.params.id]);
+  res.json({ success: true });
 });
-app.put('/api/events/:id', requireAdmin, (req, res) => {
-  const { title, description, event_date, event_type, location, image } = req.body;
-  db.run('UPDATE events SET title=?, description=?, event_date=?, event_type=?, location=?, image=? WHERE id=?',
-    [title, description, event_date, event_type, location, image, req.params.id],
-    function(err) {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({ updated: this.changes });
-    });
-});
-app.delete('/api/events/:id', requireAdmin, (req, res) => {
-  db.run('DELETE FROM events WHERE id=?', [req.params.id], function(err) {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ deleted: this.changes });
-  });
+app.delete('/api/routes/:id', requireAuth, async (req, res) => {
+  await dbRun('DELETE FROM routes WHERE id=?', [req.params.id]);
+  res.json({ success: true });
 });
 
-app.get('/api/timeline', (req, res) => {
-  db.all('SELECT * FROM timeline ORDER BY year', [], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
-  });
+// Events CRUD
+app.get('/api/events', async (req, res) => {
+  const rows = await dbAll('SELECT * FROM events ORDER BY date');
+  res.json(rows);
 });
-app.get('/api/timeline/:id', (req, res) => {
-  db.get('SELECT * FROM timeline WHERE id = ?', [req.params.id], (err, row) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(row);
-  });
+app.post('/api/events', requireAuth, async (req, res) => {
+  const { title, date, description, image_url } = req.body;
+  const result = await dbRun(`INSERT INTO events (title,date,description,image_url) VALUES (?,?,?,?)`, [title, date, description, image_url]);
+  res.json({ success: true, id: result.id });
 });
-app.post('/api/timeline', requireAdmin, (req, res) => {
+app.patch('/api/events/:id', requireAuth, async (req, res) => {
+  const { title, date, description, image_url } = req.body;
+  await dbRun(`UPDATE events SET title=?,date=?,description=?,image_url=? WHERE id=?`, [title, date, description, image_url, req.params.id]);
+  res.json({ success: true });
+});
+app.delete('/api/events/:id', requireAuth, async (req, res) => {
+  await dbRun('DELETE FROM events WHERE id=?', [req.params.id]);
+  res.json({ success: true });
+});
+
+// Timeline CRUD
+app.get('/api/timeline', async (req, res) => {
+  const rows = await dbAll('SELECT * FROM timeline ORDER BY year');
+  res.json(rows);
+});
+app.post('/api/timeline', requireAuth, async (req, res) => {
   const { year, title, description, icon } = req.body;
-  db.run('INSERT INTO timeline (year, title, description, icon) VALUES (?,?,?,?)',
-    [year, title, description, icon || ''],
-    function(err) {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({ id: this.lastID });
-    });
+  const result = await dbRun(`INSERT INTO timeline (year,title,description,icon) VALUES (?,?,?,?)`, [year, title, description, icon]);
+  res.json({ success: true, id: result.id });
 });
-app.put('/api/timeline/:id', requireAdmin, (req, res) => {
+app.patch('/api/timeline/:id', requireAuth, async (req, res) => {
   const { year, title, description, icon } = req.body;
-  db.run('UPDATE timeline SET year=?, title=?, description=?, icon=? WHERE id=?',
-    [year, title, description, icon, req.params.id],
-    function(err) {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({ updated: this.changes });
-    });
+  await dbRun(`UPDATE timeline SET year=?,title=?,description=?,icon=? WHERE id=?`, [year, title, description, icon, req.params.id]);
+  res.json({ success: true });
 });
-app.delete('/api/timeline/:id', requireAdmin, (req, res) => {
-  db.run('DELETE FROM timeline WHERE id=?', [req.params.id], function(err) {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ deleted: this.changes });
-  });
+app.delete('/api/timeline/:id', requireAuth, async (req, res) => {
+  await dbRun('DELETE FROM timeline WHERE id=?', [req.params.id]);
+  res.json({ success: true });
 });
 
-app.get('/api/staff', (req, res) => {
-  db.all('SELECT * FROM staff ORDER BY id', [], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
-  });
+app.listen(PORT, async () => {
+  await initDB();
+  console.log(`Server running on port ${PORT}`);
 });
-app.get('/api/staff/:id', (req, res) => {
-  db.get('SELECT * FROM staff WHERE id = ?', [req.params.id], (err, row) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(row);
-  });
-});
-app.post('/api/staff', requireAdmin, (req, res) => {
-  const { name, role, department, discord, image, bio } = req.body;
-  db.run('INSERT INTO staff (name, role, department, discord, image, bio) VALUES (?,?,?,?,?,?)',
-    [name, role, department, discord, image || '', bio || ''],
-    function(err) {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({ id: this.lastID });
-    });
-});
-app.put('/api/staff/:id', requireAdmin, (req, res) => {
-  const { name, role, department, discord, image, bio } = req.body;
-  db.run('UPDATE staff SET name=?, role=?, department=?, discord=?, image=?, bio=? WHERE id=?',
-    [name, role, department, discord, image, bio, req.params.id],
-    function(err) {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({ updated: this.changes });
-    });
-});
-app.delete('/api/staff/:id', requireAdmin, (req, res) => {
-  db.run('DELETE FROM staff WHERE id=?', [req.params.id], function(err) {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ deleted: this.changes });
-  });
-});
-
-app.get('/api/applications', requireAdmin, (req, res) => {
-  db.all('SELECT * FROM applications ORDER BY created_at DESC', [], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
-  });
-});
-app.get('/api/applications/:id', requireAdmin, (req, res) => {
-  db.get('SELECT * FROM applications WHERE id = ?', [req.params.id], (err, row) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(row);
-  });
-});
-app.post('/api/apply', (req, res) => {
-  const { callsign, discord, email, age, experience, ptfs_hours, why_join } = req.body;
-  db.run('INSERT INTO applications (callsign, discord, email, age, experience, ptfs_hours, why_join, status) VALUES (?,?,?,?,?,?,?,?)',
-    [callsign, discord, email, age || '', experience || '', ptfs_hours || '', why_join, 'pending'],
-    function(err) {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({ id: this.lastID, message: 'Анкета отправлена! Мы свяжемся с вами в Discord.' });
-    });
-});
-app.post('/api/applications', (req, res) => {
-  const { callsign, discord, email, age, experience, ptfs_hours, why_join } = req.body;
-  db.run('INSERT INTO applications (callsign, discord, email, age, experience, ptfs_hours, why_join, status) VALUES (?,?,?,?,?,?,?,?)',
-    [callsign, discord, email, age || '', experience || '', ptfs_hours || '', why_join, 'pending'],
-    function(err) {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({ id: this.lastID, message: 'Анкета отправлена! Мы свяжемся с вами в Discord.' });
-    });
-});
-app.put('/api/applications/:id', requireAdmin, (req, res) => {
-  const { status } = req.body;
-  db.run('UPDATE applications SET status=? WHERE id=?',
-    [status, req.params.id],
-    function(err) {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({ updated: this.changes });
-    });
-});
-app.delete('/api/applications/:id', requireAdmin, (req, res) => {
-  db.run('DELETE FROM applications WHERE id=?', [req.params.id], function(err) {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ deleted: this.changes });
-  });
-});
-
-app.get('/api/contacts', requireAdmin, (req, res) => {
-  db.all('SELECT * FROM contacts ORDER BY created_at DESC', [], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
-  });
-});
-app.get('/api/contacts/:id', requireAdmin, (req, res) => {
-  db.get('SELECT * FROM contacts WHERE id = ?', [req.params.id], (err, row) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(row);
-  });
-});
-app.post('/api/contact', (req, res) => {
-  const { name, email, subject, message } = req.body;
-  db.run('INSERT INTO contacts (name, email, subject, message, status) VALUES (?,?,?,?,?)',
-    [name, email, subject, message, 'new'],
-    function(err) {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({ id: this.lastID, message: 'Сообщение отправлено! Мы ответим вам в ближайшее время.' });
-    });
-});
-app.post('/api/contacts', (req, res) => {
-  const { name, email, subject, message } = req.body;
-  db.run('INSERT INTO contacts (name, email, subject, message, status) VALUES (?,?,?,?,?)',
-    [name, email, subject, message, 'new'],
-    function(err) {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({ id: this.lastID, message: 'Сообщение отправлено! Мы ответим вам в ближайшее время.' });
-    });
-});
-app.put('/api/contacts/:id', requireAdmin, (req, res) => {
-  const { status } = req.body;
-  db.run('UPDATE contacts SET status=? WHERE id=?',
-    [status, req.params.id],
-    function(err) {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({ updated: this.changes });
-    });
-});
-app.delete('/api/contacts/:id', requireAdmin, (req, res) => {
-  db.run('DELETE FROM contacts WHERE id=?', [req.params.id], function(err) {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ deleted: this.changes });
-  });
-});
-
-app.get('/api/stats', (req, res) => {
-  db.get('SELECT COUNT(*) as fleet FROM fleet', [], (err, fleet) => {
-    if (err) return res.status(500).json({ error: err.message });
-    db.get('SELECT COUNT(*) as routes FROM routes', [], (err, routes) => {
-      if (err) return res.status(500).json({ error: err.message });
-      db.get('SELECT COUNT(*) as events FROM events', [], (err, events) => {
-        if (err) return res.status(500).json({ error: err.message });
-        db.get('SELECT COUNT(*) as applications FROM applications', [], (err, applications) => {
-          if (err) return res.status(500).json({ error: err.message });
-          db.get('SELECT COUNT(*) as contacts FROM contacts', [], (err, contacts) => {
-            if (err) return res.status(500).json({ error: err.message });
-            res.json({ fleet: fleet.fleet, routes: routes.routes, events: events.events, applications: applications.applications, contacts: contacts.contacts });
-          });
-        });
-      });
-    });
-  });
-});
-
-app.get('/admin.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'admin.html'));
-});
-
-app.get('/favicon.ico', (req, res) => res.status(204).end());
-
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
-app.get('/fleet', (req, res) => res.sendFile(path.join(__dirname, 'fleet.html')));
-app.get('/routes', (req, res) => res.sendFile(path.join(__dirname, 'routes.html')));
-app.get('/map', (req, res) => res.sendFile(path.join(__dirname, 'map.html')));
-app.get('/events', (req, res) => res.sendFile(path.join(__dirname, 'events.html')));
-app.get('/history', (req, res) => res.sendFile(path.join(__dirname, 'history.html')));
-app.get('/apply', (req, res) => res.sendFile(path.join(__dirname, 'apply.html')));
-app.get('/contact', (req, res) => res.sendFile(path.join(__dirname, 'contact.html')));
-
-app.listen(PORT, () => {
-  console.log(`Swiss Airlines VA v2.0 running on port ${PORT}`);
-});
-
-initDB();
-seedData();

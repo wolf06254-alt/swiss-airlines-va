@@ -3,222 +3,101 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Swiss Airlines VA — Анкета пилота</title>
+<title>Анкета — Swiss Airlines VA</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
-<style>
-:root{--red:#E30613;--red-glow:rgba(227,6,19,0.35);--bg:#0a0a0f;--bg2:#141428;--glass:rgba(255,255,255,0.04);--glass-border:rgba(255,255,255,0.08);--text:#f0f0f5;--text2:#a0a0b8;}
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;cursor:none}
-::-webkit-scrollbar{width:8px}
-::-webkit-scrollbar-thumb{background:var(--red);border-radius:4px}
-::-webkit-scrollbar-track{background:var(--bg2)}
-
-.cursor{position:fixed;width:20px;height:20px;border:2px solid var(--red);border-radius:50%;pointer-events:none;z-index:9999;transition:transform .15s,background .15s;transform:translate(-50%,-50%)}
-.cursor-dot{position:fixed;width:6px;height:6px;background:var(--red);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%)}
-
-.particle-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
-.glass{background:var(--glass);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border:1px solid var(--glass-border);box-shadow:0 8px 32px rgba(0,0,0,0.25)}
-
-nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:16px 40px;display:flex;justify-content:space-between;align-items:center;transition:all .3s}
-nav.scrolled{background:rgba(10,10,15,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--glass-border)}
-nav .logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.4rem;letter-spacing:-0.5px;display:flex;align-items:center;gap:10px}
-nav .logo span{color:var(--red);font-weight:800}
-nav ul{display:flex;gap:28px;list-style:none}
-nav ul a{color:var(--text2);text-decoration:none;font-weight:500;font-size:0.9rem;transition:color .2s;position:relative}
-nav ul a:hover{color:var(--text)}
-nav ul a::after{content:'';position:absolute;bottom:-6px;left:0;width:0;height:2px;background:var(--red);transition:width .3s}
-nav ul a:hover::after{width:100%}
-nav .login-btn{background:transparent;border:1px solid var(--red);color:var(--red);padding:6px 18px;border-radius:6px;font-weight:600;font-size:0.85rem;cursor:none;transition:all .2s}
-nav .login-btn:hover{background:var(--red);color:#fff;box-shadow:0 0 20px var(--red-glow)}
-
-.page-header{padding:140px 40px 60px;text-align:center;position:relative;background:radial-gradient(ellipse at 50% 30%,rgba(227,6,19,0.06) 0%,transparent 60%),linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%)}
-.page-header h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:700}
-.page-header p{color:var(--text2);max-width:560px;margin:16px auto 0;line-height:1.6}
-
-.section{padding:40px 40px 80px;max-width:720px;margin:0 auto}
-.form-card{border-radius:20px;padding:36px}
-.form-card h2{font-family:'Space Grotesk',sans-serif;font-size:1.4rem;margin-bottom:8px}
-.form-card .sub{color:var(--text2);font-size:0.9rem;margin-bottom:28px}
-.form-group{margin-bottom:20px}
-.form-group label{display:block;font-size:0.8rem;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600}
-.form-group input,.form-group select,.form-group textarea{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:10px;padding:12px 14px;color:var(--text);font-size:0.95rem;outline:none;transition:border .2s;font-family:'Inter',sans-serif}
-.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--red)}
-.form-group textarea{min-height:120px;resize:vertical}
-.submit-btn{width:100%;background:var(--red);color:#fff;border:none;padding:14px;border-radius:10px;font-weight:600;font-size:1rem;cursor:none;transition:all .2s;margin-top:8px}
-.submit-btn:hover{box-shadow:0 0 20px var(--red-glow)}
-.success-msg{display:none;color:#22c55e;font-size:0.95rem;margin-top:16px;text-align:center}
-.success-msg.show{display:block}
-
-.footer{margin-top:60px;border-top:1px solid var(--glass-border);padding:60px 40px 40px;text-align:center}
-.footer .logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.3rem;margin-bottom:16px}
-.footer .logo span{color:var(--red)}
-.footer p{color:var(--text2);font-size:0.85rem;max-width:500px;margin:0 auto 24px;line-height:1.6}
-.footer .socials{display:flex;gap:16px;justify-content:center;margin-bottom:32px}
-.footer .socials a{width:40px;height:40px;border-radius:10px;border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;color:var(--text2);text-decoration:none;transition:all .2s}
-.footer .socials a:hover{color:var(--red);border-color:var(--red);box-shadow:0 0 15px var(--red-glow)}
-.footer .copy{color:var(--text2);font-size:0.75rem;opacity:0.6}
-
-.modal{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);z-index:200;display:none;justify-content:center;align-items:center}
-.modal.show{display:flex}
-.modal-box{background:var(--bg);border:1px solid var(--glass-border);border-radius:16px;padding:32px;max-width:360px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.5);position:relative}
-.modal-box h3{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;margin-bottom:20px}
-.modal-box input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:0.95rem;margin-bottom:12px;outline:none;transition:border .2s}
-.modal-box input:focus{border-color:var(--red)}
-.modal-box button{width:100%;background:var(--red);color:#fff;border:none;padding:12px;border-radius:8px;font-weight:600;cursor:none;transition:all .2s}
-.modal-box button:hover{box-shadow:0 0 20px var(--red-glow)}
-.modal-box .err{color:var(--red);font-size:0.8rem;margin-top:-8px;margin-bottom:10px}
-.modal-box .close{position:absolute;top:16px;right:16px;color:var(--text2);background:none;border:none;font-size:1.2rem;cursor:none}
-.admin-link{display:none;color:var(--red);font-size:0.85rem;margin-top:12px;text-decoration:none}
-.admin-link.show{display:block}
-
-@media(max-width:768px){
-  nav{padding:14px 20px}
-  nav ul{display:none}
-  .section{padding:40px 20px 60px}
-  .page-header{padding:120px 20px 40px}
-  .form-card{padding:24px}
-}
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-<canvas class="particle-canvas" id="particles"></canvas>
-<div class="cursor" id="cursor"></div>
-<div class="cursor-dot" id="cursor-dot"></div>
-
-<nav id="nav">
-  <div class="logo"><i class="fa-solid fa-plane-up"></i> Swiss <span>VA</span></div>
-  <ul>
-    <li><a href="index.html">Главная</a></li>
-    <li><a href="fleet.html">Флот</a></li>
-    <li><a href="routes.html">Маршруты</a></li>
-    <li><a href="map.html">Карта</a></li>
-    <li><a href="events.html">События</a></li>
-    <li><a href="history.html">История</a></li>
-    <li><a href="apply.html">Анкета</a></li>
-    <li><a href="contact.html">Контакты</a></li>
-  </ul>
-  <button class="login-btn" id="loginBtn">Вход</button>
+<canvas id="particles"></canvas>
+<nav class="navbar">
+  <div class="container nav-inner">
+    <a href="index.html" class="logo"><div class="logo-icon">+</div> Swiss Airlines VA</a>
+    <div class="nav-links">
+      <a href="index.html" data-i18n="nav_home">Главная</a>
+      <a href="fleet.html" data-i18n="nav_fleet">Флот</a>
+      <a href="routes.html" data-i18n="nav_routes">Маршруты</a>
+      <a href="map.html" data-i18n="nav_map">Карта</a>
+      <a href="events.html" data-i18n="nav_events">События</a>
+      <a href="history.html" data-i18n="nav_history">История</a>
+      <a href="patent.html" data-i18n="nav_patent">Патент</a>
+      <a href="apply.html" class="active" data-i18n="nav_apply">Анкета</a>
+      <a href="contacts.html" data-i18n="nav_contacts">Контакты</a>
+      <a href="login.html" data-i18n="nav_admin">Админ</a>
+      <button class="lang-btn" id="langToggle">EN</button>
+    </div>
+  </div>
 </nav>
 
-<div class="page-header">
-  <h1 data-aos="fade-up">Анкета пилота</h1>
-  <p data-aos="fade-up" data-aos-delay="100">Хотите стать частью швейцарской авиационной элиты? Заполните анкету — и мы свяжемся с вами.</p>
-</div>
-
 <section class="section">
-  <div class="glass form-card" data-aos="fade-up">
-    <h2>Присоединиться к Swiss VA</h2>
-    <p class="sub">Все поля обязательны для заполнения. Мы рассмотрим вашу заявку в течение 48 часов.</p>
-    <form id="applyForm">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+  <div class="container narrow">
+    <h1 class="section-title" data-i18n="apply_title">Анкета пилота</h1>
+    <p class="section-subtitle" data-i18n="apply_desc">Заполни форму ниже, чтобы подать заявку на вступление в Swiss Airlines VA.</p>
+
+    <form id="applyForm" class="form-card">
+      <div class="form-row">
         <div class="form-group">
-          <label>Имя</label>
-          <input type="text" name="first_name" required placeholder="Ваше имя">
+          <label for="name" data-i18n="label_name">Имя</label>
+          <input type="text" id="name" name="name" required />
         </div>
         <div class="form-group">
-          <label>Фамилия</label>
-          <input type="text" name="last_name" required placeholder="Ваша фамилия">
+          <label for="age" data-i18n="label_age">Возраст</label>
+          <input type="number" id="age" name="age" min="10" max="99" required />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="platform" data-i18n="label_platform">Платформа</label>
+          <select id="platform" name="platform" required>
+            <option value="PC">PC</option>
+            <option value="Mobile">Mobile</option>
+            <option value="Xbox">Xbox</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="username" data-i18n="label_username">Никнейм в игре</label>
+          <input type="text" id="username" name="username" required />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="discord" data-i18n="label_discord">Discord</label>
+          <input type="text" id="discord" name="discord" required />
+        </div>
+        <div class="form-group">
+          <label for="country" data-i18n="label_country">Страна</label>
+          <input type="text" id="country" name="country" required />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="experience" data-i18n="label_exp">Опыт полётов</label>
+          <select id="experience" name="experience" required>
+            <option value="Новичок">Новичок</option>
+            <option value="Средний">Средний</option>
+            <option value="Опытный">Опытный</option>
+            <option value="Профессионал">Профессионал</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="hours" data-i18n="label_hours">Часы в PTFS</label>
+          <input type="text" id="hours" name="hours" placeholder="Например: 200" required />
         </div>
       </div>
       <div class="form-group">
-        <label>Email</label>
-        <input type="email" name="email" required placeholder="email@example.com">
+        <label for="motivation" data-i18n="label_motivation">Почему именно Swiss VA?</label>
+        <textarea id="motivation" name="motivation" rows="5" required></textarea>
       </div>
-      <div class="form-group">
-        <label>Discord</label>
-        <input type="text" name="discord" required placeholder="username#1234">
-      </div>
-      <div class="form-group">
-        <label>Дата рождения</label>
-        <input type="date" name="birthdate" required>
-      </div>
-      <div class="form-group">
-        <label>Опыт в авиасимуляторах</label>
-        <select name="experience" required>
-          <option value="">Выберите уровень</option>
-          <option value="Нет опыта">Нет опыта</option>
-          <option value="Менее 1 года">Менее 1 года</option>
-          <option value="1–3 года">1–3 года</option>
-          <option value="3+ года">3+ года</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Предпочитаемый тип ВС</label>
-        <select name="preferred_aircraft" required>
-          <option value="">Выберите тип</option>
-          <option value="A220">Airbus A220</option>
-          <option value="A320">Airbus A320</option>
-          <option value="A330">Airbus A330</option>
-          <option value="A340">Airbus A340</option>
-          <option value="B777">Boeing 777</option>
-          <option value="B787">Boeing 787</option>
-          <option value="ATR72">ATR 72</option>
-          <option value="Любой">Любой — главное, чтобы летать!</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Почему именно Swiss VA?</label>
-        <textarea name="motivation" required placeholder="Расскажите нам о себе: почему вы хотите присоединиться к Swiss VA? Что привлекает вас в швейцарской авиации? Какие цели вы ставите перед собой?"></textarea>
-      </div>
-      <button type="submit" class="submit-btn">Отправить анкету</button>
-      <div class="success-msg" id="successMsg"><i class="fa-solid fa-check-circle"></i> Анкета отправлена! Мы свяжемся с вами в Discord.</div>
+      <button type="submit" class="btn btn-primary w-100" data-i18n="btn_send">Отправить заявку</button>
     </form>
   </div>
 </section>
 
-<div class="footer">
-  <div class="logo">Swiss <span>VA</span></div>
-  <p>Виртуальная авиакомпания Swiss Airlines для PTFS. Премиальный авиасимулятор с швейцарской точностью.</p>
-  <div class="socials">
-    <a href="https://discord.gg/6YA8t7GJr" target="_blank"><i class="fa-brands fa-discord"></i></a>
-    <a href="#"><i class="fa-brands fa-twitter"></i></a>
-    <a href="#"><i class="fa-brands fa-youtube"></i></a>
-  </div>
-  <div class="copy">© 2026 Swiss Airlines VA. Все права защищены.</div>
-</div>
+<footer class="footer">
+  <div class="container"><p data-i18n="footer">© 2026 Swiss Airlines VA. Все права защищены. PTFS.</p></div>
+</footer>
 
-<div class="modal" id="loginModal">
-  <div class="modal-box">
-    <button class="close" id="closeModal">×</button>
-    <h3>Вход для администратора</h3>
-    <input type="text" id="userInput" placeholder="Логин">
-    <input type="password" id="passInput" placeholder="Пароль">
-    <div class="err" id="loginErr"></div>
-    <button id="doLogin">Войти</button>
-    <a href="admin.html" class="admin-link" id="adminLink">Панель администратора</a>
-  </div>
-</div>
-
-<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
-<script>
-AOS.init({duration:800,once:true});
-const cursor=document.getElementById('cursor'),cursorDot=document.getElementById('cursor-dot');
-document.addEventListener('mousemove',e=>{cursor.style.left=e.clientX+'px';cursor.style.top=e.clientY+'px';cursorDot.style.left=e.clientX+'px';cursorDot.style.top=e.clientY+'px';});
-document.querySelectorAll('a,button,.form-group input,.form-group select,.form-group textarea').forEach(el=>{el.addEventListener('mouseenter',()=>{cursor.style.transform='translate(-50%,-50%) scale(1.6)';cursor.style.background='rgba(227,6,19,0.15)';});el.addEventListener('mouseleave',()=>{cursor.style.transform='translate(-50%,-50%) scale(1)';cursor.style.background='transparent';});});
-
-const canvas=document.getElementById('particles'),ctx=canvas.getContext('2d');let W,H,particles=[];function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight;}window.addEventListener('resize',resize);resize();class Particle{constructor(){this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-0.5)*0.4;this.vy=(Math.random()-0.5)*0.4;this.size=Math.random()*2+1;this.alpha=Math.random()*0.5+0.2;}update(){this.x+=this.vx;this.y+=this.vy;if(this.x<0||this.x>W)this.vx*=-1;if(this.y<0||this.y>H)this.vy*=-1;}draw(){ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2);ctx.fillStyle=`rgba(227,6,19,${this.alpha})`;ctx.fill();}}
-for(let i=0;i<70;i++)particles.push(new Particle());(function anim(){ctx.clearRect(0,0,W,H);particles.forEach(p=>{p.update();p.draw();});for(let i=0;i<particles.length;i++)for(let j=i+1;j<particles.length;j++){const dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<120){ctx.beginPath();ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(particles[j].x,particles[j].y);ctx.strokeStyle=`rgba(227,6,19,${0.15*(1-d/120)})`;ctx.stroke();}}requestAnimationFrame(anim);})();
-window.addEventListener('scroll',()=>{if(window.scrollY>60)document.getElementById('nav').classList.add('scrolled');else document.getElementById('nav').classList.remove('scrolled');});
-
-document.getElementById('applyForm').addEventListener('submit',e=>{
-  e.preventDefault();
-  const data={};
-  new FormData(e.target).forEach((v,k)=>data[k]=v);
-  fetch('/api/apply',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).then(r=>r.json()).then(d=>{
-    if(d.success){document.getElementById('successMsg').classList.add('show');e.target.reset();}else{alert('Ошибка: '+d.error);}
-  }).catch(err=>alert('Ошибка отправки. Попробуйте позже.'));
-});
-
-const loginBtn=document.getElementById('loginBtn'),loginModal=document.getElementById('loginModal'),closeModal=document.getElementById('closeModal'),doLogin=document.getElementById('doLogin'),loginErr=document.getElementById('loginErr'),adminLink=document.getElementById('adminLink');
-loginBtn.addEventListener('click',()=>loginModal.classList.add('show'));
-closeModal.addEventListener('click',()=>loginModal.classList.remove('show'));
-loginModal.addEventListener('click',e=>{if(e.target===loginModal)loginModal.classList.remove('show');});
-doLogin.addEventListener('click',()=>{const u=document.getElementById('userInput').value,p=document.getElementById('passInput').value;fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})}).then(r=>r.json()).then(d=>{if(d.success){loginErr.textContent='';loginBtn.textContent='Админ';adminLink.classList.add('show');loginModal.classList.remove('show');}else{loginErr.textContent='Неверные учетные данные';}});});
-fetch('/api/me').then(r=>r.json()).then(d=>{if(d.loggedIn&&d.user.role==='admin'){loginBtn.textContent='Админ';adminLink.classList.add('show');}});
-</script>
+<script src="i18n.js"></script>
+<script src="script.js"></script>
 </body>
 </html>

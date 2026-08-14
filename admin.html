@@ -3,183 +3,244 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Swiss Airlines VA — Панель администратора</title>
+<title>Админ-панель — Swiss Airlines VA</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 <style>
-:root{--red:#E30613;--red-glow:rgba(227,6,19,0.35);--bg:#0a0a0f;--bg2:#141428;--glass:rgba(255,255,255,0.04);--glass-border:rgba(255,255,255,0.08);--text:#f0f0f5;--text2:#a0a0b8;}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
-::-webkit-scrollbar{width:8px}
-::-webkit-scrollbar-thumb{background:var(--red);border-radius:4px}
-::-webkit-scrollbar-track{background:var(--bg2)}
-
-.glass{background:var(--glass);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border:1px solid var(--glass-border);box-shadow:0 8px 32px rgba(0,0,0,0.25)}
-
-.admin-layout{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
-.sidebar{background:var(--bg2);border-right:1px solid var(--glass-border);padding:24px;display:flex;flex-direction:column}
-.sidebar .logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.3rem;margin-bottom:32px;display:flex;align-items:center;gap:10px}
-.sidebar .logo span{color:var(--red)}
-.sidebar nav{display:flex;flex-direction:column;gap:4px;flex:1}
-.sidebar nav a{color:var(--text2);text-decoration:none;padding:10px 14px;border-radius:8px;font-size:0.9rem;font-weight:500;transition:all .2s;display:flex;align-items:center;gap:10px}
-.sidebar nav a:hover,.sidebar nav a.active{color:var(--text);background:rgba(227,6,19,0.08)}
-.sidebar nav a i{width:20px;text-align:center}
-.sidebar .logout{margin-top:auto;background:transparent;border:1px solid var(--glass-border);color:var(--text2);padding:10px;border-radius:8px;cursor:pointer;font-weight:600;transition:all .2s}
-.sidebar .logout:hover{border-color:var(--red);color:var(--red)}
-
-.main{padding:32px 40px;max-width:1200px;width:100%}
-.main h1{font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700;margin-bottom:24px}
-.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
-.top-bar h2{font-family:'Space Grotesk',sans-serif;font-size:1.2rem;font-weight:600}
-.top-bar .btn{background:var(--red);color:#fff;border:none;padding:8px 18px;border-radius:8px;font-weight:600;font-size:0.85rem;cursor:pointer;transition:all .2s}
-.top-bar .btn:hover{box-shadow:0 0 20px var(--red-glow)}
-.top-bar .btn.outline{background:transparent;border:1px solid var(--glass-border);color:var(--text);margin-left:8px}
-.top-bar .btn.outline:hover{border-color:var(--red);color:var(--red)}
-
-.table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--glass-border)}
-table{width:100%;border-collapse:collapse;font-size:0.9rem}
-th,td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--glass-border)}
-th{color:var(--text2);font-weight:600;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.5px;background:rgba(255,255,255,0.02)}
-tr:hover td{background:rgba(255,255,255,0.02)}
-.actions{display:flex;gap:8px}
-.actions button{background:none;border:none;color:var(--text2);cursor:pointer;padding:4px 8px;border-radius:4px;transition:all .2s}
-.actions button:hover{color:var(--red);background:rgba(227,6,19,0.08)}
-
-.modal{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);z-index:200;display:none;justify-content:center;align-items:center}
-.modal.show{display:flex}
-.modal-box{background:var(--bg);border:1px solid var(--glass-border);border-radius:16px;padding:32px;max-width:480px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.5);position:relative}
-.modal-box h3{font-family:'Space Grotesk',sans-serif;font-size:1.2rem;margin-bottom:20px}
-.modal-box label{display:block;font-size:0.8rem;color:var(--text2);margin-bottom:4px;margin-top:12px}
-.modal-box input,.modal-box textarea,.modal-box select{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:0.95rem;outline:none;transition:border .2s}
-.modal-box input:focus,.modal-box textarea:focus,.modal-box select:focus{border-color:var(--red)}
-.modal-box textarea{min-height:80px;resize:vertical}
-.modal-box .btns{display:flex;gap:10px;margin-top:20px}
-.modal-box .btns button{flex:1;padding:10px;border-radius:8px;font-weight:600;cursor:pointer;border:none}
-.modal-box .btns .save{background:var(--red);color:#fff}
-.modal-box .btns .cancel{background:transparent;border:1px solid var(--glass-border);color:var(--text2)}
-.modal-box .close{position:absolute;top:16px;right:16px;color:var(--text2);background:none;border:none;font-size:1.2rem;cursor:pointer}
-
-.login-screen{position:fixed;inset:0;background:var(--bg);z-index:300;display:flex;align-items:center;justify-content:center}
-.login-box{background:var(--bg2);border:1px solid var(--glass-border);border-radius:16px;padding:40px;max-width:360px;width:90%;text-align:center}
-.login-box .logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.4rem;margin-bottom:8px}
-.login-box .logo span{color:var(--red)}
-.login-box p{color:var(--text2);font-size:0.85rem;margin-bottom:24px}
-.login-box input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:8px;padding:12px 14px;color:var(--text);font-size:0.95rem;margin-bottom:12px;outline:none}
-.login-box input:focus{border-color:var(--red)}
-.login-box button{width:100%;background:var(--red);color:#fff;border:none;padding:12px;border-radius:8px;font-weight:600;cursor:pointer;margin-top:8px}
-.login-box .err{color:var(--red);font-size:0.8rem;margin-top:8px}
-
-@media(max-width:768px){
-  .admin-layout{grid-template-columns:1fr}
-  .sidebar{display:none}
-  .main{padding:20px}
-}
+.admin-tabs { display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1.5rem; }
+.admin-tab { padding:0.5rem 1rem; border-radius:8px; background:#1a1a1a; border:1px solid #222; color:#ccc; cursor:pointer; font-weight:600; transition:.2s; }
+.admin-tab:hover, .admin-tab.active { background:#D32F2F; color:#fff; border-color:#D32F2F; }
+.admin-panel { display:none; }
+.admin-panel.active { display:block; }
+.form-inline { display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem; }
+.form-inline input, .form-inline select, .form-inline textarea { background:#1a1a1a; border:1px solid #222; color:#fff; padding:0.5rem 0.75rem; border-radius:8px; min-width:140px; font-size:0.9rem; }
+.form-inline textarea { min-width:260px; min-height:60px; }
+.form-inline button { background:#D32F2F; color:#fff; border:none; padding:0.5rem 1rem; border-radius:8px; cursor:pointer; font-weight:600; }
+.form-inline button:hover { opacity:.9; }
+.admin-table { width:100%; border-collapse:collapse; font-size:0.85rem; }
+.admin-table th, .admin-table td { border:1px solid #222; padding:0.5rem; text-align:left; }
+.admin-table th { background:#1a1a1a; color:#D32F2F; font-weight:600; }
+.admin-table td { background:#0f0f0f; }
+.admin-table tr:hover td { background:#1a1a1a; }
+.admin-table .actions { display:flex; gap:0.35rem; }
+.admin-table button { padding:0.25rem 0.5rem; border:none; border-radius:6px; cursor:pointer; font-size:0.8rem; }
+.btn-edit { background:#f5a623; color:#111; }
+.btn-delete { background:#D32F2F; color:#fff; }
+.btn-save { background:#4caf50; color:#fff; }
 </style>
 </head>
 <body>
-
-<div class="login-screen" id="loginScreen">
-  <div class="login-box">
-    <div class="logo">Swiss <span>VA</span></div>
-    <p>Требуется доступ администратора</p>
-    <input type="text" id="loginUser" placeholder="Логин">
-    <input type="password" id="loginPass" placeholder="Пароль">
-    <button id="loginAction">Войти</button>
-    <div class="err" id="loginError"></div>
-  </div>
-</div>
-
-<div class="admin-layout" id="adminLayout" style="display:none">
-  <aside class="sidebar">
-    <div class="logo"><i class="fa-solid fa-plane-up"></i> Swiss <span>VA</span></div>
-    <nav>
-      <a href="#" class="active" data-section="fleet"><i class="fa-solid fa-plane"></i> Флот</a>
-      <a href="#" data-section="routes"><i class="fa-solid fa-route"></i> Маршруты</a>
-      <a href="#" data-section="events"><i class="fa-solid fa-calendar-days"></i> События</a>
-      <a href="#" data-section="timeline"><i class="fa-solid fa-clock-rotate-left"></i> История</a>
-      <a href="#" data-section="staff"><i class="fa-solid fa-users"></i> Команда</a>
-      <a href="#" data-section="applications"><i class="fa-solid fa-file-signature"></i> Анкеты</a>
-      <a href="#" data-section="contacts"><i class="fa-solid fa-envelope"></i> Контакты</a>
-    </nav>
-    <button class="logout" id="logoutBtn"><i class="fa-solid fa-arrow-right-from-bracket"></i> Выйти</button>
-  </aside>
-  <main class="main">
-    <h1>Панель администратора</h1>
-    <div id="sectionContent"></div>
-  </main>
-</div>
-
-<div class="modal" id="editModal">
-  <div class="modal-box">
-    <button class="close" id="closeEdit">×</button>
-    <h3 id="editTitle">Редактировать</h3>
-    <div id="editFields"></div>
-    <div class="btns">
-      <button class="save" id="saveBtn">Сохранить</button>
-      <button class="cancel" id="cancelBtn">Отмена</button>
+<nav class="navbar">
+  <div class="container nav-inner">
+    <a href="index.html" class="logo"><div class="logo-icon">+</div> Swiss Airlines VA</a>
+    <div class="nav-links">
+      <a href="index.html">Главная</a>
+      <a href="fleet.html">Флот</a>
+      <a href="routes.html">Маршруты</a>
+      <a href="map.html">Карта</a>
+      <a href="events.html">События</a>
+      <a href="history.html">История</a>
+      <a href="patent.html">Патент</a>
+      <a href="apply.html">Анкета</a>
+      <a href="contacts.html">Контакты</a>
+      <a href="login.html">Админ</a>
+      <button class="btn btn-primary" style="padding:0.35rem 0.9rem;font-size:0.85rem;" id="logoutBtn">Выйти</button>
     </div>
   </div>
-</div>
+</nav>
 
+<section class="section">
+  <div class="container">
+    <h1 class="section-title" data-i18n="admin_title">Админ-панель</h1>
+    <p class="section-subtitle">Управление заявками, флотом, маршрутами, событиями и историей.</p>
+
+    <div class="admin-tabs">
+      <div class="admin-tab active" data-tab="applications">Заявки</div>
+      <div class="admin-tab" data-tab="fleet">Флот</div>
+      <div class="admin-tab" data-tab="routes">Маршруты</div>
+      <div class="admin-tab" data-tab="events">События</div>
+      <div class="admin-tab" data-tab="timeline">История</div>
+    </div>
+
+    <!-- Applications -->
+    <div id="panel-applications" class="admin-panel active">
+      <div style="display:flex;gap:0.5rem;margin-bottom:1rem;">
+        <a href="/api/applications/export" class="btn btn-primary" style="font-size:0.85rem;" data-i18n="admin_export">Экспорт CSV</a>
+      </div>
+      <div class="table-wrap"><table class="admin-table" id="appTable"><thead><tr><th>ID</th><th>Имя</th><th>Возраст</th><th>Платформа</th><th>Ник</th><th>Discord</th><th>Страна</th><th>Опыт</th><th>Часы</th><th>Мотивация</th><th>Статус</th><th>Дата</th><th>Действия</th></tr></thead><tbody></tbody></table></div>
+    </div>
+
+    <!-- Fleet -->
+    <div id="panel-fleet" class="admin-panel">
+      <div class="form-inline" id="fleetForm">
+        <input placeholder="Модель" id="f_model" />
+        <input placeholder="Производитель" id="f_manufacturer" />
+        <input placeholder="Класс" id="f_category" />
+        <input placeholder="Пассажиры" id="f_capacity" />
+        <input placeholder="Дальность" id="f_range" type="number" />
+        <input placeholder="Скорость" id="f_speed" type="number" />
+        <select id="f_status"><option value="active">active</option><option value="maintenance">maintenance</option><option value="retired">retired</option></select>
+        <input placeholder="Описание" id="f_desc" style="min-width:200px;" />
+        <button onclick="addFleet()">Добавить</button>
+      </div>
+      <div class="table-wrap"><table class="admin-table" id="fleetTable"><thead><tr><th>ID</th><th>Модель</th><th>Производитель</th><th>Класс</th><th>Пассажиры</th><th>Дальность</th><th>Скорость</th><th>Статус</th><th>Описание</th><th>Действия</th></tr></thead><tbody></tbody></table></div>
+    </div>
+
+    <!-- Routes -->
+    <div id="panel-routes" class="admin-panel">
+      <div class="form-inline" id="routeForm">
+        <input placeholder="Вылет" id="r_origin" />
+        <input placeholder="Код" id="r_origin_code" style="min-width:80px;" />
+        <input placeholder="Прилёт" id="r_dest" />
+        <input placeholder="Код" id="r_dest_code" style="min-width:80px;" />
+        <input placeholder="Расстояние" id="r_dist" type="number" />
+        <input placeholder="Время (мин)" id="r_time" type="number" />
+        <input placeholder="Самолёт" id="r_aircraft" />
+        <input placeholder="Частота" id="r_freq" />
+        <input placeholder="lat вылета" id="r_olat" type="number" step="any" style="min-width:100px;" />
+        <input placeholder="lon вылета" id="r_olon" type="number" step="any" style="min-width:100px;" />
+        <input placeholder="lat прилёта" id="r_dlat" type="number" step="any" style="min-width:100px;" />
+        <input placeholder="lon прилёта" id="r_dlon" type="number" step="any" style="min-width:100px;" />
+        <button onclick="addRoute()">Добавить</button>
+      </div>
+      <div class="table-wrap"><table class="admin-table" id="routeTable"><thead><tr><th>ID</th><th>Вылет</th><th>Код</th><th>Прилёт</th><th>Код</th><th>Расстояние</th><th>Время</th><th>Самолёт</th><th>Частота</th><th>Действия</th></tr></thead><tbody></tbody></table></div>
+    </div>
+
+    <!-- Events -->
+    <div id="panel-events" class="admin-panel">
+      <div class="form-inline" id="eventForm">
+        <input placeholder="Название" id="e_title" />
+        <input placeholder="Дата (YYYY-MM-DD)" id="e_date" />
+        <textarea placeholder="Описание" id="e_desc"></textarea>
+        <button onclick="addEvent()">Добавить</button>
+      </div>
+      <div class="table-wrap"><table class="admin-table" id="eventTable"><thead><tr><th>ID</th><th>Название</th><th>Дата</th><th>Описание</th><th>Действия</th></tr></thead><tbody></tbody></table></div>
+    </div>
+
+    <!-- Timeline -->
+    <div id="panel-timeline" class="admin-panel">
+      <div class="form-inline" id="tlForm">
+        <input placeholder="Год" id="t_year" type="number" />
+        <input placeholder="Заголовок" id="t_title" />
+        <textarea placeholder="Описание" id="t_desc"></textarea>
+        <input placeholder="Иконка" id="t_icon" value="✈" />
+        <button onclick="addTimeline()">Добавить</button>
+      </div>
+      <div class="table-wrap"><table class="admin-table" id="tlTable"><thead><tr><th>ID</th><th>Год</th><th>Заголовок</th><th>Описание</th><th>Иконка</th><th>Действия</th></tr></thead><tbody></tbody></table></div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container"><p>© 2026 Swiss Airlines VA. PTFS.</p></div>
+</footer>
+
+<script src="script.js"></script>
 <script>
-let currentSection='fleet',currentId=null;
-const loginScreen=document.getElementById('loginScreen'),adminLayout=document.getElementById('adminLayout'),sectionContent=document.getElementById('sectionContent'),editModal=document.getElementById('editModal'),editFields=document.getElementById('editFields');
+const token = localStorage.getItem('swiss_token');
+if (!token) { location.href='login.html'; }
 
-fetch('/api/me').then(r=>r.json()).then(d=>{if(d.loggedIn&&d.user.role==='admin'){loginScreen.style.display='none';adminLayout.style.display='grid';loadSection('fleet');}else{loginScreen.style.display='flex';adminLayout.style.display='none';}});
+async function api(path, opts={}) {
+  const res = await fetch(path, { headers: { 'Authorization':'Bearer '+token, ...(opts.headers||{}) }, ...opts });
+  if (res.status===401) { localStorage.removeItem('swiss_token'); location.href='login.html'; }
+  return res;
+}
 
-document.getElementById('loginAction').addEventListener('click',()=>{const u=document.getElementById('loginUser').value,p=document.getElementById('loginPass').value;fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})}).then(r=>r.json()).then(d=>{if(d.success){loginScreen.style.display='none';adminLayout.style.display='grid';loadSection('fleet');}else{document.getElementById('loginError').textContent='Неверные учетные данные';}});});
-document.getElementById('logoutBtn').addEventListener('click',()=>{fetch('/api/logout',{method:'POST'}).then(()=>location.reload());});
+// Tabs
+const tabs = document.querySelectorAll('.admin-tab');
+tabs.forEach(t => t.addEventListener('click', () => {
+  tabs.forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  document.querySelectorAll('.admin-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+t.dataset.tab).classList.add('active');
+}));
 
-document.querySelectorAll('.sidebar nav a').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();document.querySelectorAll('.sidebar nav a').forEach(x=>x.classList.remove('active'));a.classList.add('active');loadSection(a.dataset.section);});});
+// Applications
+async function loadApps() {
+  const res = await api('/api/applications');
+  const data = await res.json();
+  document.querySelector('#appTable tbody').innerHTML = data.map(r => `
+    <tr>
+      <td>${r.id}</td><td>${r.name}</td><td>${r.age}</td><td>${r.platform}</td><td>${r.username}</td><td>${r.discord}</td><td>${r.country}</td><td>${r.experience}</td><td>${r.hours}</td><td>${r.motivation}</td>
+      <td><select onchange="updateStatus(${r.id},this.value)"><option ${r.status==='Новая'?'selected':''}>Новая</option><option ${r.status==='Рассмотрение'?'selected':''}>Рассмотрение</option><option ${r.status==='Принята'?'selected':''}>Принята</option><option ${r.status==='Отклонена'?'selected':''}>Отклонена</option></select></td>
+      <td>${r.created_at}</td>
+      <td><button class="btn-delete" onclick="delApp(${r.id})">Удалить</button></td>
+    </tr>`).join('');
+}
+async function updateStatus(id, status) { await api('/api/applications/'+id+'/status',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status})}); }
+async function delApp(id) { if(!confirm('Удалить?'))return; await api('/api/applications/'+id,{method:'DELETE'}); loadApps(); }
 
-const fields={
-  fleet:['aircraft','type','registration','capacity','range','status','image'],
-  routes:['flight_number','origin','destination','distance','duration','aircraft_type','days','status'],
-  events:['title','description','event_date','event_type','location','image'],
-  timeline:['year','title','description','icon'],
-  staff:['name','role','department','discord','image','bio'],
-  applications:['first_name','last_name','email','discord','birthdate','experience','preferred_aircraft','motivation','submitted_at','status'],
-  contacts:['name','email','discord','subject','message','submitted_at']
-};
-
-function loadSection(section){
-  currentSection=section;
-  fetch('/api/'+section).then(r=>r.json()).then(data=>{
-    let html='<div class="top-bar"><h2>'+sectionTitle(section)+'</h2><button class="btn" onclick="openAdd()">+ Добавить</button></div>';
-    if(!data.length){html+='<p style="color:var(--text2)">Пока нет записей.</p>';sectionContent.innerHTML=html;return;}
-    html+='<div class="table-wrap"><table><thead><tr>';
-    fields[section].forEach(f=>html+='<th>'+colLabel(f)+'</th>');
-    html+='<th>Действия</th></tr></thead><tbody>';
-    data.forEach(row=>{
-      html+='<tr>';
-      fields[section].forEach(f=>html+='<td>'+(row[f]||'')+'</td>');
-      html+='<td class="actions"><button onclick="openEdit('+row.id+')\"><i class="fa-solid fa-pen"></i></button><button onclick="deleteItem('+row.id+')\"><i class="fa-solid fa-trash"></i></button></td></tr>';
-    });
-    html+='</tbody></table></div>';
-    sectionContent.innerHTML=html;
+// Fleet
+async function loadFleet() {
+  const res = await api('/api/fleet');
+  const data = await res.json();
+  document.querySelector('#fleetTable tbody').innerHTML = data.map(r => `
+    <tr><td>${r.id}</td><td>${r.model}</td><td>${r.manufacturer}</td><td>${r.category}</td><td>${r.capacity}</td><td>${r.range_km}</td><td>${r.speed_kmh}</td><td>${r.status}</td><td>${r.description}</td>
+    <td class="actions"><button class="btn-delete" onclick="delFleet(${r.id})">Удалить</button></td></tr>`).join('');
+}
+async function addFleet() {
+  const body = JSON.stringify({
+    model: f_model.value, manufacturer: f_manufacturer.value, category: f_category.value, capacity: f_capacity.value,
+    range_km: +f_range.value, speed_kmh: +f_speed.value, status: f_status.value, description: f_desc.value, image_url: ''
   });
+  await api('/api/fleet',{method:'POST',headers:{'Content-Type':'application/json'},body});
+  loadFleet(); f_model.value=f_manufacturer.value=f_category.value=f_capacity.value=f_range.value=f_speed.value=f_desc.value='';
 }
-function sectionTitle(s){
-  const map={fleet:'Флот',routes:'Маршруты',events:'События',timeline:'История',staff:'Команда',applications:'Анкеты пилотов',contacts:'Контактные сообщения'};
-  return map[s]||s;
-}
-function colLabel(f){
-  const map={aircraft:'Самолет',type:'Тип',registration:'Регистрация',capacity:'Вместимость',range:'Дальность',status:'Статус',image:'Изображение',flight_number:'Рейс',origin:'Откуда',destination:'Куда',distance:'Дистанция',duration:'Длительность',aircraft_type:'Тип ВС',days:'Дни',title:'Название',description:'Описание',event_date:'Дата',event_type:'Тип',location:'Место',year:'Год',icon:'Иконка',name:'Имя',role:'Роль',department:'Отдел',discord:'Discord',bio:'Био',first_name:'Имя',last_name:'Фамилия',email:'Email',birthdate:'Дата рождения',experience:'Опыт',preferred_aircraft:'Предпочт. ВС',motivation:'Мотивация',submitted_at:'Отправлено',subject:'Тема',message:'Сообщение'};
-  return map[f]||f;
-}
-function openAdd(){currentId=null;document.getElementById('editTitle').textContent='Добавить — '+sectionTitle(currentSection);buildFields({});editModal.classList.add('show');}
-function openEdit(id){currentId=id;fetch('/api/'+currentSection+'/'+id).then(r=>r.json()).then(row=>{document.getElementById('editTitle').textContent='Редактировать — '+sectionTitle(currentSection);buildFields(row);editModal.classList.add('show');});}
-function buildFields(row){editFields.innerHTML='';fields[currentSection].forEach(f=>{const label=document.createElement('label');label.textContent=colLabel(f);const inp=document.createElement(f==='description'||f==='bio'||f==='motivation'||f==='message'?'textarea':'input');inp.className='field-'+f;inp.value=row[f]||'';editFields.appendChild(label);editFields.appendChild(inp);});}
+async function delFleet(id) { if(!confirm('Удалить?'))return; await api('/api/fleet/'+id,{method:'DELETE'}); loadFleet(); }
 
-document.getElementById('closeEdit').addEventListener('click',()=>editModal.classList.remove('show'));
-document.getElementById('cancelBtn').addEventListener('click',()=>editModal.classList.remove('show'));
-document.getElementById('saveBtn').addEventListener('click',()=>{
-  const payload={};fields[currentSection].forEach(f=>{payload[f]=document.querySelector('.field-'+f).value;});
-  const url=currentId?'/api/'+currentSection+'/'+currentId:'/api/'+currentSection;
-  fetch(url,{method:currentId?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).then(r=>r.json()).then(()=>{editModal.classList.remove('show');loadSection(currentSection);});
+// Routes
+async function loadRoutes() {
+  const res = await api('/api/routes');
+  const data = await res.json();
+  document.querySelector('#routeTable tbody').innerHTML = data.map(r => `
+    <tr><td>${r.id}</td><td>${r.origin}</td><td>${r.origin_code}</td><td>${r.destination}</td><td>${r.destination_code}</td><td>${r.distance_km}</td><td>${r.duration_min}</td><td>${r.aircraft_type}</td><td>${r.frequency}</td>
+    <td class="actions"><button class="btn-delete" onclick="delRoute(${r.id})">Удалить</button></td></tr>`).join('');
+}
+async function addRoute() {
+  const body = JSON.stringify({
+    origin: r_origin.value, origin_code: r_origin_code.value, destination: r_dest.value, destination_code: r_dest_code.value,
+    distance_km: +r_dist.value, duration_min: +r_time.value, aircraft_type: r_aircraft.value, frequency: r_freq.value,
+    active: 1, notes: '', origin_lat: +r_olat.value, origin_lon: +r_olon.value, dest_lat: +r_dlat.value, dest_lon: +r_dlon.value
+  });
+  await api('/api/routes',{method:'POST',headers:{'Content-Type':'application/json'},body});
+  loadRoutes(); [r_origin,r_origin_code,r_dest,r_dest_code,r_dist,r_time,r_aircraft,r_freq,r_olat,r_olon,r_dlat,r_dlon].forEach(i=>i.value='');
+}
+async function delRoute(id) { if(!confirm('Удалить?'))return; await api('/api/routes/'+id,{method:'DELETE'}); loadRoutes(); }
+
+// Events
+async function loadEvents() {
+  const res = await api('/api/events');
+  const data = await res.json();
+  document.querySelector('#eventTable tbody').innerHTML = data.map(r => `
+    <tr><td>${r.id}</td><td>${r.title}</td><td>${r.date}</td><td>${r.description}</td>
+    <td class="actions"><button class="btn-delete" onclick="delEvent(${r.id})">Удалить</button></td></tr>`).join('');
+}
+async function addEvent() {
+  await api('/api/events',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:e_title.value,date:e_date.value,description:e_desc.value,image_url:''})});
+  loadEvents(); e_title.value=e_date.value=e_desc.value='';
+}
+async function delEvent(id) { if(!confirm('Удалить?'))return; await api('/api/events/'+id,{method:'DELETE'}); loadEvents(); }
+
+// Timeline
+async function loadTimeline() {
+  const res = await api('/api/timeline');
+  const data = await res.json();
+  document.querySelector('#tlTable tbody').innerHTML = data.map(r => `
+    <tr><td>${r.id}</td><td>${r.year}</td><td>${r.title}</td><td>${r.description}</td><td>${r.icon}</td>
+    <td class="actions"><button class="btn-delete" onclick="delTimeline(${r.id})">Удалить</button></td></tr>`).join('');
+}
+async function addTimeline() {
+  await api('/api/timeline',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({year:+t_year.value,title:t_title.value,description:t_desc.value,icon:t_icon.value})});
+  loadTimeline(); t_year.value=t_title.value=t_desc.value=''; t_icon.value='✈';
+}
+async function delTimeline(id) { if(!confirm('Удалить?'))return; await api('/api/timeline/'+id,{method:'DELETE'}); loadTimeline(); }
+
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  await api('/api/logout',{method:'POST'}); localStorage.removeItem('swiss_token'); location.href='index.html';
 });
-function deleteItem(id){if(!confirm('Удалить эту запись?'))return;fetch('/api/'+currentSection+'/'+id,{method:'DELETE'}).then(()=>loadSection(currentSection));}
+
+loadApps(); loadFleet(); loadRoutes(); loadEvents(); loadTimeline();
 </script>
 </body>
 </html>
