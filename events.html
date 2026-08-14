@@ -1,65 +1,495 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>События — Swiss Airlines VA</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>События — Swiss Airlines</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --swiss-red: #e30613;
+      --swiss-red-dark: #b8050f;
+      --black: #0a0a0a;
+      --gray-900: #1a1a1a;
+      --gray-700: #4a4a4a;
+      --gray-500: #737373;
+      --gray-300: #d4d4d4;
+      --gray-100: #f5f5f5;
+      --white: #ffffff;
+      --bg: var(--white);
+      --text: var(--gray-900);
+      --card: var(--white);
+      --border: var(--gray-300);
+      --transition: cubic-bezier(0.4, 0, 0.2, 1);
+      --header-bg: rgba(255,255,255,0.92);
+      --header-text: var(--black);
+      --nav-link: var(--gray-700);
+      --nav-link-hover: var(--black);
+    }
+    [data-theme="dark"] {
+      --bg: #0f0f0f;
+      --text: #f0f0f0;
+      --card: #1a1a1a;
+      --border: #333333;
+      --gray-100: #1a1a1a;
+      --gray-500: #888888;
+      --header-bg: rgba(10,10,10,0.92);
+      --header-text: var(--white);
+      --nav-link: var(--gray-300);
+      --nav-link-hover: var(--white);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+      transition: background 0.4s var(--transition), color 0.4s var(--transition);
+    }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+    @keyframes pulseDot { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.5; } }
+    @keyframes stripeMove { from { background-position: 0 0; } to { background-position: 40px 0; } }
+    @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    @keyframes countdownPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+    .animate-on-scroll { opacity: 0; transform: translateY(30px); transition: opacity 0.8s var(--transition), transform 0.8s var(--transition); }
+    .animate-on-scroll.visible { opacity: 1; transform: translateY(0); }
+    .delay-1 { transition-delay: 0.1s; }
+    .delay-2 { transition-delay: 0.2s; }
+    .delay-3 { transition-delay: 0.3s; }
+
+    .top-header {
+      background: var(--header-bg);
+      padding: 0 40px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      overflow: hidden;
+    }
+    .top-header::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: repeating-linear-gradient(90deg, var(--swiss-red) 0, var(--swiss-red) 25px, transparent 25px, transparent 35px);
+      opacity: 0.5;
+      animation: stripeMove 2s linear infinite;
+    }
+    .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--header-text); font-weight: 700; font-size: 16px; letter-spacing: 1px; z-index: 1; }
+    .logo-cross { width: 28px; height: 28px; background: var(--swiss-red); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 300; color: var(--white); line-height: 1; }
+    .nav { display: flex; gap: 32px; align-items: center; z-index: 1; }
+    .nav a { color: var(--nav-link); text-decoration: none; font-size: 13px; font-weight: 500; letter-spacing: 0.5px; transition: color 0.3s; position: relative; }
+    .nav a:hover { color: var(--nav-link-hover); }
+    .nav a.active { color: var(--swiss-red); }
+    .nav a.active::after { content: ''; position: absolute; bottom: -6px; left: 0; width: 100%; height: 2px; background: var(--swiss-red); }
+    .nav a::after { content: ''; position: absolute; bottom: -6px; left: 0; width: 0; height: 2px; background: var(--swiss-red); transition: width 0.3s; }
+    .nav a:hover::after { width: 100%; }
+
+    .controls { display: flex; gap: 12px; align-items: center; z-index: 1; }
+    .theme-toggle, .lang-toggle {
+      background: transparent; border: 1px solid var(--nav-link); color: var(--nav-link);
+      padding: 6px 14px; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer;
+      transition: all 0.3s; letter-spacing: 0.5px; border-radius: 4px;
+    }
+    .theme-toggle:hover, .lang-toggle:hover { border-color: var(--nav-link-hover); color: var(--nav-link-hover); }
+
+    .hero {
+      background: var(--black);
+      padding: 100px 40px 80px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(circle at 20% 80%, rgba(227,6,19,0.08) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(227,6,19,0.05) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .hero-calendar { font-size: 80px; margin-bottom: 24px; animation: float 4s ease-in-out infinite; display: inline-block; }
+    .hero-label { font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--swiss-red); margin-bottom: 16px; animation: fadeIn 1s ease-out; }
+    .hero h1 { font-size: clamp(36px, 6vw, 64px); font-weight: 800; color: var(--white); letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 16px; animation: fadeUp 0.8s ease-out; }
+    .hero h1 span { color: var(--swiss-red); position: relative; }
+    .hero-desc { font-size: 17px; color: var(--gray-500); max-width: 600px; margin: 0 auto; animation: fadeUp 0.8s ease-out 0.2s both; }
+
+    .events-section { padding: 60px 40px; max-width: 1100px; margin: 0 auto; }
+    .events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px; }
+
+    .event-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      transition: all 0.4s var(--transition);
+      position: relative;
+    }
+    .event-card:hover { transform: translateY(-8px); box-shadow: 0 24px 48px rgba(0,0,0,0.12); border-color: var(--swiss-red); }
+    .event-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--swiss-red);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s var(--transition);
+    }
+    .event-card:hover::before { transform: scaleX(1); }
+
+    .event-header {
+      background: var(--gray-100);
+      padding: 24px;
+      text-align: center;
+      position: relative;
+      border-bottom: 1px solid var(--border);
+    }
+    .event-icon { font-size: 48px; margin-bottom: 12px; display: block; }
+    .event-type {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--swiss-red);
+      margin-bottom: 8px;
+    }
+    .event-title { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+    .event-date { font-size: 13px; color: var(--gray-500); margin-top: 4px; }
+
+    .event-body { padding: 24px; }
+    .event-desc { font-size: 14px; color: var(--gray-500); line-height: 1.7; margin-bottom: 16px; }
+    .event-route { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 16px; font-size: 14px; font-weight: 600; }
+    .event-route .from, .event-route .to { background: var(--gray-100); padding: 6px 14px; border-radius: 4px; font-size: 12px; font-weight: 700; }
+    .event-route .arrow { color: var(--swiss-red); font-size: 18px; }
+
+    .countdown { display: flex; justify-content: center; gap: 16px; margin-bottom: 16px; }
+    .countdown-unit { text-align: center; }
+    .countdown-value {
+      font-size: 28px; font-weight: 800; color: var(--swiss-red);
+      line-height: 1; min-width: 48px;
+      animation: countdownPulse 2s ease-in-out infinite;
+    }
+    .countdown-label { font-size: 10px; color: var(--gray-500); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+    .event-status {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .status-upcoming { background: rgba(227,6,19,0.1); color: var(--swiss-red); border: 1px solid rgba(227,6,19,0.3); }
+    .status-live { background: rgba(34,197,94,0.1); color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+    .status-ended { background: var(--gray-100); color: var(--gray-500); border: 1px solid var(--border); }
+
+    .past-events { margin-top: 60px; }
+    .past-events h2 { font-size: 24px; font-weight: 700; margin-bottom: 24px; text-align: center; }
+    .past-events h2 span { color: var(--swiss-red); }
+    .past-list { display: flex; flex-direction: column; gap: 16px; }
+    .past-item {
+      display: flex; align-items: center; gap: 16px;
+      padding: 16px 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      transition: all 0.3s;
+    }
+    .past-item:hover { border-color: var(--swiss-red); transform: translateX(4px); }
+    .past-icon { font-size: 24px; }
+    .past-info { flex: 1; }
+    .past-title { font-size: 14px; font-weight: 600; }
+    .past-date { font-size: 12px; color: var(--gray-500); }
+    .past-badge { font-size: 11px; font-weight: 700; color: var(--swiss-red); background: rgba(227,6,19,0.1); padding: 4px 10px; border-radius: 4px; }
+
+    .loading { text-align: center; padding: 40px; color: var(--gray-500); font-size: 14px; }
+    .error { text-align: center; padding: 40px; color: var(--swiss-red); font-size: 14px; }
+
+    .add-event {
+      background: var(--gray-100);
+      padding: 40px;
+      text-align: center;
+      border: 2px dashed var(--border);
+      margin-top: 40px;
+    }
+    .add-event:hover { border-color: var(--swiss-red); }
+    .add-event-icon { font-size: 40px; margin-bottom: 12px; opacity: 0.5; }
+    .add-event-title { font-size: 16px; font-weight: 700; color: var(--gray-500); margin-bottom: 8px; }
+    .add-event-text { font-size: 13px; color: var(--gray-500); }
+
+    .footer {
+      background: var(--black);
+      padding: 48px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .footer::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: repeating-linear-gradient(90deg, var(--swiss-red) 0, var(--swiss-red) 25px, transparent 25px, transparent 35px);
+      opacity: 0.5;
+      animation: stripeMove 2s linear infinite;
+    }
+    .footer-logo { display: flex; align-items: center; gap: 10px; color: var(--white); font-weight: 700; font-size: 14px; letter-spacing: 1px; }
+    .footer-cross { width: 24px; height: 24px; background: var(--swiss-red); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 300; color: var(--white); line-height: 1; }
+    .footer-links { display: flex; gap: 28px; }
+    .footer-links a { color: var(--gray-500); text-decoration: none; font-size: 13px; transition: color 0.3s; }
+    .footer-links a:hover { color: var(--white); }
+    .footer-right { text-align: right; color: var(--gray-500); font-size: 12px; }
+
+    @media (max-width: 768px) {
+      .top-header { padding: 0 20px; }
+      .nav { gap: 16px; }
+      .nav a { font-size: 12px; }
+      .hero { padding: 60px 20px 50px; }
+      .events-section { padding: 40px 20px; }
+      .events-grid { grid-template-columns: 1fr; }
+      .countdown { gap: 8px; }
+      .countdown-value { font-size: 22px; min-width: 36px; }
+      .footer { padding: 36px 20px; flex-direction: column; text-align: center; }
+      .footer-right { text-align: center; }
+    }
+  </style>
 </head>
 <body>
-<canvas id="particles"></canvas>
-<nav class="navbar">
-  <div class="container nav-inner">
-    <a href="index.html" class="logo"><div class="logo-icon">+</div> Swiss Airlines VA</a>
-    <div class="nav-links">
-      <a href="index.html" data-i18n="nav_home">Главная</a>
-      <a href="fleet.html" data-i18n="nav_fleet">Флот</a>
-      <a href="routes.html" data-i18n="nav_routes">Маршруты</a>
-      <a href="map.html" data-i18n="nav_map">Карта</a>
-      <a href="events.html" class="active" data-i18n="nav_events">События</a>
-      <a href="history.html" data-i18n="nav_history">История</a>
-      <a href="patent.html" data-i18n="nav_patent">Патент</a>
-      <a href="apply.html" data-i18n="nav_apply">Анкета</a>
-      <a href="contacts.html" data-i18n="nav_contacts">Контакты</a>
-      <a href="login.html" data-i18n="nav_admin">Админ</a>
-      <button class="lang-btn" id="langToggle">EN</button>
+
+  <header class="top-header">
+    <a href="index.html" class="logo">
+      <div class="logo-cross">+</div>
+      <div>SWISS AIRLINES</div>
+    </a>
+    <nav class="nav">
+      <a href="index.html">Главная</a>
+      <a href="fleet.html">Флот</a>
+      <a href="routes.html">Маршруты</a>
+      <a href="map.html">Карта</a>
+      <a href="events.html" class="active">События</a>
+      <a href="history.html">История</a>
+      <a href="https://discord.gg/6YA8t7GJr" target="_blank">Discord</a>
+      <a href="login.html">Вход</a>
+    </nav>
+    <div class="controls">
+      <button class="lang-toggle" id="langToggle" onclick="toggleLang()">EN</button>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙</button>
     </div>
-  </div>
-</nav>
+  </header>
 
-<section class="section">
-  <div class="container">
-    <h1 class="section-title" data-i18n="events_title">События</h1>
-    <p class="section-subtitle" data-i18n="events_desc">Групповые полёты, тренировки, турниры и особые рейсы.</p>
-    <div id="eventsList" class="cards-grid"></div>
-  </div>
-</section>
+  <section class="hero">
+    <div class="hero-calendar">📅</div>
+    <div class="hero-label">Swiss Airlines Virtual</div>
+    <h1>Календарь <span>событий</span></h1>
+    <p class="hero-desc">Групповые рейсы, массовые вылеты и особые события. Присоединяйся — летать вместе веселее.</p>
+  </section>
 
-<footer class="footer">
-  <div class="container"><p data-i18n="footer">© 2026 Swiss Airlines VA. Все права защищены. PTFS.</p></div>
-</footer>
+  <section class="events-section">
+    <div id="events-container">
+      <div class="loading">Загрузка событий…</div>
+    </div>
 
-<script src="i18n.js"></script>
-<script src="script.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', async () => {
-  try {
-    const res = await fetch('/api/events');
-    const data = await res.json();
-    const list = document.getElementById('eventsList');
-    list.innerHTML = data.map(e => `
-      <div class="card reveal">
-        <div class="card-icon" style="font-size:2rem;">📅</div>
-        <h3>${e.title}</h3>
-        <p style="color:#D32F2F;font-weight:600;margin:0.25rem 0;">${e.date}</p>
-        <p style="color:#aaa;">${e.description}</p>
-      </div>
-    `).join('');
-    observeReveal();
-  } catch (err) { toast('Ошибка загрузки событий'); }
-});
-</script>
+    <div class="add-event animate-on-scroll">
+      <div class="add-event-icon">📌</div>
+      <div class="add-event-title">Хочешь предложить событие?</div>
+      <div class="add-event-text">Напиши в Discord — обсудим и добавим в календарь. Все идеи приветствуются!</div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-logo">
+      <div class="footer-cross">+</div>
+      <div>SWISS AIRLINES</div>
+    </div>
+    <div class="footer-links">
+      <a href="index.html">Главная</a>
+      <a href="fleet.html">Флот</a>
+      <a href="routes.html">Маршруты</a>
+      <a href="map.html">Карта</a>
+      <a href="events.html">События</a>
+      <a href="history.html">История</a>
+      <a href="https://discord.gg/6YA8t7GJr" target="_blank">Discord</a>
+      <a href="login.html">Админ</a>
+      <a href="patent.html">Патент</a>
+    </div>
+    <div class="footer-right">
+      <div style="font-size:11px;color:var(--gray-500);margin-bottom:4px;">Неофициальный виртуальный патент № SW-VA-001 от 10.08.26 · <a href="patent.html" style="color:var(--swiss-red);text-decoration:none;">Подробнее →</a></div>
+      <div>Fly Together. Fly Swiss.</div>
+    </div>
+  </footer>
+
+  <script>
+    const API_BASE = '';
+    let eventsData = [];
+    let countdownTimer = null;
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('swiss-theme', next);
+      document.getElementById('themeToggle').textContent = next === 'dark' ? '☀️' : '🌙';
+    }
+    function toggleLang() {
+      const current = document.documentElement.getAttribute('lang');
+      const next = current === 'ru' ? 'en' : 'ru';
+      document.documentElement.setAttribute('lang', next);
+      localStorage.setItem('swiss-lang', next);
+      document.getElementById('langToggle').textContent = next === 'ru' ? 'EN' : 'RU';
+    }
+    const savedTheme = localStorage.getItem('swiss-theme');
+    if (savedTheme) { document.documentElement.setAttribute('data-theme', savedTheme); document.getElementById('themeToggle').textContent = savedTheme === 'dark' ? '☀️' : '🌙'; }
+    const savedLang = localStorage.getItem('swiss-lang');
+    if (savedLang) { document.documentElement.setAttribute('lang', savedLang); document.getElementById('langToggle').textContent = savedLang === 'ru' ? 'EN' : 'RU'; }
+
+    async function loadEvents() {
+      const container = document.getElementById('events-container');
+      try {
+        const res = await fetch(API_BASE + '/api/events');
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        eventsData = await res.json();
+      } catch (e) {
+        container.innerHTML = '<div class="error">Не удалось загрузить события. Проверьте соединение.</div>';
+        console.error(e);
+        return;
+      }
+
+      const now = new Date();
+      const upcoming = eventsData.filter(e => new Date(e.date) >= now || e.status === 'upcoming').sort((a,b) => new Date(a.date) - new Date(b.date));
+      const past = eventsData.filter(e => new Date(e.date) < now || e.status === 'ended').sort((a,b) => new Date(b.date) - new Date(a.date));
+
+      let html = '';
+
+      if (upcoming.length > 0) {
+        html += '<div class="events-grid">';
+        upcoming.forEach((ev, idx) => {
+          html += `
+          <div class="event-card animate-on-scroll ${idx === 1 ? 'delay-1' : idx === 2 ? 'delay-2' : ''}" data-event-id="${ev.id}" data-event-date="${ev.date}">
+            <div class="event-header">
+              <span class="event-icon">🛫</span>
+              <div class="event-type">${capitalize(ev.status || 'Event')}</div>
+              <div class="event-title">${escapeHtml(ev.title)}</div>
+              <div class="event-date">${formatDate(ev.date)}</div>
+            </div>
+            <div class="event-body">
+              ${ev.location ? `<div class="event-route"><span class="from">📍 ${escapeHtml(ev.location)}</span></div>` : ''}
+              ${ev.time ? `<div class="event-date" style="margin-bottom:12px;text-align:center;font-size:12px;color:var(--swiss-red);font-weight:600;">${escapeHtml(ev.time)}</div>` : ''}
+              <div class="event-desc">${escapeHtml(ev.description || '')}</div>
+              <div class="countdown" id="cd-${ev.id}">
+                <div class="countdown-unit"><div class="countdown-value" id="cd${ev.id}-d">--</div><div class="countdown-label">дней</div></div>
+                <div class="countdown-unit"><div class="countdown-value" id="cd${ev.id}-h">--</div><div class="countdown-label">часов</div></div>
+                <div class="countdown-unit"><div class="countdown-value" id="cd${ev.id}-m">--</div><div class="countdown-label">мин</div></div>
+                <div class="countdown-unit"><div class="countdown-value" id="cd${ev.id}-s">--</div><div class="countdown-label">сек</div></div>
+              </div>
+              <div class="event-status status-upcoming" id="status-${ev.id}">Скоро начнётся</div>
+            </div>
+          </div>`;
+        });
+        html += '</div>';
+      } else {
+        html += '<div class="loading" style="margin-bottom:40px;">Нет предстоящих событий. Следите за обновлениями!</div>';
+      }
+
+      if (past.length > 0) {
+        html += `
+        <div class="past-events animate-on-scroll">
+          <h2>Прошедшие <span>события</span></h2>
+          <div class="past-list">`;
+        past.forEach(ev => {
+          html += `
+          <div class="past-item">
+            <span class="past-icon">✅</span>
+            <div class="past-info">
+              <div class="past-title">${escapeHtml(ev.title)}</div>
+              <div class="past-date">${formatDate(ev.date)}</div>
+            </div>
+            <span class="past-badge">Выполнено</span>
+          </div>`;
+        });
+        html += '</div></div>';
+      }
+
+      container.innerHTML = html;
+
+      document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+      startCountdowns();
+    }
+
+    function capitalize(s) {
+      if (!s) return '';
+      return s.charAt(0).toUpperCase() + s.slice(1);
+    }
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function formatDate(iso) {
+      const d = new Date(iso);
+      const months = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+      const day = d.getDate();
+      const month = months[d.getMonth()];
+      const year = d.getFullYear();
+      const hours = String(d.getHours()).padStart(2, '0');
+      const mins = String(d.getMinutes()).padStart(2, '0');
+      return `${day} ${month} ${year} · ${hours}:${mins} UTC`;
+    }
+
+    function startCountdowns() {
+      if (countdownTimer) clearInterval(countdownTimer);
+      updateCountdowns();
+      countdownTimer = setInterval(updateCountdowns, 1000);
+    }
+
+    function updateCountdowns() {
+      const now = new Date().getTime();
+      eventsData.forEach(ev => {
+        const target = new Date(ev.date).getTime();
+        const diff = target - now;
+        const dEl = document.getElementById('cd' + ev.id + '-d');
+        if (!dEl) return;
+        if (diff <= 0) {
+          document.getElementById('cd' + ev.id + '-d').textContent = '00';
+          const hEl = document.getElementById('cd' + ev.id + '-h');
+          if (hEl) hEl.textContent = '00';
+          const mEl = document.getElementById('cd' + ev.id + '-m');
+          if (mEl) mEl.textContent = '00';
+          const sEl = document.getElementById('cd' + ev.id + '-s');
+          if (sEl) sEl.textContent = '00';
+          const stEl = document.getElementById('status-' + ev.id);
+          if (stEl) { stEl.textContent = 'Идёт сейчас!'; stEl.className = 'event-status status-live'; }
+        } else {
+          const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+          const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+          const s = Math.floor((diff % (1000 * 60)) / 1000);
+          dEl.textContent = String(d).padStart(2, '0');
+          const hEl = document.getElementById('cd' + ev.id + '-h');
+          if (hEl) hEl.textContent = String(h).padStart(2, '0');
+          const mEl = document.getElementById('cd' + ev.id + '-m');
+          if (mEl) mEl.textContent = String(m).padStart(2, '0');
+          const sEl = document.getElementById('cd' + ev.id + '-s');
+          if (sEl) sEl.textContent = String(s).padStart(2, '0');
+        }
+      });
+    }
+
+    loadEvents();
+  </script>
 </body>
 </html>

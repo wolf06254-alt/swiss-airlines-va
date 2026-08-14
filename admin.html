@@ -1,246 +1,572 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Админ-панель — Swiss Airlines VA</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
-<style>
-.admin-tabs { display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1.5rem; }
-.admin-tab { padding:0.5rem 1rem; border-radius:8px; background:#1a1a1a; border:1px solid #222; color:#ccc; cursor:pointer; font-weight:600; transition:.2s; }
-.admin-tab:hover, .admin-tab.active { background:#D32F2F; color:#fff; border-color:#D32F2F; }
-.admin-panel { display:none; }
-.admin-panel.active { display:block; }
-.form-inline { display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem; }
-.form-inline input, .form-inline select, .form-inline textarea { background:#1a1a1a; border:1px solid #222; color:#fff; padding:0.5rem 0.75rem; border-radius:8px; min-width:140px; font-size:0.9rem; }
-.form-inline textarea { min-width:260px; min-height:60px; }
-.form-inline button { background:#D32F2F; color:#fff; border:none; padding:0.5rem 1rem; border-radius:8px; cursor:pointer; font-weight:600; }
-.form-inline button:hover { opacity:.9; }
-.admin-table { width:100%; border-collapse:collapse; font-size:0.85rem; }
-.admin-table th, .admin-table td { border:1px solid #222; padding:0.5rem; text-align:left; }
-.admin-table th { background:#1a1a1a; color:#D32F2F; font-weight:600; }
-.admin-table td { background:#0f0f0f; }
-.admin-table tr:hover td { background:#1a1a1a; }
-.admin-table .actions { display:flex; gap:0.35rem; }
-.admin-table button { padding:0.25rem 0.5rem; border:none; border-radius:6px; cursor:pointer; font-size:0.8rem; }
-.btn-edit { background:#f5a623; color:#111; }
-.btn-delete { background:#D32F2F; color:#fff; }
-.btn-save { background:#4caf50; color:#fff; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Админ-панель — Swiss Airlines</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --swiss-red: #e30613;
+      --swiss-red-dark: #b8050f;
+      --black: #0a0a0a;
+      --gray-900: #1a1a1a;
+      --gray-700: #4a4a4a;
+      --gray-500: #737373;
+      --gray-300: #d4d4d4;
+      --gray-100: #f5f5f5;
+      --white: #ffffff;
+      --bg: var(--white);
+      --text: var(--gray-900);
+      --card: var(--white);
+      --border: var(--gray-300);
+      --transition: cubic-bezier(0.4, 0, 0.2, 1);
+      --header-bg: #ffffff;
+      --header-text: #0a0a0a;
+      --header-link: #737373;
+      --header-border: #d4d4d4;
+    }
+    [data-theme="dark"] {
+      --bg: #0f0f0f; --text: #f0f0f0; --card: #1a1a1a; --border: #333333;
+      --gray-100: #1a1a1a; --gray-500: #888888;
+      --header-bg: #0a0a0a; --header-text: #ffffff; --header-link: #888888; --header-border: #4a4a4a;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--gray-100); color: var(--text); line-height: 1.6; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes planeFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    @keyframes stripeMove { from { background-position: 0 0; } to { background-position: 40px 0; } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes slideToast { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    .animate-on-scroll { opacity: 0; transform: translateY(20px); transition: opacity 0.6s var(--transition), transform 0.6s var(--transition); }
+    .animate-on-scroll.visible { opacity: 1; transform: translateY(0); }
+
+    /* ===== HEADER ===== */
+    .admin-header { background: var(--header-bg); padding: 0 40px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; overflow: hidden; }
+    .admin-header::before { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: repeating-linear-gradient(90deg, var(--swiss-red) 0, var(--swiss-red) 25px, transparent 25px, transparent 35px); opacity: 0.5; animation: stripeMove 2s linear infinite; }
+    .header-left { display: flex; align-items: center; gap: 16px; }
+    .header-logo { display: flex; align-items: center; gap: 10px; color: var(--header-text); font-weight: 700; font-size: 14px; letter-spacing: -0.3px; text-decoration: none; }
+    .header-cross { width: 24px; height: 24px; background: var(--swiss-red); display: flex; align-items: center; justify-content: center; font-size: 12px; color: white; font-weight: 700; }
+    .header-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(227,6,19,0.15); color: var(--swiss-red); padding: 4px 10px; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+    .header-right { display: flex; align-items: center; gap: 12px; }
+    .user-greeting { display: flex; align-items: center; gap: 8px; color: var(--gray-500); font-size: 13px; font-weight: 500; }
+    .user-avatar { width: 28px; height: 28px; background: var(--swiss-red); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 700; }
+    .header-link { color: var(--header-link); text-decoration: none; font-size: 12px; font-weight: 500; padding: 6px 12px; border: 1px solid var(--header-border); transition: all 0.3s; display: inline-flex; align-items: center; gap: 6px; }
+    .header-link:hover { color: var(--header-text); border-color: var(--header-text); }
+    .theme-toggle, .lang-toggle { background: transparent; border: 1px solid var(--header-border); color: var(--header-link); padding: 6px 14px; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s; letter-spacing: 0.5px; border-radius: 4px; }
+    .theme-toggle:hover, .lang-toggle:hover { color: var(--header-text); border-color: var(--header-text); }
+
+    /* ===== PAGE ===== */
+    .page-title-bar { background: var(--bg); padding: 32px 40px; border-bottom: 1px solid var(--gray-300); display: flex; align-items: center; justify-content: space-between; position: relative; overflow: hidden; }
+    .page-title-bar::before { content: ''; position: absolute; bottom: 0; left: 0; width: 60px; height: 2px; background: var(--swiss-red); }
+    .page-title { display: flex; align-items: center; gap: 12px; }
+    .page-title h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
+    .page-title .plane-icon { font-size: 28px; opacity: 0.7; animation: planeFloat 4s ease-in-out infinite; }
+    .page-subtitle { font-size: 13px; color: var(--gray-500); margin-top: 4px; }
+
+    /* ===== TABS ===== */
+    .tabs-bar { padding: 0 40px; border-bottom: 1px solid var(--gray-300); background: var(--bg); display: flex; gap: 0; }
+    .tab-btn { padding: 14px 20px; font-size: 13px; font-weight: 600; border: none; border-bottom: 2px solid transparent; background: transparent; color: var(--gray-500); cursor: pointer; transition: all 0.2s; letter-spacing: 0.3px; }
+    .tab-btn:hover { color: var(--gray-700); }
+    .tab-btn.active { color: var(--swiss-red); border-bottom-color: var(--swiss-red); }
+    .tab-content { display: none; padding: 24px 40px 40px; max-width: 1400px; margin: 0 auto; }
+    .tab-content.active { display: block; }
+
+    /* ===== TOOLBAR ===== */
+    .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
+    .btn-add { background: var(--swiss-red); color: white; border: none; padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-add:hover { background: var(--swiss-red-dark); transform: translateY(-1px); }
+    .btn-export { background: var(--gray-900); color: var(--white); border: none; padding: 7px 16px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-export:hover { background: var(--black); }
+
+    /* ===== TABLE ===== */
+    .table-wrapper { background: var(--bg); border: 1px solid var(--gray-300); overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { background: var(--gray-100); padding: 12px 14px; text-align: left; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gray-500); border-bottom: 1px solid var(--gray-300); white-space: nowrap; }
+    td { padding: 12px 14px; border-bottom: 1px solid var(--gray-100); vertical-align: top; }
+    tr:hover td { background: rgba(227,6,19,0.02); }
+    .cell-name { font-weight: 600; color: var(--black); }
+    .cell-muted { color: var(--gray-500); font-size: 12px; }
+    .cell-small { font-size: 12px; }
+    .cell-actions { display: flex; gap: 6px; }
+    .action-btn { background: none; border: 1px solid var(--gray-300); padding: 4px 10px; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s; color: var(--gray-700); }
+    .action-btn:hover { border-color: var(--swiss-red); color: var(--swiss-red); }
+    .action-btn.delete:hover { border-color: #991b1b; color: #991b1b; }
+    .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px; font-size: 11px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+    .status-upcoming { background: #fef3c7; color: #92400e; }
+    .status-past { background: #e5e7eb; color: #4b5563; }
+    .status-active { background: #d1fae5; color: #065f46; }
+    .status-inactive { background: #fee2e2; color: #991b1b; }
+    .status-badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+    /* ===== MODAL ===== */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: var(--bg); width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; border: 1px solid var(--gray-300); box-shadow: 0 20px 60px rgba(0,0,0,0.2); animation: fadeUp 0.3s var(--transition); }
+    .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--gray-300); display: flex; justify-content: space-between; align-items: center; }
+    .modal-header h3 { font-size: 16px; font-weight: 700; }
+    .modal-close { background: none; border: none; font-size: 20px; color: var(--gray-500); cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; transition: color 0.2s; }
+    .modal-close:hover { color: var(--swiss-red); }
+    .modal-body { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+    .form-row { display: flex; flex-direction: column; gap: 6px; }
+    .form-row label { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--gray-500); }
+    .form-row input, .form-row textarea, .form-row select { padding: 10px 12px; font-family: inherit; font-size: 14px; border: 1px solid var(--gray-300); background: var(--bg); color: var(--text); transition: border-color 0.2s; }
+    .form-row input:focus, .form-row textarea:focus, .form-row select:focus { outline: none; border-color: var(--swiss-red); }
+    .form-row textarea { min-height: 80px; resize: vertical; }
+    .form-row.half { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-row.half > div { display: flex; flex-direction: column; gap: 6px; }
+    .modal-footer { padding: 16px 24px; border-top: 1px solid var(--gray-300); display: flex; justify-content: flex-end; gap: 10px; }
+    .btn-save { background: var(--swiss-red); color: white; border: none; padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+    .btn-save:hover { background: var(--swiss-red-dark); }
+    .btn-cancel { background: transparent; color: var(--gray-700); border: 1px solid var(--gray-300); padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+    .btn-cancel:hover { border-color: var(--gray-700); }
+
+    /* ===== LOADING / EMPTY ===== */
+    .loading { text-align: center; padding: 60px; color: var(--gray-500); font-size: 14px; }
+    .loading::after { content: ''; display: inline-block; width: 16px; height: 16px; border: 2px solid var(--gray-300); border-top-color: var(--swiss-red); border-radius: 50%; margin-left: 10px; animation: spin 0.8s linear infinite; }
+    .empty-state { text-align: center; padding: 60px 40px; color: var(--gray-500); }
+    .empty-state h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; color: var(--gray-700); }
+
+    /* ===== TOAST ===== */
+    .toast-container { position: fixed; top: 24px; right: 24px; z-index: 1000; display: flex; flex-direction: column; gap: 12px; }
+    .toast { background: var(--bg); padding: 14px 22px; min-width: 300px; font-size: 13px; font-weight: 500; box-shadow: 0 8px 32px rgba(0,0,0,0.12); animation: slideToast 0.4s var(--transition); display: flex; align-items: center; gap: 10px; border-left: 3px solid var(--swiss-red); }
+    .toast.success { border-left-color: #22c55e; }
+    .toast.error { border-left-color: var(--swiss-red); }
+
+    /* ===== STATS ===== */
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 24px 40px; max-width: 1400px; margin: 0 auto; }
+    .stat-card { background: var(--bg); border: 1px solid var(--gray-300); padding: 24px; transition: all 0.3s var(--transition); position: relative; overflow: hidden; }
+    .stat-card:hover { border-color: var(--swiss-red); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+    .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 0; background: var(--swiss-red); transition: height 0.4s var(--transition); }
+    .stat-card:hover::before { height: 100%; }
+    .stat-icon { font-size: 24px; margin-bottom: 12px; display: block; }
+    .stat-value { font-size: 32px; font-weight: 800; letter-spacing: -1px; color: var(--black); }
+    .stat-label { font-size: 12px; color: var(--gray-500); font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 4px; }
+
+    .filters-bar { padding: 0 40px 20px; max-width: 1400px; margin: 0 auto; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    .filter-btn { padding: 7px 14px; font-size: 12px; font-weight: 500; border: 1px solid var(--gray-300); background: var(--bg); color: var(--gray-700); cursor: pointer; transition: all 0.3s var(--transition); display: inline-flex; align-items: center; gap: 6px; }
+    .filter-btn:hover, .filter-btn.active { border-color: var(--swiss-red); color: var(--swiss-red); background: rgba(227,6,19,0.04); }
+
+    @media (max-width: 1024px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .admin-header { padding: 0 16px; }
+      .page-title-bar { padding: 20px 16px; flex-direction: column; align-items: flex-start; gap: 12px; }
+      .tabs-bar { padding: 0 16px; overflow-x: auto; }
+      .tab-content { padding: 16px; }
+      .stats-grid { grid-template-columns: 1fr; padding: 16px; }
+      .filters-bar { padding: 0 16px 16px; }
+      .toolbar { flex-direction: column; align-items: flex-start; }
+      .form-row.half { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
-<nav class="navbar">
-  <div class="container nav-inner">
-    <a href="index.html" class="logo"><div class="logo-icon">+</div> Swiss Airlines VA</a>
-    <div class="nav-links">
-      <a href="index.html">Главная</a>
-      <a href="fleet.html">Флот</a>
-      <a href="routes.html">Маршруты</a>
-      <a href="map.html">Карта</a>
-      <a href="events.html">События</a>
-      <a href="history.html">История</a>
-      <a href="patent.html">Патент</a>
-      <a href="apply.html">Анкета</a>
-      <a href="contacts.html">Контакты</a>
-      <a href="login.html">Админ</a>
-      <button class="btn btn-primary" style="padding:0.35rem 0.9rem;font-size:0.85rem;" id="logoutBtn">Выйти</button>
+  <div class="toast-container" id="toastContainer"></div>
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="modal"></div>
+  </div>
+
+  <header class="admin-header">
+    <div class="header-left">
+      <a href="index.html" class="header-logo">
+        <div class="header-cross">+</div>
+        <div>SWISS AIRLINES</div>
+      </a>
+      <div class="header-badge">🛡 Админ-панель</div>
+    </div>
+    <div class="header-right">
+      <div class="user-greeting"><div class="user-avatar" id="userAvatar">A</div><span id="userName">Администратор</span></div>
+      <a href="index.html" class="header-link">🏠 Главная</a>
+      <a href="#" class="header-link" onclick="logout(); return false;">↪ Выйти</a>
+      <button class="lang-toggle" id="langToggle" onclick="toggleLang()">EN</button>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙</button>
+    </div>
+  </header>
+
+  <div class="page-title-bar">
+    <div class="page-title">
+      <span class="plane-icon">✈</span>
+      <div>
+        <h1>Админ-панель</h1>
+        <div class="page-subtitle">Управление контентом сайта Swiss Airlines</div>
+      </div>
+    </div>
+    <div class="page-actions" style="display:flex;gap:10px;">
+      <button class="btn-export" onclick="exportCSV()">📥 Экспорт CSV</button>
+      <button class="btn-export" onclick="window.open('https://discord.gg/6YA8t7GJr','_blank')">🎮 Discord</button>
     </div>
   </div>
-</nav>
 
-<section class="section">
-  <div class="container">
-    <h1 class="section-title" data-i18n="admin_title">Админ-панель</h1>
-    <p class="section-subtitle">Управление заявками, флотом, маршрутами, событиями и историей.</p>
+  <div class="tabs-bar">
+    <button class="tab-btn active" onclick="switchTab('applications')" data-tab="applications">📋 Анкеты</button>
+    <button class="tab-btn" onclick="switchTab('events')" data-tab="events">📅 События</button>
+    <button class="tab-btn" onclick="switchTab('routes')" data-tab="routes">🗺️ Маршруты</button>
+    <button class="tab-btn" onclick="switchTab('fleet')" data-tab="fleet">✈️ Флот</button>
+    <button class="tab-btn" onclick="switchTab('timeline')" data-tab="timeline">📜 История</button>
+  </div>
 
-    <div class="admin-tabs">
-      <div class="admin-tab active" data-tab="applications">Заявки</div>
-      <div class="admin-tab" data-tab="fleet">Флот</div>
-      <div class="admin-tab" data-tab="routes">Маршруты</div>
-      <div class="admin-tab" data-tab="events">События</div>
-      <div class="admin-tab" data-tab="timeline">История</div>
+  <!-- ANKETY -->
+  <div class="tab-content active" id="tab-applications">
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card"><span class="stat-icon">📋</span><div class="stat-value" id="totalCount">0</div><div class="stat-label">Всего анкет</div></div>
+      <div class="stat-card"><span class="stat-icon">🆕</span><div class="stat-value" id="newCount">0</div><div class="stat-label">Новые</div></div>
+      <div class="stat-card"><span class="stat-icon">✅</span><div class="stat-value" id="acceptedCount">0</div><div class="stat-label">Принято</div></div>
+      <div class="stat-card"><span class="stat-icon">❌</span><div class="stat-value" id="rejectedCount">0</div><div class="stat-label">Отклонено</div></div>
     </div>
-
-    <!-- Applications -->
-    <div id="panel-applications" class="admin-panel active">
-      <div style="display:flex;gap:0.5rem;margin-bottom:1rem;">
-        <a href="/api/applications/export" class="btn btn-primary" style="font-size:0.85rem;" data-i18n="admin_export">Экспорт CSV</a>
-      </div>
-      <div class="table-wrap"><table class="admin-table" id="appTable"><thead><tr><th>ID</th><th>Имя</th><th>Возраст</th><th>Платформа</th><th>Ник</th><th>Discord</th><th>Страна</th><th>Опыт</th><th>Часы</th><th>Мотивация</th><th>Статус</th><th>Дата</th><th>Действия</th></tr></thead><tbody></tbody></table></div>
+    <div class="filters-bar">
+      <span class="filter-btn active" data-filter="all" onclick="setAppFilter('all')">Все</span>
+      <span class="filter-btn" data-filter="new" onclick="setAppFilter('new')">🆕 Новые</span>
+      <span class="filter-btn" data-filter="review" onclick="setAppFilter('review')">🔍 На рассмотрении</span>
+      <span class="filter-btn" data-filter="accepted" onclick="setAppFilter('accepted')">✅ Принято</span>
+      <span class="filter-btn" data-filter="rejected" onclick="setAppFilter('rejected')">❌ Отклонено</span>
     </div>
-
-    <!-- Fleet -->
-    <div id="panel-fleet" class="admin-panel">
-      <div class="form-inline" id="fleetForm">
-        <input placeholder="Модель" id="f_model" />
-        <input placeholder="Производитель" id="f_manufacturer" />
-        <input placeholder="Класс" id="f_category" />
-        <input placeholder="Пассажиры" id="f_capacity" />
-        <input placeholder="Дальность" id="f_range" type="number" />
-        <input placeholder="Скорость" id="f_speed" type="number" />
-        <select id="f_status"><option value="active">active</option><option value="maintenance">maintenance</option><option value="retired">retired</option></select>
-        <input placeholder="Описание" id="f_desc" style="min-width:200px;" />
-        <button onclick="addFleet()">Добавить</button>
-      </div>
-      <div class="table-wrap"><table class="admin-table" id="fleetTable"><thead><tr><th>ID</th><th>Модель</th><th>Производитель</th><th>Класс</th><th>Пассажиры</th><th>Дальность</th><th>Скорость</th><th>Статус</th><th>Описание</th><th>Действия</th></tr></thead><tbody></tbody></table></div>
-    </div>
-
-    <!-- Routes -->
-    <div id="panel-routes" class="admin-panel">
-      <div class="form-inline" id="routeForm">
-        <input placeholder="Вылет" id="r_origin" />
-        <input placeholder="Код" id="r_origin_code" style="min-width:80px;" />
-        <input placeholder="Прилёт" id="r_dest" />
-        <input placeholder="Код" id="r_dest_code" style="min-width:80px;" />
-        <input placeholder="Расстояние" id="r_dist" type="number" />
-        <input placeholder="Время (мин)" id="r_time" type="number" />
-        <input placeholder="Самолёт" id="r_aircraft" />
-        <input placeholder="Частота" id="r_freq" />
-        <input placeholder="lat вылета" id="r_olat" type="number" step="any" style="min-width:100px;" />
-        <input placeholder="lon вылета" id="r_olon" type="number" step="any" style="min-width:100px;" />
-        <input placeholder="lat прилёта" id="r_dlat" type="number" step="any" style="min-width:100px;" />
-        <input placeholder="lon прилёта" id="r_dlon" type="number" step="any" style="min-width:100px;" />
-        <button onclick="addRoute()">Добавить</button>
-      </div>
-      <div class="table-wrap"><table class="admin-table" id="routeTable"><thead><tr><th>ID</th><th>Вылет</th><th>Код</th><th>Прилёт</th><th>Код</th><th>Расстояние</th><th>Время</th><th>Самолёт</th><th>Частота</th><th>Действия</th></tr></thead><tbody></tbody></table></div>
-    </div>
-
-    <!-- Events -->
-    <div id="panel-events" class="admin-panel">
-      <div class="form-inline" id="eventForm">
-        <input placeholder="Название" id="e_title" />
-        <input placeholder="Дата (YYYY-MM-DD)" id="e_date" />
-        <textarea placeholder="Описание" id="e_desc"></textarea>
-        <button onclick="addEvent()">Добавить</button>
-      </div>
-      <div class="table-wrap"><table class="admin-table" id="eventTable"><thead><tr><th>ID</th><th>Название</th><th>Дата</th><th>Описание</th><th>Действия</th></tr></thead><tbody></tbody></table></div>
-    </div>
-
-    <!-- Timeline -->
-    <div id="panel-timeline" class="admin-panel">
-      <div class="form-inline" id="tlForm">
-        <input placeholder="Год" id="t_year" type="number" />
-        <input placeholder="Заголовок" id="t_title" />
-        <textarea placeholder="Описание" id="t_desc"></textarea>
-        <input placeholder="Иконка" id="t_icon" value="✈" />
-        <button onclick="addTimeline()">Добавить</button>
-      </div>
-      <div class="table-wrap"><table class="admin-table" id="tlTable"><thead><tr><th>ID</th><th>Год</th><th>Заголовок</th><th>Описание</th><th>Иконка</th><th>Действия</th></tr></thead><tbody></tbody></table></div>
+    <div class="table-wrapper">
+      <div class="loading" id="appsLoading">Загрузка анкет...</div>
+      <table id="appsTable" style="display:none;">
+        <thead><tr><th></th><th>Roblox</th><th>Telegram</th><th>Возраст</th><th>Роль</th><th>Статус</th><th>Дата</th></tr></thead>
+        <tbody id="appsBody"></tbody>
+      </table>
+      <div class="empty-state" id="appsEmpty" style="display:none;"><h3>Нет анкет</h3><p>Пока никто не отправил заявку</p></div>
     </div>
   </div>
-</section>
 
-<footer class="footer">
-  <div class="container"><p>© 2026 Swiss Airlines VA. PTFS.</p></div>
-</footer>
+  <!-- EVENTS -->
+  <div class="tab-content" id="tab-events">
+    <div class="toolbar"><h3 style="font-size:16px;font-weight:700;">События</h3><button class="btn-add" onclick="openEventModal()">+ Добавить событие</button></div>
+    <div class="table-wrapper">
+      <div class="loading" id="eventsLoading">Загрузка событий...</div>
+      <table id="eventsTable" style="display:none;">
+        <thead><tr><th>Название</th><th>Дата</th><th>Время</th><th>Локация</th><th>Статус</th><th>Действия</th></tr></thead>
+        <tbody id="eventsBody"></tbody>
+      </table>
+      <div class="empty-state" id="eventsEmpty" style="display:none;"><h3>Нет событий</h3><p>Добавьте первое событие</p></div>
+    </div>
+  </div>
 
-<script src="script.js"></script>
-<script>
-const token = localStorage.getItem('swiss_token');
-if (!token) { location.href='login.html'; }
+  <!-- ROUTES -->
+  <div class="tab-content" id="tab-routes">
+    <div class="toolbar"><h3 style="font-size:16px;font-weight:700;">Маршруты</h3><button class="btn-add" onclick="openRouteModal()">+ Добавить маршрут</button></div>
+    <div class="table-wrapper">
+      <div class="loading" id="routesLoading">Загрузка маршрутов...</div>
+      <table id="routesTable" style="display:none;">
+        <thead><tr><th>Откуда</th><th>Куда</th><th>Дистанция</th><th>Время</th><th>Самолёт</th><th>Активен</th><th>Действия</th></tr></thead>
+        <tbody id="routesBody"></tbody>
+      </table>
+      <div class="empty-state" id="routesEmpty" style="display:none;"><h3>Нет маршрутов</h3><p>Добавьте первый маршрут</p></div>
+    </div>
+  </div>
 
-async function api(path, opts={}) {
-  const res = await fetch(path, { headers: { 'Authorization':'Bearer '+token, ...(opts.headers||{}) }, ...opts });
-  if (res.status===401) { localStorage.removeItem('swiss_token'); location.href='login.html'; }
-  return res;
-}
+  <!-- FLEET -->
+  <div class="tab-content" id="tab-fleet">
+    <div class="toolbar"><h3 style="font-size:16px;font-weight:700;">Флот</h3><button class="btn-add" onclick="openFleetModal()">+ Добавить ВС</button></div>
+    <div class="table-wrapper">
+      <div class="loading" id="fleetLoading">Загрузка флота...</div>
+      <table id="fleetTable" style="display:none;">
+        <thead><tr><th>Модель</th><th>Производитель</th><th>Категория</th><th>Мест</th><th>Дальность</th><th>Скорость</th><th>Статус</th><th>Действия</th></tr></thead>
+        <tbody id="fleetBody"></tbody>
+      </table>
+      <div class="empty-state" id="fleetEmpty" style="display:none;"><h3>Нет ВС</h3><p>Добавьте первый самолёт</p></div>
+    </div>
+  </div>
 
-// Tabs
-const tabs = document.querySelectorAll('.admin-tab');
-tabs.forEach(t => t.addEventListener('click', () => {
-  tabs.forEach(x=>x.classList.remove('active'));
-  t.classList.add('active');
-  document.querySelectorAll('.admin-panel').forEach(p=>p.classList.remove('active'));
-  document.getElementById('panel-'+t.dataset.tab).classList.add('active');
-}));
+  <!-- TIMELINE -->
+  <div class="tab-content" id="tab-timeline">
+    <div class="toolbar"><h3 style="font-size:16px;font-weight:700;">История</h3><button class="btn-add" onclick="openTimelineModal()">+ Добавить событие</button></div>
+    <div class="table-wrapper">
+      <div class="loading" id="timelineLoading">Загрузка истории...</div>
+      <table id="timelineTable" style="display:none;">
+        <thead><tr><th>Год</th><th>Название</th><th>Описание</th><th>Иконка</th><th>Действия</th></tr></thead>
+        <tbody id="timelineBody"></tbody>
+      </table>
+      <div class="empty-state" id="timelineEmpty" style="display:none;"><h3>Нет записей</h3><p>Добавьте первую запись</p></div>
+    </div>
+  </div>
 
-// Applications
-async function loadApps() {
-  const res = await api('/api/applications');
-  const data = await res.json();
-  document.querySelector('#appTable tbody').innerHTML = data.map(r => `
-    <tr>
-      <td>${r.id}</td><td>${r.name}</td><td>${r.age}</td><td>${r.platform}</td><td>${r.username}</td><td>${r.discord}</td><td>${r.country}</td><td>${r.experience}</td><td>${r.hours}</td><td>${r.motivation}</td>
-      <td><select onchange="updateStatus(${r.id},this.value)"><option ${r.status==='Новая'?'selected':''}>Новая</option><option ${r.status==='Рассмотрение'?'selected':''}>Рассмотрение</option><option ${r.status==='Принята'?'selected':''}>Принята</option><option ${r.status==='Отклонена'?'selected':''}>Отклонена</option></select></td>
-      <td>${r.created_at}</td>
-      <td><button class="btn-delete" onclick="delApp(${r.id})">Удалить</button></td>
-    </tr>`).join('');
-}
-async function updateStatus(id, status) { await api('/api/applications/'+id+'/status',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status})}); }
-async function delApp(id) { if(!confirm('Удалить?'))return; await api('/api/applications/'+id,{method:'DELETE'}); loadApps(); }
+  <script>
+    let currentTab = 'applications';
+    let allData = [];
+    let appFilter = 'all';
+    let eventsData = [];
+    let routesData = [];
+    let fleetData = [];
+    let timelineData = [];
 
-// Fleet
-async function loadFleet() {
-  const res = await api('/api/fleet');
-  const data = await res.json();
-  document.querySelector('#fleetTable tbody').innerHTML = data.map(r => `
-    <tr><td>${r.id}</td><td>${r.model}</td><td>${r.manufacturer}</td><td>${r.category}</td><td>${r.capacity}</td><td>${r.range_km}</td><td>${r.speed_kmh}</td><td>${r.status}</td><td>${r.description}</td>
-    <td class="actions"><button class="btn-delete" onclick="delFleet(${r.id})">Удалить</button></td></tr>`).join('');
-}
-async function addFleet() {
-  const body = JSON.stringify({
-    model: f_model.value, manufacturer: f_manufacturer.value, category: f_category.value, capacity: f_capacity.value,
-    range_km: +f_range.value, speed_kmh: +f_speed.value, status: f_status.value, description: f_desc.value, image_url: ''
-  });
-  await api('/api/fleet',{method:'POST',headers:{'Content-Type':'application/json'},body});
-  loadFleet(); f_model.value=f_manufacturer.value=f_category.value=f_capacity.value=f_range.value=f_speed.value=f_desc.value='';
-}
-async function delFleet(id) { if(!confirm('Удалить?'))return; await api('/api/fleet/'+id,{method:'DELETE'}); loadFleet(); }
+    function showToast(message, type='info') {
+      const c = document.getElementById('toastContainer');
+      const t = document.createElement('div'); t.className='toast '+type;
+      const icons = {success:'✓',error:'✕',info:'ℹ'};
+      t.innerHTML = `<span style="font-size:16px;">${icons[type]}</span> ${message}`;
+      c.appendChild(t);
+      setTimeout(()=>{ t.style.opacity='0'; t.style.transform='translateX(120%)'; t.style.transition='all 0.4s ease'; setTimeout(()=>t.remove(),400); },4000);
+    }
+    function escapeHtml(str){ if(!str) return str; return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
+    function formatDate(d){ if(!d) return '—'; return new Date(d).toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
+    function getStatusText(s){ const m={new:'Новая',review:'На рассмотрении',accepted:'Принято',rejected:'Отклонено',upcoming:'Предстоит',past:'Прошло',active:'Активен',inactive:'Неактивен'}; return m[s]||s; }
 
-// Routes
-async function loadRoutes() {
-  const res = await api('/api/routes');
-  const data = await res.json();
-  document.querySelector('#routeTable tbody').innerHTML = data.map(r => `
-    <tr><td>${r.id}</td><td>${r.origin}</td><td>${r.origin_code}</td><td>${r.destination}</td><td>${r.destination_code}</td><td>${r.distance_km}</td><td>${r.duration_min}</td><td>${r.aircraft_type}</td><td>${r.frequency}</td>
-    <td class="actions"><button class="btn-delete" onclick="delRoute(${r.id})">Удалить</button></td></tr>`).join('');
-}
-async function addRoute() {
-  const body = JSON.stringify({
-    origin: r_origin.value, origin_code: r_origin_code.value, destination: r_dest.value, destination_code: r_dest_code.value,
-    distance_km: +r_dist.value, duration_min: +r_time.value, aircraft_type: r_aircraft.value, frequency: r_freq.value,
-    active: 1, notes: '', origin_lat: +r_olat.value, origin_lon: +r_olon.value, dest_lat: +r_dlat.value, dest_lon: +r_dlon.value
-  });
-  await api('/api/routes',{method:'POST',headers:{'Content-Type':'application/json'},body});
-  loadRoutes(); [r_origin,r_origin_code,r_dest,r_dest_code,r_dist,r_time,r_aircraft,r_freq,r_olat,r_olon,r_dlat,r_dlon].forEach(i=>i.value='');
-}
-async function delRoute(id) { if(!confirm('Удалить?'))return; await api('/api/routes/'+id,{method:'DELETE'}); loadRoutes(); }
+    function switchTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.id === 'tab-' + tab));
+      if (tab === 'events' && eventsData.length === 0) loadEvents();
+      if (tab === 'routes' && routesData.length === 0) loadRoutes();
+      if (tab === 'fleet' && fleetData.length === 0) loadFleet();
+      if (tab === 'timeline' && timelineData.length === 0) loadTimeline();
+    }
 
-// Events
-async function loadEvents() {
-  const res = await api('/api/events');
-  const data = await res.json();
-  document.querySelector('#eventTable tbody').innerHTML = data.map(r => `
-    <tr><td>${r.id}</td><td>${r.title}</td><td>${r.date}</td><td>${r.description}</td>
-    <td class="actions"><button class="btn-delete" onclick="delEvent(${r.id})">Удалить</button></td></tr>`).join('');
-}
-async function addEvent() {
-  await api('/api/events',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:e_title.value,date:e_date.value,description:e_desc.value,image_url:''})});
-  loadEvents(); e_title.value=e_date.value=e_desc.value='';
-}
-async function delEvent(id) { if(!confirm('Удалить?'))return; await api('/api/events/'+id,{method:'DELETE'}); loadEvents(); }
+    // ============ MODAL ============
+    function openModal(title, fields, onSave, values) {
+      const modal = document.getElementById('modal');
+      let html = `<div class="modal-header"><h3>${escapeHtml(title)}</h3><button class="modal-close" onclick="closeModal()">×</button></div><div class="modal-body">`;
+      fields.forEach(f => {
+        const val = values && values[f.name] !== undefined ? escapeHtml(values[f.name]) : '';
+        if (f.type === 'textarea') {
+          html += `<div class="form-row"><label>${f.label}</label><textarea id="field-${f.name}" rows="3">${val}</textarea></div>`;
+        } else if (f.type === 'select') {
+          html += `<div class="form-row"><label>${f.label}</label><select id="field-${f.name}">` + f.options.map(o => `<option value="${o.value}"${val===o.value?' selected':''}>${o.label}</option>`).join('') + `</select></div>`;
+        } else {
+          html += `<div class="form-row"><label>${f.label}</label><input type="${f.type||'text'}" id="field-${f.name}" value="${val}"${f.placeholder?` placeholder="${f.placeholder}"`:''}></div>`;
+        }
+      });
+      html += `</div><div class="modal-footer"><button class="btn-cancel" onclick="closeModal()">Отмена</button><button class="btn-save" onclick="modalSave()">Сохранить</button></div>`;
+      modal.innerHTML = html;
+      document.getElementById('modalOverlay').classList.add('open');
+      window._modalSave = onSave;
+    }
+    function closeModal(){ document.getElementById('modalOverlay').classList.remove('open'); window._modalSave = null; }
+    function modalSave(){ if(!window._modalSave) return; window._modalSave(); }
+    function getField(name){ return document.getElementById('field-'+name).value.trim(); }
+    function getFieldInt(name){ const v = parseInt(document.getElementById('field-'+name).value)||0; return v; }
 
-// Timeline
-async function loadTimeline() {
-  const res = await api('/api/timeline');
-  const data = await res.json();
-  document.querySelector('#tlTable tbody').innerHTML = data.map(r => `
-    <tr><td>${r.id}</td><td>${r.year}</td><td>${r.title}</td><td>${r.description}</td><td>${r.icon}</td>
-    <td class="actions"><button class="btn-delete" onclick="delTimeline(${r.id})">Удалить</button></td></tr>`).join('');
-}
-async function addTimeline() {
-  await api('/api/timeline',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({year:+t_year.value,title:t_title.value,description:t_desc.value,icon:t_icon.value})});
-  loadTimeline(); t_year.value=t_title.value=t_desc.value=''; t_icon.value='✈';
-}
-async function delTimeline(id) { if(!confirm('Удалить?'))return; await api('/api/timeline/'+id,{method:'DELETE'}); loadTimeline(); }
+    // ============ APPLICATIONS ============
+    async function loadApplications() {
+      try {
+        const r = await fetch('/api/applications');
+        if (!r.ok) { if (r.status===401) { window.location='login.html'; return; } throw new Error('Failed'); }
+        const data = await r.json();
+        if (data.user) { document.getElementById('userName').textContent = data.user.username || 'Администратор'; document.getElementById('userAvatar').textContent = (data.user.username || 'A').charAt(0).toUpperCase(); }
+        allData = data.applications || [];
+        document.getElementById('appsLoading').style.display='none';
+        renderAppStats(); renderApps();
+      } catch(e) { document.getElementById('appsLoading').textContent='Ошибка загрузки'; }
+    }
+    function renderAppStats() {
+      document.getElementById('totalCount').textContent = allData.length;
+      document.getElementById('newCount').textContent = allData.filter(a=>a.status==='new').length;
+      document.getElementById('acceptedCount').textContent = allData.filter(a=>a.status==='accepted').length;
+      document.getElementById('rejectedCount').textContent = allData.filter(a=>a.status==='rejected').length;
+    }
+    function setAppFilter(f){ appFilter=f; document.querySelectorAll('.filters-bar .filter-btn').forEach(b=>b.classList.toggle('active',b.dataset.filter===f)); renderApps(); }
+    function renderApps() {
+      const filtered = appFilter==='all' ? allData : allData.filter(a=>a.status===appFilter);
+      const tbody = document.getElementById('appsBody');
+      if (!filtered.length) { document.getElementById('appsTable').style.display='none'; document.getElementById('appsEmpty').style.display='block'; return; }
+      document.getElementById('appsTable').style.display='table'; document.getElementById('appsEmpty').style.display='none';
+      tbody.innerHTML = filtered.map(a => `
+        <tr>
+          <td><button class="expand-btn" onclick="toggleAppDetail(${a.id})">▶</button></td>
+          <td><div class="cell-name">${escapeHtml(a.roblox_name)||'—'}</div></td>
+          <td><div class="cell-muted">${escapeHtml(a.telegram)||'—'}</div></td>
+          <td class="cell-small">${escapeHtml(a.real_age)||'—'}</td>
+          <td class="cell-small">${escapeHtml(a.role)||'—'}</td>
+          <td><span class="status-badge status-${a.status||'new'}">${getStatusText(a.status)}</span></td>
+          <td class="cell-small">${formatDate(a.created_at)}</td>
+        </tr>
+        <tr class="detail-row" id="app-detail-${a.id}" style="display:none;">
+          <td colspan="7" style="background:var(--gray-100);padding:16px 24px;">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;font-size:12px;">
+              <div><strong style="color:var(--gray-500)">Имя:</strong> ${escapeHtml(a.roblox_name)||'—'}</div>
+              <div><strong style="color:var(--gray-500)">Возраст персонажа:</strong> ${escapeHtml(a.char_age)||'—'}</div>
+              <div><strong style="color:var(--gray-500)">Реальный возраст:</strong> ${escapeHtml(a.real_age)||'—'}</div>
+              <div><strong style="color:var(--gray-500)">Роль:</strong> ${escapeHtml(a.role)||'—'}</div>
+              <div><strong style="color:var(--gray-500)">Время онлайн:</strong> ${escapeHtml(a.online_time)||'—'}</div>
+              <div><strong style="color:var(--gray-500)">Налёт:</strong> ${escapeHtml(a.flight_minutes)||'—'}</div>
+              <div style="grid-column:span 3"><strong style="color:var(--gray-500)">Опыт:</strong><br>${escapeHtml(a.experience)||'—'}</div>
+              <div style="grid-column:span 3"><strong style="color:var(--gray-500)">Почему Swiss:</strong><br>${escapeHtml(a.why_swiss)||'—'}</div>
+              <div style="grid-column:span 3"><strong style="color:var(--gray-500)">О себе:</strong><br>${escapeHtml(a.about)||'—'}</div>
+            </div>
+            <div style="margin-top:12px;display:flex;gap:8px;">
+              <button class="action-btn" style="background:#065f46;color:white;border-color:#065f46;" onclick="updateAppStatus(${a.id},'accepted')">Принять</button>
+              <button class="action-btn" style="background:#1e40af;color:white;border-color:#1e40af;" onclick="updateAppStatus(${a.id},'review')">На рассмотрение</button>
+              <button class="action-btn" style="background:#991b1b;color:white;border-color:#991b1b;" onclick="updateAppStatus(${a.id},'rejected')">Отклонить</button>
+              <button class="action-btn delete" onclick="deleteApp(${a.id})">Удалить</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+    function toggleAppDetail(id){ const row=document.getElementById('app-detail-'+id); row.style.display = row.style.display==='none'?'table-row':'none'; }
+    async function updateAppStatus(id,status){
+      try { const r=await fetch('/api/applications/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({status})}); const d=await r.json(); if(r.ok&&d.success){ allData=allData.map(a=>a.id===id?{...a,status}:a); renderAppStats(); renderApps(); showToast('Статус изменён','success'); } else showToast(d.error||'Ошибка','error'); } catch(e){ showToast('Ошибка соединения','error'); }
+    }
+    async function deleteApp(id){
+      if(!confirm('Удалить анкету #'+id+'?')) return;
+      try { const r=await fetch('/api/applications/'+id,{method:'DELETE'}); const d=await r.json(); if(r.ok&&d.success){ allData=allData.filter(a=>a.id!==id); renderAppStats(); renderApps(); showToast('Анкета удалена','success'); } else showToast(d.error||'Ошибка','error'); } catch(e){ showToast('Ошибка соединения','error'); }
+    }
 
-document.getElementById('logoutBtn').addEventListener('click', async () => {
-  await api('/api/logout',{method:'POST'}); localStorage.removeItem('swiss_token'); location.href='index.html';
-});
+    // ============ EVENTS ============
+    async function loadEvents() {
+      try { const r=await fetch('/api/admin/events'); const d=await r.json(); eventsData=d.events||[]; document.getElementById('eventsLoading').style.display='none'; renderEvents(); } catch(e){ document.getElementById('eventsLoading').textContent='Ошибка загрузки'; }
+    }
+    function renderEvents() {
+      const tbody=document.getElementById('eventsBody');
+      if(!eventsData.length){ document.getElementById('eventsTable').style.display='none'; document.getElementById('eventsEmpty').style.display='block'; return; }
+      document.getElementById('eventsTable').style.display='table'; document.getElementById('eventsEmpty').style.display='none';
+      tbody.innerHTML = eventsData.map(e => `
+        <tr>
+          <td><div class="cell-name">${escapeHtml(e.title)}</div><div class="cell-muted">${escapeHtml(e.description||'').substring(0,60)}</div></td>
+          <td class="cell-small">${escapeHtml(e.date)}</td>
+          <td class="cell-small">${escapeHtml(e.time)||'—'}</td>
+          <td class="cell-small">${escapeHtml(e.location)||'—'}</td>
+          <td><span class="status-badge status-${e.status||'upcoming'}">${getStatusText(e.status)}</span></td>
+          <td><div class="cell-actions"><button class="action-btn" onclick="editEvent(${e.id})">Изменить</button><button class="action-btn delete" onclick="deleteEvent(${e.id})">Удалить</button></div></td>
+        </tr>
+      `).join('');
+    }
+    function openEventModal(id){
+      const e = id ? eventsData.find(x=>x.id===id) : null;
+      openModal(id?'Редактировать событие':'Новое событие', [
+        {name:'title',label:'Название',type:'text'},{name:'date',label:'Дата',type:'text',placeholder:'2026-08-20'},
+        {name:'time',label:'Время',type:'text',placeholder:'19:00'},{name:'location',label:'Локация',type:'text'},
+        {name:'status',label:'Статус',type:'select',options:[{value:'upcoming',label:'Предстоит'},{value:'past',label:'Прошло'}]},
+        {name:'description',label:'Описание',type:'textarea'},{name:'image_url',label:'URL изображения',type:'text'}
+      ], async ()=>{
+        const payload = {title:getField('title'),date:getField('date'),time:getField('time'),location:getField('location'),status:getField('status'),description:getField('description'),image_url:getField('image_url')};
+        if(!payload.title||!payload.date){ showToast('Название и дата обязательны','error'); return; }
+        try { const r=await fetch('/api/admin/events'+(id?'/'+id:''),{method:id?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); const d=await r.json(); if(r.ok&&d.success){ showToast(id?'Событие обновлено':'Событие добавлено','success'); closeModal(); loadEvents(); } else showToast(d.error||'Ошибка','error'); } catch(e){ showToast('Ошибка соединения','error'); }
+      }, e||{});
+    }
+    function editEvent(id){ openEventModal(id); }
+    async function deleteEvent(id){ if(!confirm('Удалить событие?')) return; try { const r=await fetch('/api/admin/events/'+id,{method:'DELETE'}); const d=await r.json(); if(r.ok&&d.success){ showToast('Событие удалено','success'); loadEvents(); } else showToast(d.error||'Ошибка','error'); } catch(e){ showToast('Ошибка соединения','error'); } }
 
-loadApps(); loadFleet(); loadRoutes(); loadEvents(); loadTimeline();
-</script>
+    // ============ ROUTES ============
+    async function loadRoutes() {
+      try { const r=await fetch('/api/admin/routes'); const d=await r.json(); routesData=d.routes||[]; document.getElementById('routesLoading').style.display='none'; renderRoutes(); } catch(e){ document.getElementById('routesLoading').textContent='Ошибка загрузки'; }
+    }
+    function renderRoutes() {
+      const tbody=document.getElementById('routesBody');
+      if(!routesData.length){ document.getElementById('routesTable').style.display='none'; document.getElementById('routesEmpty').style.display='block'; return; }
+      document.getElementById('routesTable').style.display='table'; document.getElementById('routesEmpty').style.display='none';
+      tbody.innerHTML = routesData.map(r => `
+        <tr>
+          <td><div class="cell-name">${escapeHtml(r.origin)}</div><div class="cell-muted">${escapeHtml(r.origin_code)||'—'}</div></td>
+          <td><div class="cell-name">${escapeHtml(r.destination)}</div><div class="cell-muted">${escapeHtml(r.destination_code)||'—'}</div></td>
+          <td class="cell-small">${r.distance_km||'—'} км</td>
+          <td class="cell-small">${r.duration_min||'—'} мин</td>
+          <td class="cell-small">${escapeHtml(r.aircraft_type)||'—'}</td>
+          <td><span class="status-badge status-${r.active?'active':'inactive'}">${r.active?'Активен':'Неактивен'}</span></td>
+          <td><div class="cell-actions"><button class="action-btn" onclick="editRoute(${r.id})">Изменить</button><button class="action-btn delete" onclick="deleteRoute(${r.id})">Удалить</button></div></td>
+        </tr>
+      `).join('');
+    }
+    function openRouteModal(id){
+      const r = id ? routesData.find(x=>x.id===id) : null;
+      openModal(id?'Редактировать маршрут':'Новый маршрут', [
+        {name:'origin',label:'Откуда',type:'text'},{name:'origin_code',label:'Код откуда',type:'text'},
+        {name:'destination',label:'Куда',type:'text'},{name:'destination_code',label:'Код куда',type:'text'},
+        {name:'distance_km',label:'Дистанция (км)',type:'number'},{name:'duration_min',label:'Время (мин)',type:'number'},
+        {name:'aircraft_type',label:'Тип ВС',type:'text'},{name:'frequency',label:'Частота',type:'text'},
+        {name:'active',label:'Активен',type:'select',options:[{value:'1',label:'Да'},{value:'0',label:'Нет'}]}
+      ], async ()=>{
+        const payload = {origin:getField('origin'),origin_code:getField('origin_code'),destination:getField('destination'),destination_code:getField('destination_code'),distance_km:getFieldInt('distance_km'),duration_min:getFieldInt('duration_min'),aircraft_type:getField('aircraft_type'),frequency:getField('frequency'),active:getField('active')==='1'};
+        if(!payload.origin||!payload.destination){ showToast('Откуда и Куда обязательны','error'); return; }
+        try { const resp=await fetch('/api/admin/routes'+(id?'/'+id:''),{method:id?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); const d=await resp.json(); if(resp.ok&&d.success){ showToast(id?'Маршрут обновлён':'Маршрут добавлен','success'); closeModal(); loadRoutes(); } else showToast(d.error||'Ошибка','error'); } catch(e){ showToast('Ошибка соединения','error'); }
+      }, r ? {...r, active: r.active ? '1' : '0'} : {active:'1'});
+    }
+    function editRoute(id){ openRouteModal(id); }
+    async function deleteRoute(id){ if(!confirm('Удалить маршрут?')) return; try { const r=await fetch('/api/admin/routes/'+id,{method:'DELETE'}); const d=await r.json(); if(r.ok&&d.success){ showToast('Маршрут удалён','success'); loadRoutes(); } else showToast(d.error||'Ошибка','error'); } catch(e){ showToast('Ошибка соединения','error'); } }
+
+    // ============ FLEET ============
+    async function loadFleet() {
+      try { const r=await fetch('/api/admin/fleet'); const d=await r.json(); fleetData=d.fleet||[]; document.getElementById('fleetLoading').style.display='none'; renderFleet(); } catch(e){ document.getElementById('fleetLoading').textContent='Ошибка загрузки'; }
+    }
+    function renderFleet() {
+      const tbody=document.getElementById('fleetBody');
+      if(!fleetData.length){ document.getElementById('fleetTable').style.display='none'; document.getElementById('fleetEmpty').style.display='block'; return; }
+      document.getElementById('fleetTable').style.display='table'; document.getElementById('fleetEmpty').style.display='none';
+      tbody.innerHTML = fleetData.map(f => `
+        <tr>
+          <td><div class="cell-name">${escapeHtml(f.model)}</div></td>
+          <td class="cell-small">${escapeHtml(f.manufacturer)||'—'}</td>
+          <td class="cell-small">${escapeHtml(f.category)||'—'}</td>
+          <td class="cell-small">${f.capacity||'—'}</td>
+          <td class="cell-small">${f.range_km||'—'} км</td>
+          <td class="cell-small">${f.speed_kmh||'—'} км/ч</td>
+          <td><span class="status-badge status-${f.status||'active'}">${getStatusText(f.status)}</span></td>
+          <td><div class="cell-actions"><button class="action-btn" onclick="editFleet(${f.id})">Изменить</button><button class="action-btn delete" onclick="deleteFleet(${f.id})">Удалить</button></div></td>
+        </tr>
+      `).join('');
+    }
+    function openFleetModal(id){
+      const f = id ? fleetData.find(x=>x.id===id) : null;
+      openModal(id?'Редактировать ВС':'Новое ВС', [
+        {name:'model',label:'Модель',type:'text'},{name:'manufacturer',label:'Производитель',type:'text'},
+        {name:'category',label:'Категория',type:'text'},{name:'capacity',label:'Мест',type:'number'},
+        {name:'range_km',label:'Дальность (км)',type:'number'},{name:'speed_kmh',label:'Скорость (км/ч)',type:'number'},
+        {name:'status',label:'Статус',type:'select',options:[{value:'active',label:'Активен'},{value:'inactive',label:'Неактивен'}]},
+        {name:'description',label:'Описание',type:'textarea'},{name:'image_url',label:'URL изображения',type:'text'}
+      ], async ()=>{
+        const payload = {model:getField('model'),manufacturer:getField('manufacturer'),category:getField('category'),capacity:getFieldInt('capacity'),range_km:getFieldInt('range_km'),speed_kmh:getFieldInt('speed_kmh'),status:getField('status'),description:getField('description'),image_url:getField('image_url')};
+        if(!payload.model){ showToast('Модель обязательна','error'); return; }
+        try { const r=await fetch('/api/admin/fleet'+(id?'/'+id:''),{method:id?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); const d=await r.json(); if(r.ok&&d.success){ showToast(id?'ВС обновлено':'ВС добавлено','success'); closeModal(); loadFleet(); } else showToast(d.error||'Ошибка','error'); } catch(e){ showToast('Ошибка соединения','error'); }
+      }, f||{});
+    }
+    function editFleet(id){ openFleetModal(id); }
+    async function deleteFleet(id){ if(!confirm('Удалить ВС?')) return; try { const r=await fetch('/api/admin/fleet/'+id,{method:'DELETE'}); const d=await r.json(); if(r.ok&&d.success){ showToast('ВС удалено','success'); loadFleet(); } else showToast(d.error||'Ошибка','error'); } catch(e){ showToast('Ошибка соединения','error'); } }
+
+    // ============ TIMELINE ============
+    async function loadTimeline() {
+      try { const r=await fetch('/api/admin/timeline'); const d=await r.json(); timelineData=d.timeline||[]; document.getElementById('timelineLoading').style.display='none'; renderTimeline(); } catch(e){ document.getElementById('timelineLoading').textContent='Ошибка загрузки'; }
+    }
+    function renderTimeline() {
+      const tbody=document.getElementById('timelineBody');
+      if(!timelineData.length){ document.getElementById('timelineTable').style.display='none'; document.getElementById('timelineEmpty').style.display='block'; return; }
+      document.getElementById('timelineTable').style.display='table'; document.getElementById('timelineEmpty').style.display='none';
+      tbody.innerHTML = timelineData.map(t => `
+        <tr>
+          <td class="cell-name">${escapeHtml(t.year)}</td>
+          <td><div class="cell-name">${escapeHtml(t.title)}</div></td>
+          <td class="cell-small">${escapeHtml(t.description)||'—'}</td>
+          <td class="cell-small">${escapeHtml(t.icon)||'—'}</td>
+          <td><div class="cell-actions"><button class="action-btn" onclick="editTimeline(${t.id})">Изменить</button><button class="action-btn delete" onclick="deleteTimeline(${t.id})">Удалить</button></div></td>
+        </tr>
+      `).join('');
+    }
+    function openTimelineModal(id){
+      const t = id ? timelineData.find(x=>x.id===id) : null;
+      openModal(id?'Редактировать запись':'Новая запись', [
+        {name:'year',label:'Год',type:'text'},{name:'title',label:'Название',type:'text'},
+        {name:'description',label:'Описание',type:'textarea'},{name:'icon',label:'Иконка (emoji)',type:'text'}
+      ], async ()=>{
+        const payload = {year:getField('year'),title:getField('title'),description:getField('description'),icon:getField('icon')};
+        if(!payload.year||!payload.title){ showToast('Год и название обязательны','error'); return; }
+        try { const r=await fetch('/api/admin/timeline'+(id?'/'+id:''),{method:id?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); const d=await r.json(); if(r.ok&&d.success){ showToast(id?'Запись обновлена':'Запись добавлена','success'); closeModal(); loadTimeline(); } else showToast(d.error||'Ошибка','error'); } catch(e){ showToast('Ошибка соединения','error'); }
+      }, t||{});
+    }
+    function editTimeline(id){ openTimelineModal(id); }
+    async function deleteTimeline(id){ if(!confirm('Удалить запись?')) return; try { const r=await fetch('/api/admin/timeline/'+id,{method:'DELETE'}); const d=await r.json(); if(r.ok&&d.success){ showToast('Запись удалена','success'); loadTimeline(); } else showToast(d.error||'Ошибка','error'); } catch(e){ showToast('Ошибка соединения','error'); } }
+
+    // ============ EXPORT / UTILS ============
+    function exportCSV() {
+      const headers = ['ID','Roblox Name','Char Age','Real Age','Experience','Role','Online Time','Why Swiss','Rules','FRO','Flight Minutes','Telegram','About','Status','Date'];
+      const rows = allData.map(a => [a.id, a.roblox_name, a.char_age, a.real_age, a.experience, a.role, a.online_time, a.why_swiss, a.rules, a.fro, a.flight_minutes, a.telegram, a.about, getStatusText(a.status), a.created_at]);
+      let csv = '\uFEFF' + headers.join(',') + '\n';
+      rows.forEach(r => { csv += r.map(v => `"${String(v||'').replace(/"/g,'""')}"`).join(',') + '\n'; });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = `swiss_airlines_${new Date().toISOString().slice(0,10)}.csv`; a.click(); URL.revokeObjectURL(url);
+      showToast('CSV файл загружен', 'success');
+    }
+    async function logout() { try { await fetch('/api/logout',{method:'POST'}); } catch(e){} window.location='login.html'; }
+    function toggleTheme() { const c=document.documentElement.getAttribute('data-theme'); const n=c==='dark'?'light':'dark'; document.documentElement.setAttribute('data-theme',n); localStorage.setItem('swiss-theme',n); document.getElementById('themeToggle').textContent=n==='dark'?'☀️':'🌙'; }
+    function toggleLang() { const c=document.documentElement.getAttribute('lang'); const n=c==='ru'?'en':'ru'; document.documentElement.setAttribute('lang',n); localStorage.setItem('swiss-lang',n); document.getElementById('langToggle').textContent=n==='ru'?'EN':'RU'; }
+    const savedTheme=localStorage.getItem('swiss-theme'); if(savedTheme){ document.documentElement.setAttribute('data-theme',savedTheme); document.getElementById('themeToggle').textContent=savedTheme==='dark'?'☀️':'🌙'; }
+    const savedLang=localStorage.getItem('swiss-lang'); if(savedLang){ document.documentElement.setAttribute('lang',savedLang); document.getElementById('langToggle').textContent=savedLang==='ru'?'EN':'RU'; }
+
+    loadApplications();
+  </script>
 </body>
 </html>

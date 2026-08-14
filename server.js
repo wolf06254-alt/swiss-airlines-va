@@ -1,352 +1,663 @@
-require('dotenv').config();
+/* ============================================================
+   Swiss Airlines VA — Server
+   Database: SQLite (file) or PostgreSQL (connection string)
+   ============================================================ */
+
 const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
 const session = require('express-session');
-const crypto = require('crypto');
+const bcrypt = require('bcryptjs');
 const path = require('path');
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const ADMIN_USER = process.env.ADMIN_USERNAME || 'Gregory';
-const ADMIN_PASS = process.env.ADMIN_PASSWORD || '123789';
-const SESSION_SECRET = process.env.SESSION_SECRET || 'swiss-secret-2026';
 
-const tokens = new Map();
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'Gregory';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '123789';
+const ADMIN_PASSWORD_HASH = bcrypt.hashSync(ADMIN_PASSWORD, 10);
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+const SESSION_SECRET = process.env.SESSION_SECRET || 'swiss-airlines-va-secret-key-' + Math.random().toString(36);
+
+/* ============================================================
+   DATABASE SETUP
+   ============================================================ */
+let db, dbType;
+const pgConn = process.env.DATABASE_URL || process.env.POSTGRES_URL || '';
+
+if (pgConn && pgConn.startsWith('postgres')) {
+  const { Pool } = require('pg');
+  db = new Pool({ connectionString: pgConn, ssl: { rejectUnauthorized: false } });
+  dbType = 'postgres';
+  console.log('🗄️  Using PostgreSQL');
+} else {
+  const sqlite3 = require('sqlite3').verbose();
+  db = new sqlite3.Database('./swiss_airlines.db');
+  dbType = 'sqlite';
+  console.log('🗄️  Using SQLite');
+}
+
+/* ============================================================
+   MIDDLEWARE
+   ============================================================ */
+app.use(express.json({ limit: '2mb' }));
+app.use(express.urlencoded({ extended: true, limit: '2mb' }));
+app.use(express.static(path.join(__dirname, '.')));
+
 app.use(session({
   secret: SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 }
+  cookie: {
+    secure: false,
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000,
+    sameSite: 'lax'
+  },
+  name: 'swiss_session'
 }));
 
-app.use(express.static(path.join(__dirname)));
-
-const db = new sqlite3.Database(path.join(__dirname, 'database.sqlite'), (err) => {
-  if (err) console.error('DB error:', err);
-  else console.log('SQLite connected');
+/* ============================================================
+   SECURITY HEADERS
+   ============================================================ */
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  next();
 });
 
-function dbRun(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    db.run(sql, params, function(err) {
-      if (err) reject(err);
-      else resolve({ id: this.lastID, changes: this.changes });
-    });
-  });
+/* ============================================================
+   RATE LIMITER (in-memory, per IP)
+   ============================================================ */
+const rateLimits = new Map();
+function rateLimit(windowMs = 60000, max = 5) {
+  return (req, res, next) => {
+    const ip = req.ip || req.connection.remoteAddress || 'unknown';
+    const now = Date.now();
+    const record = rateLimits.get(ip) || { count: 0, resetTime: now + windowMs };
+    if (now > record.resetTime) { record.count = 0; record.resetTime = now + windowMs; }
+    record.count++;
+    rateLimits.set(ip, record);
+    if (record.count > max) {
+      console.log('🚫 [RATE LIMIT] Blocked IP:', ip, '| Count:', record.count);
+      return res.status(429).json({ success: false, error: 'Слишком много запросов. Подожди минуту.' });
+    }
+    next();
+  };
 }
 
-function dbAll(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    db.all(sql, params, (err, rows) => {
-      if (err) reject(err);
-      else resolve(rows);
-    });
-  });
-}
+/* ============================================================
+   ROUTES FOR HTML PAGES
+   ============================================================ */
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+app.get('/login.html', (req, res) => res.sendFile(path.join(__dirname, 'login.html')));
+app.get('/admin.html', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
 
-async function initDB() {
-  await dbRun(`CREATE TABLE IF NOT EXISTS applications (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL, age INTEGER, platform TEXT, username TEXT, discord TEXT,
-    country TEXT, experience TEXT, hours TEXT, motivation TEXT,
-    status TEXT DEFAULT 'Новая', created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  )`);
-
-  await dbRun(`CREATE TABLE IF NOT EXISTS fleet (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    model TEXT NOT NULL, manufacturer TEXT, category TEXT, capacity TEXT,
-    range_km INTEGER, speed_kmh INTEGER, status TEXT DEFAULT 'active',
-    description TEXT, image_url TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  )`);
-
-  await dbRun(`CREATE TABLE IF NOT EXISTS routes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    origin TEXT NOT NULL, origin_code TEXT, destination TEXT NOT NULL, destination_code TEXT,
-    distance_km INTEGER, duration_min INTEGER, aircraft_type TEXT, frequency TEXT,
-    notes TEXT, active INTEGER DEFAULT 1,
-    origin_lat REAL, origin_lon REAL, dest_lat REAL, dest_lon REAL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  )`);
-
-  await dbRun(`CREATE TABLE IF NOT EXISTS events (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT NOT NULL, date TEXT, description TEXT, image_url TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  )`);
-
-  await dbRun(`CREATE TABLE IF NOT EXISTS timeline (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    year INTEGER, title TEXT, description TEXT, icon TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  )`);
-
-  console.log('DB tables ready');
-  await seedData();
-}
-
-async function seedData() {
-  const fleetCount = await dbAll('SELECT COUNT(*) as c FROM fleet');
-  if (fleetCount[0].c === 0) {
-    const fleet = [
-      ['Airbus A220-100','Airbus','Региональный','125','3350','829','active','Региональный самолёт для коротких маршрутов по Европе.',''],
-      ['Airbus A220-300','Airbus','Региональный','145','3350','829','active','Увеличенная версия A220 для плотных европейских направлений.',''],
-      ['Airbus A319','Airbus','Узкофюзеляжный','138','6800','828','active','Классический европейский самолёт средней дальности.',''],
-      ['Airbus A320neo','Airbus','Узкофюзеляжный','180','6300','828','active','Новое поколение A320 с топливной эффективностью на 15% выше.',''],
-      ['Airbus A321neo','Airbus','Узкофюзеляжный','219','7400','828','active','Удлинённая версия A320neo для высоких нагрузок.',''],
-      ['Airbus A330-300','Airbus','Широкофюзеляжный','236','11300','871','active','Дальнемагистральный широкофюзеляжник для трансатлантики.',''],
-      ['Airbus A340-300','Airbus','Широкофюзеляжный','219','13700','871','active','Классический четырёхдвигательный лайнер для дальних рейсов.',''],
-      ['Boeing 777-300ER','Boeing','Широкофюзеляжный','340','13650','892','active','Флагман дальнемагистрального флота Swiss.',''],
-      ['Boeing 787-9','Boeing','Широкофюзеляжный','290','14010','903','active','Сверхэффективный Dreamliner для дальних маршрутов.',''],
-      ['Bombardier CS100','Bombardier','Региональный','108','3100','828','active','Компактный региональный самолёт для небольших аэропортов.','']
-    ];
-    for (const f of fleet) {
-      await dbRun(`INSERT INTO fleet (model,manufacturer,category,capacity,range_km,speed_kmh,status,description,image_url) VALUES (?,?,?,?,?,?,?,?,?)`, f);
+/* ============================================================
+   DATABASE INITIALIZATION
+   ============================================================ */
+async function initDb() {
+  try {
+    if (dbType === 'postgres') {
+      await db.query(`
+        CREATE TABLE IF NOT EXISTS applications (
+          id SERIAL PRIMARY KEY,
+          roblox_name TEXT NOT NULL,
+          char_age TEXT, real_age TEXT, experience TEXT, role TEXT,
+          online_time TEXT, why_swiss TEXT, rules TEXT, fro TEXT,
+          flight_minutes TEXT, telegram TEXT, about TEXT,
+          status TEXT DEFAULT 'new',
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+      await db.query(`
+        CREATE TABLE IF NOT EXISTS events (
+          id SERIAL PRIMARY KEY,
+          title TEXT NOT NULL,
+          description TEXT,
+          date TEXT NOT NULL,
+          time TEXT,
+          location TEXT,
+          status TEXT DEFAULT 'upcoming',
+          image_url TEXT,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+      await db.query(`
+        CREATE TABLE IF NOT EXISTS routes (
+          id SERIAL PRIMARY KEY,
+          origin TEXT NOT NULL,
+          origin_code TEXT,
+          destination TEXT NOT NULL,
+          destination_code TEXT,
+          distance_km INTEGER,
+          duration_min INTEGER,
+          aircraft_type TEXT,
+          frequency TEXT,
+          active BOOLEAN DEFAULT true,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+      await db.query(`
+        CREATE TABLE IF NOT EXISTS fleet (
+          id SERIAL PRIMARY KEY,
+          model TEXT NOT NULL,
+          manufacturer TEXT,
+          category TEXT,
+          capacity INTEGER,
+          range_km INTEGER,
+          speed_kmh INTEGER,
+          status TEXT DEFAULT 'active',
+          description TEXT,
+          image_url TEXT,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+      await db.query(`
+        CREATE TABLE IF NOT EXISTS timeline (
+          id SERIAL PRIMARY KEY,
+          year TEXT NOT NULL,
+          title TEXT NOT NULL,
+          description TEXT,
+          icon TEXT,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+    } else {
+      await new Promise((resolve, reject) => {
+        db.run(`CREATE TABLE IF NOT EXISTS applications (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          roblox_name TEXT NOT NULL, char_age TEXT, real_age TEXT, experience TEXT, role TEXT,
+          online_time TEXT, why_swiss TEXT, rules TEXT, fro TEXT,
+          flight_minutes TEXT, telegram TEXT, about TEXT,
+          status TEXT DEFAULT 'new', created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`, (err) => err ? reject(err) : resolve());
+      });
+      await new Promise((resolve, reject) => {
+        db.run(`CREATE TABLE IF NOT EXISTS events (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          title TEXT NOT NULL, description TEXT, date TEXT NOT NULL, time TEXT,
+          location TEXT, status TEXT DEFAULT 'upcoming', image_url TEXT,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`, (err) => err ? reject(err) : resolve());
+      });
+      await new Promise((resolve, reject) => {
+        db.run(`CREATE TABLE IF NOT EXISTS routes (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          origin TEXT NOT NULL, origin_code TEXT,
+          destination TEXT NOT NULL, destination_code TEXT,
+          distance_km INTEGER, duration_min INTEGER,
+          aircraft_type TEXT, frequency TEXT,
+          active BOOLEAN DEFAULT 1,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`, (err) => err ? reject(err) : resolve());
+      });
+      await new Promise((resolve, reject) => {
+        db.run(`CREATE TABLE IF NOT EXISTS fleet (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          model TEXT NOT NULL, manufacturer TEXT, category TEXT,
+          capacity INTEGER, range_km INTEGER, speed_kmh INTEGER,
+          status TEXT DEFAULT 'active', description TEXT, image_url TEXT,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`, (err) => err ? reject(err) : resolve());
+      });
+      await new Promise((resolve, reject) => {
+        db.run(`CREATE TABLE IF NOT EXISTS timeline (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          year TEXT NOT NULL, title TEXT NOT NULL, description TEXT, icon TEXT,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`, (err) => err ? reject(err) : resolve());
+      });
     }
-    console.log('Fleet seeded');
-  }
-
-  const routesCount = await dbAll('SELECT COUNT(*) as c FROM routes');
-  if (routesCount[0].c === 0) {
-    const routes = [
-      ['Цюрих','ZRH','Женева','GVA',230,55,'A220-100','Ежедневно','Внутренний рейс',47.4647,8.5492,46.2380,6.1089],
-      ['Цюрих','ZRH','Лондон','LHR',788,110,'A320neo','Ежедневно','Основной европейский хаб',47.4647,8.5492,51.4700,-0.4543],
-      ['Цюрих','ZRH','Париж','CDG',478,85,'A220-300','Ежедневно','Популярное направление',47.4647,8.5492,49.0097,2.5479],
-      ['Цюрих','ZRH','Амстердам','AMS',603,95,'A320neo','Ежедневно','Европейский хаб',47.4647,8.5492,52.3105,4.7683],
-      ['Цюрих','ZRH','Франкфурт','FRA',285,60,'A220-100','Ежедневно','Короткий рейс',47.4647,8.5492,50.0379,8.5622],
-      ['Цюрих','ZRH','Мюнхен','MUC',261,55,'A220-100','Ежедневно','Близкий сосед',47.4647,8.5492,48.3538,11.7861],
-      ['Цюрих','ZRH','Вена','VIE',604,95,'A320neo','Ежедневно','Австрийское направление',47.4647,8.5492,48.1103,16.5697],
-      ['Цюрих','ZRH','Милан','MXP',203,50,'A220-100','Ежедневно','Итальянский рейс',47.4647,8.5492,45.6301,8.7231],
-      ['Цюрих','ZRH','Рим','FCO',700,105,'A320neo','Ежедневно','В Италию',47.4647,8.5492,41.8003,12.2389],
-      ['Цюрих','ZRH','Мадрид','MAD',1236,155,'A321neo','Ежедневно','Испанское направление',47.4647,8.5492,40.4983,-3.5676],
-      ['Цюрих','ZRH','Лиссабон','LIS',1723,185,'A321neo','Ежедневно','Португалия',47.4647,8.5492,38.7756,-9.1354],
-      ['Цюрих','ZRH','Брюссель','BRU',483,80,'A220-300','Ежедневно','Бельгия',47.4647,8.5492,50.9010,4.4844],
-      ['Цюрих','ZRH','Прага','PRG',560,90,'A220-300','Ежедневно','Чехия',47.4647,8.5492,50.1008,14.2632],
-      ['Цюрих','ZRH','Берлин','BER',669,100,'A320neo','Ежедневно','Немецкая столица',47.4647,8.5492,52.3667,13.5033],
-      ['Цюрих','ZRH','Копенгаген','CPH',959,120,'A320neo','Ежедневно','Дания',47.4647,8.5492,55.6180,12.6560],
-      ['Цюрих','ZRH','Стокгольм','ARN',1496,155,'A321neo','Ежедневно','Швеция',47.4647,8.5492,59.6519,17.9186],
-      ['Цюрих','ZRH','Осло','OSL',1420,150,'A321neo','Ежедневно','Норвегия',47.4647,8.5492,60.1939,11.1004],
-      ['Цюрих','ZRH','Хельсинки','HEL',1777,175,'A321neo','Ежедневно','Финляндия',47.4647,8.5492,60.3172,24.9633],
-      ['Цюрих','ZRH','Дубай','DXB',4770,330,'B777-300ER','Ежедневно','Ближний Восток',47.4647,8.5492,25.2532,55.3657],
-      ['Цюрих','ZRH','Тель-Авив','TLV',2814,245,'A330-300','Ежедневно','Израиль',47.4647,8.5492,32.0055,34.8854],
-      ['Цюрих','ZRH','Нью-Йорк','JFK',6342,510,'B777-300ER','Ежедневно','Трансатлантика',47.4647,8.5492,40.6413,-73.7781],
-      ['Цюрих','ZRH','Майами','MIA',7885,640,'B777-300ER','Ежедневно','США — юг',47.4647,8.5492,25.7959,-80.2870],
-      ['Цюрих','ZRH','Лос-Анджелес','LAX',9539,750,'B787-9','Ежедневно','США — запад',47.4647,8.5492,33.9416,-118.4085],
-      ['Цюрих','ZRH','Сан-Франциско','SFO',9360,740,'B787-9','Ежедневно','Калифорния',47.4647,8.5492,37.6213,-122.3790],
-      ['Цюрих','ZRH','Бостон','BOS',5992,485,'A330-300','Ежедневно','США — восток',47.4647,8.5492,42.3656,-71.0096],
-      ['Цюрих','ZRH','Сингапур','SIN',10328,795,'B787-9','Ежедневно','Дальний Восток',47.4647,8.5492,1.3644,103.9915],
-      ['Цюрих','ZRH','Бангкок','BKK',9094,715,'B777-300ER','Ежедневно','Таиланд',47.4647,8.5492,13.6900,100.7501],
-      ['Цюрих','ZRH','Токио','NRT',9572,755,'B787-9','Ежедневно','Япония',47.4647,8.5492,35.7647,140.3864],
-      ['Цюрих','ZRH','Пекин','PEK',8005,650,'A340-300','Ежедневно','Китай',47.4647,8.5492,40.0799,116.6031],
-      ['Цюрих','ZRH','Шанхай','PVG',8922,710,'A340-300','Ежедневно','Китай',47.4647,8.5492,31.1443,121.8083],
-      ['Цюрих','ZRH','Мумбаи','BOM',6486,525,'A330-300','Ежедневно','Индия',47.4647,8.5492,19.0896,72.8656],
-      ['Женева','GVA','Лондон','LHR',755,105,'A220-300','Ежедневно','Из Женевы',46.2380,6.1089,51.4700,-0.4543],
-      ['Женева','GVA','Париж','CDG',411,75,'A220-100','Ежедневно','Из Женевы',46.2380,6.1089,49.0097,2.5479]
-    ];
-    for (const r of routes) {
-      await dbRun(`INSERT INTO routes (origin,origin_code,destination,destination_code,distance_km,duration_min,aircraft_type,frequency,notes,active,origin_lat,origin_lon,dest_lat,dest_lon) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`, r);
-    }
-    console.log('Routes seeded');
-  }
-
-  const eventsCount = await dbAll('SELECT COUNT(*) as c FROM events');
-  if (eventsCount[0].c === 0) {
-    const events = [
-      ['Групповой полёт: Цюрих — Нью-Йорк','2026-08-20','Совместный трансатлантический рейс на B777-300ER. Приглашаются все пилоты VA.',''],
-      ['Тренировка: Посадка в Женеве','2026-08-25','Практика захода на посадку в сложных метеоусловиях.',''],
-      ['Ивент: Swiss Precision Challenge','2026-09-05','Соревнование по точности приземления. Призы за топ-3.',''],
-      ['Групповой полёт: Европейский тур','2026-09-12','Цепочка рейсов по 5 европейским столицам за один день.',''],
-      ['Специальный рейс: День авиации','2026-09-27','Праздничный рейс с эксклюзивным расписанием и ливреями.',''],
-      ['Ночной полёт: Цюрих — Дубай','2026-10-10','Ночной вылет с полной процедурой FMC и VATSIM.',''],
-      ['Турнир: Crosswind Masters','2026-10-18','Соревнование по посадке с боковым ветром.',''],
-      ['Групповой полёт: Тихоокеанский маршрут','2026-11-01','Дальний рейс Цюрих — Лос-Анджелес в составе каравана.','']
-    ];
-    for (const e of events) {
-      await dbRun(`INSERT INTO events (title,date,description,image_url) VALUES (?,?,?,?)`, e);
-    }
-    console.log('Events seeded');
-  }
-
-  const timelineCount = await dbAll('SELECT COUNT(*) as c FROM timeline');
-  if (timelineCount[0].c === 0) {
-    const timeline = [
-      [2023,'Основание VA','Gregory основал Swiss Airlines VA для PTFS. Первые 5 пилотов присоединились к проекту.','🛫'],
-      [2023,'Первый рейс','Выполнен первый официальный рейс Цюрих — Женева. Начало операционной деятельности.','✈️'],
-      [2024,'Расширение флота','Флот пополнился Airbus A320neo и Boeing 777-300ER. Открыты 15 новых направлений.','📈'],
-      [2024,'Discord-сообщество','Запущен официальный Discord-сервер. Более 50 активных участников за первый месяц.','💬'],
-      [2025,'Международные рейсы','Открыты трансатлантические направления: Нью-Йорк, Бостон, Майами.','🌍'],
-      [2025,'100 пилотов','Swiss Airlines VA достигла отметки в 100 активных пилотов. Введена система званий.','🎖️'],
-      [2026,'Азиатское направление','Запущены регулярные рейсы в Сингапур, Токио и Бангкок.','🌏'],
-      [2026,'Обновление сайта','Запущен новый сайт с интерактивной картой маршрутов, админ-панелью и полным каталогом флота.','🚀']
-    ];
-    for (const t of timeline) {
-      await dbRun(`INSERT INTO timeline (year,title,description,icon) VALUES (?,?,?,?)`, t);
-    }
-    console.log('Timeline seeded');
+    console.log('✅ Database initialized');
+  } catch (err) {
+    console.error('❌ Database initialization error:', err);
   }
 }
+initDb();
 
+/* ============================================================
+   AUTH MIDDLEWARE
+   ============================================================ */
 function requireAuth(req, res, next) {
-  if (req.session && req.session.authenticated) return next();
-  const auth = req.headers['authorization'] || '';
-  const m = auth.match(/^Bearer\s+(.+)$/i);
-  if (m && tokens.has(m[1])) return next();
-  return res.status(401).json({ error: 'Unauthorized' });
+  if (req.session && req.session.isAdmin) { next(); }
+  else { res.status(401).json({ error: 'Unauthorized' }); }
 }
 
-// Auth
-app.post('/api/login', (req, res) => {
-  const { username, password } = req.body;
-  if (username === ADMIN_USER && password === ADMIN_PASS) {
-    req.session.authenticated = true;
-    const token = crypto.randomBytes(32).toString('hex');
-    tokens.set(token, true);
-    return res.json({ success: true, token });
+/* ============================================================
+   HEALTH CHECK
+   ============================================================ */
+app.get('/api/health', async (req, res) => {
+  try {
+    let count = 0;
+    if (dbType === 'postgres') {
+      const result = await db.query('SELECT COUNT(*) as count FROM applications');
+      count = parseInt(result.rows[0].count);
+    } else {
+      const row = await new Promise((resolve, reject) => {
+        db.get('SELECT COUNT(*) as count FROM applications', [], (err, r) => err ? reject(err) : resolve(r));
+      });
+      count = row ? row.count : 0;
+    }
+    res.json({ status: 'ok', db: dbType, applications_count: count, timestamp: new Date().toISOString() });
+  } catch (err) {
+    console.error('❌ [HEALTH] DB check failed:', err.message);
+    res.status(500).json({ status: 'error', db: dbType, error: err.message });
   }
-  res.status(401).json({ success: false, error: 'Invalid credentials' });
 });
 
-app.post('/api/logout', (req, res) => {
-  const auth = req.headers['authorization'] || '';
-  const m = auth.match(/^Bearer\s+(.+)$/i);
-  if (m) tokens.delete(m[1]);
-  req.session.destroy();
-  res.json({ success: true });
+/* ============================================================
+   PUBLIC API
+   ============================================================ */
+app.post('/api/submit', rateLimit(60000, 10), async (req, res) => {
+  const { roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about } = req.body;
+  console.log('📥 [SUBMIT] Received application from:', roblox_name);
+  if (!roblox_name || !experience || !rules || !telegram) {
+    return res.status(400).json({ success: false, error: 'Required fields missing' });
+  }
+  if (roblox_name.length > 50 || telegram.length > 50) {
+    return res.status(400).json({ success: false, error: 'Roblox name or Telegram too long (max 50 chars)' });
+  }
+  if (experience && experience.length > 2000) return res.status(400).json({ success: false, error: 'Experience too long' });
+  if (about && about.length > 2000) return res.status(400).json({ success: false, error: 'About too long' });
+  if (why_swiss && why_swiss.length > 2000) return res.status(400).json({ success: false, error: 'Why Swiss too long' });
+
+  try {
+    if (dbType === 'postgres') {
+      const result = await db.query(
+        `INSERT INTO applications (roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about)
+        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING id`,
+        [roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about]
+      );
+      res.json({ success: true, id: result.rows[0].id });
+    } else {
+      const stmt = db.prepare(`INSERT INTO applications (roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+      stmt.run(roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about, function(err) {
+        if (err) { stmt.finalize(); return res.status(500).json({ success: false, error: 'DB error: ' + err.message }); }
+        res.json({ success: true, id: this.lastID });
+        stmt.finalize();
+      });
+    }
+  } catch (err) {
+    console.error('❌ [SUBMIT] Error:', err);
+    res.status(500).json({ success: false, error: 'Database error: ' + err.message });
+  }
+});
+
+/* ============================================================
+   PUBLIC CMS CONTENT API
+   ============================================================ */
+
+// Events
+app.get('/api/events', async (req, res) => {
+  try {
+    let rows;
+    if (dbType === 'postgres') { const r = await db.query('SELECT * FROM events ORDER BY date DESC'); rows = r.rows; }
+    else { rows = await new Promise((resolve, reject) => db.all('SELECT * FROM events ORDER BY date DESC', [], (err, r) => err ? reject(err) : resolve(r))); }
+    res.json({ events: rows });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Routes
+app.get('/api/routes', async (req, res) => {
+  try {
+    let rows;
+    if (dbType === 'postgres') { const r = await db.query('SELECT * FROM routes ORDER BY origin, destination'); rows = r.rows; }
+    else { rows = await new Promise((resolve, reject) => db.all('SELECT * FROM routes ORDER BY origin, destination', [], (err, r) => err ? reject(err) : resolve(r))); }
+    res.json({ routes: rows });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Fleet
+app.get('/api/fleet', async (req, res) => {
+  try {
+    let rows;
+    if (dbType === 'postgres') { const r = await db.query('SELECT * FROM fleet ORDER BY category, model'); rows = r.rows; }
+    else { rows = await new Promise((resolve, reject) => db.all('SELECT * FROM fleet ORDER BY category, model', [], (err, r) => err ? reject(err) : resolve(r))); }
+    res.json({ fleet: rows });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Timeline
+app.get('/api/timeline', async (req, res) => {
+  try {
+    let rows;
+    if (dbType === 'postgres') { const r = await db.query('SELECT * FROM timeline ORDER BY year DESC'); rows = r.rows; }
+    else { rows = await new Promise((resolve, reject) => db.all('SELECT * FROM timeline ORDER BY year DESC', [], (err, r) => err ? reject(err) : resolve(r))); }
+    res.json({ timeline: rows });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+/* ============================================================
+   ADMIN AUTH
+   ============================================================ */
+app.post('/api/login', rateLimit(60000, 5), (req, res) => {
+  const { username, password } = req.body;
+  if (username === ADMIN_USERNAME && bcrypt.compareSync(password, ADMIN_PASSWORD_HASH)) {
+    req.session.isAdmin = true;
+    req.session.username = username;
+    res.json({ success: true });
+  } else {
+    res.status(401).json({ success: false, error: 'Неверный логин или пароль' });
+  }
 });
 
 app.get('/api/me', (req, res) => {
-  const auth = req.headers['authorization'] || '';
-  const m = auth.match(/^Bearer\s+(.+)$/i);
-  const ok = (req.session && req.session.authenticated) || (m && tokens.has(m[1]));
-  res.json({ authenticated: !!ok });
+  res.json({ isAdmin: !!req.session.isAdmin, username: req.session.username || null });
 });
 
-// Applications
+app.post('/api/logout', (req, res) => {
+  req.session.destroy(() => res.json({ success: true }));
+});
+
+/* ============================================================
+   ADMIN APPLICATIONS API
+   ============================================================ */
 app.get('/api/applications', requireAuth, async (req, res) => {
-  const rows = await dbAll('SELECT * FROM applications ORDER BY created_at DESC');
-  res.json(rows);
-});
-app.post('/api/applications', async (req, res) => {
-  const { name, age, platform, username, discord, country, experience, hours, motivation } = req.body;
   try {
-    const result = await dbRun(
-      `INSERT INTO applications (name,age,platform,username,discord,country,experience,hours,motivation) VALUES (?,?,?,?,?,?,?,?,?)`,
-      [name, age, platform, username, discord, country, experience, hours, motivation]
-    );
-    res.json({ success: true, id: result.id });
-  } catch (e) { res.status(500).json({ success: false, error: e.message }); }
+    let rows;
+    if (dbType === 'postgres') { const r = await db.query('SELECT * FROM applications ORDER BY created_at DESC'); rows = r.rows; }
+    else { rows = await new Promise((resolve, reject) => db.all('SELECT * FROM applications ORDER BY created_at DESC', [], (err, r) => err ? reject(err) : resolve(r))); }
+    res.json({ applications: rows, user: { username: req.session.username || 'Администратор' } });
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
-app.patch('/api/applications/:id/status', requireAuth, async (req, res) => {
-  await dbRun('UPDATE applications SET status=? WHERE id=?', [req.body.status, req.params.id]);
-  res.json({ success: true });
+
+app.put('/api/applications/:id', requireAuth, async (req, res) => {
+  const { id } = req.params; const { status } = req.body;
+  const validStatuses = ['new', 'review', 'accepted', 'rejected'];
+  if (!validStatuses.includes(status)) return res.status(400).json({ error: 'Invalid status' });
+  try {
+    if (dbType === 'postgres') {
+      const result = await db.query('UPDATE applications SET status = $1 WHERE id = $2', [status, id]);
+      if (result.rowCount === 0) return res.status(404).json({ error: 'Not found' });
+    } else {
+      const result = await new Promise((resolve, reject) => db.run('UPDATE applications SET status = ? WHERE id = ?', [status, id], function(err) { err ? reject(err) : resolve({ changes: this.changes }); }));
+      if (result.changes === 0) return res.status(404).json({ error: 'Not found' });
+    }
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
+
 app.delete('/api/applications/:id', requireAuth, async (req, res) => {
-  await dbRun('DELETE FROM applications WHERE id=?', [req.params.id]);
-  res.json({ success: true });
-});
-app.get('/api/applications/export', requireAuth, async (req, res) => {
-  const rows = await dbAll('SELECT * FROM applications ORDER BY created_at DESC');
-  const headers = ['ID','Name','Age','Platform','Username','Discord','Country','Experience','Hours','Motivation','Status','Date'];
-  const lines = [headers.join(';')];
-  for (const r of rows) {
-    lines.push([r.id, `"${(r.name||'').replace(/"/g,'""')}"`, r.age, `"${(r.platform||'').replace(/"/g,'""')}"`,
-      `"${(r.username||'').replace(/"/g,'""')}"`, `"${(r.discord||'').replace(/"/g,'""')}"`,
-      `"${(r.country||'').replace(/"/g,'""')}"`, `"${(r.experience||'').replace(/"/g,'""')}"`,
-      `"${(r.hours||'').replace(/"/g,'""')}"`, `"${(r.motivation||'').replace(/"/g,'""')}"`,
-      r.status||'Новая', r.created_at].join(';'));
-  }
-  res.setHeader('Content-Type','text/csv; charset=utf-8');
-  res.setHeader('Content-Disposition','attachment; filename=applications.csv');
-  res.send('\uFEFF'+lines.join('\n'));
+  const { id } = req.params;
+  try {
+    if (dbType === 'postgres') { const result = await db.query('DELETE FROM applications WHERE id = $1', [id]); if (result.rowCount === 0) return res.status(404).json({ error: 'Not found' }); }
+    else { const result = await new Promise((resolve, reject) => db.run('DELETE FROM applications WHERE id = ?', [id], function(err) { err ? reject(err) : resolve({ changes: this.changes }); })); if (result.changes === 0) return res.status(404).json({ error: 'Not found' }); }
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// Fleet CRUD
-app.get('/api/fleet', async (req, res) => {
-  const rows = await dbAll('SELECT * FROM fleet ORDER BY id');
-  res.json(rows);
+app.get('/api/stats', requireAuth, async (req, res) => {
+  try {
+    let total, n, accepted, rejected;
+    if (dbType === 'postgres') {
+      total = parseInt((await db.query('SELECT COUNT(*) as total FROM applications')).rows[0].total);
+      n = parseInt((await db.query('SELECT COUNT(*) as count FROM applications WHERE status = $1', ['new'])).rows[0].count);
+      accepted = parseInt((await db.query('SELECT COUNT(*) as count FROM applications WHERE status = $1', ['accepted'])).rows[0].count);
+      rejected = parseInt((await db.query('SELECT COUNT(*) as count FROM applications WHERE status = $1', ['rejected'])).rows[0].count);
+    } else {
+      total = (await new Promise((resolve, reject) => db.get('SELECT COUNT(*) as total FROM applications', [], (err, r) => err ? reject(err) : resolve(r)))).total;
+      n = (await new Promise((resolve, reject) => db.get('SELECT COUNT(*) as count FROM applications WHERE status = ?', ['new'], (err, r) => err ? reject(err) : resolve(r)))).count || 0;
+      accepted = (await new Promise((resolve, reject) => db.get('SELECT COUNT(*) as count FROM applications WHERE status = ?', ['accepted'], (err, r) => err ? reject(err) : resolve(r)))).count || 0;
+      rejected = (await new Promise((resolve, reject) => db.get('SELECT COUNT(*) as count FROM applications WHERE status = ?', ['rejected'], (err, r) => err ? reject(err) : resolve(r)))).count || 0;
+    }
+    res.json({ total, new: n, accepted, rejected });
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
-app.post('/api/fleet', requireAuth, async (req, res) => {
+
+/* ============================================================
+   ADMIN CMS API — EVENTS
+   ============================================================ */
+app.get('/api/admin/events', requireAuth, async (req, res) => {
+  try {
+    let rows;
+    if (dbType === 'postgres') { const r = await db.query('SELECT * FROM events ORDER BY date DESC'); rows = r.rows; }
+    else { rows = await new Promise((resolve, reject) => db.all('SELECT * FROM events ORDER BY date DESC', [], (err, r) => err ? reject(err) : resolve(r))); }
+    res.json({ events: rows });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/admin/events', requireAuth, async (req, res) => {
+  const { title, description, date, time, location, status, image_url } = req.body;
+  if (!title || !date) return res.status(400).json({ error: 'Title and date required' });
+  try {
+    if (dbType === 'postgres') {
+      const r = await db.query('INSERT INTO events (title,description,date,time,location,status,image_url) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id', [title, description, date, time, location, status || 'upcoming', image_url]);
+      res.json({ success: true, id: r.rows[0].id });
+    } else {
+      db.run('INSERT INTO events (title,description,date,time,location,status,image_url) VALUES (?,?,?,?,?,?,?)', [title, description, date, time, location, status || 'upcoming', image_url], function(err) {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ success: true, id: this.lastID });
+      });
+    }
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.put('/api/admin/events/:id', requireAuth, async (req, res) => {
+  const { id } = req.params; const { title, description, date, time, location, status, image_url } = req.body;
+  try {
+    if (dbType === 'postgres') {
+      const r = await db.query('UPDATE events SET title=$1,description=$2,date=$3,time=$4,location=$5,status=$6,image_url=$7 WHERE id=$8', [title, description, date, time, location, status, image_url, id]);
+      if (r.rowCount === 0) return res.status(404).json({ error: 'Not found' });
+    } else {
+      const r = await new Promise((resolve, reject) => db.run('UPDATE events SET title=?,description=?,date=?,time=?,location=?,status=?,image_url=? WHERE id=?', [title, description, date, time, location, status, image_url, id], function(err) { err ? reject(err) : resolve({ changes: this.changes }); }));
+      if (r.changes === 0) return res.status(404).json({ error: 'Not found' });
+    }
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.delete('/api/admin/events/:id', requireAuth, async (req, res) => {
+  const { id } = req.params;
+  try {
+    if (dbType === 'postgres') { const r = await db.query('DELETE FROM events WHERE id=$1', [id]); if (r.rowCount === 0) return res.status(404).json({ error: 'Not found' }); }
+    else { const r = await new Promise((resolve, reject) => db.run('DELETE FROM events WHERE id=?', [id], function(err) { err ? reject(err) : resolve({ changes: this.changes }); })); if (r.changes === 0) return res.status(404).json({ error: 'Not found' }); }
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+/* ============================================================
+   ADMIN CMS API — ROUTES
+   ============================================================ */
+app.get('/api/admin/routes', requireAuth, async (req, res) => {
+  try {
+    let rows;
+    if (dbType === 'postgres') { const r = await db.query('SELECT * FROM routes ORDER BY origin, destination'); rows = r.rows; }
+    else { rows = await new Promise((resolve, reject) => db.all('SELECT * FROM routes ORDER BY origin, destination', [], (err, r) => err ? reject(err) : resolve(r))); }
+    res.json({ routes: rows });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/admin/routes', requireAuth, async (req, res) => {
+  const { origin, origin_code, destination, destination_code, distance_km, duration_min, aircraft_type, frequency, active } = req.body;
+  if (!origin || !destination) return res.status(400).json({ error: 'Origin and destination required' });
+  try {
+    if (dbType === 'postgres') {
+      const r = await db.query('INSERT INTO routes (origin,origin_code,destination,destination_code,distance_km,duration_min,aircraft_type,frequency,active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id', [origin, origin_code, destination, destination_code, distance_km, duration_min, aircraft_type, frequency, active !== false]);
+      res.json({ success: true, id: r.rows[0].id });
+    } else {
+      db.run('INSERT INTO routes (origin,origin_code,destination,destination_code,distance_km,duration_min,aircraft_type,frequency,active) VALUES (?,?,?,?,?,?,?,?,?)', [origin, origin_code, destination, destination_code, distance_km, duration_min, aircraft_type, frequency, active !== false ? 1 : 0], function(err) {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ success: true, id: this.lastID });
+      });
+    }
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.put('/api/admin/routes/:id', requireAuth, async (req, res) => {
+  const { id } = req.params; const { origin, origin_code, destination, destination_code, distance_km, duration_min, aircraft_type, frequency, active } = req.body;
+  try {
+    if (dbType === 'postgres') {
+      const r = await db.query('UPDATE routes SET origin=$1,origin_code=$2,destination=$3,destination_code=$4,distance_km=$5,duration_min=$6,aircraft_type=$7,frequency=$8,active=$9 WHERE id=$10', [origin, origin_code, destination, destination_code, distance_km, duration_min, aircraft_type, frequency, active !== false, id]);
+      if (r.rowCount === 0) return res.status(404).json({ error: 'Not found' });
+    } else {
+      const r = await new Promise((resolve, reject) => db.run('UPDATE routes SET origin=?,origin_code=?,destination=?,destination_code=?,distance_km=?,duration_min=?,aircraft_type=?,frequency=?,active=? WHERE id=?', [origin, origin_code, destination, destination_code, distance_km, duration_min, aircraft_type, frequency, active !== false ? 1 : 0, id], function(err) { err ? reject(err) : resolve({ changes: this.changes }); }));
+      if (r.changes === 0) return res.status(404).json({ error: 'Not found' });
+    }
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.delete('/api/admin/routes/:id', requireAuth, async (req, res) => {
+  const { id } = req.params;
+  try {
+    if (dbType === 'postgres') { const r = await db.query('DELETE FROM routes WHERE id=$1', [id]); if (r.rowCount === 0) return res.status(404).json({ error: 'Not found' }); }
+    else { const r = await new Promise((resolve, reject) => db.run('DELETE FROM routes WHERE id=?', [id], function(err) { err ? reject(err) : resolve({ changes: this.changes }); })); if (r.changes === 0) return res.status(404).json({ error: 'Not found' }); }
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+/* ============================================================
+   ADMIN CMS API — FLEET
+   ============================================================ */
+app.get('/api/admin/fleet', requireAuth, async (req, res) => {
+  try {
+    let rows;
+    if (dbType === 'postgres') { const r = await db.query('SELECT * FROM fleet ORDER BY category, model'); rows = r.rows; }
+    else { rows = await new Promise((resolve, reject) => db.all('SELECT * FROM fleet ORDER BY category, model', [], (err, r) => err ? reject(err) : resolve(r))); }
+    res.json({ fleet: rows });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/admin/fleet', requireAuth, async (req, res) => {
   const { model, manufacturer, category, capacity, range_km, speed_kmh, status, description, image_url } = req.body;
-  const result = await dbRun(`INSERT INTO fleet (model,manufacturer,category,capacity,range_km,speed_kmh,status,description,image_url) VALUES (?,?,?,?,?,?,?,?,?)`,
-    [model, manufacturer, category, capacity, range_km, speed_kmh, status, description, image_url]);
-  res.json({ success: true, id: result.id });
-});
-app.patch('/api/fleet/:id', requireAuth, async (req, res) => {
-  const { model, manufacturer, category, capacity, range_km, speed_kmh, status, description, image_url } = req.body;
-  await dbRun(`UPDATE fleet SET model=?,manufacturer=?,category=?,capacity=?,range_km=?,speed_kmh=?,status=?,description=?,image_url=? WHERE id=?`,
-    [model, manufacturer, category, capacity, range_km, speed_kmh, status, description, image_url, req.params.id]);
-  res.json({ success: true });
-});
-app.delete('/api/fleet/:id', requireAuth, async (req, res) => {
-  await dbRun('DELETE FROM fleet WHERE id=?', [req.params.id]);
-  res.json({ success: true });
-});
-
-// Routes CRUD
-app.get('/api/routes', async (req, res) => {
-  const rows = await dbAll('SELECT * FROM routes ORDER BY id');
-  res.json(rows);
-});
-app.post('/api/routes', requireAuth, async (req, res) => {
-  const { origin, origin_code, destination, destination_code, distance_km, duration_min, aircraft_type, frequency, notes, active, origin_lat, origin_lon, dest_lat, dest_lon } = req.body;
-  const result = await dbRun(`INSERT INTO routes (origin,origin_code,destination,destination_code,distance_km,duration_min,aircraft_type,frequency,notes,active,origin_lat,origin_lon,dest_lat,dest_lon) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-    [origin, origin_code, destination, destination_code, distance_km, duration_min, aircraft_type, frequency, notes, active?1:0, origin_lat, origin_lon, dest_lat, dest_lon]);
-  res.json({ success: true, id: result.id });
-});
-app.patch('/api/routes/:id', requireAuth, async (req, res) => {
-  const { origin, origin_code, destination, destination_code, distance_km, duration_min, aircraft_type, frequency, notes, active, origin_lat, origin_lon, dest_lat, dest_lon } = req.body;
-  await dbRun(`UPDATE routes SET origin=?,origin_code=?,destination=?,destination_code=?,distance_km=?,duration_min=?,aircraft_type=?,frequency=?,notes=?,active=?,origin_lat=?,origin_lon=?,dest_lat=?,dest_lon=? WHERE id=?`,
-    [origin, origin_code, destination, destination_code, distance_km, duration_min, aircraft_type, frequency, notes, active?1:0, origin_lat, origin_lon, dest_lat, dest_lon, req.params.id]);
-  res.json({ success: true });
-});
-app.delete('/api/routes/:id', requireAuth, async (req, res) => {
-  await dbRun('DELETE FROM routes WHERE id=?', [req.params.id]);
-  res.json({ success: true });
+  if (!model) return res.status(400).json({ error: 'Model required' });
+  try {
+    if (dbType === 'postgres') {
+      const r = await db.query('INSERT INTO fleet (model,manufacturer,category,capacity,range_km,speed_kmh,status,description,image_url) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id', [model, manufacturer, category, capacity, range_km, speed_kmh, status || 'active', description, image_url]);
+      res.json({ success: true, id: r.rows[0].id });
+    } else {
+      db.run('INSERT INTO fleet (model,manufacturer,category,capacity,range_km,speed_kmh,status,description,image_url) VALUES (?,?,?,?,?,?,?,?,?)', [model, manufacturer, category, capacity, range_km, speed_kmh, status || 'active', description, image_url], function(err) {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ success: true, id: this.lastID });
+      });
+    }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// Events CRUD
-app.get('/api/events', async (req, res) => {
-  const rows = await dbAll('SELECT * FROM events ORDER BY date');
-  res.json(rows);
-});
-app.post('/api/events', requireAuth, async (req, res) => {
-  const { title, date, description, image_url } = req.body;
-  const result = await dbRun(`INSERT INTO events (title,date,description,image_url) VALUES (?,?,?,?)`, [title, date, description, image_url]);
-  res.json({ success: true, id: result.id });
-});
-app.patch('/api/events/:id', requireAuth, async (req, res) => {
-  const { title, date, description, image_url } = req.body;
-  await dbRun(`UPDATE events SET title=?,date=?,description=?,image_url=? WHERE id=?`, [title, date, description, image_url, req.params.id]);
-  res.json({ success: true });
-});
-app.delete('/api/events/:id', requireAuth, async (req, res) => {
-  await dbRun('DELETE FROM events WHERE id=?', [req.params.id]);
-  res.json({ success: true });
+app.put('/api/admin/fleet/:id', requireAuth, async (req, res) => {
+  const { id } = req.params; const { model, manufacturer, category, capacity, range_km, speed_kmh, status, description, image_url } = req.body;
+  try {
+    if (dbType === 'postgres') {
+      const r = await db.query('UPDATE fleet SET model=$1,manufacturer=$2,category=$3,capacity=$4,range_km=$5,speed_kmh=$6,status=$7,description=$8,image_url=$9 WHERE id=$10', [model, manufacturer, category, capacity, range_km, speed_kmh, status, description, image_url, id]);
+      if (r.rowCount === 0) return res.status(404).json({ error: 'Not found' });
+    } else {
+      const r = await new Promise((resolve, reject) => db.run('UPDATE fleet SET model=?,manufacturer=?,category=?,capacity=?,range_km=?,speed_kmh=?,status=?,description=?,image_url=? WHERE id=?', [model, manufacturer, category, capacity, range_km, speed_kmh, status, description, image_url, id], function(err) { err ? reject(err) : resolve({ changes: this.changes }); }));
+      if (r.changes === 0) return res.status(404).json({ error: 'Not found' });
+    }
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// Timeline CRUD
-app.get('/api/timeline', async (req, res) => {
-  const rows = await dbAll('SELECT * FROM timeline ORDER BY year');
-  res.json(rows);
+app.delete('/api/admin/fleet/:id', requireAuth, async (req, res) => {
+  const { id } = req.params;
+  try {
+    if (dbType === 'postgres') { const r = await db.query('DELETE FROM fleet WHERE id=$1', [id]); if (r.rowCount === 0) return res.status(404).json({ error: 'Not found' }); }
+    else { const r = await new Promise((resolve, reject) => db.run('DELETE FROM fleet WHERE id=?', [id], function(err) { err ? reject(err) : resolve({ changes: this.changes }); })); if (r.changes === 0) return res.status(404).json({ error: 'Not found' }); }
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
-app.post('/api/timeline', requireAuth, async (req, res) => {
+
+/* ============================================================
+   ADMIN CMS API — TIMELINE
+   ============================================================ */
+app.get('/api/admin/timeline', requireAuth, async (req, res) => {
+  try {
+    let rows;
+    if (dbType === 'postgres') { const r = await db.query('SELECT * FROM timeline ORDER BY year DESC'); rows = r.rows; }
+    else { rows = await new Promise((resolve, reject) => db.all('SELECT * FROM timeline ORDER BY year DESC', [], (err, r) => err ? reject(err) : resolve(r))); }
+    res.json({ timeline: rows });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/admin/timeline', requireAuth, async (req, res) => {
   const { year, title, description, icon } = req.body;
-  const result = await dbRun(`INSERT INTO timeline (year,title,description,icon) VALUES (?,?,?,?)`, [year, title, description, icon]);
-  res.json({ success: true, id: result.id });
-});
-app.patch('/api/timeline/:id', requireAuth, async (req, res) => {
-  const { year, title, description, icon } = req.body;
-  await dbRun(`UPDATE timeline SET year=?,title=?,description=?,icon=? WHERE id=?`, [year, title, description, icon, req.params.id]);
-  res.json({ success: true });
-});
-app.delete('/api/timeline/:id', requireAuth, async (req, res) => {
-  await dbRun('DELETE FROM timeline WHERE id=?', [req.params.id]);
-  res.json({ success: true });
+  if (!year || !title) return res.status(400).json({ error: 'Year and title required' });
+  try {
+    if (dbType === 'postgres') {
+      const r = await db.query('INSERT INTO timeline (year,title,description,icon) VALUES ($1,$2,$3,$4) RETURNING id', [year, title, description, icon]);
+      res.json({ success: true, id: r.rows[0].id });
+    } else {
+      db.run('INSERT INTO timeline (year,title,description,icon) VALUES (?,?,?,?)', [year, title, description, icon], function(err) {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ success: true, id: this.lastID });
+      });
+    }
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-app.listen(PORT, async () => {
-  await initDB();
-  console.log(`Server running on port ${PORT}`);
+app.put('/api/admin/timeline/:id', requireAuth, async (req, res) => {
+  const { id } = req.params; const { year, title, description, icon } = req.body;
+  try {
+    if (dbType === 'postgres') {
+      const r = await db.query('UPDATE timeline SET year=$1,title=$2,description=$3,icon=$4 WHERE id=$5', [year, title, description, icon, id]);
+      if (r.rowCount === 0) return res.status(404).json({ error: 'Not found' });
+    } else {
+      const r = await new Promise((resolve, reject) => db.run('UPDATE timeline SET year=?,title=?,description=?,icon=? WHERE id=?', [year, title, description, icon, id], function(err) { err ? reject(err) : resolve({ changes: this.changes }); }));
+      if (r.changes === 0) return res.status(404).json({ error: 'Not found' });
+    }
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
+
+app.delete('/api/admin/timeline/:id', requireAuth, async (req, res) => {
+  const { id } = req.params;
+  try {
+    if (dbType === 'postgres') { const r = await db.query('DELETE FROM timeline WHERE id=$1', [id]); if (r.rowCount === 0) return res.status(404).json({ error: 'Not found' }); }
+    else { const r = await new Promise((resolve, reject) => db.run('DELETE FROM timeline WHERE id=?', [id], function(err) { err ? reject(err) : resolve({ changes: this.changes }); })); if (r.changes === 0) return res.status(404).json({ error: 'Not found' }); }
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+/* ============================================================
+   PUBLIC MAIL API
+   ============================================================ */
+app.get('/api/notifications', async (req, res) => {
+  const { ptfs_nick } = req.query;
+  if (!ptfs_nick) return res.status(400).json({ error: 'Ник не указан' });
+  try {
+    let rows;
+    if (dbType === 'postgres') {
+      rows = (await db.query('SELECT * FROM applications WHERE LOWER(roblox_name) = LOWER($1) ORDER BY created_at DESC LIMIT 1', [ptfs_nick])).rows;
+    } else {
+      rows = await new Promise((resolve, reject) => db.all('SELECT * FROM applications WHERE LOWER(roblox_name) = LOWER(?) ORDER BY created_at DESC LIMIT 1', [ptfs_nick], (err, r) => err ? reject(err) : resolve(r)));
+    }
+    if (rows.length === 0) return res.json({ notifications: [] });
+    const app = rows[0];
+    res.json({ notifications: [{ title: 'Анкета', message: 'Ваша анкета найдена', status: app.status, created_at: app.created_at, data: app }] });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+/* ============================================================
+   START SERVER
+   ============================================================ */
+const server = app.listen(PORT, () => {
+  console.log(`✈️  Swiss Airlines server running on port ${PORT}`);
+  console.log(`🗄️  Database: ${dbType.toUpperCase()}`);
+  console.log(`📝 Public form: http://localhost:${PORT}`);
+  console.log(`🔐 Admin panel: http://localhost:${PORT}/login.html`);
+  console.log(`🔑 Default admin: ${ADMIN_USERNAME}`);
+  console.log(`💡 To change credentials, set ADMIN_USERNAME and ADMIN_PASSWORD environment variables`);
+});
+
+/* ============================================================
+   GRACEFUL SHUTDOWN
+   ============================================================ */
+function shutdown(signal) {
+  console.log(`\n${signal} received. Closing server gracefully...`);
+  server.close(() => {
+    console.log('🛑 HTTP server closed');
+    if (dbType === 'sqlite') {
+      db.close((err) => {
+        if (err) console.error('❌ Error closing SQLite:', err.message);
+        else console.log('✅ SQLite connection closed');
+        process.exit(0);
+      });
+    } else {
+      db.end().then(() => { console.log('✅ PostgreSQL pool closed'); process.exit(0); }).catch((err) => { console.error('❌ Error closing PostgreSQL:', err.message); process.exit(1); });
+    }
+  });
+}
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));

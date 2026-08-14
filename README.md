@@ -1,45 +1,143 @@
-# Swiss Airlines VA
+# 🛫 Swiss Airlines — Сайт с анкетой и админ-панелью
 
-Минималистичный сайт виртуальной авиакомпании Swiss Airlines для PTFS.
+Готовый сайт для виртуальной авиакомпании Swiss Airlines с формой подачи заявки и панелью управления для администратора.
 
-## Структура
+## 📦 Что включено
 
-- `index.html` — главная страница
-- `apply.html` — анкета пилота
-- `contacts.html` — контакты и Discord
-- `login.html` — вход для администрации
-- `admin.html` — панель управления заявками
-- `style.css` — стили (dark theme, glassmorphism)
-- `script.js` — анимации, i18n, формы
-- `server.js` — бэкенд (Node.js + Express + SQLite)
+- **Публичная анкета** (`index.html`) — стильная форма для кандидатов с авиа-декором
+- **Панель администратора** (`admin.html`) — просмотр, одобрение, отклонение и удаление заявок
+- **Система авторизации** — защита админки паролем
+- **PostgreSQL / SQLite** — заявки сохраняются навсегда (PostgreSQL на Render, SQLite локально)
+- **REST API** — серверная обработка заявок
 
-## Установка
+## 🔐 Данные для входа (по умолчанию)
+
+- **Логин:** `Gregory`
+- **Пароль:** `123789`
+
+> ⚠️ **Для безопасности создай файл `.env` в папке проекта и укажи свои данные:**
+> ```
+> ADMIN_USERNAME=Gregory
+> ADMIN_PASSWORD=123789
+> SESSION_SECRET=любая-случайная-строка
+> ```
+> Файл `.env` уже добавлен в `.gitignore` и не попадёт в Git.
+
+---
+
+## 🚀 Быстрый старт (локально)
 
 ```bash
+# 1. Установи зависимости
 npm install
+
+# 2. Запусти сервер
 npm start
+
+# 3. Открой в браузере:
+# Анкета:    http://localhost:3000
+# Админка:   http://localhost:3000/login.html
 ```
 
-## Переменные окружения (.env)
+Локально сервер автоматически использует **SQLite** (`applications.db` в папке проекта).
+
+---
+
+## 🌐 Публикация на Render (бесплатно, заявки НЕ пропадают)
+
+### Шаг 1: Загрузи код на GitHub
+1. Создай новый репозиторий на GitHub
+2. Загрузи туда все файлы из этого архива
+3. Запушь (`git push`)
+
+### Шаг 2: Создай Web Service на Render
+1. Зарегистрируйся на [render.com](https://render.com) (бесплатно)
+2. Нажми **New → Web Service**
+3. Подключи свой GitHub-репозиторий
+4. Укажи настройки:
+   - **Name:** `swiss-airlines-va`
+   - **Runtime:** `Node`
+   - **Build Command:** `npm install`
+   - **Start Command:** `node server.js`
+5. В разделе **Environment Variables** добавь:
+   - `ADMIN_USERNAME` = `Gregory`
+   - `ADMIN_PASSWORD` = `123789`
+   - `SESSION_SECRET` = любая случайная строка (например `swiss-secret-abc123`)
+
+### Шаг 3: Подключи PostgreSQL (важно!)
+1. На дашборде Render нажми **New → PostgreSQL**
+2. **Name:** `swiss-airlines-db`
+3. **Plan:** `Free`
+4. Нажми **Create Database**
+5. После создания перейди в свою Web Service → **Environment** → **Add Environment Variable**
+6. **Key:** `DATABASE_URL`
+7. **Value:** скопируй **Internal Database URL** из настроек PostgreSQL (выглядит как `postgres://user:password@swiss-airlines-db/...:5432/swiss_airlines_db`)
+8. Сохрани — Render перезадеплоит сервис
+
+> ✅ **Готово!** Теперь все заявки хранятся в PostgreSQL и никогда не пропадут при новом деплое.
+
+### Шаг 4: UptimeRobot (чтобы сайт не засыпал)
+Бесплатный инстанс на Render "засыпает" после 15 минут без трафика.
+
+1. Зарегистрируйся на [uptimerobot.com](https://uptimerobot.com)
+2. Создай монитор **HTTP(s)**
+3. **URL:** твой Render-адрес (например `https://swiss-airlines-va.onrender.com`)
+4. **Interval:** `5 minutes`
+5. Сохрани — сайт будет пинговаться каждые 5 минут и оставаться онлайн 24/7
+
+---
+
+## 🔧 Смена пароля администратора
+
+**Через переменные окружения (рекомендуется):**
+
+На Render → твой Web Service → **Environment** → добавь/измени:
+```
+ADMIN_USERNAME=твой_логин
+ADMIN_PASSWORD=твой_сложный_пароль
+SESSION_SECRET=любая_длинная_строка_12345
+```
+
+---
+
+## 📁 Структура проекта
 
 ```
-PORT=3000
-ADMIN_USERNAME=Gregory
-ADMIN_PASSWORD=123789
-SESSION_SECRET=your-secret
+swiss-airlines-va/
+├── server.js           # Главный сервер (Node.js + Express)
+│                       # Автоопределение: PostgreSQL на Render, SQLite локально
+├── package.json        # Зависимости (express, pg, sqlite3, bcryptjs, ...)
+├── .env.example        # Пример переменных окружения
+├── render.yaml         # Конфиг для Render (Web Service + PostgreSQL)
+├── README.md           # Этот файл
+├── index.html          # Публичная анкета (авиа-декор, анимации)
+├── login.html          # Страница входа администратора
+└── admin.html          # Панель администратора
 ```
 
-## Деплой
+---
 
-1. Загрузи репозиторий на GitHub.
-2. Подключи репозиторий к Render.
-3. Укажи Build Command: `npm install` и Start Command: `npm start`.
-4. Готово!
+## 🛠️ Возможности админ-панели
 
-## Дизайн
+- 📊 **Статистика** — общее количество, новые, принятые, отклонённые
+- 🔍 **Фильтры** — по статусам: все, новые, на рассмотрении, принято, отклонено
+- 📋 **Просмотр деталей** — клик по строке открывает полную анкету
+- ✅ **Принять / 🔍 На рассмотрение / ❌ Отклонить** — быстрые кнопки действий
+- 🗑️ **Удаление** — полное удаление анкеты
+- 📥 **Экспорт CSV** — скачать все анкеты в CSV
 
-- Dark theme (#050505)
-- Акцентный цвет — Swiss Red (#e30613)
-- Glassmorphism карточки
-- Canvas particles с соединяющими линиями
-- Reveal on scroll анимации
+---
+
+## ⚠️ Важно: заявки больше не пропадают
+
+При деплое на Render файловая система очищается — SQLite-файл удалялся.
+**Решение:** сервер теперь автоматически использует PostgreSQL, если доступна переменная `DATABASE_URL`.
+
+| Где запущено | База данных | Данные сохраняются? |
+|-------------|-------------|---------------------|
+| **Render + PostgreSQL** | PostgreSQL | ✅ Да, навсегда |
+| **Локально** | SQLite | ⚠️ Только на локальном диске |
+
+---
+
+**✈️ FLY TOGETHER. FLY SWISS.**
