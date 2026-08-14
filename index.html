@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Swiss Airlines VA — Home</title>
+<title>Swiss Airlines VA — Главная</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -126,72 +126,75 @@ nav .login-btn:hover{background:var(--red);color:#fff;box-shadow:0 0 20px var(--
 <nav id="nav">
   <div class="logo"><i class="fa-solid fa-plane-up"></i> Swiss <span>VA</span></div>
   <ul>
-    <li><a href="index.html">Home</a></li>
-    <li><a href="fleet.html">Fleet</a></li>
-    <li><a href="routes.html">Routes</a></li>
-    <li><a href="map.html">Map</a></li>
-    <li><a href="events.html">Events</a></li>
-    <li><a href="history.html">History</a></li>
+    <li><a href="index.html">Главная</a></li>
+    <li><a href="fleet.html">Флот</a></li>
+    <li><a href="routes.html">Маршруты</a></li>
+    <li><a href="map.html">Карта</a></li>
+    <li><a href="events.html">События</a></li>
+    <li><a href="history.html">История</a></li>
+    <li><a href="apply.html">Анкета</a></li>
+    <li><a href="contact.html">Контакты</a></li>
   </ul>
-  <button class="login-btn" id="loginBtn">Login</button>
+  <button class="login-btn" id="loginBtn">Вход</button>
 </nav>
 
 <div class="hero">
   <div class="hero-bg"></div>
-  <h1 data-aos="fade-up">Swiss Precision.<br><span>Global Reach.</span></h1>
-  <p data-aos="fade-up" data-aos-delay="100">Experience virtual aviation at its finest. Swiss Airlines VA brings premium flight simulation to the skies of PTFS.</p>
+  <h1 data-aos="fade-up">Швейцарская точность.<br><span>Глобальный охват.</span></h1>
+  <p data-aos="fade-up" data-aos-delay="100">Виртуальная авиакомпания Swiss Airlines VA — премиальный авиасимулятор для PTFS. Присоединяйтесь к нашему сообществу!</p>
   <div class="hero-btns" data-aos="fade-up" data-aos-delay="200">
-    <a href="fleet.html" class="btn-primary">Explore Fleet</a>
-    <a href="https://discord.gg/6YA8t7GJr" target="_blank" class="btn-secondary"><i class="fa-brands fa-discord"></i> Join Discord</a>
+    <a href="fleet.html" class="btn-primary">Изучить флот</a>
+    <a href="apply.html" class="btn-secondary"><i class="fa-solid fa-user-plus"></i> Подать анкету</a>
+    <a href="https://discord.gg/6YA8t7GJr" target="_blank" class="btn-secondary"><i class="fa-brands fa-discord"></i> Discord</a>
   </div>
   <div class="hero-stats" data-aos="fade-up" data-aos-delay="300">
-    <div class="hero-stat"><div class="num" id="statFleet">0</div><div class="label">Aircraft</div></div>
-    <div class="hero-stat"><div class="num" id="statRoutes">0</div><div class="label">Routes</div></div>
-    <div class="hero-stat"><div class="num" id="statEvents">0</div><div class="label">Events</div></div>
+    <div class="hero-stat"><div class="num" id="statFleet">0</div><div class="label">Самолетов</div></div>
+    <div class="hero-stat"><div class="num" id="statRoutes">0</div><div class="label">Маршрутов</div></div>
+    <div class="hero-stat"><div class="num" id="statEvents">0</div><div class="label">Событий</div></div>
   </div>
 </div>
 
 <section class="section">
-  <h2 class="section-title" data-aos="fade-right">Fleet Preview</h2>
-  <p class="section-sub" data-aos="fade-right">Our modern and diverse fleet connects Switzerland to the world.</p>
+  <h2 class="section-title" data-aos="fade-right">Флот</h2>
+  <p class="section-sub" data-aos="fade-right">Наш современный и разнообразный флот соединяет Швейцарию с миром.</p>
   <div class="fleet-grid" id="fleetPreview"></div>
-  <div style="text-align:center;margin-top:32px"><a href="fleet.html" class="btn-secondary">View Full Fleet</a></div>
+  <div style="text-align:center;margin-top:32px"><a href="fleet.html" class="btn-secondary">Весь флот</a></div>
 </section>
 
 <section class="section">
-  <h2 class="section-title" data-aos="fade-right">Popular Routes</h2>
-  <p class="section-sub" data-aos="fade-right">From Zurich to global destinations — our most flown routes.</p>
+  <h2 class="section-title" data-aos="fade-right">Популярные маршруты</h2>
+  <p class="section-sub" data-aos="fade-right">Из Цюриха в любую точку мира — наши самые популярные направления.</p>
   <div class="featured-routes" id="routePreview"></div>
-  <div style="text-align:center;margin-top:32px"><a href="routes.html" class="btn-secondary">All Routes</a></div>
+  <div style="text-align:center;margin-top:32px"><a href="routes.html" class="btn-secondary">Все маршруты</a></div>
 </section>
 
 <section class="section">
-  <h2 class="section-title" data-aos="fade-right">Upcoming Events</h2>
-  <p class="section-sub" data-aos="fade-right">Join the community for tours, challenges, and group flights.</p>
+  <h2 class="section-title" data-aos="fade-right">Ближайшие события</h2>
+  <p class="section-sub" data-aos="fade-right">Присоединяйтесь к турам, челленджам и групповым полетам.</p>
   <div class="events-row" id="eventsPreview"></div>
-  <div style="text-align:center;margin-top:32px"><a href="events.html" class="btn-secondary">All Events</a></div>
+  <div style="text-align:center;margin-top:32px"><a href="events.html" class="btn-secondary">Все события</a></div>
 </section>
 
 <div class="footer">
   <div class="logo">Swiss <span>VA</span></div>
-  <p>Swiss Airlines Virtual Airline for PTFS. Premium flight simulation with Swiss precision.</p>
+  <p>Виртуальная авиакомпания Swiss Airlines для PTFS. Премиальный авиасимулятор с швейцарской точностью.</p>
   <div class="socials">
     <a href="https://discord.gg/6YA8t7GJr" target="_blank"><i class="fa-brands fa-discord"></i></a>
     <a href="#"><i class="fa-brands fa-twitter"></i></a>
     <a href="#"><i class="fa-brands fa-youtube"></i></a>
   </div>
-  <div class="copy">© 2026 Swiss Airlines VA. All rights reserved.</div>
+  <div class="copy">© 2026 Swiss Airlines VA. Все права защищены.</div>
 </div>
 
 <div class="modal" id="loginModal">
   <div class="modal-box" style="position:relative">
     <button class="close" id="closeModal">×</button>
-    <h3>Admin Login</h3>
-    <input type="text" id="userInput" placeholder="Username">
-    <input type="password" id="passInput" placeholder="Password">
+    <h3>Вход для администратора</h3>
+    <input type="text" id="userInput" placeholder="Логин">
+    <input type="password" id="passInput" placeholder="Пароль">
     <div class="err" id="loginErr"></div>
-    <button id="doLogin">Login</button>
-    <a href="admin.html" class="admin-link" id="adminLink">Go to Admin Panel</a>
+    <button id="doLogin">Войти</button>
+    <a href="admin.html" class="admin-link" id="adminLink">Панель администратора</a>
   </div>
 </div>
 
@@ -216,9 +219,9 @@ window.addEventListener('scroll',()=>{if(window.scrollY>60)document.getElementBy
 fetch('/api/stats').then(r=>r.json()).then(d=>{animateNum('statFleet',d.fleet);animateNum('statRoutes',d.routes);animateNum('statEvents',d.events);});
 function animateNum(id,target){const el=document.getElementById(id);let c=0;const step=Math.max(1,Math.floor(target/40));const iv=setInterval(()=>{c+=step;if(c>=target){c=target;clearInterval(iv);}el.textContent=c;},30);}
 
-fetch('/api/fleet').then(r=>r.json()).then(d=>{const container=document.getElementById('fleetPreview');d.slice(0,3).forEach(a=>{const div=document.createElement('div');div.className='glass fleet-card';div.innerHTML=`<div class="badge">${a.status}</div><h3>${a.aircraft}</h3><div class="meta">${a.type} · ${a.registration}</div><div class="stats"><div><strong>${a.capacity}</strong>Seats</div><div><strong>${a.range}</strong>km Range</div></div>`;container.appendChild(div);});});
+fetch('/api/fleet').then(r=>r.json()).then(d=>{const container=document.getElementById('fleetPreview');d.slice(0,3).forEach(a=>{const div=document.createElement('div');div.className='glass fleet-card';div.innerHTML=`<div class="badge">${a.status}</div><h3>${a.aircraft}</h3><div class="meta">${a.type} · ${a.registration}</div><div class="stats"><div><strong>${a.capacity}</strong>${a.type==='Cargo'?'Тонн':'Мест'}</div><div><strong>${a.range}</strong>км Дальность</div></div>`;container.appendChild(div);});});
 
-fetch('/api/routes').then(r=>r.json()).then(d=>{const container=document.getElementById('routePreview');const popular=['Zurich','New York JFK','Los Angeles','Tokyo NRT','Singapore','London LHR','Dubai','Chicago ORD'];d.filter(r=>popular.includes(r.destination)||popular.includes(r.origin)).slice(0,5).forEach(r=>{const div=document.createElement('div');div.className='glass route-card';div.innerHTML=`<div class="icon"><i class="fa-solid fa-plane"></i></div><div class="info"><h4>${r.origin} → ${r.destination}</h4><p>${r.flight_number} · ${r.duration} · ${r.aircraft_type}</p></div><div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>`;container.appendChild(div);});});
+fetch('/api/routes').then(r=>r.json()).then(d=>{const container=document.getElementById('routePreview');const popular=['New York','Los Angeles','Tokyo','Singapore','London','Dubai','Chicago','Miami','Sao Paulo','Bangkok'];d.filter(r=>popular.some(p=>r.destination.includes(p))).slice(0,5).forEach(r=>{const div=document.createElement('div');div.className='glass route-card';div.innerHTML=`<div class="icon"><i class="fa-solid fa-plane"></i></div><div class="info"><h4>${r.origin} → ${r.destination}</h4><p>${r.flight_number} · ${r.duration} · ${r.aircraft_type}</p></div><div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>`;container.appendChild(div);});});
 
 fetch('/api/events').then(r=>r.json()).then(d=>{const container=document.getElementById('eventsPreview');d.slice(0,3).forEach(e=>{const div=document.createElement('div');div.className='glass event-card';div.innerHTML=`<div class="date">${e.event_date}</div><h4>${e.title}</h4><p>${e.description}</p><span class="tag">${e.event_type}</span>`;container.appendChild(div);});});
 
@@ -226,8 +229,8 @@ const loginBtn=document.getElementById('loginBtn'),loginModal=document.getElemen
 loginBtn.addEventListener('click',()=>loginModal.classList.add('show'));
 closeModal.addEventListener('click',()=>loginModal.classList.remove('show'));
 loginModal.addEventListener('click',e=>{if(e.target===loginModal)loginModal.classList.remove('show');});
-doLogin.addEventListener('click',()=>{const u=document.getElementById('userInput').value,p=document.getElementById('passInput').value;fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})}).then(r=>r.json()).then(d=>{if(d.success){loginErr.textContent='';loginBtn.textContent='Admin';adminLink.classList.add('show');loginModal.classList.remove('show');}else{loginErr.textContent='Invalid credentials';}});});
-fetch('/api/me').then(r=>r.json()).then(d=>{if(d.loggedIn&&d.user.role==='admin'){loginBtn.textContent='Admin';adminLink.classList.add('show');}});
+doLogin.addEventListener('click',()=>{const u=document.getElementById('userInput').value,p=document.getElementById('passInput').value;fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})}).then(r=>r.json()).then(d=>{if(d.success){loginErr.textContent='';loginBtn.textContent='Админ';adminLink.classList.add('show');loginModal.classList.remove('show');}else{loginErr.textContent='Неверные учетные данные';}});});
+fetch('/api/me').then(r=>r.json()).then(d=>{if(d.loggedIn&&d.user.role==='admin'){loginBtn.textContent='Админ';adminLink.classList.add('show');}});
 </script>
 </body>
 </html>

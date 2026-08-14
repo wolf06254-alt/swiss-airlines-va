@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Swiss Airlines VA — Admin Panel</title>
+<title>Swiss Airlines VA — Панель администратора</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -82,10 +82,10 @@ tr:hover td{background:rgba(255,255,255,0.02)}
 <div class="login-screen" id="loginScreen">
   <div class="login-box">
     <div class="logo">Swiss <span>VA</span></div>
-    <p>Admin access required</p>
-    <input type="text" id="loginUser" placeholder="Username">
-    <input type="password" id="loginPass" placeholder="Password">
-    <button id="loginAction">Login</button>
+    <p>Требуется доступ администратора</p>
+    <input type="text" id="loginUser" placeholder="Логин">
+    <input type="password" id="loginPass" placeholder="Пароль">
+    <button id="loginAction">Войти</button>
     <div class="err" id="loginError"></div>
   </div>
 </div>
@@ -94,16 +94,18 @@ tr:hover td{background:rgba(255,255,255,0.02)}
   <aside class="sidebar">
     <div class="logo"><i class="fa-solid fa-plane-up"></i> Swiss <span>VA</span></div>
     <nav>
-      <a href="#" class="active" data-section="fleet"><i class="fa-solid fa-plane"></i> Fleet</a>
-      <a href="#" data-section="routes"><i class="fa-solid fa-route"></i> Routes</a>
-      <a href="#" data-section="events"><i class="fa-solid fa-calendar-days"></i> Events</a>
-      <a href="#" data-section="timeline"><i class="fa-solid fa-clock-rotate-left"></i> Timeline</a>
-      <a href="#" data-section="staff"><i class="fa-solid fa-users"></i> Staff</a>
+      <a href="#" class="active" data-section="fleet"><i class="fa-solid fa-plane"></i> Флот</a>
+      <a href="#" data-section="routes"><i class="fa-solid fa-route"></i> Маршруты</a>
+      <a href="#" data-section="events"><i class="fa-solid fa-calendar-days"></i> События</a>
+      <a href="#" data-section="timeline"><i class="fa-solid fa-clock-rotate-left"></i> История</a>
+      <a href="#" data-section="staff"><i class="fa-solid fa-users"></i> Команда</a>
+      <a href="#" data-section="applications"><i class="fa-solid fa-file-signature"></i> Анкеты</a>
+      <a href="#" data-section="contacts"><i class="fa-solid fa-envelope"></i> Контакты</a>
     </nav>
-    <button class="logout" id="logoutBtn"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</button>
+    <button class="logout" id="logoutBtn"><i class="fa-solid fa-arrow-right-from-bracket"></i> Выйти</button>
   </aside>
   <main class="main">
-    <h1>Admin Panel</h1>
+    <h1>Панель администратора</h1>
     <div id="sectionContent"></div>
   </main>
 </div>
@@ -111,11 +113,11 @@ tr:hover td{background:rgba(255,255,255,0.02)}
 <div class="modal" id="editModal">
   <div class="modal-box">
     <button class="close" id="closeEdit">×</button>
-    <h3 id="editTitle">Edit</h3>
+    <h3 id="editTitle">Редактировать</h3>
     <div id="editFields"></div>
     <div class="btns">
-      <button class="save" id="saveBtn">Save</button>
-      <button class="cancel" id="cancelBtn">Cancel</button>
+      <button class="save" id="saveBtn">Сохранить</button>
+      <button class="cancel" id="cancelBtn">Отмена</button>
     </div>
   </div>
 </div>
@@ -126,7 +128,7 @@ const loginScreen=document.getElementById('loginScreen'),adminLayout=document.ge
 
 fetch('/api/me').then(r=>r.json()).then(d=>{if(d.loggedIn&&d.user.role==='admin'){loginScreen.style.display='none';adminLayout.style.display='grid';loadSection('fleet');}else{loginScreen.style.display='flex';adminLayout.style.display='none';}});
 
-document.getElementById('loginAction').addEventListener('click',()=>{const u=document.getElementById('loginUser').value,p=document.getElementById('loginPass').value;fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})}).then(r=>r.json()).then(d=>{if(d.success){loginScreen.style.display='none';adminLayout.style.display='grid';loadSection('fleet');}else{document.getElementById('loginError').textContent='Invalid credentials';}});});
+document.getElementById('loginAction').addEventListener('click',()=>{const u=document.getElementById('loginUser').value,p=document.getElementById('loginPass').value;fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})}).then(r=>r.json()).then(d=>{if(d.success){loginScreen.style.display='none';adminLayout.style.display='grid';loadSection('fleet');}else{document.getElementById('loginError').textContent='Неверные учетные данные';}});});
 document.getElementById('logoutBtn').addEventListener('click',()=>{fetch('/api/logout',{method:'POST'}).then(()=>location.reload());});
 
 document.querySelectorAll('.sidebar nav a').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();document.querySelectorAll('.sidebar nav a').forEach(x=>x.classList.remove('active'));a.classList.add('active');loadSection(a.dataset.section);});});
@@ -136,30 +138,39 @@ const fields={
   routes:['flight_number','origin','destination','distance','duration','aircraft_type','days','status'],
   events:['title','description','event_date','event_type','location','image'],
   timeline:['year','title','description','icon'],
-  staff:['name','role','department','discord','image','bio']
+  staff:['name','role','department','discord','image','bio'],
+  applications:['first_name','last_name','email','discord','birthdate','experience','preferred_aircraft','motivation','submitted_at','status'],
+  contacts:['name','email','discord','subject','message','submitted_at']
 };
 
 function loadSection(section){
   currentSection=section;
   fetch('/api/'+section).then(r=>r.json()).then(data=>{
-    let html='<div class="top-bar"><h2>'+section.charAt(0).toUpperCase()+section.slice(1)+'</h2><button class="btn" onclick="openAdd()">+ Add</button></div>';
-    if(!data.length){html+='<p style="color:var(--text2)">No records yet.</p>';sectionContent.innerHTML=html;return;}
+    let html='<div class="top-bar"><h2>'+sectionTitle(section)+'</h2><button class="btn" onclick="openAdd()">+ Добавить</button></div>';
+    if(!data.length){html+='<p style="color:var(--text2)">Пока нет записей.</p>';sectionContent.innerHTML=html;return;}
     html+='<div class="table-wrap"><table><thead><tr>';
-    fields[section].forEach(f=>html+='<th>'+f.replace(/_/g,' ')+'</th>');
-    html+='<th>Actions</th></tr></thead><tbody>';
+    fields[section].forEach(f=>html+='<th>'+colLabel(f)+'</th>');
+    html+='<th>Действия</th></tr></thead><tbody>';
     data.forEach(row=>{
       html+='<tr>';
       fields[section].forEach(f=>html+='<td>'+(row[f]||'')+'</td>');
-      html+='<td class="actions"><button onclick="openEdit('+row.id+')"><i class="fa-solid fa-pen"></i></button><button onclick="deleteItem('+row.id+')"><i class="fa-solid fa-trash"></i></button></td></tr>';
+      html+='<td class="actions"><button onclick="openEdit('+row.id+')\"><i class="fa-solid fa-pen"></i></button><button onclick="deleteItem('+row.id+')\"><i class="fa-solid fa-trash"></i></button></td></tr>';
     });
     html+='</tbody></table></div>';
     sectionContent.innerHTML=html;
   });
 }
-
-function openAdd(){currentId=null;document.getElementById('editTitle').textContent='Add '+currentSection;buildFields({});editModal.classList.add('show');}
-function openEdit(id){currentId=id;fetch('/api/'+currentSection+'/'+id).then(r=>r.json()).then(row=>{document.getElementById('editTitle').textContent='Edit '+currentSection;buildFields(row);editModal.classList.add('show');});}
-function buildFields(row){editFields.innerHTML='';fields[currentSection].forEach(f=>{const label=document.createElement('label');label.textContent=f.replace(/_/g,' ');const inp=document.createElement(f==='description'||f==='bio'?'textarea':'input');inp.className='field-'+f;inp.value=row[f]||'';editFields.appendChild(label);editFields.appendChild(inp);});}
+function sectionTitle(s){
+  const map={fleet:'Флот',routes:'Маршруты',events:'События',timeline:'История',staff:'Команда',applications:'Анкеты пилотов',contacts:'Контактные сообщения'};
+  return map[s]||s;
+}
+function colLabel(f){
+  const map={aircraft:'Самолет',type:'Тип',registration:'Регистрация',capacity:'Вместимость',range:'Дальность',status:'Статус',image:'Изображение',flight_number:'Рейс',origin:'Откуда',destination:'Куда',distance:'Дистанция',duration:'Длительность',aircraft_type:'Тип ВС',days:'Дни',title:'Название',description:'Описание',event_date:'Дата',event_type:'Тип',location:'Место',year:'Год',icon:'Иконка',name:'Имя',role:'Роль',department:'Отдел',discord:'Discord',bio:'Био',first_name:'Имя',last_name:'Фамилия',email:'Email',birthdate:'Дата рождения',experience:'Опыт',preferred_aircraft:'Предпочт. ВС',motivation:'Мотивация',submitted_at:'Отправлено',subject:'Тема',message:'Сообщение'};
+  return map[f]||f;
+}
+function openAdd(){currentId=null;document.getElementById('editTitle').textContent='Добавить — '+sectionTitle(currentSection);buildFields({});editModal.classList.add('show');}
+function openEdit(id){currentId=id;fetch('/api/'+currentSection+'/'+id).then(r=>r.json()).then(row=>{document.getElementById('editTitle').textContent='Редактировать — '+sectionTitle(currentSection);buildFields(row);editModal.classList.add('show');});}
+function buildFields(row){editFields.innerHTML='';fields[currentSection].forEach(f=>{const label=document.createElement('label');label.textContent=colLabel(f);const inp=document.createElement(f==='description'||f==='bio'||f==='motivation'||f==='message'?'textarea':'input');inp.className='field-'+f;inp.value=row[f]||'';editFields.appendChild(label);editFields.appendChild(inp);});}
 
 document.getElementById('closeEdit').addEventListener('click',()=>editModal.classList.remove('show'));
 document.getElementById('cancelBtn').addEventListener('click',()=>editModal.classList.remove('show'));
@@ -168,7 +179,7 @@ document.getElementById('saveBtn').addEventListener('click',()=>{
   const url=currentId?'/api/'+currentSection+'/'+currentId:'/api/'+currentSection;
   fetch(url,{method:currentId?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).then(r=>r.json()).then(()=>{editModal.classList.remove('show');loadSection(currentSection);});
 });
-function deleteItem(id){if(!confirm('Delete this record?'))return;fetch('/api/'+currentSection+'/'+id,{method:'DELETE'}).then(()=>loadSection(currentSection));}
+function deleteItem(id){if(!confirm('Удалить эту запись?'))return;fetch('/api/'+currentSection+'/'+id,{method:'DELETE'}).then(()=>loadSection(currentSection));}
 </script>
 </body>
 </html>

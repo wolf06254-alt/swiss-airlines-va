@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Swiss Airlines VA — Events</title>
+<title>Swiss Airlines VA — События</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -88,19 +88,21 @@ nav .login-btn:hover{background:var(--red);color:#fff;box-shadow:0 0 20px var(--
 <nav id="nav">
   <div class="logo"><i class="fa-solid fa-plane-up"></i> Swiss <span>VA</span></div>
   <ul>
-    <li><a href="index.html">Home</a></li>
-    <li><a href="fleet.html">Fleet</a></li>
-    <li><a href="routes.html">Routes</a></li>
-    <li><a href="map.html">Map</a></li>
-    <li><a href="events.html">Events</a></li>
-    <li><a href="history.html">History</a></li>
+    <li><a href="index.html">Главная</a></li>
+    <li><a href="fleet.html">Флот</a></li>
+    <li><a href="routes.html">Маршруты</a></li>
+    <li><a href="map.html">Карта</a></li>
+    <li><a href="events.html">События</a></li>
+    <li><a href="history.html">История</a></li>
+    <li><a href="apply.html">Анкета</a></li>
+    <li><a href="contact.html">Контакты</a></li>
   </ul>
-  <button class="login-btn" id="loginBtn">Login</button>
+  <button class="login-btn" id="loginBtn">Вход</button>
 </nav>
 
 <div class="page-header">
-  <h1 data-aos="fade-up">Events</h1>
-  <p data-aos="fade-up" data-aos-delay="100">Join our community for group flights, tours, challenges, and special celebrations.</p>
+  <h1 data-aos="fade-up">События</h1>
+  <p data-aos="fade-up" data-aos-delay="100">Присоединяйтесь к групповым полетам, турам, челленджам и специальным мероприятиям.</p>
 </div>
 
 <section class="section">
@@ -109,24 +111,24 @@ nav .login-btn:hover{background:var(--red);color:#fff;box-shadow:0 0 20px var(--
 
 <div class="footer">
   <div class="logo">Swiss <span>VA</span></div>
-  <p>Swiss Airlines Virtual Airline for PTFS. Premium flight simulation with Swiss precision.</p>
+  <p>Виртуальная авиакомпания Swiss Airlines для PTFS. Премиальный авиасимулятор с швейцарской точностью.</p>
   <div class="socials">
     <a href="https://discord.gg/6YA8t7GJr" target="_blank"><i class="fa-brands fa-discord"></i></a>
     <a href="#"><i class="fa-brands fa-twitter"></i></a>
     <a href="#"><i class="fa-brands fa-youtube"></i></a>
   </div>
-  <div class="copy">© 2026 Swiss Airlines VA. All rights reserved.</div>
+  <div class="copy">© 2026 Swiss Airlines VA. Все права защищены.</div>
 </div>
 
 <div class="modal" id="loginModal">
   <div class="modal-box">
     <button class="close" id="closeModal">×</button>
-    <h3>Admin Login</h3>
-    <input type="text" id="userInput" placeholder="Username">
-    <input type="password" id="passInput" placeholder="Password">
+    <h3>Вход для администратора</h3>
+    <input type="text" id="userInput" placeholder="Логин">
+    <input type="password" id="passInput" placeholder="Пароль">
     <div class="err" id="loginErr"></div>
-    <button id="doLogin">Login</button>
-    <a href="admin.html" class="admin-link" id="adminLink">Go to Admin Panel</a>
+    <button id="doLogin">Войти</button>
+    <a href="admin.html" class="admin-link" id="adminLink">Панель администратора</a>
   </div>
 </div>
 
@@ -147,8 +149,8 @@ const loginBtn=document.getElementById('loginBtn'),loginModal=document.getElemen
 loginBtn.addEventListener('click',()=>loginModal.classList.add('show'));
 closeModal.addEventListener('click',()=>loginModal.classList.remove('show'));
 loginModal.addEventListener('click',e=>{if(e.target===loginModal)loginModal.classList.remove('show');});
-doLogin.addEventListener('click',()=>{const u=document.getElementById('userInput').value,p=document.getElementById('passInput').value;fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})}).then(r=>r.json()).then(d=>{if(d.success){loginErr.textContent='';loginBtn.textContent='Admin';adminLink.classList.add('show');loginModal.classList.remove('show');}else{loginErr.textContent='Invalid credentials';}});});
-fetch('/api/me').then(r=>r.json()).then(d=>{if(d.loggedIn&&d.user.role==='admin'){loginBtn.textContent='Admin';adminLink.classList.add('show');}});
+doLogin.addEventListener('click',()=>{const u=document.getElementById('userInput').value,p=document.getElementById('passInput').value;fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})}).then(r=>r.json()).then(d=>{if(d.success){loginErr.textContent='';loginBtn.textContent='Админ';adminLink.classList.add('show');loginModal.classList.remove('show');}else{loginErr.textContent='Неверные учетные данные';}});});
+fetch('/api/me').then(r=>r.json()).then(d=>{if(d.loggedIn&&d.user.role==='admin'){loginBtn.textContent='Админ';adminLink.classList.add('show');}});
 </script>
 </body>
 </html>

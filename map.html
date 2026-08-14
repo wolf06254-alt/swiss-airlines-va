@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Swiss Airlines VA — Route Map</title>
+<title>Swiss Airlines VA — Карта маршрутов</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -90,51 +90,53 @@ nav .login-btn:hover{background:var(--red);color:#fff;box-shadow:0 0 20px var(--
 <nav id="nav">
   <div class="logo"><i class="fa-solid fa-plane-up"></i> Swiss <span>VA</span></div>
   <ul>
-    <li><a href="index.html">Home</a></li>
-    <li><a href="fleet.html">Fleet</a></li>
-    <li><a href="routes.html">Routes</a></li>
-    <li><a href="map.html">Map</a></li>
-    <li><a href="events.html">Events</a></li>
-    <li><a href="history.html">History</a></li>
+    <li><a href="index.html">Главная</a></li>
+    <li><a href="fleet.html">Флот</a></li>
+    <li><a href="routes.html">Маршруты</a></li>
+    <li><a href="map.html">Карта</a></li>
+    <li><a href="events.html">События</a></li>
+    <li><a href="history.html">История</a></li>
+    <li><a href="apply.html">Анкета</a></li>
+    <li><a href="contact.html">Контакты</a></li>
   </ul>
-  <button class="login-btn" id="loginBtn">Login</button>
+  <button class="login-btn" id="loginBtn">Вход</button>
 </nav>
 
 <div class="page-header">
-  <h1>Route Map</h1>
-  <p>Explore our global network from Zurich to destinations across six continents.</p>
+  <h1>Карта маршрутов</h1>
+  <p>Изучите нашу глобальную сеть из Цюриха и Женевы в направления на всех шести континентах.</p>
 </div>
 
 <div class="map-wrap">
   <div id="map"></div>
   <div class="glass map-legend">
-    <h4>Legend</h4>
-    <div><div class="dot" style="background:var(--red)"></div> Zurich Hub</div>
-    <div><div class="dot" style="background:#a0a0b8"></div> Destination</div>
-    <div><div class="dot" style="background:var(--red);width:24px;height:2px;border-radius:0"></div> Route</div>
+    <h4>Легенда</h4>
+    <div><div class="dot" style="background:var(--red)"></div> Хаб Цюрих</div>
+    <div><div class="dot" style="background:#a0a0b8"></div> Направление</div>
+    <div><div class="dot" style="background:var(--red);width:24px;height:2px;border-radius:0"></div> Маршрут</div>
   </div>
 </div>
 
 <div class="footer">
   <div class="logo">Swiss <span>VA</span></div>
-  <p>Swiss Airlines Virtual Airline for PTFS. Premium flight simulation with Swiss precision.</p>
+  <p>Виртуальная авиакомпания Swiss Airlines для PTFS. Премиальный авиасимулятор с швейцарской точностью.</p>
   <div class="socials">
     <a href="https://discord.gg/6YA8t7GJr" target="_blank"><i class="fa-brands fa-discord"></i></a>
     <a href="#"><i class="fa-brands fa-twitter"></i></a>
     <a href="#"><i class="fa-brands fa-youtube"></i></a>
   </div>
-  <div class="copy">© 2026 Swiss Airlines VA. All rights reserved.</div>
+  <div class="copy">© 2026 Swiss Airlines VA. Все права защищены.</div>
 </div>
 
 <div class="modal" id="loginModal">
   <div class="modal-box">
     <button class="close" id="closeModal">×</button>
-    <h3>Admin Login</h3>
-    <input type="text" id="userInput" placeholder="Username">
-    <input type="password" id="passInput" placeholder="Password">
+    <h3>Вход для администратора</h3>
+    <input type="text" id="userInput" placeholder="Логин">
+    <input type="password" id="passInput" placeholder="Пароль">
     <div class="err" id="loginErr"></div>
-    <button id="doLogin">Login</button>
-    <a href="admin.html" class="admin-link" id="adminLink">Go to Admin Panel</a>
+    <button id="doLogin">Войти</button>
+    <a href="admin.html" class="admin-link" id="adminLink">Панель администратора</a>
   </div>
 </div>
 
@@ -146,7 +148,7 @@ document.querySelectorAll('a,button').forEach(el=>{el.addEventListener('mouseent
 window.addEventListener('scroll',()=>{if(window.scrollY>60)document.getElementById('nav').classList.add('scrolled');else document.getElementById('nav').classList.remove('scrolled');});
 
 const airports={
-  'Zurich':[47.4647,8.5492],'New York JFK':[40.6413,-73.7781],'Chicago ORD':[41.9742,-87.9073],'Los Angeles':[33.9416,-118.4085],
+  'Zurich':[47.4647,8.5492],'Geneva':[46.2370,6.1084],'New York JFK':[40.6413,-73.7781],'Chicago ORD':[41.9742,-87.9073],'Los Angeles':[33.9416,-118.4085],
   'Miami':[25.7959,-80.2870],'Sao Paulo':[-23.4356,-46.4731],'Dubai':[25.2532,55.3657],'Tokyo NRT':[35.7647,140.3864],
   'Singapore':[1.3644,103.9915],'Shanghai':[31.1443,121.8083],'Boston':[42.3656,-71.0096],'Hong Kong':[22.3080,113.9185],
   'Johannesburg':[-26.1392,28.2460],'Mumbai':[19.0896,72.8656],'Bangkok':[13.6900,100.7501],'Madrid':[40.4983,-3.5676],
@@ -154,8 +156,13 @@ const airports={
   'Rome FCO':[41.8003,12.2389],'Barcelona':[41.2971,2.0785],'Vienna':[48.1103,16.5697],'Prague':[50.1008,14.2632],
   'Athens':[37.9364,23.9445],'Istanbul':[41.2751,28.7519],'Cairo':[30.1219,31.4056],'Tel Aviv':[32.0094,34.8827],
   'Stockholm':[59.6519,17.9186],'Oslo':[60.1939,11.1004],'Copenhagen':[55.6180,12.6561],'Lisbon':[38.7756,-9.1354],
-  'Dublin':[53.4264,-6.2499],'Edinburgh':[55.9508,-3.3615],'Geneva':[46.2370,6.1084],'Lugano':[46.0042,8.9106],
-  'Innsbruck':[47.2576,11.3519],'Rovaniemi':[66.5618,25.8308]
+  'Dublin':[53.4264,-6.2499],'Edinburgh':[55.9508,-3.3615],'Lugano':[46.0042,8.9106],
+  'Innsbruck':[47.2576,11.3519],'Rovaniemi':[66.5618,25.8308],'Denver':[39.8561,-104.6737],
+  'San Francisco':[37.6213,-122.3790],'Seattle':[47.4502,-122.3088],'Washington IAD':[38.9531,-77.4565],
+  'Toronto':[43.6777,-79.6248],'Vancouver':[49.1967,-123.1815],'Mexico City':[19.4363,-99.0721],
+  'Delhi':[28.5562,77.1000],'Sydney':[-33.9399,151.1753],'Melbourne':[-37.6733,144.8430],'Auckland':[-37.0080,174.7917],
+  'Sao Paulo GRU':[-23.4356,-46.4731],'Buenos Aires':[-34.8222,-58.5358],'Cape Town':[-33.9715,18.6021],
+  'Moscow':[55.4103,37.9023],'Warsaw':[52.1657,20.9671],'Budapest':[47.4298,19.2611],'Zagreb':[45.7409,16.0677]
 };
 
 const map=L.map('map',{zoomControl:false}).setView([30,10],2);
@@ -165,7 +172,8 @@ L.control.zoom({position:'bottomright'}).addTo(map);
 const redIcon=L.divIcon({className:'custom-marker',html:`<div style="width:14px;height:14px;background:#E30613;border-radius:50%;border:2px solid #fff;box-shadow:0 0 10px rgba(227,6,19,0.5);"></div>`,iconSize:[14,14],iconAnchor:[7,7]});
 const greyIcon=L.divIcon({className:'custom-marker',html:`<div style="width:10px;height:10px;background:#a0a0b8;border-radius:50%;border:2px solid #fff;box-shadow:0 0 6px rgba(160,160,184,0.4);"></div>`,iconSize:[10,10],iconAnchor:[5,5]});
 
-L.marker([47.4647,8.5492],{icon:redIcon}).addTo(map).bindPopup('<b>Zurich (ZRH)</b><br>Swiss Airlines VA Hub');
+L.marker([47.4647,8.5492],{icon:redIcon}).addTo(map).bindPopup('<b>Цюрих (ZRH)</b><br>Хаб Swiss Airlines VA');
+L.marker([46.2370,6.1084],{icon:redIcon}).addTo(map).bindPopup('<b>Женева (GVA)</b><br>Хаб Swiss Airlines VA');
 
 fetch('/api/routes').then(r=>r.json()).then(routes=>{
   const seen=new Set();
@@ -175,8 +183,8 @@ fetch('/api/routes').then(r=>r.json()).then(routes=>{
       seen.add(dest);
       L.marker(airports[dest],{icon:greyIcon}).addTo(map).bindPopup(`<b>${dest}</b><br>${r.flight_number} · ${r.duration}`);
     }
-    if(airports[dest]){
-      L.polyline([[47.4647,8.5492],airports[dest]],{color:'#E30613',weight:1,opacity:0.35,dashArray:'4,6'}).addTo(map);
+    if(airports[dest]&&airports[r.origin]){
+      L.polyline([airports[r.origin],airports[dest]],{color:'#E30613',weight:1,opacity:0.35,dashArray:'4,6'}).addTo(map);
     }
   });
 });
@@ -185,8 +193,8 @@ const loginBtn=document.getElementById('loginBtn'),loginModal=document.getElemen
 loginBtn.addEventListener('click',()=>loginModal.classList.add('show'));
 closeModal.addEventListener('click',()=>loginModal.classList.remove('show'));
 loginModal.addEventListener('click',e=>{if(e.target===loginModal)loginModal.classList.remove('show');});
-doLogin.addEventListener('click',()=>{const u=document.getElementById('userInput').value,p=document.getElementById('passInput').value;fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})}).then(r=>r.json()).then(d=>{if(d.success){loginErr.textContent='';loginBtn.textContent='Admin';adminLink.classList.add('show');loginModal.classList.remove('show');}else{loginErr.textContent='Invalid credentials';}});});
-fetch('/api/me').then(r=>r.json()).then(d=>{if(d.loggedIn&&d.user.role==='admin'){loginBtn.textContent='Admin';adminLink.classList.add('show');}});
+doLogin.addEventListener('click',()=>{const u=document.getElementById('userInput').value,p=document.getElementById('passInput').value;fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})}).then(r=>r.json()).then(d=>{if(d.success){loginErr.textContent='';loginBtn.textContent='Админ';adminLink.classList.add('show');loginModal.classList.remove('show');}else{loginErr.textContent='Неверные учетные данные';}});});
+fetch('/api/me').then(r=>r.json()).then(d=>{if(d.loggedIn&&d.user.role==='admin'){loginBtn.textContent='Админ';adminLink.classList.add('show');}});
 </script>
 </body>
 </html>
