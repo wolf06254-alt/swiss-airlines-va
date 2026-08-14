@@ -592,13 +592,13 @@ app.get('/admin.html', (req, res) => {
 
 app.get('/favicon.ico', (req, res) => res.status(204).end());
 
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html'));
-app.get('/fleet', (req, res) => res.sendFile(path.join(__dirname, 'fleet.html'));
-app.get('/routes', (req, res) => res.sendFile(path.join(__dirname, 'routes.html'));
-app.get('/map', (req, res) => res.sendFile(path.join(__dirname, 'map.html'));
-app.get('/events', (req, res) => res.sendFile(path.join(__dirname, 'events.html'));
-app.get('/history', (req, res) => res.sendFile(path.join(__dirname, 'history.html'));
-app.get('/apply', (req, res) => res.sendFile(path.join(__dirname, 'apply.html'));
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+app.get('/fleet', (req, res) => res.sendFile(path.join(__dirname, 'fleet.html')));
+app.get('/routes', (req, res) => res.sendFile(path.join(__dirname, 'routes.html')));
+app.get('/map', (req, res) => res.sendFile(path.join(__dirname, 'map.html')));
+app.get('/events', (req, res) => res.sendFile(path.join(__dirname, 'events.html')));
+app.get('/history', (req, res) => res.sendFile(path.join(__dirname, 'history.html')));
+app.get('/apply', (req, res) => res.sendFile(path.join(__dirname, 'apply.html')));
 app.get('/contact', (req, res) => res.sendFile(path.join(__dirname, 'contact.html')));
 
 app.listen(PORT, () => {
