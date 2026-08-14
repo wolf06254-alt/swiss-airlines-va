@@ -286,7 +286,7 @@ app.post('/api/submit', rateLimit(60000, 10), async (req, res) => {
 });
 
 /* ============================================================
-   PUBLIC CMS CONTENT API
+   PUBLIC CMS CONTENT API (read-only)
    ============================================================ */
 
 // Events
@@ -407,7 +407,7 @@ app.get('/api/stats', requireAuth, async (req, res) => {
 });
 
 /* ============================================================
-   ADMIN CMS API — EVENTS
+   ADMIN CMS API — EVENTS (full CRUD)
    ============================================================ */
 app.get('/api/admin/events', requireAuth, async (req, res) => {
   try {
@@ -458,7 +458,7 @@ app.delete('/api/admin/events/:id', requireAuth, async (req, res) => {
 });
 
 /* ============================================================
-   ADMIN CMS API — ROUTES
+   ADMIN CMS API — ROUTES (read-only GET)
    ============================================================ */
 app.get('/api/admin/routes', requireAuth, async (req, res) => {
   try {
@@ -469,47 +469,8 @@ app.get('/api/admin/routes', requireAuth, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-app.post('/api/admin/routes', requireAuth, async (req, res) => {
-  const { origin, origin_code, destination, destination_code, distance_km, duration_min, aircraft_type, frequency, active } = req.body;
-  if (!origin || !destination) return res.status(400).json({ error: 'Origin and destination required' });
-  try {
-    if (dbType === 'postgres') {
-      const r = await db.query('INSERT INTO routes (origin,origin_code,destination,destination_code,distance_km,duration_min,aircraft_type,frequency,active) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id', [origin, origin_code, destination, destination_code, distance_km, duration_min, aircraft_type, frequency, active !== false]);
-      res.json({ success: true, id: r.rows[0].id });
-    } else {
-      db.run('INSERT INTO routes (origin,origin_code,destination,destination_code,distance_km,duration_min,aircraft_type,frequency,active) VALUES (?,?,?,?,?,?,?,?,?)', [origin, origin_code, destination, destination_code, distance_km, duration_min, aircraft_type, frequency, active !== false ? 1 : 0], function(err) {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json({ success: true, id: this.lastID });
-      });
-    }
-  } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-app.put('/api/admin/routes/:id', requireAuth, async (req, res) => {
-  const { id } = req.params; const { origin, origin_code, destination, destination_code, distance_km, duration_min, aircraft_type, frequency, active } = req.body;
-  try {
-    if (dbType === 'postgres') {
-      const r = await db.query('UPDATE routes SET origin=$1,origin_code=$2,destination=$3,destination_code=$4,distance_km=$5,duration_min=$6,aircraft_type=$7,frequency=$8,active=$9 WHERE id=$10', [origin, origin_code, destination, destination_code, distance_km, duration_min, aircraft_type, frequency, active !== false, id]);
-      if (r.rowCount === 0) return res.status(404).json({ error: 'Not found' });
-    } else {
-      const r = await new Promise((resolve, reject) => db.run('UPDATE routes SET origin=?,origin_code=?,destination=?,destination_code=?,distance_km=?,duration_min=?,aircraft_type=?,frequency=?,active=? WHERE id=?', [origin, origin_code, destination, destination_code, distance_km, duration_min, aircraft_type, frequency, active !== false ? 1 : 0, id], function(err) { err ? reject(err) : resolve({ changes: this.changes }); }));
-      if (r.changes === 0) return res.status(404).json({ error: 'Not found' });
-    }
-    res.json({ success: true });
-  } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-app.delete('/api/admin/routes/:id', requireAuth, async (req, res) => {
-  const { id } = req.params;
-  try {
-    if (dbType === 'postgres') { const r = await db.query('DELETE FROM routes WHERE id=$1', [id]); if (r.rowCount === 0) return res.status(404).json({ error: 'Not found' }); }
-    else { const r = await new Promise((resolve, reject) => db.run('DELETE FROM routes WHERE id=?', [id], function(err) { err ? reject(err) : resolve({ changes: this.changes }); })); if (r.changes === 0) return res.status(404).json({ error: 'Not found' }); }
-    res.json({ success: true });
-  } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
 /* ============================================================
-   ADMIN CMS API — FLEET
+   ADMIN CMS API — FLEET (read-only GET, static in admin.html)
    ============================================================ */
 app.get('/api/admin/fleet', requireAuth, async (req, res) => {
   try {
@@ -520,47 +481,8 @@ app.get('/api/admin/fleet', requireAuth, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-app.post('/api/admin/fleet', requireAuth, async (req, res) => {
-  const { model, manufacturer, category, capacity, range_km, speed_kmh, status, description, image_url } = req.body;
-  if (!model) return res.status(400).json({ error: 'Model required' });
-  try {
-    if (dbType === 'postgres') {
-      const r = await db.query('INSERT INTO fleet (model,manufacturer,category,capacity,range_km,speed_kmh,status,description,image_url) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id', [model, manufacturer, category, capacity, range_km, speed_kmh, status || 'active', description, image_url]);
-      res.json({ success: true, id: r.rows[0].id });
-    } else {
-      db.run('INSERT INTO fleet (model,manufacturer,category,capacity,range_km,speed_kmh,status,description,image_url) VALUES (?,?,?,?,?,?,?,?,?)', [model, manufacturer, category, capacity, range_km, speed_kmh, status || 'active', description, image_url], function(err) {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json({ success: true, id: this.lastID });
-      });
-    }
-  } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-app.put('/api/admin/fleet/:id', requireAuth, async (req, res) => {
-  const { id } = req.params; const { model, manufacturer, category, capacity, range_km, speed_kmh, status, description, image_url } = req.body;
-  try {
-    if (dbType === 'postgres') {
-      const r = await db.query('UPDATE fleet SET model=$1,manufacturer=$2,category=$3,capacity=$4,range_km=$5,speed_kmh=$6,status=$7,description=$8,image_url=$9 WHERE id=$10', [model, manufacturer, category, capacity, range_km, speed_kmh, status, description, image_url, id]);
-      if (r.rowCount === 0) return res.status(404).json({ error: 'Not found' });
-    } else {
-      const r = await new Promise((resolve, reject) => db.run('UPDATE fleet SET model=?,manufacturer=?,category=?,capacity=?,range_km=?,speed_kmh=?,status=?,description=?,image_url=? WHERE id=?', [model, manufacturer, category, capacity, range_km, speed_kmh, status, description, image_url, id], function(err) { err ? reject(err) : resolve({ changes: this.changes }); }));
-      if (r.changes === 0) return res.status(404).json({ error: 'Not found' });
-    }
-    res.json({ success: true });
-  } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-app.delete('/api/admin/fleet/:id', requireAuth, async (req, res) => {
-  const { id } = req.params;
-  try {
-    if (dbType === 'postgres') { const r = await db.query('DELETE FROM fleet WHERE id=$1', [id]); if (r.rowCount === 0) return res.status(404).json({ error: 'Not found' }); }
-    else { const r = await new Promise((resolve, reject) => db.run('DELETE FROM fleet WHERE id=?', [id], function(err) { err ? reject(err) : resolve({ changes: this.changes }); })); if (r.changes === 0) return res.status(404).json({ error: 'Not found' }); }
-    res.json({ success: true });
-  } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
 /* ============================================================
-   ADMIN CMS API — TIMELINE
+   ADMIN CMS API — TIMELINE (read-only GET)
    ============================================================ */
 app.get('/api/admin/timeline', requireAuth, async (req, res) => {
   try {
@@ -568,45 +490,6 @@ app.get('/api/admin/timeline', requireAuth, async (req, res) => {
     if (dbType === 'postgres') { const r = await db.query('SELECT * FROM timeline ORDER BY year DESC'); rows = r.rows; }
     else { rows = await new Promise((resolve, reject) => db.all('SELECT * FROM timeline ORDER BY year DESC', [], (err, r) => err ? reject(err) : resolve(r))); }
     res.json({ timeline: rows });
-  } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-app.post('/api/admin/timeline', requireAuth, async (req, res) => {
-  const { year, title, description, icon } = req.body;
-  if (!year || !title) return res.status(400).json({ error: 'Year and title required' });
-  try {
-    if (dbType === 'postgres') {
-      const r = await db.query('INSERT INTO timeline (year,title,description,icon) VALUES ($1,$2,$3,$4) RETURNING id', [year, title, description, icon]);
-      res.json({ success: true, id: r.rows[0].id });
-    } else {
-      db.run('INSERT INTO timeline (year,title,description,icon) VALUES (?,?,?,?)', [year, title, description, icon], function(err) {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json({ success: true, id: this.lastID });
-      });
-    }
-  } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-app.put('/api/admin/timeline/:id', requireAuth, async (req, res) => {
-  const { id } = req.params; const { year, title, description, icon } = req.body;
-  try {
-    if (dbType === 'postgres') {
-      const r = await db.query('UPDATE timeline SET year=$1,title=$2,description=$3,icon=$4 WHERE id=$5', [year, title, description, icon, id]);
-      if (r.rowCount === 0) return res.status(404).json({ error: 'Not found' });
-    } else {
-      const r = await new Promise((resolve, reject) => db.run('UPDATE timeline SET year=?,title=?,description=?,icon=? WHERE id=?', [year, title, description, icon, id], function(err) { err ? reject(err) : resolve({ changes: this.changes }); }));
-      if (r.changes === 0) return res.status(404).json({ error: 'Not found' });
-    }
-    res.json({ success: true });
-  } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-app.delete('/api/admin/timeline/:id', requireAuth, async (req, res) => {
-  const { id } = req.params;
-  try {
-    if (dbType === 'postgres') { const r = await db.query('DELETE FROM timeline WHERE id=$1', [id]); if (r.rowCount === 0) return res.status(404).json({ error: 'Not found' }); }
-    else { const r = await new Promise((resolve, reject) => db.run('DELETE FROM timeline WHERE id=?', [id], function(err) { err ? reject(err) : resolve({ changes: this.changes }); })); if (r.changes === 0) return res.status(404).json({ error: 'Not found' }); }
-    res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 

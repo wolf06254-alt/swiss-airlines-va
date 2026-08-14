@@ -28,7 +28,7 @@
     }
     [data-theme="dark"] {
       --bg: #0f0f0f; --text: #f0f0f0; --card: #1a1a1a; --border: #333333;
-      --gray-100: #1a1a1a; --gray-500: #888888;
+      --gray-100: #1a1a1a; --gray-300: #444444; --gray-500: #888888; --gray-700: #a0a0a0; --gray-900: #e0e0e0;
       --header-bg: #0a0a0a; --header-text: #ffffff; --header-link: #888888; --header-border: #4a4a4a;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -95,7 +95,11 @@
     .action-btn:hover { border-color: var(--swiss-red); color: var(--swiss-red); }
     .action-btn.delete:hover { border-color: #991b1b; color: #991b1b; }
     .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px; font-size: 11px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+    .status-new { background: #dbeafe; color: #1e40af; }
+    .status-review { background: #fef3c7; color: #92400e; }
     .status-upcoming { background: #fef3c7; color: #92400e; }
+    .status-accepted { background: #d1fae5; color: #065f46; }
+    .status-rejected { background: #fee2e2; color: #991b1b; }
     .status-past { background: #e5e7eb; color: #4b5563; }
     .status-active { background: #d1fae5; color: #065f46; }
     .status-inactive { background: #fee2e2; color: #991b1b; }
@@ -149,6 +153,10 @@
     .filter-btn { padding: 7px 14px; font-size: 12px; font-weight: 500; border: 1px solid var(--gray-300); background: var(--bg); color: var(--gray-700); cursor: pointer; transition: all 0.3s var(--transition); display: inline-flex; align-items: center; gap: 6px; }
     .filter-btn:hover, .filter-btn.active { border-color: var(--swiss-red); color: var(--swiss-red); background: rgba(227,6,19,0.04); }
 
+    /* ===== EXPAND ===== */
+    .expand-btn { background: none; border: 1px solid var(--gray-300); width: 22px; height: 22px; cursor: pointer; font-size: 10px; color: var(--gray-500); transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+    .expand-btn:hover { border-color: var(--swiss-red); color: var(--swiss-red); }
+
     @media (max-width: 1024px) {
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
     }
@@ -176,12 +184,12 @@
         <div class="header-cross">+</div>
         <div>SWISS AIRLINES</div>
       </a>
-      <div class="header-badge">🛡 Админ-панель</div>
+      <div class="header-badge">🛡 <span data-i18n="admin-badge">Админ-панель</span></div>
     </div>
     <div class="header-right">
       <div class="user-greeting"><div class="user-avatar" id="userAvatar">A</div><span id="userName">Администратор</span></div>
-      <a href="index.html" class="header-link">🏠 Главная</a>
-      <a href="#" class="header-link" onclick="logout(); return false;">↪ Выйти</a>
+      <a href="index.html" class="header-link"><span data-i18n="btn-home">🏠 Главная</span></a>
+      <a href="#" class="header-link" onclick="logout(); return false;"><span data-i18n="btn-logout">↪ Выйти</span></a>
       <button class="lang-toggle" id="langToggle" onclick="toggleLang()">EN</button>
       <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙</button>
     </div>
@@ -191,98 +199,98 @@
     <div class="page-title">
       <span class="plane-icon">✈</span>
       <div>
-        <h1>Админ-панель</h1>
-        <div class="page-subtitle">Управление контентом сайта Swiss Airlines</div>
+        <h1 data-i18n="admin-title">Админ-панель</h1>
+        <div class="page-subtitle" data-i18n="admin-subtitle">Управление контентом сайта Swiss Airlines</div>
       </div>
     </div>
     <div class="page-actions" style="display:flex;gap:10px;">
-      <button class="btn-export" onclick="exportCSV()">📥 Экспорт CSV</button>
+      <button class="btn-export" onclick="exportCSV()">📥 <span data-i18n="btn-csv">Экспорт CSV</span></button>
       <button class="btn-export" onclick="window.open('https://discord.gg/6YA8t7GJr','_blank')">🎮 Discord</button>
     </div>
   </div>
 
   <div class="tabs-bar">
-    <button class="tab-btn active" onclick="switchTab('applications')" data-tab="applications">📋 Анкеты</button>
-    <button class="tab-btn" onclick="switchTab('events')" data-tab="events">📅 События</button>
-    <button class="tab-btn" onclick="switchTab('routes')" data-tab="routes">🗺️ Маршруты</button>
-    <button class="tab-btn" onclick="switchTab('fleet')" data-tab="fleet">✈️ Флот</button>
-    <button class="tab-btn" onclick="switchTab('timeline')" data-tab="timeline">📜 История</button>
+    <button class="tab-btn active" onclick="switchTab('applications')" data-tab="applications" data-i18n="tab-applications">📋 Анкеты</button>
+    <button class="tab-btn" onclick="switchTab('events')" data-tab="events" data-i18n="tab-events">📅 События</button>
+    <button class="tab-btn" onclick="switchTab('routes')" data-tab="routes" data-i18n="tab-routes">🗺️ Маршруты</button>
+    <button class="tab-btn" onclick="switchTab('fleet')" data-tab="fleet" data-i18n="tab-fleet">✈️ Флот</button>
+    <button class="tab-btn" onclick="switchTab('timeline')" data-tab="timeline" data-i18n="tab-timeline">📜 История</button>
   </div>
 
   <!-- ANKETY -->
   <div class="tab-content active" id="tab-applications">
     <div class="stats-grid" id="statsGrid">
-      <div class="stat-card"><span class="stat-icon">📋</span><div class="stat-value" id="totalCount">0</div><div class="stat-label">Всего анкет</div></div>
-      <div class="stat-card"><span class="stat-icon">🆕</span><div class="stat-value" id="newCount">0</div><div class="stat-label">Новые</div></div>
-      <div class="stat-card"><span class="stat-icon">✅</span><div class="stat-value" id="acceptedCount">0</div><div class="stat-label">Принято</div></div>
-      <div class="stat-card"><span class="stat-icon">❌</span><div class="stat-value" id="rejectedCount">0</div><div class="stat-label">Отклонено</div></div>
+      <div class="stat-card"><span class="stat-icon">📋</span><div class="stat-value" id="totalCount">0</div><div class="stat-label" data-i18n="stat-total">Всего анкет</div></div>
+      <div class="stat-card"><span class="stat-icon">🆕</span><div class="stat-value" id="newCount">0</div><div class="stat-label" data-i18n="stat-new">Новые</div></div>
+      <div class="stat-card"><span class="stat-icon">✅</span><div class="stat-value" id="acceptedCount">0</div><div class="stat-label" data-i18n="stat-accepted">Принято</div></div>
+      <div class="stat-card"><span class="stat-icon">❌</span><div class="stat-value" id="rejectedCount">0</div><div class="stat-label" data-i18n="stat-rejected">Отклонено</div></div>
     </div>
     <div class="filters-bar">
-      <span class="filter-btn active" data-filter="all" onclick="setAppFilter('all')">Все</span>
-      <span class="filter-btn" data-filter="new" onclick="setAppFilter('new')">🆕 Новые</span>
-      <span class="filter-btn" data-filter="review" onclick="setAppFilter('review')">🔍 На рассмотрении</span>
-      <span class="filter-btn" data-filter="accepted" onclick="setAppFilter('accepted')">✅ Принято</span>
-      <span class="filter-btn" data-filter="rejected" onclick="setAppFilter('rejected')">❌ Отклонено</span>
+      <span class="filter-btn active" data-filter="all" onclick="setAppFilter('all')" data-i18n="filter-all">Все</span>
+      <span class="filter-btn" data-filter="new" onclick="setAppFilter('new')" data-i18n="filter-new">🆕 Новые</span>
+      <span class="filter-btn" data-filter="review" onclick="setAppFilter('review')" data-i18n="filter-review">🔍 На рассмотрении</span>
+      <span class="filter-btn" data-filter="accepted" onclick="setAppFilter('accepted')" data-i18n="filter-accepted">✅ Принято</span>
+      <span class="filter-btn" data-filter="rejected" onclick="setAppFilter('rejected')" data-i18n="filter-rejected">❌ Отклонено</span>
     </div>
     <div class="table-wrapper">
-      <div class="loading" id="appsLoading">Загрузка анкет...</div>
+      <div class="loading" id="appsLoading" data-i18n="loading-apps">Загрузка анкет...</div>
       <table id="appsTable" style="display:none;">
-        <thead><tr><th></th><th>Roblox</th><th>Telegram</th><th>Возраст</th><th>Роль</th><th>Статус</th><th>Дата</th></tr></thead>
+        <thead><tr><th></th><th data-i18n="th-roblox">Roblox</th><th data-i18n="th-telegram">Telegram</th><th data-i18n="th-age">Возраст</th><th data-i18n="th-role">Роль</th><th data-i18n="th-status">Статус</th><th data-i18n="th-date">Дата</th></tr></thead>
         <tbody id="appsBody"></tbody>
       </table>
-      <div class="empty-state" id="appsEmpty" style="display:none;"><h3>Нет анкет</h3><p>Пока никто не отправил заявку</p></div>
+      <div class="empty-state" id="appsEmpty" style="display:none;"><h3 data-i18n="empty-apps-title">Нет анкет</h3><p data-i18n="empty-apps-desc">Пока никто не отправил заявку</p></div>
     </div>
   </div>
 
   <!-- EVENTS -->
   <div class="tab-content" id="tab-events">
-    <div class="toolbar"><h3 style="font-size:16px;font-weight:700;">События</h3><button class="btn-add" onclick="openEventModal()">+ Добавить событие</button></div>
+    <div class="toolbar"><h3 style="font-size:16px;font-weight:700;" data-i18n="tab-events">События</h3><button class="btn-add" onclick="openEventModal()" data-i18n="btn-add">+ Добавить событие</button></div>
     <div class="table-wrapper">
-      <div class="loading" id="eventsLoading">Загрузка событий...</div>
+      <div class="loading" id="eventsLoading" data-i18n="loading-events">Загрузка событий...</div>
       <table id="eventsTable" style="display:none;">
-        <thead><tr><th>Название</th><th>Дата</th><th>Время</th><th>Локация</th><th>Статус</th><th>Действия</th></tr></thead>
+        <thead><tr><th data-i18n="th-title">Название</th><th data-i18n="th-date">Дата</th><th data-i18n="th-time">Время</th><th data-i18n="th-location">Локация</th><th data-i18n="th-status">Статус</th><th data-i18n="th-actions">Действия</th></tr></thead>
         <tbody id="eventsBody"></tbody>
       </table>
-      <div class="empty-state" id="eventsEmpty" style="display:none;"><h3>Нет событий</h3><p>Добавьте первое событие</p></div>
+      <div class="empty-state" id="eventsEmpty" style="display:none;"><h3 data-i18n="empty-events-title">Нет событий</h3><p data-i18n="empty-events-desc">Добавьте первое событие</p></div>
     </div>
   </div>
 
   <!-- ROUTES -->
   <div class="tab-content" id="tab-routes">
-    <div class="toolbar"><h3 style="font-size:16px;font-weight:700;">Маршруты</h3><button class="btn-add" onclick="openRouteModal()">+ Добавить маршрут</button></div>
+    <div class="toolbar"><h3 style="font-size:16px;font-weight:700;" data-i18n="tab-routes">Маршруты</h3></div>
     <div class="table-wrapper">
-      <div class="loading" id="routesLoading">Загрузка маршрутов...</div>
+      <div class="loading" id="routesLoading" data-i18n="loading-routes">Загрузка маршрутов...</div>
       <table id="routesTable" style="display:none;">
-        <thead><tr><th>Откуда</th><th>Куда</th><th>Дистанция</th><th>Время</th><th>Самолёт</th><th>Активен</th><th>Действия</th></tr></thead>
+        <thead><tr><th data-i18n="th-origin">Откуда</th><th data-i18n="th-destination">Куда</th><th data-i18n="th-distance">Дистанция</th><th data-i18n="th-duration">Время</th><th data-i18n="th-aircraft">Самолёт</th><th data-i18n="th-status">Статус</th></tr></thead>
         <tbody id="routesBody"></tbody>
       </table>
-      <div class="empty-state" id="routesEmpty" style="display:none;"><h3>Нет маршрутов</h3><p>Добавьте первый маршрут</p></div>
+      <div class="empty-state" id="routesEmpty" style="display:none;"><h3 data-i18n="empty-routes-title">Нет маршрутов</h3><p data-i18n="empty-routes-desc">Маршруты загружаются из базы данных</p></div>
     </div>
   </div>
 
   <!-- FLEET -->
   <div class="tab-content" id="tab-fleet">
-    <div class="toolbar"><h3 style="font-size:16px;font-weight:700;">Флот</h3><button class="btn-add" onclick="openFleetModal()">+ Добавить ВС</button></div>
+    <div class="toolbar"><h3 style="font-size:16px;font-weight:700;" data-i18n="tab-fleet">Флот</h3></div>
     <div class="table-wrapper">
-      <div class="loading" id="fleetLoading">Загрузка флота...</div>
+      <div class="loading" id="fleetLoading" data-i18n="loading-fleet">Загрузка флота...</div>
       <table id="fleetTable" style="display:none;">
-        <thead><tr><th>Модель</th><th>Производитель</th><th>Категория</th><th>Мест</th><th>Дальность</th><th>Скорость</th><th>Статус</th><th>Действия</th></tr></thead>
+        <thead><tr><th data-i18n="th-model">Модель</th><th data-i18n="th-manufacturer">Производитель</th><th data-i18n="th-category">Категория</th><th data-i18n="th-capacity">Мест</th><th data-i18n="th-range">Дальность</th><th data-i18n="th-speed">Скорость</th><th data-i18n="th-status">Статус</th></tr></thead>
         <tbody id="fleetBody"></tbody>
       </table>
-      <div class="empty-state" id="fleetEmpty" style="display:none;"><h3>Нет ВС</h3><p>Добавьте первый самолёт</p></div>
+      <div class="empty-state" id="fleetEmpty" style="display:none;"><h3 data-i18n="empty-fleet-title">Нет ВС</h3><p data-i18n="empty-fleet-desc">Флот не найден</p></div>
     </div>
   </div>
 
   <!-- TIMELINE -->
   <div class="tab-content" id="tab-timeline">
-    <div class="toolbar"><h3 style="font-size:16px;font-weight:700;">История</h3><button class="btn-add" onclick="openTimelineModal()">+ Добавить событие</button></div>
+    <div class="toolbar"><h3 style="font-size:16px;font-weight:700;" data-i18n="tab-timeline">История</h3></div>
     <div class="table-wrapper">
-      <div class="loading" id="timelineLoading">Загрузка истории...</div>
+      <div class="loading" id="timelineLoading" data-i18n="loading-timeline">Загрузка истории...</div>
       <table id="timelineTable" style="display:none;">
-        <thead><tr><th>Год</th><th>Название</th><th>Описание</th><th>Иконка</th><th>Действия</th></tr></thead>
+        <thead><tr><th data-i18n="th-year">Год</th><th data-i18n="th-title">Название</th><th data-i18n="th-description">Описание</th><th data-i18n="th-icon">Иконка</th></tr></thead>
         <tbody id="timelineBody"></tbody>
       </table>
-      <div class="empty-state" id="timelineEmpty" style="display:none;"><h3>Нет записей</h3><p>Добавьте первую запись</p></div>
+      <div class="empty-state" id="timelineEmpty" style="display:none;"><h3 data-i18n="empty-timeline-title">Нет записей</h3><p data-i18n="empty-timeline-desc">Записи загружаются из базы данных</p></div>
     </div>
   </div>
 
@@ -295,17 +303,109 @@
     let fleetData = [];
     let timelineData = [];
 
+    /* ===== i18n ===== */
+    const i18n = {
+      ru: {
+        'admin-badge': 'Админ-панель', 'admin-title': 'Админ-панель', 'admin-subtitle': 'Управление контентом сайта Swiss Airlines',
+        'btn-home': '🏠 Главная', 'btn-logout': '↪ Выйти', 'btn-csv': 'Экспорт CSV',
+        'tab-applications': '📋 Анкеты', 'tab-events': '📅 События', 'tab-routes': '🗺️ Маршруты', 'tab-fleet': '✈️ Флот', 'tab-timeline': '📜 История',
+        'stat-total': 'Всего анкет', 'stat-new': 'Новые', 'stat-accepted': 'Принято', 'stat-rejected': 'Отклонено',
+        'filter-all': 'Все', 'filter-new': '🆕 Новые', 'filter-review': '🔍 На рассмотрении', 'filter-accepted': '✅ Принято', 'filter-rejected': '❌ Отклонено',
+        'loading-apps': 'Загрузка анкет...', 'loading-events': 'Загрузка событий...', 'loading-routes': 'Загрузка маршрутов...', 'loading-fleet': 'Загрузка флота...', 'loading-timeline': 'Загрузка истории...',
+        'th-roblox': 'Roblox', 'th-telegram': 'Telegram', 'th-age': 'Возраст', 'th-role': 'Роль', 'th-status': 'Статус', 'th-date': 'Дата',
+        'th-title': 'Название', 'th-time': 'Время', 'th-location': 'Локация', 'th-actions': 'Действия',
+        'th-origin': 'Откуда', 'th-destination': 'Куда', 'th-distance': 'Дистанция', 'th-duration': 'Время', 'th-aircraft': 'Самолёт',
+        'th-model': 'Модель', 'th-manufacturer': 'Производитель', 'th-category': 'Категория', 'th-capacity': 'Мест', 'th-range': 'Дальность', 'th-speed': 'Скорость',
+        'th-year': 'Год', 'th-description': 'Описание', 'th-icon': 'Иконка',
+        'empty-apps-title': 'Нет анкет', 'empty-apps-desc': 'Пока никто не отправил заявку',
+        'empty-events-title': 'Нет событий', 'empty-events-desc': 'Добавьте первое событие',
+        'empty-routes-title': 'Нет маршрутов', 'empty-routes-desc': 'Маршруты загружаются из базы данных',
+        'empty-fleet-title': 'Нет ВС', 'empty-fleet-desc': 'Флот не найден',
+        'empty-timeline-title': 'Нет записей', 'empty-timeline-desc': 'Записи загружаются из базы данных',
+        'btn-add': '+ Добавить событие',
+        'modal-add-title': 'Новое событие', 'modal-edit-title': 'Редактировать событие',
+        'label-title': 'Название', 'label-date': 'Дата', 'label-time': 'Время', 'label-location': 'Локация', 'label-description': 'Описание', 'label-status': 'Статус',
+        'btn-save': 'Сохранить', 'btn-cancel': 'Отмена',
+        'status-new': 'Новая', 'status-review': 'На рассмотрении', 'status-accepted': 'Принято', 'status-rejected': 'Отклонено',
+        'status-upcoming': 'Предстоит', 'status-past': 'Прошло', 'status-active': 'Активен', 'status-inactive': 'Неактивен',
+        'toast-added': 'Событие добавлено', 'toast-updated': 'Событие обновлено', 'toast-deleted': 'Событие удалено',
+        'error-required': 'Название и дата обязательны', 'error-connection': 'Ошибка соединения',
+        'csv-downloaded': 'CSV файл загружен',
+        'app-detail-name': 'Имя', 'app-detail-char-age': 'Возраст персонажа', 'app-detail-real-age': 'Реальный возраст',
+        'app-detail-role': 'Роль', 'app-detail-online': 'Время онлайн', 'app-detail-flights': 'Налёт',
+        'app-detail-experience': 'Опыт', 'app-detail-why': 'Почему Swiss', 'app-detail-about': 'О себе',
+        'btn-edit': 'Изменить', 'btn-delete': 'Удалить', 'confirm-delete': 'Удалить событие?',
+        'cat-wide-body': 'Широкофюзеляжный', 'cat-cargo': 'Грузовой', 'cat-regional': 'Региональный',
+        'error-load': 'Ошибка загрузки'
+      },
+      en: {
+        'admin-badge': 'Admin Panel', 'admin-title': 'Admin Panel', 'admin-subtitle': 'Swiss Airlines website content management',
+        'btn-home': '🏠 Home', 'btn-logout': '↪ Logout', 'btn-csv': 'Export CSV',
+        'tab-applications': '📋 Applications', 'tab-events': '📅 Events', 'tab-routes': '🗺️ Routes', 'tab-fleet': '✈️ Fleet', 'tab-timeline': '📜 Timeline',
+        'stat-total': 'Total applications', 'stat-new': 'New', 'stat-accepted': 'Accepted', 'stat-rejected': 'Rejected',
+        'filter-all': 'All', 'filter-new': '🆕 New', 'filter-review': '🔍 Under review', 'filter-accepted': '✅ Accepted', 'filter-rejected': '❌ Rejected',
+        'loading-apps': 'Loading applications...', 'loading-events': 'Loading events...', 'loading-routes': 'Loading routes...', 'loading-fleet': 'Loading fleet...', 'loading-timeline': 'Loading timeline...',
+        'th-roblox': 'Roblox', 'th-telegram': 'Telegram', 'th-age': 'Age', 'th-role': 'Role', 'th-status': 'Status', 'th-date': 'Date',
+        'th-title': 'Title', 'th-time': 'Time', 'th-location': 'Location', 'th-actions': 'Actions',
+        'th-origin': 'From', 'th-destination': 'To', 'th-distance': 'Distance', 'th-duration': 'Duration', 'th-aircraft': 'Aircraft',
+        'th-model': 'Model', 'th-manufacturer': 'Manufacturer', 'th-category': 'Category', 'th-capacity': 'Seats', 'th-range': 'Range', 'th-speed': 'Speed',
+        'th-year': 'Year', 'th-description': 'Description', 'th-icon': 'Icon',
+        'empty-apps-title': 'No applications', 'empty-apps-desc': 'No one has submitted an application yet',
+        'empty-events-title': 'No events', 'empty-events-desc': 'Add your first event',
+        'empty-routes-title': 'No routes', 'empty-routes-desc': 'Routes are loaded from the database',
+        'empty-fleet-title': 'No aircraft', 'empty-fleet-desc': 'Fleet not found',
+        'empty-timeline-title': 'No records', 'empty-timeline-desc': 'Records are loaded from the database',
+        'btn-add': '+ Add Event',
+        'modal-add-title': 'New Event', 'modal-edit-title': 'Edit Event',
+        'label-title': 'Title', 'label-date': 'Date', 'label-time': 'Time', 'label-location': 'Location', 'label-description': 'Description', 'label-status': 'Status',
+        'btn-save': 'Save', 'btn-cancel': 'Cancel',
+        'status-new': 'New', 'status-review': 'Under review', 'status-accepted': 'Accepted', 'status-rejected': 'Rejected',
+        'status-upcoming': 'Upcoming', 'status-past': 'Past', 'status-active': 'Active', 'status-inactive': 'Inactive',
+        'toast-added': 'Event added', 'toast-updated': 'Event updated', 'toast-deleted': 'Event deleted',
+        'error-required': 'Title and date are required', 'error-connection': 'Connection error',
+        'csv-downloaded': 'CSV file downloaded',
+        'app-detail-name': 'Name', 'app-detail-char-age': 'Character age', 'app-detail-real-age': 'Real age',
+        'app-detail-role': 'Role', 'app-detail-online': 'Online time', 'app-detail-flights': 'Flight time',
+        'app-detail-experience': 'Experience', 'app-detail-why': 'Why Swiss', 'app-detail-about': 'About',
+        'btn-edit': 'Edit', 'btn-delete': 'Delete', 'confirm-delete': 'Delete event?',
+        'cat-wide-body': 'Wide-body', 'cat-cargo': 'Cargo', 'cat-regional': 'Regional',
+        'error-load': 'Loading error'
+      }
+    };
+
+    function t(key) {
+      const lang = document.documentElement.getAttribute('lang') || 'ru';
+      return (i18n[lang] && i18n[lang][key]) || (i18n.ru[key]) || key;
+    }
+
+    function applyLang() {
+      const lang = document.documentElement.getAttribute('lang') || 'ru';
+      const dict = i18n[lang] || i18n.ru;
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        if (dict[key]) el.textContent = dict[key];
+      });
+      // Re-render active tab content with new language
+      if (currentTab === 'applications' && allData.length >= 0) renderApps();
+      if (currentTab === 'events' && eventsData.length >= 0) renderEvents();
+      if (currentTab === 'routes' && routesData.length >= 0) renderRoutes();
+      if (currentTab === 'fleet') renderFleet();
+      if (currentTab === 'timeline' && timelineData.length >= 0) renderTimeline();
+      renderAppStats();
+    }
+
     function showToast(message, type='info') {
       const c = document.getElementById('toastContainer');
-      const t = document.createElement('div'); t.className='toast '+type;
+      const toast = document.createElement('div'); toast.className='toast '+type;
       const icons = {success:'✓',error:'✕',info:'ℹ'};
-      t.innerHTML = `<span style="font-size:16px;">${icons[type]}</span> ${message}`;
-      c.appendChild(t);
-      setTimeout(()=>{ t.style.opacity='0'; t.style.transform='translateX(120%)'; t.style.transition='all 0.4s ease'; setTimeout(()=>t.remove(),400); },4000);
+      toast.innerHTML = '<span style="font-size:16px;">'+icons[type]+'</span> '+message;
+      c.appendChild(toast);
+      setTimeout(()=>{ toast.style.opacity='0'; toast.style.transform='translateX(120%)'; toast.style.transition='all 0.4s ease'; setTimeout(()=>toast.remove(),400); },4000);
     }
     function escapeHtml(str){ if(!str) return str; return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
     function formatDate(d){ if(!d) return '—'; return new Date(d).toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
-    function getStatusText(s){ const m={new:'Новая',review:'На рассмотрении',accepted:'Принято',rejected:'Отклонено',upcoming:'Предстоит',past:'Прошло',active:'Активен',inactive:'Неактивен'}; return m[s]||s; }
+    function getStatusText(s){ const m={new:t('status-new'),review:t('status-review'),accepted:t('status-accepted'),rejected:t('status-rejected'),upcoming:t('status-upcoming'),past:t('status-past'),active:t('status-active'),inactive:t('status-inactive')}; return m[s]||s; }
+    function getCategoryText(c){ const m={'wide-body':t('cat-wide-body'),'cargo':t('cat-cargo'),'regional':t('cat-regional')}; return m[c]||c; }
 
     function switchTab(tab) {
       currentTab = tab;
@@ -320,18 +420,18 @@
     // ============ MODAL ============
     function openModal(title, fields, onSave, values) {
       const modal = document.getElementById('modal');
-      let html = `<div class="modal-header"><h3>${escapeHtml(title)}</h3><button class="modal-close" onclick="closeModal()">×</button></div><div class="modal-body">`;
+      let html = '<div class="modal-header"><h3>'+escapeHtml(title)+'</h3><button class="modal-close" onclick="closeModal()">×</button></div><div class="modal-body">';
       fields.forEach(f => {
         const val = values && values[f.name] !== undefined ? escapeHtml(values[f.name]) : '';
         if (f.type === 'textarea') {
-          html += `<div class="form-row"><label>${f.label}</label><textarea id="field-${f.name}" rows="3">${val}</textarea></div>`;
+          html += '<div class="form-row"><label>'+f.label+'</label><textarea id="field-'+f.name+'" rows="3">'+val+'</textarea></div>';
         } else if (f.type === 'select') {
-          html += `<div class="form-row"><label>${f.label}</label><select id="field-${f.name}">` + f.options.map(o => `<option value="${o.value}"${val===o.value?' selected':''}>${o.label}</option>`).join('') + `</select></div>`;
+          html += '<div class="form-row"><label>'+f.label+'</label><select id="field-'+f.name+'">' + f.options.map(o => '<option value="'+o.value+'"'+(val===o.value?' selected':'')+'>'+o.label+'</option>').join('') + '</select></div>';
         } else {
-          html += `<div class="form-row"><label>${f.label}</label><input type="${f.type||'text'}" id="field-${f.name}" value="${val}"${f.placeholder?` placeholder="${f.placeholder}"`:''}></div>`;
+          html += '<div class="form-row"><label>'+f.label+'</label><input type="'+(f.type||'text')+'" id="field-'+f.name+'" value="'+val+'"'+(f.placeholder?' placeholder="'+f.placeholder+'"':'')+'></div>';
         }
       });
-      html += `</div><div class="modal-footer"><button class="btn-cancel" onclick="closeModal()">Отмена</button><button class="btn-save" onclick="modalSave()">Сохранить</button></div>`;
+      html += '</div><div class="modal-footer"><button class="btn-cancel" onclick="closeModal()">'+t('btn-cancel')+'</button><button class="btn-save" onclick="modalSave()">'+t('btn-save')+'</button></div>';
       modal.innerHTML = html;
       document.getElementById('modalOverlay').classList.add('open');
       window._modalSave = onSave;
@@ -339,7 +439,6 @@
     function closeModal(){ document.getElementById('modalOverlay').classList.remove('open'); window._modalSave = null; }
     function modalSave(){ if(!window._modalSave) return; window._modalSave(); }
     function getField(name){ return document.getElementById('field-'+name).value.trim(); }
-    function getFieldInt(name){ const v = parseInt(document.getElementById('field-'+name).value)||0; return v; }
 
     // ============ APPLICATIONS ============
     async function loadApplications() {
@@ -347,11 +446,11 @@
         const r = await fetch('/api/applications');
         if (!r.ok) { if (r.status===401) { window.location='login.html'; return; } throw new Error('Failed'); }
         const data = await r.json();
-        if (data.user) { document.getElementById('userName').textContent = data.user.username || 'Администратор'; document.getElementById('userAvatar').textContent = (data.user.username || 'A').charAt(0).toUpperCase(); }
+        if (data.user) { document.getElementById('userName').textContent = data.user.username || t('admin-badge'); document.getElementById('userAvatar').textContent = (data.user.username || 'A').charAt(0).toUpperCase(); }
         allData = data.applications || [];
         document.getElementById('appsLoading').style.display='none';
         renderAppStats(); renderApps();
-      } catch(e) { document.getElementById('appsLoading').textContent='Ошибка загрузки'; }
+      } catch(e) { document.getElementById('appsLoading').textContent=t('error-load'); }
     }
     function renderAppStats() {
       document.getElementById('totalCount').textContent = allData.length;
@@ -378,38 +477,25 @@
         <tr class="detail-row" id="app-detail-${a.id}" style="display:none;">
           <td colspan="7" style="background:var(--gray-100);padding:16px 24px;">
             <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;font-size:12px;">
-              <div><strong style="color:var(--gray-500)">Имя:</strong> ${escapeHtml(a.roblox_name)||'—'}</div>
-              <div><strong style="color:var(--gray-500)">Возраст персонажа:</strong> ${escapeHtml(a.char_age)||'—'}</div>
-              <div><strong style="color:var(--gray-500)">Реальный возраст:</strong> ${escapeHtml(a.real_age)||'—'}</div>
-              <div><strong style="color:var(--gray-500)">Роль:</strong> ${escapeHtml(a.role)||'—'}</div>
-              <div><strong style="color:var(--gray-500)">Время онлайн:</strong> ${escapeHtml(a.online_time)||'—'}</div>
-              <div><strong style="color:var(--gray-500)">Налёт:</strong> ${escapeHtml(a.flight_minutes)||'—'}</div>
-              <div style="grid-column:span 3"><strong style="color:var(--gray-500)">Опыт:</strong><br>${escapeHtml(a.experience)||'—'}</div>
-              <div style="grid-column:span 3"><strong style="color:var(--gray-500)">Почему Swiss:</strong><br>${escapeHtml(a.why_swiss)||'—'}</div>
-              <div style="grid-column:span 3"><strong style="color:var(--gray-500)">О себе:</strong><br>${escapeHtml(a.about)||'—'}</div>
-            </div>
-            <div style="margin-top:12px;display:flex;gap:8px;">
-              <button class="action-btn" style="background:#065f46;color:white;border-color:#065f46;" onclick="updateAppStatus(${a.id},'accepted')">Принять</button>
-              <button class="action-btn" style="background:#1e40af;color:white;border-color:#1e40af;" onclick="updateAppStatus(${a.id},'review')">На рассмотрение</button>
-              <button class="action-btn" style="background:#991b1b;color:white;border-color:#991b1b;" onclick="updateAppStatus(${a.id},'rejected')">Отклонить</button>
-              <button class="action-btn delete" onclick="deleteApp(${a.id})">Удалить</button>
+              <div><strong style="color:var(--gray-500)">${t('app-detail-name')}:</strong> ${escapeHtml(a.roblox_name)||'—'}</div>
+              <div><strong style="color:var(--gray-500)">${t('app-detail-char-age')}:</strong> ${escapeHtml(a.char_age)||'—'}</div>
+              <div><strong style="color:var(--gray-500)">${t('app-detail-real-age')}:</strong> ${escapeHtml(a.real_age)||'—'}</div>
+              <div><strong style="color:var(--gray-500)">${t('app-detail-role')}:</strong> ${escapeHtml(a.role)||'—'}</div>
+              <div><strong style="color:var(--gray-500)">${t('app-detail-online')}:</strong> ${escapeHtml(a.online_time)||'—'}</div>
+              <div><strong style="color:var(--gray-500)">${t('app-detail-flights')}:</strong> ${escapeHtml(a.flight_minutes)||'—'}</div>
+              <div style="grid-column:span 3"><strong style="color:var(--gray-500)">${t('app-detail-experience')}:</strong><br>${escapeHtml(a.experience)||'—'}</div>
+              <div style="grid-column:span 3"><strong style="color:var(--gray-500)">${t('app-detail-why')}:</strong><br>${escapeHtml(a.why_swiss)||'—'}</div>
+              <div style="grid-column:span 3"><strong style="color:var(--gray-500)">${t('app-detail-about')}:</strong><br>${escapeHtml(a.about)||'—'}</div>
             </div>
           </td>
         </tr>
       `).join('');
     }
     function toggleAppDetail(id){ const row=document.getElementById('app-detail-'+id); row.style.display = row.style.display==='none'?'table-row':'none'; }
-    async function updateAppStatus(id,status){
-      try { const r=await fetch('/api/applications/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({status})}); const d=await r.json(); if(r.ok&&d.success){ allData=allData.map(a=>a.id===id?{...a,status}:a); renderAppStats(); renderApps(); showToast('Статус изменён','success'); } else showToast(d.error||'Ошибка','error'); } catch(e){ showToast('Ошибка соединения','error'); }
-    }
-    async function deleteApp(id){
-      if(!confirm('Удалить анкету #'+id+'?')) return;
-      try { const r=await fetch('/api/applications/'+id,{method:'DELETE'}); const d=await r.json(); if(r.ok&&d.success){ allData=allData.filter(a=>a.id!==id); renderAppStats(); renderApps(); showToast('Анкета удалена','success'); } else showToast(d.error||'Ошибка','error'); } catch(e){ showToast('Ошибка соединения','error'); }
-    }
 
     // ============ EVENTS ============
     async function loadEvents() {
-      try { const r=await fetch('/api/admin/events'); const d=await r.json(); eventsData=d.events||[]; document.getElementById('eventsLoading').style.display='none'; renderEvents(); } catch(e){ document.getElementById('eventsLoading').textContent='Ошибка загрузки'; }
+      try { const r=await fetch('/api/admin/events'); const d=await r.json(); eventsData=d.events||[]; document.getElementById('eventsLoading').style.display='none'; renderEvents(); } catch(e){ document.getElementById('eventsLoading').textContent=t('error-load'); }
     }
     function renderEvents() {
       const tbody=document.getElementById('eventsBody');
@@ -422,29 +508,29 @@
           <td class="cell-small">${escapeHtml(e.time)||'—'}</td>
           <td class="cell-small">${escapeHtml(e.location)||'—'}</td>
           <td><span class="status-badge status-${e.status||'upcoming'}">${getStatusText(e.status)}</span></td>
-          <td><div class="cell-actions"><button class="action-btn" onclick="editEvent(${e.id})">Изменить</button><button class="action-btn delete" onclick="deleteEvent(${e.id})">Удалить</button></div></td>
+          <td><div class="cell-actions"><button class="action-btn" onclick="editEvent(${e.id})">${t('btn-edit')}</button><button class="action-btn delete" onclick="deleteEvent(${e.id})">${t('btn-delete')}</button></div></td>
         </tr>
       `).join('');
     }
     function openEventModal(id){
       const e = id ? eventsData.find(x=>x.id===id) : null;
-      openModal(id?'Редактировать событие':'Новое событие', [
-        {name:'title',label:'Название',type:'text'},{name:'date',label:'Дата',type:'text',placeholder:'2026-08-20'},
-        {name:'time',label:'Время',type:'text',placeholder:'19:00'},{name:'location',label:'Локация',type:'text'},
-        {name:'status',label:'Статус',type:'select',options:[{value:'upcoming',label:'Предстоит'},{value:'past',label:'Прошло'}]},
-        {name:'description',label:'Описание',type:'textarea'},{name:'image_url',label:'URL изображения',type:'text'}
+      openModal(id?t('modal-edit-title'):t('modal-add-title'), [
+        {name:'title',label:t('label-title'),type:'text'},{name:'date',label:t('label-date'),type:'text',placeholder:'2026-08-20'},
+        {name:'time',label:t('label-time'),type:'text',placeholder:'19:00'},{name:'location',label:t('label-location'),type:'text'},
+        {name:'status',label:t('label-status'),type:'select',options:[{value:'upcoming',label:t('status-upcoming')},{value:'past',label:t('status-past')}]},
+        {name:'description',label:t('label-description'),type:'textarea'},{name:'image_url',label:'URL',type:'text'}
       ], async ()=>{
         const payload = {title:getField('title'),date:getField('date'),time:getField('time'),location:getField('location'),status:getField('status'),description:getField('description'),image_url:getField('image_url')};
-        if(!payload.title||!payload.date){ showToast('Название и дата обязательны','error'); return; }
-        try { const r=await fetch('/api/admin/events'+(id?'/'+id:''),{method:id?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); const d=await r.json(); if(r.ok&&d.success){ showToast(id?'Событие обновлено':'Событие добавлено','success'); closeModal(); loadEvents(); } else showToast(d.error||'Ошибка','error'); } catch(e){ showToast('Ошибка соединения','error'); }
+        if(!payload.title||!payload.date){ showToast(t('error-required'),'error'); return; }
+        try { const r=await fetch('/api/admin/events'+(id?'/'+id:''),{method:id?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); const d=await r.json(); if(r.ok&&d.success){ showToast(id?t('toast-updated'):t('toast-added'),'success'); closeModal(); loadEvents(); } else showToast(d.error||'Error','error'); } catch(e){ showToast(t('error-connection'),'error'); }
       }, e||{});
     }
     function editEvent(id){ openEventModal(id); }
-    async function deleteEvent(id){ if(!confirm('Удалить событие?')) return; try { const r=await fetch('/api/admin/events/'+id,{method:'DELETE'}); const d=await r.json(); if(r.ok&&d.success){ showToast('Событие удалено','success'); loadEvents(); } else showToast(d.error||'Ошибка','error'); } catch(e){ showToast('Ошибка соединения','error'); } }
+    async function deleteEvent(id){ if(!confirm(t('confirm-delete'))) return; try { const r=await fetch('/api/admin/events/'+id,{method:'DELETE'}); const d=await r.json(); if(r.ok&&d.success){ showToast(t('toast-deleted'),'success'); loadEvents(); } else showToast(d.error||'Error','error'); } catch(e){ showToast(t('error-connection'),'error'); } }
 
-    // ============ ROUTES ============
+    // ============ ROUTES (read-only) ============
     async function loadRoutes() {
-      try { const r=await fetch('/api/admin/routes'); const d=await r.json(); routesData=d.routes||[]; document.getElementById('routesLoading').style.display='none'; renderRoutes(); } catch(e){ document.getElementById('routesLoading').textContent='Ошибка загрузки'; }
+      try { const r=await fetch('/api/admin/routes'); const d=await r.json(); routesData=d.routes||[]; document.getElementById('routesLoading').style.display='none'; renderRoutes(); } catch(e){ document.getElementById('routesLoading').textContent=t('error-load'); }
     }
     function renderRoutes() {
       const tbody=document.getElementById('routesBody');
@@ -457,31 +543,20 @@
           <td class="cell-small">${r.distance_km||'—'} км</td>
           <td class="cell-small">${r.duration_min||'—'} мин</td>
           <td class="cell-small">${escapeHtml(r.aircraft_type)||'—'}</td>
-          <td><span class="status-badge status-${r.active?'active':'inactive'}">${r.active?'Активен':'Неактивен'}</span></td>
-          <td><div class="cell-actions"><button class="action-btn" onclick="editRoute(${r.id})">Изменить</button><button class="action-btn delete" onclick="deleteRoute(${r.id})">Удалить</button></div></td>
+          <td><span class="status-badge status-${r.active?'active':'inactive'}">${r.active?t('status-active'):t('status-inactive')}</span></td>
         </tr>
       `).join('');
     }
-    function openRouteModal(id){
-      const r = id ? routesData.find(x=>x.id===id) : null;
-      openModal(id?'Редактировать маршрут':'Новый маршрут', [
-        {name:'origin',label:'Откуда',type:'text'},{name:'origin_code',label:'Код откуда',type:'text'},
-        {name:'destination',label:'Куда',type:'text'},{name:'destination_code',label:'Код куда',type:'text'},
-        {name:'distance_km',label:'Дистанция (км)',type:'number'},{name:'duration_min',label:'Время (мин)',type:'number'},
-        {name:'aircraft_type',label:'Тип ВС',type:'text'},{name:'frequency',label:'Частота',type:'text'},
-        {name:'active',label:'Активен',type:'select',options:[{value:'1',label:'Да'},{value:'0',label:'Нет'}]}
-      ], async ()=>{
-        const payload = {origin:getField('origin'),origin_code:getField('origin_code'),destination:getField('destination'),destination_code:getField('destination_code'),distance_km:getFieldInt('distance_km'),duration_min:getFieldInt('duration_min'),aircraft_type:getField('aircraft_type'),frequency:getField('frequency'),active:getField('active')==='1'};
-        if(!payload.origin||!payload.destination){ showToast('Откуда и Куда обязательны','error'); return; }
-        try { const resp=await fetch('/api/admin/routes'+(id?'/'+id:''),{method:id?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); const d=await resp.json(); if(resp.ok&&d.success){ showToast(id?'Маршрут обновлён':'Маршрут добавлен','success'); closeModal(); loadRoutes(); } else showToast(d.error||'Ошибка','error'); } catch(e){ showToast('Ошибка соединения','error'); }
-      }, r ? {...r, active: r.active ? '1' : '0'} : {active:'1'});
-    }
-    function editRoute(id){ openRouteModal(id); }
-    async function deleteRoute(id){ if(!confirm('Удалить маршрут?')) return; try { const r=await fetch('/api/admin/routes/'+id,{method:'DELETE'}); const d=await r.json(); if(r.ok&&d.success){ showToast('Маршрут удалён','success'); loadRoutes(); } else showToast(d.error||'Ошибка','error'); } catch(e){ showToast('Ошибка соединения','error'); } }
 
-    // ============ FLEET ============
-    async function loadFleet() {
-      try { const r=await fetch('/api/admin/fleet'); const d=await r.json(); fleetData=d.fleet||[]; document.getElementById('fleetLoading').style.display='none'; renderFleet(); } catch(e){ document.getElementById('fleetLoading').textContent='Ошибка загрузки'; }
+    // ============ FLEET (static) ============
+    function loadFleet() {
+      fleetData = [
+        { id: 1, model: 'Swiss Airlines', manufacturer: 'Boeing', category: 'wide-body', capacity: '350', range_km: '14000', speed_kmh: '900', status: 'active', description: 'Флагман дальних маршрутов' },
+        { id: 2, model: 'Boeing 747 Cargo', manufacturer: 'Boeing', category: 'cargo', capacity: '—', range_km: '8000', speed_kmh: '850', status: 'active', description: 'Грузовые перевозки' },
+        { id: 3, model: 'ATR', manufacturer: 'ATR', category: 'regional', capacity: '72', range_km: '1500', speed_kmh: '500', status: 'active', description: 'Региональные рейсы' }
+      ];
+      document.getElementById('fleetLoading').style.display='none';
+      renderFleet();
     }
     function renderFleet() {
       const tbody=document.getElementById('fleetBody');
@@ -491,81 +566,51 @@
         <tr>
           <td><div class="cell-name">${escapeHtml(f.model)}</div></td>
           <td class="cell-small">${escapeHtml(f.manufacturer)||'—'}</td>
-          <td class="cell-small">${escapeHtml(f.category)||'—'}</td>
+          <td class="cell-small">${getCategoryText(f.category)}</td>
           <td class="cell-small">${f.capacity||'—'}</td>
           <td class="cell-small">${f.range_km||'—'} км</td>
           <td class="cell-small">${f.speed_kmh||'—'} км/ч</td>
           <td><span class="status-badge status-${f.status||'active'}">${getStatusText(f.status)}</span></td>
-          <td><div class="cell-actions"><button class="action-btn" onclick="editFleet(${f.id})">Изменить</button><button class="action-btn delete" onclick="deleteFleet(${f.id})">Удалить</button></div></td>
         </tr>
       `).join('');
     }
-    function openFleetModal(id){
-      const f = id ? fleetData.find(x=>x.id===id) : null;
-      openModal(id?'Редактировать ВС':'Новое ВС', [
-        {name:'model',label:'Модель',type:'text'},{name:'manufacturer',label:'Производитель',type:'text'},
-        {name:'category',label:'Категория',type:'text'},{name:'capacity',label:'Мест',type:'number'},
-        {name:'range_km',label:'Дальность (км)',type:'number'},{name:'speed_kmh',label:'Скорость (км/ч)',type:'number'},
-        {name:'status',label:'Статус',type:'select',options:[{value:'active',label:'Активен'},{value:'inactive',label:'Неактивен'}]},
-        {name:'description',label:'Описание',type:'textarea'},{name:'image_url',label:'URL изображения',type:'text'}
-      ], async ()=>{
-        const payload = {model:getField('model'),manufacturer:getField('manufacturer'),category:getField('category'),capacity:getFieldInt('capacity'),range_km:getFieldInt('range_km'),speed_kmh:getFieldInt('speed_kmh'),status:getField('status'),description:getField('description'),image_url:getField('image_url')};
-        if(!payload.model){ showToast('Модель обязательна','error'); return; }
-        try { const r=await fetch('/api/admin/fleet'+(id?'/'+id:''),{method:id?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); const d=await r.json(); if(r.ok&&d.success){ showToast(id?'ВС обновлено':'ВС добавлено','success'); closeModal(); loadFleet(); } else showToast(d.error||'Ошибка','error'); } catch(e){ showToast('Ошибка соединения','error'); }
-      }, f||{});
-    }
-    function editFleet(id){ openFleetModal(id); }
-    async function deleteFleet(id){ if(!confirm('Удалить ВС?')) return; try { const r=await fetch('/api/admin/fleet/'+id,{method:'DELETE'}); const d=await r.json(); if(r.ok&&d.success){ showToast('ВС удалено','success'); loadFleet(); } else showToast(d.error||'Ошибка','error'); } catch(e){ showToast('Ошибка соединения','error'); } }
 
-    // ============ TIMELINE ============
+    // ============ TIMELINE (read-only) ============
     async function loadTimeline() {
-      try { const r=await fetch('/api/admin/timeline'); const d=await r.json(); timelineData=d.timeline||[]; document.getElementById('timelineLoading').style.display='none'; renderTimeline(); } catch(e){ document.getElementById('timelineLoading').textContent='Ошибка загрузки'; }
+      try { const r=await fetch('/api/admin/timeline'); const d=await r.json(); timelineData=d.timeline||[]; document.getElementById('timelineLoading').style.display='none'; renderTimeline(); } catch(e){ document.getElementById('timelineLoading').textContent=t('error-load'); }
     }
     function renderTimeline() {
       const tbody=document.getElementById('timelineBody');
       if(!timelineData.length){ document.getElementById('timelineTable').style.display='none'; document.getElementById('timelineEmpty').style.display='block'; return; }
       document.getElementById('timelineTable').style.display='table'; document.getElementById('timelineEmpty').style.display='none';
-      tbody.innerHTML = timelineData.map(t => `
+      tbody.innerHTML = timelineData.map(tl => `
         <tr>
-          <td class="cell-name">${escapeHtml(t.year)}</td>
-          <td><div class="cell-name">${escapeHtml(t.title)}</div></td>
-          <td class="cell-small">${escapeHtml(t.description)||'—'}</td>
-          <td class="cell-small">${escapeHtml(t.icon)||'—'}</td>
-          <td><div class="cell-actions"><button class="action-btn" onclick="editTimeline(${t.id})">Изменить</button><button class="action-btn delete" onclick="deleteTimeline(${t.id})">Удалить</button></div></td>
+          <td class="cell-name">${escapeHtml(tl.year)}</td>
+          <td><div class="cell-name">${escapeHtml(tl.title)}</div></td>
+          <td class="cell-small">${escapeHtml(tl.description)||'—'}</td>
+          <td class="cell-small">${escapeHtml(tl.icon)||'—'}</td>
         </tr>
       `).join('');
     }
-    function openTimelineModal(id){
-      const t = id ? timelineData.find(x=>x.id===id) : null;
-      openModal(id?'Редактировать запись':'Новая запись', [
-        {name:'year',label:'Год',type:'text'},{name:'title',label:'Название',type:'text'},
-        {name:'description',label:'Описание',type:'textarea'},{name:'icon',label:'Иконка (emoji)',type:'text'}
-      ], async ()=>{
-        const payload = {year:getField('year'),title:getField('title'),description:getField('description'),icon:getField('icon')};
-        if(!payload.year||!payload.title){ showToast('Год и название обязательны','error'); return; }
-        try { const r=await fetch('/api/admin/timeline'+(id?'/'+id:''),{method:id?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); const d=await r.json(); if(r.ok&&d.success){ showToast(id?'Запись обновлена':'Запись добавлена','success'); closeModal(); loadTimeline(); } else showToast(d.error||'Ошибка','error'); } catch(e){ showToast('Ошибка соединения','error'); }
-      }, t||{});
-    }
-    function editTimeline(id){ openTimelineModal(id); }
-    async function deleteTimeline(id){ if(!confirm('Удалить запись?')) return; try { const r=await fetch('/api/admin/timeline/'+id,{method:'DELETE'}); const d=await r.json(); if(r.ok&&d.success){ showToast('Запись удалена','success'); loadTimeline(); } else showToast(d.error||'Ошибка','error'); } catch(e){ showToast('Ошибка соединения','error'); } }
 
     // ============ EXPORT / UTILS ============
     function exportCSV() {
       const headers = ['ID','Roblox Name','Char Age','Real Age','Experience','Role','Online Time','Why Swiss','Rules','FRO','Flight Minutes','Telegram','About','Status','Date'];
       const rows = allData.map(a => [a.id, a.roblox_name, a.char_age, a.real_age, a.experience, a.role, a.online_time, a.why_swiss, a.rules, a.fro, a.flight_minutes, a.telegram, a.about, getStatusText(a.status), a.created_at]);
       let csv = '\uFEFF' + headers.join(',') + '\n';
-      rows.forEach(r => { csv += r.map(v => `"${String(v||'').replace(/"/g,'""')}"`).join(',') + '\n'; });
+      rows.forEach(r => { csv += r.map(v => '"'+String(v||'').replace(/"/g,'""')+'"').join(',') + '\n'; });
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = `swiss_airlines_${new Date().toISOString().slice(0,10)}.csv`; a.click(); URL.revokeObjectURL(url);
-      showToast('CSV файл загружен', 'success');
+      const a = document.createElement('a'); a.href = url; a.download = 'swiss_airlines_'+new Date().toISOString().slice(0,10)+'.csv'; a.click(); URL.revokeObjectURL(url);
+      showToast(t('csv-downloaded'), 'success');
     }
     async function logout() { try { await fetch('/api/logout',{method:'POST'}); } catch(e){} window.location='login.html'; }
     function toggleTheme() { const c=document.documentElement.getAttribute('data-theme'); const n=c==='dark'?'light':'dark'; document.documentElement.setAttribute('data-theme',n); localStorage.setItem('swiss-theme',n); document.getElementById('themeToggle').textContent=n==='dark'?'☀️':'🌙'; }
-    function toggleLang() { const c=document.documentElement.getAttribute('lang'); const n=c==='ru'?'en':'ru'; document.documentElement.setAttribute('lang',n); localStorage.setItem('swiss-lang',n); document.getElementById('langToggle').textContent=n==='ru'?'EN':'RU'; }
+    function toggleLang() { const c=document.documentElement.getAttribute('lang') || 'ru'; const n=c==='ru'?'en':'ru'; document.documentElement.setAttribute('lang',n); localStorage.setItem('swiss-lang',n); document.getElementById('langToggle').textContent=n==='ru'?'EN':'RU'; applyLang(); }
+
+    // ============ INIT ============
     const savedTheme=localStorage.getItem('swiss-theme'); if(savedTheme){ document.documentElement.setAttribute('data-theme',savedTheme); document.getElementById('themeToggle').textContent=savedTheme==='dark'?'☀️':'🌙'; }
     const savedLang=localStorage.getItem('swiss-lang'); if(savedLang){ document.documentElement.setAttribute('lang',savedLang); document.getElementById('langToggle').textContent=savedLang==='ru'?'EN':'RU'; }
-
     loadApplications();
   </script>
 </body>

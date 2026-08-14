@@ -250,8 +250,14 @@
   </footer>
 
   <script>
+    
     const API_BASE = '';
-    let fleetData = [];
+    let fleetData = [
+      { model: 'Swiss Airlines', manufacturer: 'Boeing', category: 'wide-body', capacity: '350', range_km: '14000', speed_kmh: '900', status: 'active', description: 'Long-haul flagship' },
+      { model: 'Boeing 747 Cargo', manufacturer: 'Boeing', category: 'cargo', capacity: '0', range_km: '8000', speed_kmh: '850', status: 'active', description: 'Freight operations' },
+      { model: 'ATR', manufacturer: 'ATR', category: 'regional', capacity: '72', range_km: '1500', speed_kmh: '500', status: 'active', description: 'Regional connections' }
+    ];
+    function escapeHtml(str){ if(!str) return str; return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
     let currentFilter = 'all';
 
     const observer = new IntersectionObserver((entries) => {
@@ -262,18 +268,8 @@
     const badgeMap = { 'narrow-body': 'badge-narrow', 'wide-body': 'badge-wide', 'regional': 'badge-regional', 'cargo': 'badge-cargo' };
     const labelMap = { 'narrow-body': 'Narrow-body', 'wide-body': 'Wide-body', 'regional': 'Regional', 'cargo': 'Cargo' };
 
-    async function loadFleet() {
+    function loadFleet() {
       const container = document.getElementById('fleet-container');
-      try {
-        const res = await fetch(API_BASE + '/api/fleet');
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        fleetData = await res.json();
-      } catch (e) {
-        container.innerHTML = '<div class="error">Не удалось загрузить флот. Проверьте соединение.</div>';
-        console.error(e);
-        return;
-      }
-
       const types = [...new Set(fleetData.map(f => f.category).filter(Boolean))];
       const filterSection = document.getElementById('filter-section');
       filterSection.innerHTML = '<button class="filter-btn active" data-filter="all">Все</button>';
@@ -287,7 +283,7 @@
       bindFilters();
 
       document.getElementById('stat-models').textContent = fleetData.length;
-      document.getElementById('stat-aircraft').textContent = fleetData.reduce((sum, f) => sum + (1), 0);
+      document.getElementById('stat-aircraft').textContent = fleetData.length;
 
       renderFleet();
     }
@@ -331,18 +327,10 @@
           </div>
         </div>`;
       });
-      html += `
-      <div class="aircraft-card coming-soon animate-on-scroll delay-3" data-category="all">
-        <div class="cs-icon">🔧</div>
-        <div class="cs-title">Расширение флота</div>
-        <div class="cs-text">Добавляйте самолёты через админ-панель — они появятся здесь автоматически.</div>
-      </div>`;
       html += '</div>';
       container.innerHTML = html;
       document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
     }
-
-    function escapeHtml(text) { if (!text) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
 
     function toggleTheme() {
       const current = document.documentElement.getAttribute('data-theme');
