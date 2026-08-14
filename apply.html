@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Анкета — Swiss Airlines VA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="particles"></canvas>
+<nav class="navbar">
+  <div class="container nav-inner">
+    <a href="index.html" class="logo"><div class="logo-icon">+</div> Swiss Airlines VA</a>
+    <div class="nav-links">
+      <a href="index.html" data-i18n="nav_home">Главная</a>
+      <a href="fleet.html" data-i18n="nav_fleet">Флот</a>
+      <a href="routes.html" data-i18n="nav_routes">Маршруты</a>
+      <a href="map.html" data-i18n="nav_map">Карта</a>
+      <a href="events.html" data-i18n="nav_events">События</a>
+      <a href="history.html" data-i18n="nav_history">История</a>
+      <a href="patent.html" data-i18n="nav_patent">Патент</a>
+      <a href="apply.html" class="active" data-i18n="nav_apply">Анкета</a>
+      <a href="contacts.html" data-i18n="nav_contacts">Контакты</a>
+      <a href="login.html" data-i18n="nav_admin">Админ</a>
+      <button class="lang-btn" id="langToggle">EN</button>
+    </div>
+  </div>
+</nav>
+
+<section class="section">
+  <div class="container narrow">
+    <h1 class="section-title" data-i18n="apply_title">Анкета пилота</h1>
+    <p class="section-subtitle" data-i18n="apply_desc">Заполни форму ниже, чтобы подать заявку на вступление в Swiss Airlines VA.</p>
+
+    <form id="applyForm" class="form-card">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="name" data-i18n="label_name">Имя</label>
+          <input type="text" id="name" name="name" required />
+        </div>
+        <div class="form-group">
+          <label for="age" data-i18n="label_age">Возраст</label>
+          <input type="number" id="age" name="age" min="10" max="99" required />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="platform" data-i18n="label_platform">Платформа</label>
+          <select id="platform" name="platform" required>
+            <option value="PC">PC</option>
+            <option value="Mobile">Mobile</option>
+            <option value="Xbox">Xbox</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="username" data-i18n="label_username">Никнейм в игре</label>
+          <input type="text" id="username" name="username" required />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="discord" data-i18n="label_discord">Discord</label>
+          <input type="text" id="discord" name="discord" required />
+        </div>
+        <div class="form-group">
+          <label for="country" data-i18n="label_country">Страна</label>
+          <input type="text" id="country" name="country" required />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="experience" data-i18n="label_exp">Опыт полётов</label>
+          <select id="experience" name="experience" required>
+            <option value="Новичок">Новичок</option>
+            <option value="Средний">Средний</option>
+            <option value="Опытный">Опытный</option>
+            <option value="Профессионал">Профессионал</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="hours" data-i18n="label_hours">Часы в PTFS</label>
+          <input type="text" id="hours" name="hours" placeholder="Например: 200" required />
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="motivation" data-i18n="label_motivation">Почему именно Swiss VA?</label>
+        <textarea id="motivation" name="motivation" rows="5" required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary w-100" data-i18n="btn_send">Отправить заявку</button>
+    </form>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container"><p data-i18n="footer">© 2026 Swiss Airlines VA. Все права защищены. PTFS.</p></div>
+</footer>
+
+<script src="i18n.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

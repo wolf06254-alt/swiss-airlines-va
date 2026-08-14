@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Вход в панель управления — Swiss Airlines</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #8b0000 100%);
+      min-height: 100vh; display: flex; align-items: center; justify-content: center; color: #fff;
+    }
+    .login-card {
+      background: #fff; color: #1a1a1a; border-radius: 16px; padding: 48px 40px;
+      width: 100%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    .login-header { text-align: center; margin-bottom: 32px; }
+    .login-header .logo-icon { font-size: 40px; color: #e30613; margin-bottom: 8px; }
+    .login-header h1 { font-size: 24px; font-weight: 800; }
+    .login-header p { color: #888; font-size: 14px; margin-top: 6px; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #555; }
+    .form-group input {
+      width: 100%; padding: 12px 14px; border: 1px solid #ddd; border-radius: 8px;
+      font-size: 15px; font-family: inherit; transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-group input:focus { outline: none; border-color: #e30613; box-shadow: 0 0 0 3px rgba(227,6,19,0.1); }
+    .btn-login {
+      width: 100%; padding: 14px; background: #e30613; color: #fff; border: none;
+      border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer;
+      transition: background 0.2s, transform 0.15s; margin-top: 8px;
+    }
+    .btn-login:hover { background: #c00510; transform: translateY(-1px); }
+    .btn-login:disabled { background: #999; cursor: not-allowed; transform: none; }
+    .error-msg {
+      background: #fff5f5; border: 1px solid #ffd0d0; color: #b30000;
+      padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; display: none;
+    }
+    .back-link { display: block; text-align: center; margin-top: 20px; color: #888; font-size: 13px; text-decoration: none; }
+    .back-link:hover { color: #e30613; }
+    .toast-container { position: fixed; top: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; }
+    .toast {
+      background: #fff; border-radius: 8px; padding: 14px 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      display: flex; align-items: center; gap: 10px; min-width: 280px; font-size: 14px; border-left: 4px solid #e30613;
+      animation: slideIn 0.3s ease, fadeOut 0.3s ease 4.7s forwards;
+    }
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes fadeOut { to { opacity: 0; transform: translateX(100%); } }
+  </style>
+</head>
+<body>
+  <div class="toast-container" id="toastContainer"></div>
+
+  <div class="login-card">
+    <div class="login-header">
+      <div class="logo-icon">✚</div>
+      <h1>SWISSAIRPTFS</h1>
+      <p>Панель управления экипажем</p>
+    </div>
+
+    <div class="error-msg" id="errorMsg"></div>
+
+    <form id="loginForm">
+      <div class="form-group">
+        <label>Логин администратора</label>
+        <input type="text" id="username" placeholder="Gregory" required>
+      </div>
+      <div class="form-group">
+        <label>Пароль</label>
+        <input type="password" id="password" placeholder="••••••" required>
+      </div>
+      <button type="submit" class="btn-login" id="loginBtn">🔐 ВОЙТИ В ПАНЕЛЬ</button>
+    </form>
+
+    <a href="index.html" class="back-link">← На главную</a>
+  </div>
+
+  <script>
+    function showToast(message) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.innerHTML = `<span>❌</span> ${message}`;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 5000);
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('loginBtn');
+      const errDiv = document.getElementById('errorMsg');
+      btn.disabled = true;
+      btn.innerHTML = '⏳ Вход...';
+      errDiv.style.display = 'none';
+
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+
+      try {
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          window.location.href = 'admin.html';
+        } else {
+          errDiv.textContent = result.message || 'Неверный логин или пароль';
+          errDiv.style.display = 'block';
+          showToast(result.message || 'Ошибка входа');
+        }
+      } catch (err) {
+        errDiv.textContent = 'Сервер недоступен. Убедись, что сервер запущен (npm start), и попробуй снова.';
+        errDiv.style.display = 'block';
+        showToast('Сервер не отвечает. Запусти сервер командой: npm start');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '🔐 ВОЙТИ В ПАНЕЛЬ';
+      }
+    });
+
+    // Check if already logged in
+    fetch('/api/me').then(r => r.json()).then(data => {
+      if (data.isAdmin) window.location.href = 'admin.html';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Контакты — Swiss Airlines VA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="particles"></canvas>
+<nav class="navbar">
+  <div class="container nav-inner">
+    <a href="index.html" class="logo"><div class="logo-icon">+</div> Swiss Airlines VA</a>
+    <div class="nav-links">
+      <a href="index.html" data-i18n="nav_home">Главная</a>
+      <a href="fleet.html" data-i18n="nav_fleet">Флот</a>
+      <a href="routes.html" data-i18n="nav_routes">Маршруты</a>
+      <a href="map.html" data-i18n="nav_map">Карта</a>
+      <a href="events.html" data-i18n="nav_events">События</a>
+      <a href="history.html" data-i18n="nav_history">История</a>
+      <a href="patent.html" data-i18n="nav_patent">Патент</a>
+      <a href="apply.html" data-i18n="nav_apply">Анкета</a>
+      <a href="contacts.html" class="active" data-i18n="nav_contacts">Контакты</a>
+      <a href="login.html" data-i18n="nav_admin">Админ</a>
+      <button class="lang-btn" id="langToggle">EN</button>
+    </div>
+  </div>
+</nav>
+
+<section class="section">
+  <div class="container narrow">
+    <h1 class="section-title" data-i18n="contacts_title">Связь с нами</h1>
+    <p class="section-subtitle" data-i18n="contacts_desc">Есть вопросы? Хочешь узнать больше? Свяжись любым удобным способом.</p>
+
+    <div class="cards-grid" style="margin-top:2rem;">
+      <div class="card reveal">
+        <div class="card-icon" style="color:#D32F2F;font-size:2rem;">💬</div>
+        <h3 data-i18n="contact_discord_title">Discord-сервер</h3>
+        <p data-i18n="contact_discord_desc">Основная площадка для общения, объявлений и координации полётов.</p>
+        <a href="https://discord.gg/6YA8t7GJr" target="_blank" class="btn btn-primary" data-i18n="contact_discord_btn">Присоединиться</a>
+      </div>
+      <div class="card reveal">
+        <div class="card-icon" style="color:#D32F2F;font-size:2rem;">✉</div>
+        <h3 data-i18n="contact_email_title">Электронная почта</h3>
+        <p data-i18n="contact_email_desc">Для официальных вопросов, жалоб и предложений.</p>
+        <p style="margin-top:0.5rem;color:#bbb;">info@swissairlinesva.ptfs</p>
+      </div>
+      <div class="card reveal">
+        <div class="card-icon" style="color:#D32F2F;font-size:2rem;">★</div>
+        <h3 data-i18n="contact_admin_title">Администратор</h3>
+        <p data-i18n="contact_admin_desc">Личный контакт основателя VA.</p>
+        <p style="margin-top:0.5rem;color:#bbb;">Gregory</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container"><p data-i18n="footer">© 2026 Swiss Airlines VA. Все права защищены. PTFS.</p></div>
+</footer>
+
+<script src="i18n.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

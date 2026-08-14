@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: swiss-airlines-va
+    runtime: node
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: ADMIN_USERNAME
+        value: Gregory
+      - key: ADMIN_PASSWORD
+        value: 123789
+      - key: SESSION_SECRET
+        generateValue: true

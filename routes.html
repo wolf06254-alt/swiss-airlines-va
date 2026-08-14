@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Маршруты — Swiss Airlines VA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="particles"></canvas>
+<nav class="navbar">
+  <div class="container nav-inner">
+    <a href="index.html" class="logo"><div class="logo-icon">+</div> Swiss Airlines VA</a>
+    <div class="nav-links">
+      <a href="index.html" data-i18n="nav_home">Главная</a>
+      <a href="fleet.html" data-i18n="nav_fleet">Флот</a>
+      <a href="routes.html" class="active" data-i18n="nav_routes">Маршруты</a>
+      <a href="map.html" data-i18n="nav_map">Карта</a>
+      <a href="events.html" data-i18n="nav_events">События</a>
+      <a href="history.html" data-i18n="nav_history">История</a>
+      <a href="patent.html" data-i18n="nav_patent">Патент</a>
+      <a href="apply.html" data-i18n="nav_apply">Анкета</a>
+      <a href="contacts.html" data-i18n="nav_contacts">Контакты</a>
+      <a href="login.html" data-i18n="nav_admin">Админ</a>
+      <button class="lang-btn" id="langToggle">EN</button>
+    </div>
+  </div>
+</nav>
+
+<section class="section">
+  <div class="container">
+    <h1 class="section-title" data-i18n="routes_title">Маршруты</h1>
+    <p class="section-subtitle" data-i18n="routes_desc">33 направления из Цюриха и Женевы. Открой мир вместе с Swiss.</p>
+
+    <div class="table-wrap">
+      <table class="data-table" id="routesTable">
+        <thead>
+          <tr>
+            <th data-i18n="route_origin">Вылет</th>
+            <th data-i18n="route_destination">Прилёт</th>
+            <th data-i18n="route_dist">Расстояние</th>
+            <th data-i18n="route_time">Время</th>
+            <th data-i18n="route_aircraft">Самолёт</th>
+            <th data-i18n="route_freq">Частота</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container"><p data-i18n="footer">© 2026 Swiss Airlines VA. Все права защищены. PTFS.</p></div>
+</footer>
+
+<script src="i18n.js"></script>
+<script src="script.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const res = await fetch('/api/routes');
+    const data = await res.json();
+    const tbody = document.querySelector('#routesTable tbody');
+    tbody.innerHTML = data.map(r => `
+      <tr>
+        <td><strong>${r.origin}</strong> <span style="color:#888">(${r.origin_code})</span></td>
+        <td><strong>${r.destination}</strong> <span style="color:#888">(${r.destination_code})</span></td>
+        <td>${r.distance_km} km</td>
+        <td>${Math.floor(r.duration_min/60)}h ${r.duration_min%60}m</td>
+        <td>${r.aircraft_type}</td>
+        <td>${r.frequency}</td>
+      </tr>
+    `).join('');
+  } catch (e) { toast('Ошибка загрузки маршрутов'); }
+});
+</script>
+</body>
+</html>

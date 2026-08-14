@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Панель управления — Swiss Airlines</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #f5f5f5; color: #1a1a1a; line-height: 1.5;
+    }
+    .admin-header {
+      background: #0d0d0d; color: #fff; padding: 14px 30px;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    }
+    .admin-header .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px; }
+    .admin-header .logo span { color: #e30613; font-size: 20px; }
+    .admin-header .actions { display: flex; gap: 10px; align-items: center; }
+    .btn {
+      padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;
+      border: none; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-primary { background: #e30613; color: #fff; }
+    .btn-primary:hover { background: #c00510; }
+    .btn-secondary { background: #333; color: #fff; }
+    .btn-secondary:hover { background: #555; }
+    .btn-success { background: #22c55e; color: #fff; }
+    .btn-success:hover { background: #16a34a; }
+    .btn-danger { background: #ef4444; color: #fff; }
+    .btn-danger:hover { background: #dc2626; }
+    .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+    .container { max-width: 1400px; margin: 0 auto; padding: 30px; }
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;
+    }
+    .stat-card {
+      background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      display: flex; align-items: center; gap: 16px;
+    }
+    .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+    .stat-icon.blue { background: #eff6ff; }
+    .stat-icon.yellow { background: #fffbeb; }
+    .stat-icon.green { background: #f0fdf4; }
+    .stat-icon.red { background: #fef2f2; }
+    .stat-value { font-size: 28px; font-weight: 800; }
+    .stat-label { font-size: 13px; color: #888; margin-top: 2px; }
+
+    .filters {
+      background: #fff; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px;
+      display: flex; gap: 12px; align-items: center; flex-wrap: wrap; box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .filters label { font-size: 13px; font-weight: 600; color: #555; }
+    .filters select, .filters input {
+      padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; font-family: inherit;
+    }
+    .filters select:focus, .filters input:focus { outline: none; border-color: #e30613; }
+
+    .table-card {
+      background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); overflow: hidden;
+    }
+    .table-header {
+      padding: 20px 24px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+    }
+    .table-header h2 { font-size: 18px; font-weight: 700; }
+    .table-header .count { font-size: 13px; color: #888; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead th {
+      background: #fafafa; padding: 12px 16px; text-align: left; font-weight: 600; font-size: 12px;
+      color: #888; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #eee;
+    }
+    tbody td { padding: 14px 16px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+    tbody tr:hover { background: #fafafa; }
+    tbody tr:last-child td { border-bottom: none; }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 20px;
+      font-size: 12px; font-weight: 600;
+    }
+    .badge-pending { background: #fffbeb; color: #b45309; }
+    .badge-approved { background: #f0fdf4; color: #15803d; }
+    .badge-rejected { background: #fef2f2; color: #b91c1c; }
+
+    .applicant-name { font-weight: 700; color: #1a1a1a; }
+    .applicant-telegram { font-size: 12px; color: #888; }
+    .applicant-date { font-size: 12px; color: #aaa; }
+
+    .detail-row { display: none; }
+    .detail-row.active { display: table-row; }
+    .detail-cell { background: #fafafa; padding: 20px 24px; }
+    .detail-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;
+    }
+    .detail-item { background: #fff; border: 1px solid #eee; border-radius: 8px; padding: 12px 14px; }
+    .detail-item-label { font-size: 11px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .detail-item-value { font-size: 13px; color: #1a1a1a; line-height: 1.5; }
+    .detail-item-value pre { font-family: inherit; white-space: pre-wrap; word-wrap: break-word; margin: 0; }
+
+    .detail-actions { display: flex; gap: 10px; margin-top: 16px; justify-content: flex-end; }
+
+    .empty-state { text-align: center; padding: 60px 20px; }
+    .empty-state-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
+    .empty-state h3 { font-size: 18px; color: #555; margin-bottom: 6px; }
+    .empty-state p { font-size: 14px; color: #888; }
+
+    .toast-container { position: fixed; top: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; }
+    .toast {
+      background: #fff; border-radius: 8px; padding: 14px 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      display: flex; align-items: center; gap: 10px; min-width: 280px; font-size: 14px;
+      animation: slideIn 0.3s ease, fadeOut 0.3s ease 4.7s forwards;
+    }
+    .toast.success { border-left: 4px solid #22c55e; }
+    .toast.error { border-left: 4px solid #e30613; }
+    .toast.info { border-left: 4px solid #3b82f6; }
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes fadeOut { to { opacity: 0; transform: translateX(100%); } }
+
+    @media (max-width: 900px) {
+      .container { padding: 16px; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .table-header { padding: 16px; }
+      thead { display: none; }
+      tbody, tr, td { display: block; width: 100%; }
+      tbody td { position: relative; padding-left: 40%; border-bottom: 1px solid #f0f0f0; }
+      tbody td::before {
+        content: attr(data-label); position: absolute; left: 16px; top: 14px;
+        font-size: 11px; font-weight: 600; color: #888; text-transform: uppercase;
+      }
+      .detail-cell { padding: 16px; }
+      .detail-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toast-container" id="toastContainer"></div>
+
+  <header class="admin-header">
+    <div class="logo">
+      <span>✚</span>
+      <div>SWISSAIRPTFS <span style="opacity:0.6;font-size:13px;font-weight:400">— Панель управления</span></div>
+    </div>
+    <div class="actions">
+      <a href="index.html" class="btn btn-secondary">🏠 Главная</a>
+      <button class="btn btn-primary" onclick="logout()">🚪 Выйти</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon blue">📨</div>
+        <div>
+          <div class="stat-value" id="statTotal">0</div>
+          <div class="stat-label">Всего анкет</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon yellow">⏳</div>
+        <div>
+          <div class="stat-value" id="statPending">0</div>
+          <div class="stat-label">Ожидают проверки</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green">✅</div>
+        <div>
+          <div class="stat-value" id="statApproved">0</div>
+          <div class="stat-label">Одобрено</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon red">❌</div>
+        <div>
+          <div class="stat-value" id="statRejected">0</div>
+          <div class="stat-label">Отклонено</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="filters">
+      <label>Фильтр:</label>
+      <select id="statusFilter" onchange="loadApplications()">
+        <option value="all">Все статусы</option>
+        <option value="pending">⏳ Ожидают</option>
+        <option value="approved">✅ Одобрены</option>
+        <option value="rejected">❌ Отклонены</option>
+      </select>
+      <input type="text" id="searchFilter" placeholder="Поиск по имени или Telegram..." oninput="loadApplications()" style="min-width:200px">
+      <button class="btn btn-primary btn-sm" onclick="loadApplications()">🔄 Обновить</button>
+    </div>
+
+    <div class="table-card">
+      <div class="table-header">
+        <h2>📋 Заявки кандидатов</h2>
+        <span class="count" id="tableCount">Загрузка...</span>
+      </div>
+      <div id="tableContainer">
+        <div class="empty-state">
+          <div class="empty-state-icon">⏳</div>
+          <h3>Загрузка заявок...</h3>
+          <p>Пожалуйста, подождите</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let applications = [];
+    let expandedId = null;
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `<span>${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span> ${message}`;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 5000);
+    }
+
+    async function checkAuth() {
+      try {
+        const res = await fetch('/api/me');
+        const data = await res.json();
+        if (!data.isAdmin) {
+          window.location.href = 'login.html';
+        }
+      } catch {
+        window.location.href = 'login.html';
+      }
+    }
+
+    async function logout() {
+      await fetch('/api/logout', { method: 'POST' });
+      window.location.href = 'login.html';
+    }
+
+    async function loadStats() {
+      try {
+        const res = await fetch('/api/stats');
+        const data = await res.json();
+        document.getElementById('statTotal').textContent = data.total || 0;
+        document.getElementById('statPending').textContent = data.pending || 0;
+        document.getElementById('statApproved').textContent = data.approved || 0;
+        document.getElementById('statRejected').textContent = data.rejected || 0;
+      } catch (err) {
+        console.error('Stats error:', err);
+      }
+    }
+
+    function getStatusBadge(status) {
+      if (status === 'approved') return '<span class="badge badge-approved">✅ Одобрено</span>';
+      if (status === 'rejected') return '<span class="badge badge-rejected">❌ Отклонено</span>';
+      return '<span class="badge badge-pending">⏳ На рассмотрении</span>';
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '-';
+      const d = new Date(dateStr);
+      return d.toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+
+    function toggleDetail(id) {
+      const row = document.getElementById('detail-' + id);
+      if (expandedId === id) {
+        row.classList.remove('active');
+        expandedId = null;
+      } else {
+        if (expandedId) {
+          const prev = document.getElementById('detail-' + expandedId);
+          if (prev) prev.classList.remove('active');
+        }
+        row.classList.add('active');
+        expandedId = id;
+      }
+    }
+
+    function renderTable() {
+      const statusFilter = document.getElementById('statusFilter').value;
+      const searchFilter = document.getElementById('searchFilter').value.toLowerCase();
+
+      let filtered = applications;
+      if (statusFilter !== 'all') {
+        filtered = filtered.filter(a => a.status === statusFilter);
+      }
+      if (searchFilter) {
+        filtered = filtered.filter(a =>
+          (a.roblox_name && a.roblox_name.toLowerCase().includes(searchFilter)) ||
+          (a.telegram && a.telegram.toLowerCase().includes(searchFilter))
+        );
+      }
+
+      document.getElementById('tableCount').textContent = `Показано: ${filtered.length} из ${applications.length}`;
+
+      if (filtered.length === 0) {
+        document.getElementById('tableContainer').innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">📭</div>
+            <h3>Нет заявок</h3>
+            <p>Пока нет анкет с выбранным фильтром</p>
+          </div>`;
+        return;
+      }
+
+      let html = `<table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Кандидат</th>
+            <th>Роли</th>
+            <th>Telegram</th>
+            <th>Дата</th>
+            <th>Статус</th>
+            <th>Действия</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+      for (const app of filtered) {
+        html += `
+          <tr onclick="toggleDetail(${app.id})" style="cursor:pointer">
+            <td data-label="ID">#${app.id}</td>
+            <td data-label="Кандидат">
+              <div class="applicant-name">${app.roblox_name}</div>
+              <div class="applicant-telegram">🎂 ${app.char_age || '-'} | 📅 ${app.real_age || '-'}</div>
+            </td>
+            <td data-label="Роли">${app.role || '-'}</td>
+            <td data-label="Telegram">${app.telegram || '-'}</td>
+            <td data-label="Дата">${formatDate(app.submitted_at)}</td>
+            <td data-label="Статус">${getStatusBadge(app.status)}</td>
+            <td data-label="Действия">
+              <button class="btn btn-success btn-sm" onclick="event.stopPropagation();updateStatus(${app.id}, 'approved')">✅</button>
+              <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();updateStatus(${app.id}, 'rejected')">❌</button>
+              <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();deleteApp(${app.id})">🗑️</button>
+            </td>
+          </tr>
+          <tr class="detail-row" id="detail-${app.id}">
+            <td colspan="7" class="detail-cell">
+              <div class="detail-grid">
+                <div class="detail-item">
+                  <div class="detail-item-label">Имя в Roblox</div>
+                  <div class="detail-item-value">${app.roblox_name}</div>
+                </div>
+                <div class="detail-item">
+                  <div class="detail-item-label">Telegram</div>
+                  <div class="detail-item-value">${app.telegram}</div>
+                </div>
+                <div class="detail-item">
+                  <div class="detail-item-label">Возраст персонажа</div>
+                  <div class="detail-item-value">${app.char_age || '-'}</div>
+                </div>
+                <div class="detail-item">
+                  <div class="detail-item-label">Реальный возраст</div>
+                  <div class="detail-item-value">${app.real_age || '-'}</div>
+                </div>
+                <div class="detail-item">
+                  <div class="detail-item-label">Роли</div>
+                  <div class="detail-item-value">${app.role || '-'}</div>
+                </div>
+                <div class="detail-item">
+                  <div class="detail-item-label">Время онлайн</div>
+                  <div class="detail-item-value">${app.online_time || '-'}</div>
+                </div>
+                <div class="detail-item">
+                  <div class="detail-item-label">Налёт (мин)</div>
+                  <div class="detail-item-value">${app.flight_minutes || '-'}</div>
+                </div>
+                <div class="detail-item">
+                  <div class="detail-item-label">Правила</div>
+                  <div class="detail-item-value">${app.rules || '-'}</div>
+                </div>
+                <div class="detail-item">
+                  <div class="detail-item-label">ФРО</div>
+                  <div class="detail-item-value">${app.fro || '-'}</div>
+                </div>
+                <div class="detail-item">
+                  <div class="detail-item-label">Опыт</div>
+                  <div class="detail-item-value"><pre>${app.experience || '-'}</pre></div>
+                </div>
+                <div class="detail-item">
+                  <div class="detail-item-label">Почему Swiss Airlines</div>
+                  <div class="detail-item-value"><pre>${app.why_swiss || '-'}</pre></div>
+                </div>
+                <div class="detail-item">
+                  <div class="detail-item-label">О себе</div>
+                  <div class="detail-item-value"><pre>${app.about || '-'}</pre></div>
+                </div>
+              </div>
+              <div class="detail-actions">
+                <button class="btn btn-success" onclick="updateStatus(${app.id}, 'approved')">✅ ОДОБРИТЬ</button>
+                <button class="btn btn-danger" onclick="updateStatus(${app.id}, 'rejected')">❌ ОТКЛОНИТЬ</button>
+                <button class="btn btn-secondary" onclick="deleteApp(${app.id})">🗑️ УДАЛИТЬ</button>
+              </div>
+            </td>
+          </tr>`;
+      }
+
+      html += '</tbody></table>';
+      document.getElementById('tableContainer').innerHTML = html;
+    }
+
+    async function loadApplications() {
+      try {
+        const res = await fetch('/api/applications');
+        if (!res.ok) throw new Error('Unauthorized');
+        applications = await res.json();
+        renderTable();
+        loadStats();
+      } catch (err) {
+        if (err.message === 'Unauthorized') {
+          window.location.href = 'login.html';
+        } else {
+          showToast('Ошибка загрузки заявок', 'error');
+        }
+      }
+    }
+
+    async function updateStatus(id, status) {
+      try {
+        const res = await fetch(`/api/applications/${id}/status`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(status === 'approved' ? 'Заявка одобрена!' : 'Заявка отклонена', 'success');
+          loadApplications();
+        } else {
+          showToast(data.error || 'Ошибка', 'error');
+        }
+      } catch {
+        showToast('Ошибка сервера', 'error');
+      }
+    }
+
+    async function deleteApp(id) {
+      if (!confirm('Точно удалить эту анкету? Действие нельзя отменить.')) return;
+      try {
+        const res = await fetch(`/api/applications/${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.success) {
+          showToast('Анкета удалена', 'success');
+          loadApplications();
+        } else {
+          showToast(data.error || 'Ошибка', 'error');
+        }
+      } catch {
+        showToast('Ошибка сервера', 'error');
+      }
+    }
+
+    checkAuth();
+    loadApplications();
+    // Auto-refresh every 60 seconds
+    setInterval(loadApplications, 60000);
+  </script>
+</body>
+</html>

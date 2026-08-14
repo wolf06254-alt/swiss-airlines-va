@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Флот — Swiss Airlines VA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="particles"></canvas>
+<nav class="navbar">
+  <div class="container nav-inner">
+    <a href="index.html" class="logo"><div class="logo-icon">+</div> Swiss Airlines VA</a>
+    <div class="nav-links">
+      <a href="index.html" data-i18n="nav_home">Главная</a>
+      <a href="fleet.html" class="active" data-i18n="nav_fleet">Флот</a>
+      <a href="routes.html" data-i18n="nav_routes">Маршруты</a>
+      <a href="map.html" data-i18n="nav_map">Карта</a>
+      <a href="events.html" data-i18n="nav_events">События</a>
+      <a href="history.html" data-i18n="nav_history">История</a>
+      <a href="patent.html" data-i18n="nav_patent">Патент</a>
+      <a href="apply.html" data-i18n="nav_apply">Анкета</a>
+      <a href="contacts.html" data-i18n="nav_contacts">Контакты</a>
+      <a href="login.html" data-i18n="nav_admin">Админ</a>
+      <button class="lang-btn" id="langToggle">EN</button>
+    </div>
+  </div>
+</nav>
+
+<section class="section">
+  <div class="container">
+    <h1 class="section-title" data-i18n="fleet_title">Флот Swiss Airlines</h1>
+    <p class="section-subtitle" data-i18n="fleet_desc">Реальные самолёты, реальные характеристики. От A220 до B777-300ER.</p>
+    <div id="fleetGrid" class="cards-grid"></div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container"><p data-i18n="footer">© 2026 Swiss Airlines VA. Все права защищены. PTFS.</p></div>
+</footer>
+
+<script src="i18n.js"></script>
+<script src="script.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const res = await fetch('/api/fleet');
+    const data = await res.json();
+    const grid = document.getElementById('fleetGrid');
+    grid.innerHTML = data.map(a => `
+      <div class="card reveal">
+        <div class="card-icon" style="font-size:2.5rem;">✈</div>
+        <h3>${a.model}</h3>
+        <p style="color:#888;margin:0.25rem 0 0.75rem;">${a.category}</p>
+        <div class="meta-list">
+          <div class="meta-item"><span data-i18n="fleet_capacity">Пассажиры</span><b>${a.capacity}</b></div>
+          <div class="meta-item"><span data-i18n="fleet_range">Дальность</span><b>${a.range_km} km</b></div>
+          <div class="meta-item"><span data-i18n="fleet_speed">Скорость</span><b>${a.speed_kmh} km/h</b></div>
+          <div class="meta-item"><span data-i18n="fleet_status">Статус</span><b class="${a.status==='active'?'green':a.status==='maintenance'?'orange':'red'}">${a.status}</b></div>
+        </div>
+        <p style="color:#aaa;font-size:0.9rem;margin-top:0.75rem;">${a.description}</p>
+      </div>
+    `).join('');
+    observeReveal();
+  } catch (e) { toast('Ошибка загрузки флота'); }
+});
+</script>
+</body>
+</html>

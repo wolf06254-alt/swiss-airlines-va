@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Патент — Swiss Airlines VA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="particles"></canvas>
+<nav class="navbar">
+  <div class="container nav-inner">
+    <a href="index.html" class="logo"><div class="logo-icon">+</div> Swiss Airlines VA</a>
+    <div class="nav-links">
+      <a href="index.html" data-i18n="nav_home">Главная</a>
+      <a href="fleet.html" data-i18n="nav_fleet">Флот</a>
+      <a href="routes.html" data-i18n="nav_routes">Маршруты</a>
+      <a href="map.html" data-i18n="nav_map">Карта</a>
+      <a href="events.html" data-i18n="nav_events">События</a>
+      <a href="history.html" data-i18n="nav_history">История</a>
+      <a href="patent.html" class="active" data-i18n="nav_patent">Патент</a>
+      <a href="apply.html" data-i18n="nav_apply">Анкета</a>
+      <a href="contacts.html" data-i18n="nav_contacts">Контакты</a>
+      <a href="login.html" data-i18n="nav_admin">Админ</a>
+      <button class="lang-btn" id="langToggle">EN</button>
+    </div>
+  </div>
+</nav>
+
+<section class="section">
+  <div class="container narrow">
+    <h1 class="section-title" data-i18n="patent_title">Патент Swiss Airlines VA</h1>
+    <p class="section-subtitle" data-i18n="patent_desc">Официальная документация виртуальной авиакомпании в PTFS.</p>
+
+    <div class="patent-card reveal">
+      <div class="patent-badge" data-i18n="patent_badge">Официальная регистрация</div>
+      <div class="patent-name" data-i18n="patent_name">Swiss Airlines VA</div>
+      <p style="color:#ccc;margin:1rem 0;line-height:1.6;" data-i18n="patent_text">Данная виртуальная авиакомпания зарегистрирована и функционирует в рамках сообщества PTFS. Все права на бренд, маршруты и материалы принадлежат администрации Swiss Airlines VA.</p>
+      <div class="patent-meta">
+        <div><span data-i18n="patent_founder">Основатель</span><b>Gregory</b></div>
+        <div><span data-i18n="patent_date">Дата создания</span><b>2023</b></div>
+        <div><span data-i18n="patent_game">Игра</span><b>PTFS</b></div>
+        <div><span data-i18n="patent_discord">Discord</span><b>discord.gg/6YA8t7GJr</b></div>
+      </div>
+    </div>
+
+    <h2 class="section-title" style="margin-top:3rem;font-size:1.5rem;" data-i18n="rules_title">Правила сообщества</h2>
+    <div class="cards-grid">
+      <div class="card reveal">
+        <div class="card-icon" style="color:#D32F2F;font-size:1.8rem;">1</div>
+        <h3 data-i18n="rule_1_title">Уважение</h3>
+        <p data-i18n="rule_1_desc">Уважай пилотов, диспетчеров и администрацию. Токсичность и оскорбления запрещены.</p>
+      </div>
+      <div class="card reveal">
+        <div class="card-icon" style="color:#D32F2F;font-size:1.8rem;">2</div>
+        <h3 data-i18n="rule_2_title">Реализм</h3>
+        <p data-i18n="rule_2_desc">Соблюдай реалистичные процедуры полёта, используй правильные позывные и маршруты.</p>
+      </div>
+      <div class="card reveal">
+        <div class="card-icon" style="color:#D32F2F;font-size:1.8rem;">3</div>
+        <h3 data-i18n="rule_3_title">Активность</h3>
+        <p data-i18n="rule_3_desc">Выполняй минимум 1 рейс в месяц. При неактивности более 60 дней — исключение.</p>
+      </div>
+      <div class="card reveal">
+        <div class="card-icon" style="color:#D32F2F;font-size:1.8rem;">4</div>
+        <h3 data-i18n="rule_4_title">Discord</h3>
+        <p data-i18n="rule_4_desc">Обязательное присутствие в Discord сервере для получения расписания и объявлений.</p>
+      </div>
+      <div class="card reveal" style="grid-column: span 1;">
+        <div class="card-icon" style="color:#D32F2F;font-size:1.8rem;">5</div>
+        <h3 data-i18n="rule_5_title">Нарушения</h3>
+        <p data-i18n="rule_5_desc">За нарушение правил — предупреждение, затем понижение или исключение из VA.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container"><p data-i18n="footer">© 2026 Swiss Airlines VA. Все права защищены. PTFS.</p></div>
+</footer>
+
+<script src="i18n.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
