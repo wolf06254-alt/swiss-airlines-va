@@ -258,7 +258,7 @@
     <div class="hero-icon">🗺️</div>
     <div class="hero-label">Swiss Airlines Virtual</div>
     <h1 data-i18n-html="hero-title">Наша сеть <span>маршрутов</span></h1>
-    <p class="hero-desc" data-i18n="hero-desc">Переработанная карта направлений из Цюриха и Женевы — чётко, логично и атмосферно.</p>
+    <p class="hero-desc" data-i18n="hero-desc">Маршрутная сеть Swiss Airlines VA — хабы в Цюрихе и Женеве, рейсы по всей Европе, Америке, Азии, Африке и Ближнему Востоку.</p>
   </section>
 
   <section class="stats-bar">
@@ -328,7 +328,7 @@
         'nav-map': 'Карта', 'nav-events': 'События', 'nav-history': 'История',
         'nav-login': 'Вход', 'nav-admin': 'Админ', 'nav-patent': 'Патент',
         'hero-title': 'Наша сеть <span>маршрутов</span>',
-        'hero-desc': 'Переработанная карта направлений из Цюриха и Женевы — чётко, логично и атмосферно.',
+        'hero-desc': 'Маршрутная сеть Swiss Airlines VA — хабы в Цюрихе и Женеве, рейсы по всей Европе, Америке, Азии, Африке и Ближнему Востоку.',
         'stat-routes': 'Направлений', 'stat-countries': 'Регионов', 'stat-hubs': 'Хаба', 'stat-impressions': 'Впечатлений',
         'hub-title': '🇨🇭 Главный хаб — <span>Цюрих (IPPH)</span>',
         'hub-desc': 'Центр всех маршрутов и ключевая точка сети. Второй хаб — Женева (IZOL).',
@@ -345,7 +345,7 @@
         'nav-map': 'Map', 'nav-events': 'Events', 'nav-history': 'History',
         'nav-login': 'Login', 'nav-admin': 'Admin', 'nav-patent': 'Patent',
         'hero-title': 'Our route <span>network</span>',
-        'hero-desc': 'Reimagined destinations from Zurich and Geneva — clear, logical and atmospheric.',
+        'hero-desc': 'Swiss Airlines VA route network — hubs in Zurich and Geneva, flights across Europe, the Americas, Asia, Africa and the Middle East.',
         'stat-routes': 'Destinations', 'stat-countries': 'Regions', 'stat-hubs': 'Hubs', 'stat-impressions': 'Impressions',
         'hub-title': '🇨🇭 Main hub — <span>Zurich (IPPH)</span>',
         'hub-desc': 'The center of all routes and the key point of the network. Second hub — Geneva (IZOL).',
@@ -375,42 +375,48 @@
 
     // ============ STATIC ROUTES DATA ============
     const routesData = [
-      // === EUROPE — внутришвейцарские ===
+      // ═══ ВНУТРИШВЕЙЦАРСКИЕ (Perth IPPH / Izolirani IZOL) ═══
       { origin:'Цюрих', origin_code:'IPPH', destination:'Женева', destination_code:'IZOL', region:'europe', aircraft_type:'A220-100 / A220-300', distance_km:230, duration_min:45, frequency:'daily', class:'economy' },
       { origin:'Цюрих', origin_code:'IPPH', destination:'Лугано', destination_code:'ILKL', region:'europe', aircraft_type:'A220-100', distance_km:210, duration_min:40, frequency:'daily', class:'economy' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Берн', destination_code:'IJAF', region:'europe', aircraft_type:'A220-100', distance_km:120, duration_min:30, frequency:'daily', class:'economy' },
-      // === EUROPE — Цюрих → Европа ===
+      { origin:'Женева', origin_code:'IZOL', destination:'Берн', destination_code:'IJAF', region:'europe', aircraft_type:'A220-100', distance_km:160, duration_min:35, frequency:'daily', class:'economy' },
+
+      // ═══ РОССИЯ — внутренние (Greater Rockford IRFD) ═══
+      { origin:'Москва', origin_code:'IRFD', destination:'Санкт-Петербург', destination_code:'IMLR', region:'europe', aircraft_type:'A220-300 / A320neo', distance_km:700, duration_min:90, frequency:'daily', class:'economy' },
+      { origin:'Москва', origin_code:'IRFD', destination:'Сочи', destination_code:'IBLT', region:'europe', aircraft_type:'A220-300 / A320-200', distance_km:1500, duration_min:145, frequency:'daily', class:'economy' },
+
+      // ═══ США — внутренние (Orenji ITKO/IDCS/IBRD) ═══
+      { origin:'Нью-Йорк', origin_code:'ITKO', destination:'Чикаго', destination_code:'IDCS', region:'america', aircraft_type:'A320neo / A321neo', distance_km:1190, duration_min:150, frequency:'daily', class:'economy' },
+      { origin:'Нью-Йорк', origin_code:'ITKO', destination:'Лос-Анджелес', destination_code:'IBRD', region:'america', aircraft_type:'A321neo / A330-300', distance_km:3940, duration_min:330, frequency:'daily', class:'economy' },
+
+      // ═══ ВЕЛИКОБРИТАНИЯ — внутренний (Grindavik IKFL/ITEY) ═══
+      { origin:'Лондон', origin_code:'IKFL', destination:'Манчестер', destination_code:'ITEY', region:'europe', aircraft_type:'A220-100 / A220-300', distance_km:300, duration_min:55, frequency:'daily', class:'economy' },
+
+      // ═══ ЕГИПЕТ — внутренний (Cyprus ILAR/IBAR) ═══
+      { origin:'Каир', origin_code:'ILAR', destination:'Шарм-эль-Шейх', destination_code:'IBAR', region:'africa', aircraft_type:'A220-300 / A320neo', distance_km:500, duration_min:60, frequency:'daily', class:'economy' },
+
+      // ═══ КЕНИЯ — внутренний (Cyprus IPAP/IHEN) ═══
+      { origin:'Найроби', origin_code:'IPAP', destination:'Дар-эс-Салам', destination_code:'IHEN', region:'africa', aircraft_type:'A220-300 / A320-200', distance_km:1100, duration_min:90, frequency:'daily', class:'economy' },
+
+      // ═══ ХАБОВЫЕ ИЗ ЦЮРИХА (IPPH) — межостровные ═══
       { origin:'Цюрих', origin_code:'IPPH', destination:'Лондон', destination_code:'IKFL', region:'europe', aircraft_type:'A220-300 / A320neo', distance_km:947, duration_min:105, frequency:'daily', class:'economy' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Манчестер', destination_code:'ITEY', region:'europe', aircraft_type:'A220-300', distance_km:1020, duration_min:115, frequency:'daily', class:'economy' },
       { origin:'Цюрих', origin_code:'IPPH', destination:'Москва', destination_code:'IRFD', region:'europe', aircraft_type:'A320-200 / A320neo', distance_km:2200, duration_min:195, frequency:'daily', class:'business' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Санкт-Петербург', destination_code:'IMLR', region:'europe', aircraft_type:'A320neo', distance_km:2100, duration_min:190, frequency:'weekly', class:'economy' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Сочи', destination_code:'IBLT', region:'europe', aircraft_type:'A320-200 / A321neo', distance_km:2450, duration_min:215, frequency:'seasonal', class:'economy' },
-      // === EUROPE — Женева → Европа ===
-      { origin:'Женева', origin_code:'IZOL', destination:'Лондон', destination_code:'IKFL', region:'europe', aircraft_type:'A220-300 / A320neo', distance_km:815, duration_min:95, frequency:'daily', class:'business' },
-      { origin:'Женева', origin_code:'IZOL', destination:'Москва', destination_code:'IRFD', region:'europe', aircraft_type:'A320neo / A321neo', distance_km:2500, duration_min:210, frequency:'weekly', class:'business' },
-      { origin:'Женева', origin_code:'IZOL', destination:'Лугано', destination_code:'ILKL', region:'europe', aircraft_type:'A220-100', distance_km:270, duration_min:50, frequency:'daily', class:'economy' },
-      // === AMERICAS — Цюрих → Америка ===
       { origin:'Цюрих', origin_code:'IPPH', destination:'Нью-Йорк', destination_code:'ITKO', region:'america', aircraft_type:'A330-300 / B777-300ER', distance_km:6980, duration_min:510, frequency:'daily', class:'first' },
       { origin:'Цюрих', origin_code:'IPPH', destination:'Чикаго', destination_code:'IDCS', region:'america', aircraft_type:'A330-300 / A340-300', distance_km:7420, duration_min:540, frequency:'weekly', class:'business' },
       { origin:'Цюрих', origin_code:'IPPH', destination:'Лос-Анджелес', destination_code:'IBRD', region:'america', aircraft_type:'B777-300ER / A350-900', distance_km:9540, duration_min:690, frequency:'daily', class:'first' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Сан-Паулу', destination_code:'ISAU', region:'america', aircraft_type:'B777-300ER', distance_km:9855, duration_min:720, frequency:'weekly', class:'business' },
-      // === MIDDLE EAST — Цюрих → Ближний Восток ===
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Дубай', destination_code:'ISKP', region:'middle-east', aircraft_type:'A330-300 / A340-300', distance_km:4860, duration_min:370, frequency:'daily', class:'business' },
-      // === AFRICA — Цюрих → Африка ===
       { origin:'Цюрих', origin_code:'IPPH', destination:'Каир', destination_code:'ILAR', region:'africa', aircraft_type:'A220-300 / A320-200', distance_km:2840, duration_min:240, frequency:'daily', class:'economy' },
       { origin:'Цюрих', origin_code:'IPPH', destination:'Найроби', destination_code:'IPAP', region:'africa', aircraft_type:'A330-300', distance_km:6460, duration_min:480, frequency:'weekly', class:'economy' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Шарм-эль-Шейх', destination_code:'IBAR', region:'africa', aircraft_type:'A220-300 / A320neo', distance_km:3100, duration_min:255, frequency:'seasonal', class:'economy' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Дар-эс-Салам', destination_code:'IHEN', region:'africa', aircraft_type:'A330-300', distance_km:7000, duration_min:500, frequency:'weekly', class:'economy' },
-      // === ASIA — Цюрих → Азия ===
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Дубай', destination_code:'ISKP', region:'middle-east', aircraft_type:'A330-300 / A340-300', distance_km:4860, duration_min:370, frequency:'daily', class:'business' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Сан-Паулу', destination_code:'ISAU', region:'america', aircraft_type:'B777-300ER', distance_km:9855, duration_min:720, frequency:'weekly', class:'business' },
       { origin:'Цюрих', origin_code:'IPPH', destination:'Сингапур', destination_code:'IBTH', region:'asia', aircraft_type:'A340-300 / B777-300ER', distance_km:10300, duration_min:750, frequency:'daily', class:'business' },
-      // === Межрегиональные маршруты ===
+
+      // ═══ ХАБОВЫЕ ИЗ ЖЕНЕВЫ (IZOL) — межостровные ═══
+      { origin:'Женева', origin_code:'IZOL', destination:'Лондон', destination_code:'IKFL', region:'europe', aircraft_type:'A220-300 / A320neo', distance_km:815, duration_min:95, frequency:'daily', class:'business' },
+      { origin:'Женева', origin_code:'IZOL', destination:'Москва', destination_code:'IRFD', region:'europe', aircraft_type:'A320neo / A321neo', distance_km:2500, duration_min:210, frequency:'weekly', class:'business' },
+
+      // ═══ МЕЖОСТРОВНЫЕ (через хабы) ═══
       { origin:'Москва', origin_code:'IRFD', destination:'Дубай', destination_code:'ISKP', region:'middle-east', aircraft_type:'A320neo / A321neo', distance_km:3600, duration_min:280, frequency:'daily', class:'business' },
-      { origin:'Москва', origin_code:'IRFD', destination:'Сочи', destination_code:'IBLT', region:'europe', aircraft_type:'A220-300 / A320-200', distance_km:1500, duration_min:145, frequency:'daily', class:'economy' },
-      { origin:'Москва', origin_code:'IRFD', destination:'Санкт-Петербург', destination_code:'IMLR', region:'europe', aircraft_type:'A220-300 / A320neo', distance_km:700, duration_min:90, frequency:'daily', class:'economy' },
       { origin:'Лондон', origin_code:'IKFL', destination:'Нью-Йорк', destination_code:'ITKO', region:'america', aircraft_type:'A330-300 / B777-300ER', distance_km:5570, duration_min:420, frequency:'daily', class:'first' },
       { origin:'Дубай', origin_code:'ISKP', destination:'Сингапур', destination_code:'IBTH', region:'asia', aircraft_type:'A330-300 / B777-300ER', distance_km:5900, duration_min:430, frequency:'daily', class:'business' },
-      { origin:'Дубай', origin_code:'ISKP', destination:'Найроби', destination_code:'IPAP', region:'africa', aircraft_type:'A320neo / A321neo', distance_km:3500, duration_min:270, frequency:'daily', class:'economy' },
-      { origin:'Каир', origin_code:'ILAR', destination:'Дар-эс-Салам', destination_code:'IHEN', region:'africa', aircraft_type:'A220-300 / A320-200', distance_km:4300, duration_min:320, frequency:'weekly', class:'economy' },
       { origin:'Сан-Паулу', origin_code:'ISAU', destination:'Нью-Йорк', destination_code:'ITKO', region:'america', aircraft_type:'A330-300 / B777-300ER', distance_km:7700, duration_min:570, frequency:'daily', class:'business' }
     ];
 
