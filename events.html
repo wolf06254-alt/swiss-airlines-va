@@ -27,6 +27,7 @@
       --nav-link-hover: var(--black);
     }
     [data-theme="dark"] {
+      --black: #f0f0f0;
       --bg: #0f0f0f;
       --text: #f0f0f0;
       --card: #1a1a1a;
@@ -100,12 +101,13 @@
     .theme-toggle:hover, .lang-toggle:hover { border-color: var(--nav-link-hover); color: var(--nav-link-hover); }
 
     .hero {
-      background: var(--black);
+      background: #0a0a0a;
       padding: 100px 40px 80px;
       text-align: center;
       position: relative;
       overflow: hidden;
     }
+    [data-theme="dark"] .hero { background: #0a0a0a; }
     .hero::before {
       content: '';
       position: absolute;
@@ -115,7 +117,8 @@
     }
     .hero-calendar { font-size: 80px; margin-bottom: 24px; animation: float 4s ease-in-out infinite; display: inline-block; }
     .hero-label { font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--swiss-red); margin-bottom: 16px; animation: fadeIn 1s ease-out; }
-    .hero h1 { font-size: clamp(36px, 6vw, 64px); font-weight: 800; color: var(--white); letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 16px; animation: fadeUp 0.8s ease-out; }
+    .hero h1 { font-size: clamp(36px, 6vw, 64px); font-weight: 800; color: #ffffff; letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 16px; animation: fadeUp 0.8s ease-out; }
+    [data-theme="dark"] .hero h1 { color: var(--black); }
     .hero h1 span { color: var(--swiss-red); position: relative; }
     .hero-desc { font-size: 17px; color: var(--gray-500); max-width: 600px; margin: 0 auto; animation: fadeUp 0.8s ease-out 0.2s both; }
 
@@ -222,7 +225,7 @@
     .add-event-text { font-size: 13px; color: var(--gray-500); }
 
     .footer {
-      background: var(--black);
+      background: #0a0a0a;
       padding: 48px 40px;
       display: flex;
       justify-content: space-between;
@@ -232,6 +235,7 @@
       position: relative;
       overflow: hidden;
     }
+    [data-theme="dark"] .footer { background: #0a0a0a; }
     .footer::before {
       content: '';
       position: absolute;
@@ -241,7 +245,8 @@
       opacity: 0.5;
       animation: stripeMove 2s linear infinite;
     }
-    .footer-logo { display: flex; align-items: center; gap: 10px; color: var(--white); font-weight: 700; font-size: 14px; letter-spacing: 1px; }
+    .footer-logo { display: flex; align-items: center; gap: 10px; color: #ffffff; font-weight: 700; font-size: 14px; letter-spacing: 1px; }
+    [data-theme="dark"] .footer-logo { color: var(--black); }
     .footer-cross { width: 24px; height: 24px; background: var(--swiss-red); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 300; color: var(--white); line-height: 1; }
     .footer-links { display: flex; gap: 28px; }
     .footer-links a { color: var(--gray-500); text-decoration: none; font-size: 13px; transition: color 0.3s; }
@@ -270,14 +275,14 @@
       <div>SWISS AIRLINES</div>
     </a>
     <nav class="nav">
-      <a href="index.html">Главная</a>
-      <a href="fleet.html">Флот</a>
-      <a href="routes.html">Маршруты</a>
-      <a href="map.html">Карта</a>
-      <a href="events.html" class="active">События</a>
-      <a href="history.html">История</a>
+      <a href="index.html" data-i18n="nav-home">Главная</a>
+      <a href="fleet.html" data-i18n="nav-fleet">Флот</a>
+      <a href="routes.html" data-i18n="nav-routes">Маршруты</a>
+      <a href="map.html" data-i18n="nav-map">Карта</a>
+      <a href="events.html" class="active" data-i18n="nav-events">События</a>
+      <a href="history.html" data-i18n="nav-history">История</a>
       <a href="https://discord.gg/6YA8t7GJr" target="_blank">Discord</a>
-      <a href="login.html">Вход</a>
+      <a href="login.html" data-i18n="nav-login">Вход</a>
     </nav>
     <div class="controls">
       <button class="lang-toggle" id="langToggle" onclick="toggleLang()">EN</button>
@@ -288,19 +293,19 @@
   <section class="hero">
     <div class="hero-calendar">📅</div>
     <div class="hero-label">Swiss Airlines Virtual</div>
-    <h1>Календарь <span>событий</span></h1>
-    <p class="hero-desc">Групповые рейсы, массовые вылеты и особые события. Присоединяйся — летать вместе веселее.</p>
+    <h1 data-i18n-html="hero-title">Календарь <span>событий</span></h1>
+    <p class="hero-desc" data-i18n="hero-desc">Групповые рейсы, массовые вылеты и особые события. Присоединяйся — летать вместе веселее.</p>
   </section>
 
   <section class="events-section">
     <div id="events-container">
-      <div class="loading">Загрузка событий…</div>
+      <div class="loading" data-i18n="loading">Загрузка событий…</div>
     </div>
 
     <div class="add-event animate-on-scroll">
       <div class="add-event-icon">📌</div>
-      <div class="add-event-title">Хочешь предложить событие?</div>
-      <div class="add-event-text">Напиши в Discord — обсудим и добавим в календарь. Все идеи приветствуются!</div>
+      <div class="add-event-title" data-i18n="suggest-title">Хочешь предложить событие?</div>
+      <div class="add-event-text" data-i18n="suggest-text">Напиши в Discord — обсудим и добавим в календарь. Все идеи приветствуются!</div>
     </div>
   </section>
 
@@ -310,32 +315,89 @@
       <div>SWISS AIRLINES</div>
     </div>
     <div class="footer-links">
-      <a href="index.html">Главная</a>
-      <a href="fleet.html">Флот</a>
-      <a href="routes.html">Маршруты</a>
-      <a href="map.html">Карта</a>
-      <a href="events.html">События</a>
-      <a href="history.html">История</a>
+      <a href="index.html" data-i18n="nav-home">Главная</a>
+      <a href="fleet.html" data-i18n="nav-fleet">Флот</a>
+      <a href="routes.html" data-i18n="nav-routes">Маршруты</a>
+      <a href="map.html" data-i18n="nav-map">Карта</a>
+      <a href="events.html" data-i18n="nav-events">События</a>
+      <a href="history.html" data-i18n="nav-history">История</a>
       <a href="https://discord.gg/6YA8t7GJr" target="_blank">Discord</a>
-      <a href="login.html">Админ</a>
-      <a href="patent.html">Патент</a>
+      <a href="login.html" data-i18n="nav-admin">Админ</a>
+      <a href="patent.html" data-i18n="nav-patent">Патент</a>
     </div>
     <div class="footer-right">
-      <div style="font-size:11px;color:var(--gray-500);margin-bottom:4px;">Неофициальный виртуальный патент № SW-VA-001 от 10.08.26 · <a href="patent.html" style="color:var(--swiss-red);text-decoration:none;">Подробнее →</a></div>
-      <div>Fly Together. Fly Swiss.</div>
+      <div style="font-size:11px;color:var(--gray-500);margin-bottom:4px;" data-i18n="footer-patent">Неофициальный виртуальный патент № SW-VA-001 от 10.08.26</div>
+      <div style="font-size:11px;color:var(--gray-500);">© 2026 Swiss Airlines Virtual</div>
     </div>
   </footer>
 
   <script>
+    // ============ i18n ============
+    const i18n = {
+      ru: {
+        'nav-home': 'Главная', 'nav-fleet': 'Флот', 'nav-routes': 'Маршруты',
+        'nav-map': 'Карта', 'nav-events': 'События', 'nav-history': 'История',
+        'nav-login': 'Вход', 'nav-admin': 'Админ', 'nav-patent': 'Патент',
+        'hero-title': 'Календарь <span>событий</span>',
+        'hero-desc': 'Групповые рейсы, массовые вылеты и особые события. Присоединяйся — летать вместе веселее.',
+        'loading': 'Загрузка событий…',
+        'error-load': 'Не удалось загрузить события. Проверьте соединение.',
+        'no-upcoming': 'Нет предстоящих событий. Следите за обновлениями!',
+        'cd-days': 'дней', 'cd-hours': 'часов', 'cd-min': 'мин', 'cd-sec': 'сек',
+        'status-upcoming': 'Скоро начнётся', 'status-live': 'Идёт сейчас!', 'status-ended': 'Завершено',
+        'past-title': 'Прошедшие <span>события</span>',
+        'past-badge': 'Выполнено',
+        'suggest-title': 'Хочешь предложить событие?',
+        'suggest-text': 'Напиши в Discord — обсудим и добавим в календарь. Все идеи приветствуются!',
+        'footer-patent': 'Неофициальный виртуальный патент № SW-VA-001 от 10.08.26',
+        'months': ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря']
+      },
+      en: {
+        'nav-home': 'Home', 'nav-fleet': 'Fleet', 'nav-routes': 'Routes',
+        'nav-map': 'Map', 'nav-events': 'Events', 'nav-history': 'History',
+        'nav-login': 'Login', 'nav-admin': 'Admin', 'nav-patent': 'Patent',
+        'hero-title': 'Events <span>calendar</span>',
+        'hero-desc': 'Group flights, mass departures and special events. Join in — flying together is more fun.',
+        'loading': 'Loading events…',
+        'error-load': 'Failed to load events. Check your connection.',
+        'no-upcoming': 'No upcoming events. Stay tuned for updates!',
+        'cd-days': 'days', 'cd-hours': 'hours', 'cd-min': 'min', 'cd-sec': 'sec',
+        'status-upcoming': 'Coming soon', 'status-live': 'Live now!', 'status-ended': 'Ended',
+        'past-title': 'Past <span>events</span>',
+        'past-badge': 'Completed',
+        'suggest-title': 'Want to suggest an event?',
+        'suggest-text': 'Write in Discord — we\'ll discuss and add it to the calendar. All ideas welcome!',
+        'footer-patent': 'Unofficial virtual patent No. SW-VA-001 dated 10.08.26',
+        'months': ['January','February','March','April','May','June','July','August','September','October','November','December']
+      }
+    };
+    function t(key) { const lang = document.documentElement.getAttribute('lang') || 'ru'; return (i18n[lang] && i18n[lang][key]) || key; }
+    function applyLang() {
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        const val = t(key);
+        if (val) el.textContent = val;
+      });
+      document.querySelectorAll('[data-i18n-html]').forEach(el => {
+        const key = el.getAttribute('data-i18n-html');
+        const val = t(key);
+        if (val) el.innerHTML = val;
+      });
+      renderEvents();
+    }
+
+    // ============ STATE ============
     const API_BASE = '';
     let eventsData = [];
     let countdownTimer = null;
 
+    // ============ SCROLL OBSERVER ============
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
     }, { threshold: 0.1 });
     document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
 
+    // ============ THEME / LANG ============
     function toggleTheme() {
       const current = document.documentElement.getAttribute('data-theme');
       const next = current === 'dark' ? 'light' : 'dark';
@@ -344,17 +406,15 @@
       document.getElementById('themeToggle').textContent = next === 'dark' ? '☀️' : '🌙';
     }
     function toggleLang() {
-      const current = document.documentElement.getAttribute('lang');
+      const current = document.documentElement.getAttribute('lang') || 'ru';
       const next = current === 'ru' ? 'en' : 'ru';
       document.documentElement.setAttribute('lang', next);
       localStorage.setItem('swiss-lang', next);
       document.getElementById('langToggle').textContent = next === 'ru' ? 'EN' : 'RU';
+      applyLang();
     }
-    const savedTheme = localStorage.getItem('swiss-theme');
-    if (savedTheme) { document.documentElement.setAttribute('data-theme', savedTheme); document.getElementById('themeToggle').textContent = savedTheme === 'dark' ? '☀️' : '🌙'; }
-    const savedLang = localStorage.getItem('swiss-lang');
-    if (savedLang) { document.documentElement.setAttribute('lang', savedLang); document.getElementById('langToggle').textContent = savedLang === 'ru' ? 'EN' : 'RU'; }
 
+    // ============ LOAD & RENDER ============
     async function loadEvents() {
       const container = document.getElementById('events-container');
       try {
@@ -362,11 +422,15 @@
         if (!res.ok) throw new Error('HTTP ' + res.status);
         eventsData = await res.json();
       } catch (e) {
-        container.innerHTML = '<div class="error">Не удалось загрузить события. Проверьте соединение.</div>';
+        container.innerHTML = '<div class="error">' + t('error-load') + '</div>';
         console.error(e);
         return;
       }
+      renderEvents();
+    }
 
+    function renderEvents() {
+      const container = document.getElementById('events-container');
       const now = new Date();
       const upcoming = eventsData.filter(e => new Date(e.date) >= now || e.status === 'upcoming').sort((a,b) => new Date(a.date) - new Date(b.date));
       const past = eventsData.filter(e => new Date(e.date) < now || e.status === 'ended').sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -389,24 +453,24 @@
               ${ev.time ? `<div class="event-date" style="margin-bottom:12px;text-align:center;font-size:12px;color:var(--swiss-red);font-weight:600;">${escapeHtml(ev.time)}</div>` : ''}
               <div class="event-desc">${escapeHtml(ev.description || '')}</div>
               <div class="countdown" id="cd-${ev.id}">
-                <div class="countdown-unit"><div class="countdown-value" id="cd${ev.id}-d">--</div><div class="countdown-label">дней</div></div>
-                <div class="countdown-unit"><div class="countdown-value" id="cd${ev.id}-h">--</div><div class="countdown-label">часов</div></div>
-                <div class="countdown-unit"><div class="countdown-value" id="cd${ev.id}-m">--</div><div class="countdown-label">мин</div></div>
-                <div class="countdown-unit"><div class="countdown-value" id="cd${ev.id}-s">--</div><div class="countdown-label">сек</div></div>
+                <div class="countdown-unit"><div class="countdown-value" id="cd${ev.id}-d">--</div><div class="countdown-label">${t('cd-days')}</div></div>
+                <div class="countdown-unit"><div class="countdown-value" id="cd${ev.id}-h">--</div><div class="countdown-label">${t('cd-hours')}</div></div>
+                <div class="countdown-unit"><div class="countdown-value" id="cd${ev.id}-m">--</div><div class="countdown-label">${t('cd-min')}</div></div>
+                <div class="countdown-unit"><div class="countdown-value" id="cd${ev.id}-s">--</div><div class="countdown-label">${t('cd-sec')}</div></div>
               </div>
-              <div class="event-status status-upcoming" id="status-${ev.id}">Скоро начнётся</div>
+              <div class="event-status status-upcoming" id="status-${ev.id}">${t('status-upcoming')}</div>
             </div>
           </div>`;
         });
         html += '</div>';
       } else {
-        html += '<div class="loading" style="margin-bottom:40px;">Нет предстоящих событий. Следите за обновлениями!</div>';
+        html += '<div class="loading" style="margin-bottom:40px;">' + t('no-upcoming') + '</div>';
       }
 
       if (past.length > 0) {
         html += `
         <div class="past-events animate-on-scroll">
-          <h2>Прошедшие <span>события</span></h2>
+          <h2>${t('past-title')}</h2>
           <div class="past-list">`;
         past.forEach(ev => {
           html += `
@@ -416,34 +480,25 @@
               <div class="past-title">${escapeHtml(ev.title)}</div>
               <div class="past-date">${formatDate(ev.date)}</div>
             </div>
-            <span class="past-badge">Выполнено</span>
+            <span class="past-badge">${t('past-badge')}</span>
           </div>`;
         });
         html += '</div></div>';
       }
 
       container.innerHTML = html;
-
       document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
       startCountdowns();
     }
 
-    function capitalize(s) {
-      if (!s) return '';
-      return s.charAt(0).toUpperCase() + s.slice(1);
-    }
-    function escapeHtml(text) {
-      if (!text) return '';
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
-    }
+    function capitalize(s) { if (!s) return ''; return s.charAt(0).toUpperCase() + s.slice(1); }
+    function escapeHtml(text) { if (!text) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
 
     function formatDate(iso) {
       const d = new Date(iso);
-      const months = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+      const months = t('months');
       const day = d.getDate();
-      const month = months[d.getMonth()];
+      const month = Array.isArray(months) ? months[d.getMonth()] : '';
       const year = d.getFullYear();
       const hours = String(d.getHours()).padStart(2, '0');
       const mins = String(d.getMinutes()).padStart(2, '0');
@@ -465,29 +520,29 @@
         if (!dEl) return;
         if (diff <= 0) {
           document.getElementById('cd' + ev.id + '-d').textContent = '00';
-          const hEl = document.getElementById('cd' + ev.id + '-h');
-          if (hEl) hEl.textContent = '00';
-          const mEl = document.getElementById('cd' + ev.id + '-m');
-          if (mEl) mEl.textContent = '00';
-          const sEl = document.getElementById('cd' + ev.id + '-s');
-          if (sEl) sEl.textContent = '00';
+          const hEl = document.getElementById('cd' + ev.id + '-h'); if (hEl) hEl.textContent = '00';
+          const mEl = document.getElementById('cd' + ev.id + '-m'); if (mEl) mEl.textContent = '00';
+          const sEl = document.getElementById('cd' + ev.id + '-s'); if (sEl) sEl.textContent = '00';
           const stEl = document.getElementById('status-' + ev.id);
-          if (stEl) { stEl.textContent = 'Идёт сейчас!'; stEl.className = 'event-status status-live'; }
+          if (stEl) { stEl.textContent = t('status-live'); stEl.className = 'event-status status-live'; }
         } else {
           const d = Math.floor(diff / (1000 * 60 * 60 * 24));
           const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
           const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
           const s = Math.floor((diff % (1000 * 60)) / 1000);
           dEl.textContent = String(d).padStart(2, '0');
-          const hEl = document.getElementById('cd' + ev.id + '-h');
-          if (hEl) hEl.textContent = String(h).padStart(2, '0');
-          const mEl = document.getElementById('cd' + ev.id + '-m');
-          if (mEl) mEl.textContent = String(m).padStart(2, '0');
-          const sEl = document.getElementById('cd' + ev.id + '-s');
-          if (sEl) sEl.textContent = String(s).padStart(2, '0');
+          const hEl = document.getElementById('cd' + ev.id + '-h'); if (hEl) hEl.textContent = String(h).padStart(2, '0');
+          const mEl = document.getElementById('cd' + ev.id + '-m'); if (mEl) mEl.textContent = String(m).padStart(2, '0');
+          const sEl = document.getElementById('cd' + ev.id + '-s'); if (sEl) sEl.textContent = String(s).padStart(2, '0');
         }
       });
     }
+
+    // ============ INIT ============
+    const savedTheme = localStorage.getItem('swiss-theme');
+    if (savedTheme) { document.documentElement.setAttribute('data-theme', savedTheme); document.getElementById('themeToggle').textContent = savedTheme === 'dark' ? '☀️' : '🌙'; }
+    const savedLang = localStorage.getItem('swiss-lang');
+    if (savedLang) { document.documentElement.setAttribute('lang', savedLang); document.getElementById('langToggle').textContent = savedLang === 'ru' ? 'EN' : 'RU'; }
 
     loadEvents();
   </script>

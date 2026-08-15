@@ -25,8 +25,16 @@
       --header-text: var(--black);
       --nav-link: var(--gray-700);
       --nav-link-hover: var(--black);
+      --map-land: #e8e8e8;
+      --map-water: #f5f5f5;
+      --route-eu: #1d4ed8;
+      --route-am: #b91c1c;
+      --route-as: #92400e;
+      --route-me: #065f46;
+      --route-af: #7c2d12;
     }
     [data-theme="dark"] {
+      --black: #f0f0f0;
       --bg: #0f0f0f;
       --text: #f0f0f0;
       --card: #1a1a1a;
@@ -40,7 +48,6 @@
       --map-land: #2a2a2a;
       --map-water: #0f0f0f;
     }
-    :root { --map-land: #e8e8e8; --map-water: #f5f5f5; }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Inter', sans-serif;
@@ -54,37 +61,13 @@
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes stripeMove { from { background-position: 0 0; } to { background-position: 40px 0; } }
     @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-    @keyframes flowLine {
-      0% { stroke-dashoffset: 24; }
-      100% { stroke-dashoffset: 0; }
-    }
-    @keyframes planeMove1 {
-      0% { transform: translate(0,0) rotate(0deg); opacity: 0; }
+    @keyframes flowLine { 0% { stroke-dashoffset: 24; } 100% { stroke-dashoffset: 0; } }
+    @keyframes glowPulse { 0%,100% { opacity: 0.15; } 50% { opacity: 0.4; } }
+    @keyframes planeFly {
+      0% { offset-distance: 0%; opacity: 0; }
       5% { opacity: 1; }
       95% { opacity: 1; }
-      100% { transform: translate(180px,-120px) rotate(-15deg); opacity: 0; }
-    }
-    @keyframes planeMove2 {
-      0% { transform: translate(0,0) rotate(0deg); opacity: 0; }
-      5% { opacity: 1; }
-      95% { opacity: 1; }
-      100% { transform: translate(200px,80px) rotate(25deg); opacity: 0; }
-    }
-    @keyframes planeMove3 {
-      0% { transform: translate(0,0) rotate(0deg); opacity: 0; }
-      5% { opacity: 1; }
-      95% { opacity: 1; }
-      100% { transform: translate(-100px,140px) rotate(35deg); opacity: 0; }
-    }
-    @keyframes planeMove4 {
-      0% { transform: translate(0,0) rotate(0deg); opacity: 0; }
-      5% { opacity: 1; }
-      95% { opacity: 1; }
-      100% { transform: translate(220px,-20px) rotate(-5deg); opacity: 0; }
-    }
-    @keyframes glowPulse {
-      0%,100% { opacity: 0.4; }
-      50% { opacity: 0.8; }
+      100% { offset-distance: 100%; opacity: 0; }
     }
     .animate-on-scroll { opacity: 0; transform: translateY(30px); transition: opacity 0.8s var(--transition), transform 0.8s var(--transition); }
     .animate-on-scroll.visible { opacity: 1; transform: translateY(0); }
@@ -93,22 +76,13 @@
       background: var(--header-bg);
       padding: 0 40px;
       height: 64px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      overflow: hidden;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100; overflow: hidden;
     }
     .top-header::before {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 2px;
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
       background: repeating-linear-gradient(90deg, var(--swiss-red) 0, var(--swiss-red) 25px, transparent 25px, transparent 35px);
-      opacity: 0.5;
-      animation: stripeMove 2s linear infinite;
+      opacity: 0.5; animation: stripeMove 2s linear infinite;
     }
     .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--header-text); font-weight: 700; font-size: 16px; letter-spacing: 1px; z-index: 1; }
     .logo-cross { width: 28px; height: 28px; background: var(--swiss-red); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 300; color: var(--white); line-height: 1; }
@@ -121,180 +95,118 @@
     .nav a:hover::after { width: 100%; }
 
     .controls { display: flex; gap: 12px; align-items: center; z-index: 1; }
-    .theme-toggle, .lang-toggle {
+    .lang-toggle, .theme-toggle {
       background: transparent; border: 1px solid var(--nav-link); color: var(--nav-link);
       padding: 6px 14px; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer;
       transition: all 0.3s; letter-spacing: 0.5px; border-radius: 4px;
     }
-    .theme-toggle:hover, .lang-toggle:hover { border-color: var(--nav-link-hover); color: var(--nav-link-hover); }
+    .lang-toggle:hover, .theme-toggle:hover { border-color: var(--nav-link-hover); color: var(--nav-link-hover); }
 
     .hero {
-      background: var(--black);
-      padding: 80px 40px 60px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
+      background: #0a0a0a;
+      padding: 80px 40px 60px; text-align: center; position: relative; overflow: hidden;
     }
+    [data-theme="dark"] .hero { background: #0a0a0a; }
     .hero::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
+      content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
       background: radial-gradient(circle at 20% 80%, rgba(227,6,19,0.08) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(227,6,19,0.05) 0%, transparent 50%);
       pointer-events: none;
     }
     .hero-map { font-size: 64px; margin-bottom: 16px; animation: float 4s ease-in-out infinite; display: inline-block; }
     .hero-label { font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--swiss-red); margin-bottom: 12px; }
-    .hero h1 { font-size: clamp(32px, 5vw, 52px); font-weight: 800; color: var(--white); letter-spacing: -1px; line-height: 1.1; margin-bottom: 12px; }
+    .hero h1 { font-size: clamp(32px, 5vw, 52px); font-weight: 800; color: #ffffff; letter-spacing: -1px; line-height: 1.1; margin-bottom: 12px; }
+    [data-theme="dark"] .hero h1 { color: var(--black); }
     .hero h1 span { color: var(--swiss-red); }
     .hero-desc { font-size: 16px; color: var(--gray-500); max-width: 560px; margin: 0 auto; }
 
-    .map-container {
-      padding: 40px;
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+    .map-container { padding: 40px; max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; }
     .map-wrapper {
-      width: 100%;
-      max-width: 1000px;
-      aspect-ratio: 16/9;
-      background: var(--card);
-      border: 1px solid var(--border);
-      position: relative;
-      overflow: hidden;
-      transition: all 0.4s var(--transition);
-      border-radius: 4px;
+      width: 100%; max-width: 1000px; aspect-ratio: 16/9;
+      background: var(--card); border: 1px solid var(--border); position: relative; overflow: hidden;
+      transition: all 0.4s var(--transition); border-radius: 4px;
     }
     .map-wrapper:hover { border-color: var(--swiss-red); }
 
     .map-svg { width: 100%; height: 100%; }
-    .map-land {
-      fill: var(--map-land);
-      stroke: var(--border);
-      stroke-width: 0.5;
-      transition: fill 0.4s;
-    }
-    .route-line {
-      fill: none;
-      stroke: var(--swiss-red);
-      stroke-width: 1.5;
-      stroke-dasharray: 6 6;
-      opacity: 0.5;
-      animation: flowLine 1.5s linear infinite;
-    }
+    .map-land { fill: var(--map-land); stroke: var(--border); stroke-width: 0.5; transition: fill 0.4s; }
+
+    .route-line { fill: none; stroke-width: 1.5; stroke-dasharray: 6 6; opacity: 0.5; animation: flowLine 1.5s linear infinite; }
+    .route-line.eu { stroke: var(--route-eu); }
+    .route-line.am { stroke: var(--route-am); }
+    .route-line.as { stroke: var(--route-as); }
+    .route-line.me { stroke: var(--route-me); }
+    .route-line.af { stroke: var(--route-af); }
     .route-line:nth-child(2n) { animation-duration: 2s; }
     .route-line:nth-child(3n) { animation-duration: 1.2s; }
 
     .airport-group { cursor: pointer; }
-    .airport-dot {
-      fill: var(--swiss-red);
-      transition: r 0.3s;
-    }
-    .airport-group:hover .airport-dot { r: 7; }
-    .airport-glow {
-      fill: var(--swiss-red);
-      opacity: 0.15;
-      animation: glowPulse 3s ease-in-out infinite;
-    }
+    .airport-dot { fill: var(--swiss-red); transition: r 0.3s; }
+    .airport-group:hover .airport-dot { r: 6; }
+    .airport-glow { fill: var(--swiss-red); opacity: 0.15; animation: glowPulse 3s ease-in-out infinite; }
     .airport-group:hover .airport-glow { opacity: 0.35; }
-    .airport-label {
-      font-size: 9px;
-      font-weight: 600;
-      fill: var(--text);
-      text-anchor: middle;
-      font-family: 'Inter', sans-serif;
-      pointer-events: none;
-    }
+    .airport-label { font-size: 8px; font-weight: 600; fill: var(--text); text-anchor: middle; font-family: 'Inter', sans-serif; pointer-events: none; }
     .airport-dot.hub { fill: var(--white); stroke: var(--swiss-red); stroke-width: 2; }
     .airport-glow.hub { opacity: 0.25; }
 
-    .plane-icon {
-      fill: var(--swiss-red);
-      filter: drop-shadow(0 1px 3px rgba(227,6,19,0.4));
-    }
-    .plane-1 { animation: planeMove1 8s linear infinite; }
-    .plane-2 { animation: planeMove2 10s linear infinite; animation-delay: 2s; }
-    .plane-3 { animation: planeMove3 12s linear infinite; animation-delay: 4s; }
-    .plane-4 { animation: planeMove4 9s linear infinite; animation-delay: 1s; }
-
     .map-tooltip {
-      position: absolute;
-      background: var(--card);
-      border: 1px solid var(--border);
-      padding: 10px 14px;
-      font-size: 12px;
-      font-weight: 600;
-      pointer-events: none;
-      opacity: 0;
-      transform: translateY(4px);
-      transition: opacity 0.2s, transform 0.2s;
-      z-index: 10;
-      white-space: nowrap;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      position: absolute; background: var(--card); border: 1px solid var(--border);
+      padding: 10px 14px; font-size: 12px; font-weight: 600; pointer-events: none;
+      opacity: 0; transform: translateY(4px); transition: opacity 0.2s, transform 0.2s;
+      z-index: 10; white-space: nowrap; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
     .map-tooltip.visible { opacity: 1; transform: translateY(0); }
     .map-tooltip .tt-code { color: var(--swiss-red); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 2px; }
 
-    .map-legend {
-      display: flex;
-      justify-content: center;
-      gap: 32px;
-      margin-top: 24px;
-      flex-wrap: wrap;
-    }
-    .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--gray-500); }
+    .map-legend { display: flex; justify-content: center; gap: 24px; margin-top: 24px; flex-wrap: wrap; }
+    .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--gray-500); }
     .legend-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--swiss-red); }
     .legend-dot.hub { background: var(--white); border: 2px solid var(--swiss-red); }
-    .legend-line { width: 24px; height: 2px; background: repeating-linear-gradient(90deg, var(--swiss-red) 0, var(--swiss-red) 4px, transparent 4px, transparent 8px); }
-    .legend-glow { width: 16px; height: 16px; border-radius: 50%; background: rgba(227,6,19,0.2); border: 1px solid var(--swiss-red); }
+    .legend-line { width: 20px; height: 2px; }
+    .legend-line.eu { background: var(--route-eu); }
+    .legend-line.am { background: var(--route-am); }
+    .legend-line.as { background: var(--route-as); }
+    .legend-line.me { background: var(--route-me); }
+    .legend-line.af { background: var(--route-af); }
 
-    .route-list {
-      padding: 40px;
-      max-width: 1000px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 16px;
+    .region-filter { display: flex; justify-content: center; gap: 8px; margin-top: 24px; flex-wrap: wrap; }
+    .region-btn {
+      padding: 8px 18px; border: 1px solid var(--border); background: var(--bg); color: var(--gray-500);
+      font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer;
+      transition: all 0.3s; letter-spacing: 0.5px; border-radius: 4px;
     }
+    .region-btn:hover { border-color: var(--swiss-red); color: var(--swiss-red); }
+    .region-btn.active { background: var(--swiss-red); border-color: var(--swiss-red); color: var(--white); }
+
+    .route-list { padding: 40px; max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
     .route-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 16px 20px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      transition: all 0.3s;
-      cursor: pointer;
+      display: flex; align-items: center; gap: 12px; padding: 14px 18px;
+      background: var(--card); border: 1px solid var(--border); transition: all 0.3s; cursor: pointer;
     }
     .route-item:hover { border-color: var(--swiss-red); transform: translateX(4px); }
-    .route-fromto { font-size: 14px; font-weight: 600; flex: 1; }
+    .route-item.hidden { display: none; }
+    .route-fromto { font-size: 13px; font-weight: 600; flex: 1; }
     .route-fromto span { color: var(--swiss-red); margin: 0 6px; }
-    .route-code { font-size: 11px; color: var(--gray-500); font-weight: 500; letter-spacing: 0.5px; }
-    .route-plane { font-size: 18px; }
+    .route-code { font-size: 10px; color: var(--gray-500); font-weight: 500; letter-spacing: 0.5px; }
+    .route-plane { font-size: 16px; }
+    .route-region-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .route-region-dot.eu { background: var(--route-eu); }
+    .route-region-dot.am { background: var(--route-am); }
+    .route-region-dot.as { background: var(--route-as); }
+    .route-region-dot.me { background: var(--route-me); }
+    .route-region-dot.af { background: var(--route-af); }
 
     .footer {
-      background: var(--black);
-      padding: 48px 40px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 24px;
-      position: relative;
-      overflow: hidden;
+      background: #0a0a0a; padding: 48px 40px; display: flex; justify-content: space-between;
+      align-items: center; flex-wrap: wrap; gap: 24px; position: relative; overflow: hidden;
     }
+    [data-theme="dark"] .footer { background: #0a0a0a; }
     .footer::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
       background: repeating-linear-gradient(90deg, var(--swiss-red) 0, var(--swiss-red) 25px, transparent 25px, transparent 35px);
-      opacity: 0.5;
-      animation: stripeMove 2s linear infinite;
+      opacity: 0.5; animation: stripeMove 2s linear infinite;
     }
-    .footer-logo { display: flex; align-items: center; gap: 10px; color: var(--white); font-weight: 700; font-size: 14px; letter-spacing: 1px; }
+    .footer-logo { display: flex; align-items: center; gap: 10px; color: #ffffff; font-weight: 700; font-size: 14px; letter-spacing: 1px; }
+    [data-theme="dark"] .footer-logo { color: var(--black); }
     .footer-cross { width: 24px; height: 24px; background: var(--swiss-red); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 300; color: var(--white); line-height: 1; }
     .footer-links { display: flex; gap: 28px; }
     .footer-links a { color: var(--gray-500); text-decoration: none; font-size: 13px; transition: color 0.3s; }
@@ -323,14 +235,14 @@
       <div>SWISS AIRLINES</div>
     </a>
     <nav class="nav">
-      <a href="index.html">Главная</a>
-      <a href="fleet.html">Флот</a>
-      <a href="routes.html">Маршруты</a>
-      <a href="map.html" class="active">Карта</a>
-      <a href="events.html">События</a>
-      <a href="history.html">История</a>
+      <a href="index.html" data-i18n="nav-home">Главная</a>
+      <a href="fleet.html" data-i18n="nav-fleet">Флот</a>
+      <a href="routes.html" data-i18n="nav-routes">Маршруты</a>
+      <a href="map.html" class="active" data-i18n="nav-map">Карта</a>
+      <a href="events.html" data-i18n="nav-events">События</a>
+      <a href="history.html" data-i18n="nav-history">История</a>
       <a href="https://discord.gg/6YA8t7GJr" target="_blank">Discord</a>
-      <a href="login.html">Вход</a>
+      <a href="login.html" data-i18n="nav-login">Вход</a>
     </nav>
     <div class="controls">
       <button class="lang-toggle" id="langToggle" onclick="toggleLang()">EN</button>
@@ -341,8 +253,8 @@
   <section class="hero">
     <div class="hero-map">🗺️</div>
     <div class="hero-label">Swiss Airlines Virtual</div>
-    <h1>Карта <span>маршрутов</span></h1>
-    <p class="hero-desc">Наша сеть направлений в PTFS. Хабы в Цюрихе и Женеве, рейсы по всему миру.</p>
+    <h1 data-i18n-html="hero-title">Карта <span>маршрутов</span></h1>
+    <p class="hero-desc" data-i18n="hero-desc">Наша сеть направлений в PTFS. Хабы в Цюрихе и Женеве, рейсы по всему миру.</p>
   </section>
 
   <section class="map-container">
@@ -359,208 +271,285 @@
           </filter>
         </defs>
 
-        <!-- Simplified world map -->
-        <g class="world-map">
-          <!-- Europe -->
-          <path class="map-land" d="M460,180 L470,170 L490,165 L510,170 L520,180 L530,175 L540,185 L550,190 L560,185 L570,195 L580,200 L590,195 L600,200 L610,195 L620,200 L630,210 L640,215 L650,210 L660,220 L670,215 L680,225 L690,220 L700,230 L710,225 L720,235 L730,230 L740,240 L750,245 L760,250 L770,245 L780,255 L790,260 L800,265 L810,270 L820,275 L830,280 L840,285 L850,290 L860,295 L870,300 L880,305 L890,310 L900,315 L910,320 L920,325 L930,330 L940,335 L950,340 L960,345 L970,350 L980,355 L990,360 L1000,365 L1000,560 L0,560 L0,365 L10,360 L20,355 L30,350 L40,345 L50,340 L60,335 L70,330 L80,325 L90,320 L100,315 L110,310 L120,305 L130,300 L140,295 L150,290 L160,285 L170,280 L180,275 L190,270 L200,265 L210,260 L220,255 L230,250 L240,245 L250,240 L260,235 L270,230 L280,225 L290,220 L300,215 L310,210 L320,205 L330,200 L340,195 L350,190 L360,185 L370,180 L380,175 L390,170 L400,165 L410,160 L420,155 L430,150 L440,145 L450,140 L460,135 L470,130 L480,125 L490,120 L500,115 L510,110 L520,105 L530,100 L540,95 L550,90 L560,85 L570,80 L580,75 L590,70 L600,65 L610,60 L620,55 L630,50 L640,45 L650,40 L660,35 L670,30 L680,25 L690,20 L700,15 L710,10 L720,5 L730,0 L740,0 L750,5 L760,10 L770,15 L780,20 L790,25 L800,30 L810,35 L820,40 L830,45 L840,50 L850,55 L860,60 L870,65 L880,70 L890,75 L900,80 L910,85 L920,90 L930,95 L940,100 L950,105 L960,110 L970,115 L980,120 L990,125 L1000,130 L1000,0 L0,0 L0,130 L10,125 L20,120 L30,115 L40,110 L50,105 L60,100 L70,95 L80,90 L90,85 L100,80 L110,75 L120,70 L130,65 L140,60 L150,55 L160,50 L170,45 L180,40 L190,35 L200,30 L210,25 L220,20 L230,15 L240,10 L250,5 L260,0 L270,0 L280,5 L290,10 L300,15 L310,20 L320,25 L330,30 L340,35 L350,40 L360,45 L370,50 L380,55 L390,60 L400,65 L410,70 L420,75 L430,80 L440,85 L450,90 L460,95 L470,100 L480,105 L490,110 L500,115 L510,120 L520,125 L530,130 L540,135 L550,140 L560,145 L570,150 L580,155 L590,160 L600,165 L610,170 L620,175 L630,180 L640,185 L650,190 L660,195 L670,200 L680,205 L690,210 L700,215 L710,220 L720,225 L730,230 L740,235 L750,240 L760,245 L770,250 L780,255 L790,260 L800,265 L810,270 L820,275 L830,280 L840,285 L850,290 L860,295 L870,300 L880,305 L890,310 L900,315 L910,320 L920,325 L930,330 L940,335 L950,340 L960,345 L970,350 L980,355 L990,360 L1000,365 Z"/>
-          <!-- Simplified Europe shape (overlay for better look) -->
-          <path class="map-land" d="M420,200 L430,190 L450,180 L470,175 L490,180 L510,185 L530,180 L550,185 L570,190 L590,195 L610,200 L630,205 L650,210 L670,215 L690,220 L710,225 L730,230 L750,235 L770,240 L790,245 L810,250 L830,255 L850,260 L870,265 L890,270 L910,275 L930,280 L950,285 L970,290 L990,295 L1000,300 L1000,320 L990,325 L970,330 L950,335 L930,340 L910,345 L890,350 L870,355 L850,360 L830,365 L810,370 L790,375 L770,380 L750,385 L730,390 L710,395 L690,400 L670,405 L650,410 L630,415 L610,420 L590,425 L570,430 L550,435 L530,440 L510,445 L490,450 L470,455 L450,460 L430,465 L410,470 L390,475 L370,480 L350,485 L330,490 L310,495 L290,500 L270,505 L250,510 L230,515 L210,520 L190,525 L170,530 L150,535 L130,540 L110,545 L90,550 L70,555 L50,560 L30,560 L10,555 L0,550 L0,500 L10,490 L30,480 L50,470 L70,460 L90,450 L110,440 L130,430 L150,420 L170,410 L190,400 L210,390 L230,380 L250,370 L270,360 L290,350 L310,340 L330,330 L350,320 L370,310 L390,300 L410,290 L430,280 L450,270 L470,260 L490,250 L510,240 L530,230 L550,220 L570,210 L590,200 L610,190 L630,180 L650,170 L670,160 L690,150 L710,140 L730,130 L750,120 L770,110 L790,100 L810,90 L830,80 L850,70 L870,60 L890,50 L910,40 L930,30 L950,20 L970,10 L990,0 L1000,0 L1000,100 L990,110 L970,120 L950,130 L930,140 L910,150 L890,160 L870,170 L850,180 L830,190 L810,200 L790,210 L770,220 L750,230 L730,240 L710,250 L690,260 L670,270 L650,280 L630,290 L610,300 L590,310 L570,320 L550,330 L530,340 L510,350 L490,360 L470,370 L450,380 L430,390 L410,400 L390,410 L370,420 L350,430 L330,440 L310,450 L290,460 L270,470 L250,480 L230,490 L210,500 L190,510 L170,520 L150,530 L130,540 L110,550 L90,560 L70,560 L50,550 L30,540 L10,530 L0,520 Z" opacity="0"/>
-          <!-- Better simplified continents -->
-          <!-- Europe proper -->
-          <path class="map-land" d="M450,160 L470,150 L500,145 L530,150 L560,155 L590,160 L620,165 L650,170 L680,180 L710,190 L740,200 L770,210 L800,220 L830,230 L860,240 L890,250 L920,260 L950,270 L980,280 L1000,290 L1000,340 L980,350 L950,360 L920,370 L890,380 L860,390 L830,400 L800,410 L770,420 L740,430 L710,440 L680,450 L650,460 L620,470 L590,480 L560,490 L530,500 L500,510 L470,520 L440,530 L410,540 L380,550 L350,560 L320,560 L290,550 L260,540 L230,530 L200,520 L170,510 L140,500 L110,490 L80,480 L50,470 L20,460 L0,450 L0,400 L20,390 L50,380 L80,370 L110,360 L140,350 L170,340 L200,330 L230,320 L260,310 L290,300 L320,290 L350,280 L380,270 L410,260 L440,250 L470,240 L500,230 L530,220 L560,210 L590,200 L620,190 L650,180 L680,170 L710,160 L740,150 L770,140 L800,130 L830,120 L860,110 L890,100 L920,90 L950,80 L980,70 L1000,60 L1000,120 L980,130 L950,140 L920,150 L890,160 L860,170 L830,180 L800,190 L770,200 L740,210 L710,220 L680,230 L650,240 L620,250 L590,260 L560,270 L530,280 L500,290 L470,300 L440,310 L410,320 L380,330 L350,340 L320,350 L290,360 L260,370 L230,380 L200,390 L170,400 L140,410 L110,420 L80,430 L50,440 L20,450 L0,460 Z" opacity="0.6"/>
-          <!-- Africa -->
-          <path class="map-land" d="M430,280 L450,270 L480,260 L510,255 L540,260 L570,270 L600,280 L630,290 L660,300 L690,310 L720,320 L750,330 L780,340 L810,350 L840,360 L870,370 L900,380 L930,390 L960,400 L990,410 L1000,420 L1000,500 L980,510 L950,520 L920,530 L890,540 L860,550 L830,560 L800,560 L770,550 L740,540 L710,530 L680,520 L650,510 L620,500 L590,490 L560,480 L530,470 L500,460 L470,450 L440,440 L410,430 L380,420 L350,410 L320,400 L290,390 L260,380 L230,370 L200,360 L170,350 L140,340 L110,330 L80,320 L50,310 L20,300 L0,290 L0,250 L20,240 L50,230 L80,220 L110,210 L140,200 L170,190 L200,180 L230,170 L260,160 L290,150 L320,140 L350,130 L380,120 L410,110 L440,100 L470,90 L500,80 L530,70 L560,60 L590,50 L620,40 L650,30 L680,20 L710,10 L740,0 L770,0 L800,10 L830,20 L860,30 L890,40 L920,50 L950,60 L980,70 L1000,80 L1000,140 L980,150 L950,160 L920,170 L890,180 L860,190 L830,200 L800,210 L770,220 L740,230 L710,240 L680,250 L650,260 L620,270 L590,280 L560,290 L530,300 L500,310 L470,320 L440,330 L410,340 L380,350 L350,360 L320,370 L290,380 L260,390 L230,400 L200,410 L170,420 L140,430 L110,440 L80,450 L50,460 L20,470 L0,480 Z" opacity="0.4"/>
-          <!-- North America -->
-          <path class="map-land" d="M0,80 L30,70 L60,60 L90,50 L120,40 L150,30 L180,20 L210,10 L240,0 L270,0 L300,10 L330,20 L360,30 L390,40 L420,50 L450,60 L480,70 L510,80 L540,90 L570,100 L600,110 L630,120 L660,130 L690,140 L720,150 L750,160 L780,170 L810,180 L840,190 L870,200 L900,210 L930,220 L960,230 L990,240 L1000,250 L1000,350 L990,360 L960,370 L930,380 L900,390 L870,400 L840,410 L810,420 L780,430 L750,440 L720,450 L690,460 L660,470 L630,480 L600,490 L570,500 L540,510 L510,520 L480,530 L450,540 L420,550 L390,560 L360,560 L330,550 L300,540 L270,530 L240,520 L210,510 L180,500 L150,490 L120,480 L90,470 L60,460 L30,450 L0,440 Z" opacity="0.35"/>
-          <!-- Asia -->
-          <path class="map-land" d="M600,60 L630,50 L660,40 L690,30 L720,20 L750,10 L780,0 L810,0 L840,10 L870,20 L900,30 L930,40 L960,50 L990,60 L1000,70 L1000,150 L990,160 L960,170 L930,180 L900,190 L870,200 L840,210 L810,220 L780,230 L750,240 L720,250 L690,260 L660,270 L630,280 L600,290 L570,300 L540,310 L510,320 L480,330 L450,340 L420,350 L390,360 L360,370 L330,380 L300,390 L270,400 L240,410 L210,420 L180,430 L150,440 L120,450 L90,460 L60,470 L30,480 L0,490 L0,430 L30,420 L60,410 L90,400 L120,390 L150,380 L180,370 L210,360 L240,350 L270,340 L300,330 L330,320 L360,310 L390,300 L420,290 L450,280 L480,270 L510,260 L540,250 L570,240 L600,230 L630,220 L660,210 L690,200 L720,190 L750,180 L780,170 L810,160 L840,150 L870,140 L900,130 L930,120 L960,110 L990,100 L1000,90 Z" opacity="0.45"/>
+        <!-- Simplified world continents -->
+        <!-- North America -->
+        <path class="map-land" d="M40,120 L80,100 L120,85 L160,80 L200,75 L230,70 L260,65 L280,75 L300,90 L310,110 L320,130 L340,145 L370,150 L400,155 L420,170 L430,190 L420,210 L400,225 L380,240 L360,250 L340,260 L320,275 L300,290 L280,300 L260,310 L240,315 L220,325 L200,340 L180,355 L160,370 L140,380 L120,385 L100,380 L80,370 L60,350 L45,330 L35,300 L30,270 L25,240 L20,200 L25,160 L30,140 Z"/>
+        <!-- South America -->
+        <path class="map-land" d="M200,370 L220,365 L240,360 L260,355 L270,370 L280,390 L285,410 L288,430 L290,450 L285,470 L280,490 L270,510 L260,530 L245,545 L230,550 L215,545 L200,530 L190,510 L185,490 L180,470 L178,450 L180,430 L185,410 L190,390 Z"/>
+        <!-- Europe -->
+        <path class="map-land" d="M430,95 L445,85 L460,78 L480,72 L500,70 L520,72 L535,78 L545,85 L540,100 L535,110 L525,118 L515,125 L505,132 L500,142 L498,155 L500,170 L498,180 L490,190 L475,195 L465,200 L455,210 L445,218 L435,225 L425,232 L420,240 L418,248 L420,255 L430,260 L440,265 L450,275 L455,285 L452,295 L445,300 L435,305 L420,308 L405,310 L390,308 L380,300 L370,290 L365,280 L360,270 L355,258 L352,245 L355,230 L360,218 L370,205 L380,195 L390,182 L400,170 L410,155 L420,140 L428,125 L432,110 Z"/>
+        <!-- Africa -->
+        <path class="map-land" d="M430,310 L445,305 L460,300 L475,298 L490,300 L505,305 L520,310 L530,320 L535,335 L540,355 L542,375 L540,395 L535,415 L525,435 L510,455 L495,470 L480,480 L465,485 L450,480 L440,470 L430,455 L422,435 L418,415 L415,395 L412,375 L415,355 L420,335 L425,320 Z"/>
+        <!-- Middle East -->
+        <path class="map-land" d="M540,215 L555,208 L570,205 L585,208 L595,218 L600,230 L598,245 L590,255 L580,260 L570,265 L555,268 L545,265 L535,258 L530,245 L532,230 L535,220 Z"/>
+        <!-- Asia (Russia/Central) -->
+        <path class="map-land" d="M545,80 L570,70 L600,60 L640,50 L680,42 L720,38 L760,36 L800,40 L840,48 L880,58 L920,72 L950,88 L970,105 L980,125 L975,148 L960,168 L940,182 L920,195 L895,208 L870,218 L845,225 L820,230 L795,232 L770,230 L745,225 L720,218 L700,210 L680,200 L660,188 L640,175 L620,165 L600,155 L580,148 L560,142 L545,135 L535,125 L530,112 L532,98 L538,88 Z"/>
+        <!-- South/East Asia -->
+        <path class="map-land" d="M640,210 L660,205 L680,210 L700,218 L720,230 L735,245 L748,265 L755,285 L752,305 L745,322 L730,335 L710,345 L690,348 L670,345 L655,335 L645,320 L638,300 L635,280 L638,260 L640,240 L642,225 Z"/>
+        <!-- India -->
+        <path class="map-land" d="M600,240 L615,235 L630,238 L640,250 L645,270 L640,290 L630,310 L615,325 L600,330 L590,320 L585,300 L588,280 L592,260 Z"/>
+        <!-- Japan/Korea -->
+        <path class="map-land" d="M800,170 L810,165 L822,168 L830,178 L828,192 L820,200 L810,202 L800,198 L795,188 Z"/>
+        <!-- Australia -->
+        <path class="map-land" d="M780,380 L800,370 L825,365 L850,370 L870,380 L880,395 L882,415 L875,435 L860,450 L840,460 L815,462 L795,455 L778,440 L770,420 L768,400 Z"/>
+
+        <!-- ===== ROUTE LINES ===== -->
+        <!-- Europe routes from ZRH (IPPH at 490,190) -->
+        <path class="route-line eu" d="M490,190 Q470,155 435,110" />
+        <path class="route-line eu" d="M490,190 Q478,150 448,95" />
+        <path class="route-line eu" d="M490,190 Q508,145 518,105" />
+        <path class="route-line eu" d="M490,190 Q515,178 530,162" />
+        <path class="route-line eu" d="M490,190 Q520,188 550,180" />
+        <path class="route-line eu" d="M490,190 Q508,195 520,205" />
+        <path class="route-line eu" d="M490,190 Q530,200 565,210" />
+        <path class="route-line eu" d="M490,190 Q548,215 590,240" />
+        <path class="route-line eu" d="M490,190 Q460,180 435,165" />
+        <path class="route-line eu" d="M490,190 Q440,180 415,172" />
+        <path class="route-line eu" d="M490,190 Q548,172 600,148" />
+        <path class="route-line eu" d="M490,190 Q560,175 620,158" />
+        <path class="route-line eu" d="M490,190 Q575,165 650,140" />
+        <path class="route-line eu" d="M490,190 Q590,160 690,130" />
+        <path class="route-line eu" d="M490,190 Q555,155 615,108" />
+        <path class="route-line eu" d="M490,190 Q530,168 570,128" />
+        <!-- Europe routes from GVA (IZOL at 460,215) -->
+        <path class="route-line eu" d="M460,215 Q440,155 430,105" />
+        <path class="route-line eu" d="M460,215 Q455,160 445,110" />
+        <path class="route-line eu" d="M460,215 Q490,198 515,180" />
+        <path class="route-line eu" d="M460,215 Q480,195 508,170" />
+        <path class="route-line eu" d="M460,215 Q498,218 548,218" />
+
+        <!-- Americas routes from ZRH -->
+        <path class="route-line am" d="M490,190 Q380,168 270,185" />
+        <path class="route-line am" d="M490,190 Q360,182 250,205" />
+        <path class="route-line am" d="M490,190 Q370,148 240,125" />
+        <path class="route-line am" d="M490,190 Q400,168 310,155" />
+        <path class="route-line am" d="M490,190 Q385,158 290,138" />
+        <path class="route-line am" d="M490,190 Q330,230 250,385" />
+        <path class="route-line am" d="M490,190 Q310,280 230,460" />
+
+        <!-- Asia routes from ZRH -->
+        <path class="route-line as" d="M490,190 Q640,145 800,175" />
+        <path class="route-line as" d="M490,190 Q640,150 750,230" />
+        <path class="route-line as" d="M490,190 Q630,170 740,260" />
+        <path class="route-line as" d="M490,190 Q630,178 730,290" />
+        <path class="route-line as" d="M490,190 Q580,195 630,260" />
+        <path class="route-line as" d="M490,190 Q650,148 800,185" />
+        <path class="route-line as" d="M490,190 Q660,148 720,168" />
+        <path class="route-line as" d="M490,190 Q650,142 680,140" />
+
+        <!-- Middle East routes from ZRH -->
+        <path class="route-line me" d="M490,190 Q520,200 560,230" />
+        <path class="route-line me" d="M490,190 Q545,195 578,218" />
+        <path class="route-line me" d="M490,190 Q560,205 600,230" />
+
+        <!-- Africa routes from ZRH -->
+        <path class="route-line af" d="M490,190 Q500,260 480,320" />
+        <path class="route-line af" d="M490,190 Q510,310 500,440" />
+        <path class="route-line af" d="M490,190 Q515,310 510,395" />
+        <path class="route-line af" d="M490,190 Q518,320 505,465" />
+
+        <!-- ZRH-GVA shuttle -->
+        <path class="route-line eu" d="M490,190 Q475,200 460,215" />
+
+        <!-- ===== AIRPORTS ===== -->
+        <!-- ZRH Hub -->
+        <g class="airport-group" data-code="IPPH" data-name-ru="Цюрих (Perth International)" data-name-en="Zurich (Perth International)" data-region="hub">
+          <circle class="airport-glow hub" cx="490" cy="190" r="16" />
+          <circle class="airport-dot hub" cx="490" cy="190" r="5" />
+          <text class="airport-label" x="490" y="215">IPPH</text>
+        </g>
+        <!-- GVA Hub -->
+        <g class="airport-group" data-code="IZOL" data-name-ru="Женева (Izolirani)" data-name-en="Geneva (Izolirani)" data-region="hub">
+          <circle class="airport-glow hub" cx="460" cy="215" r="14" />
+          <circle class="airport-dot hub" cx="460" cy="215" r="4.5" />
+          <text class="airport-label" x="460" y="240">IZOL</text>
         </g>
 
-        <!-- Route lines (great-circle style curves) -->
-        <!-- Zurich to destinations -->
-        <path class="route-line" d="M510,200 Q530,170 580,160" />
-        <path class="route-line" d="M510,200 Q520,140 560,110" />
-        <path class="route-line" d="M510,200 Q480,150 440,130" />
-        <path class="route-line" d="M510,200 Q600,250 720,280" />
-        <path class="route-line" d="M510,200 Q620,240 780,260" />
-        <path class="route-line" d="M510,200 Q490,150 460,120" />
-        <path class="route-line" d="M510,200 Q550,190 610,170" />
-        <path class="route-line" d="M510,200 Q530,170 550,140" />
-
-        <!-- Geneva to destinations -->
-        <path class="route-line" d="M470,220 Q450,180 420,130" />
-        <path class="route-line" d="M470,220 Q490,210 510,200" />
-        <path class="route-line" d="M470,220 Q440,260 410,300" />
-        <path class="route-line" d="M470,220 Q490,180 510,160" />
-
-        <!-- Animated planes -->
-        <g transform="translate(510,200)" class="plane-1">
-          <path class="plane-icon" d="M-6,-2 L6,0 L-6,2 L-3,0 Z" />
+        <!-- Europe -->
+        <g class="airport-group" data-code="ILND" data-name-ru="Лондон" data-name-en="London" data-region="europe">
+          <circle class="airport-glow" cx="435" cy="110" r="8" /><circle class="airport-dot" cx="435" cy="110" r="3" />
+          <text class="airport-label" x="435" y="126">ILND</text>
         </g>
-        <g transform="translate(510,200)" class="plane-2">
-          <path class="plane-icon" d="M-6,-2 L6,0 L-6,2 L-3,0 Z" />
+        <g class="airport-group" data-code="IPAR" data-name-ru="Париж" data-name-en="Paris" data-region="europe">
+          <circle class="airport-glow" cx="448" cy="95" r="8" /><circle class="airport-dot" cx="448" cy="95" r="3" />
+          <text class="airport-label" x="448" y="110">IPAR</text>
         </g>
-        <g transform="translate(470,220)" class="plane-3">
-          <path class="plane-icon" d="M-6,-2 L6,0 L-6,2 L-3,0 Z" />
+        <g class="airport-group" data-code="IBER" data-name-ru="Берлин" data-name-en="Berlin" data-region="europe">
+          <circle class="airport-glow" cx="518" cy="105" r="8" /><circle class="airport-dot" cx="518" cy="105" r="3" />
+          <text class="airport-label" x="518" y="120">IBER</text>
         </g>
-        <g transform="translate(510,200)" class="plane-4">
-          <path class="plane-icon" d="M-6,-2 L6,0 L-6,2 L-3,0 Z" />
+        <g class="airport-group" data-code="IROM" data-name-ru="Рим" data-name-en="Rome" data-region="europe">
+          <circle class="airport-glow" cx="530" cy="162" r="8" /><circle class="airport-dot" cx="530" cy="162" r="3" />
+          <text class="airport-label" x="530" y="178">IROM</text>
         </g>
-
-        <!-- Airports -->
-        <!-- Zurich hub -->
-        <g class="airport-group" data-code="IPPH" data-name="Цюрих (Perth International)">
-          <circle class="airport-glow hub" cx="510" cy="200" r="16" />
-          <circle class="airport-dot hub" cx="510" cy="200" r="5" />
-          <text class="airport-label" x="510" y="225">IPPH Цюрих</text>
+        <g class="airport-group" data-code="IMAD" data-name-ru="Мадрид" data-name-en="Madrid" data-region="europe">
+          <circle class="airport-glow" cx="420" cy="150" r="8" /><circle class="airport-dot" cx="420" cy="150" r="3" />
+          <text class="airport-label" x="420" y="166">IMAD</text>
         </g>
-
-        <!-- Geneva hub -->
-        <g class="airport-group" data-code="IZOL" data-name="Женева (Izolirani)">
-          <circle class="airport-glow hub" cx="470" cy="220" r="14" />
-          <circle class="airport-dot hub" cx="470" cy="220" r="4.5" />
-          <text class="airport-label" x="470" y="245">IZOL Женева</text>
+        <g class="airport-group" data-code="IAMS" data-name-ru="Амстердам" data-name-en="Amsterdam" data-region="europe">
+          <circle class="airport-glow" cx="468" cy="88" r="8" /><circle class="airport-dot" cx="468" cy="88" r="3" />
+          <text class="airport-label" x="468" y="104">IAMS</text>
         </g>
-
-        <!-- Moscow Orenji -->
-        <g class="airport-group" data-code="Orenji" data-name="Москва (Orenji)">
-          <circle class="airport-glow" cx="580" cy="160" r="10" />
-          <circle class="airport-dot" cx="580" cy="160" r="3.5" />
-          <text class="airport-label" x="580" y="180">Orenji Москва</text>
+        <g class="airport-group" data-code="IVIE" data-name-ru="Вена" data-name-en="Vienna" data-region="europe">
+          <circle class="airport-glow" cx="520" cy="148" r="8" /><circle class="airport-dot" cx="520" cy="148" r="3" />
+          <text class="airport-label" x="520" y="163">IVIE</text>
         </g>
-
-        <!-- St Petersburg IMLR -->
-        <g class="airport-group" data-code="IMLR" data-name="Санкт-Петербург (IMLR)">
-          <circle class="airport-glow" cx="560" cy="110" r="10" />
-          <circle class="airport-dot" cx="560" cy="110" r="3.5" />
-          <text class="airport-label" x="560" y="130">IMLR СПб</text>
+        <g class="airport-group" data-code="IBCN" data-name-ru="Барселона" data-name-en="Barcelona" data-region="europe">
+          <circle class="airport-glow" cx="415" cy="155" r="8" /><circle class="airport-dot" cx="415" cy="155" r="3" />
+          <text class="airport-label" x="415" y="170">IBCN</text>
         </g>
-
-        <!-- Sochi IBTH -->
-        <g class="airport-group" data-code="IBTH" data-name="Сочи (IBTH)">
-          <circle class="airport-glow" cx="440" cy="130" r="10" />
-          <circle class="airport-dot" cx="440" cy="130" r="3.5" />
-          <text class="airport-label" x="440" y="150">IBTH Сочи</text>
+        <g class="airport-group" data-code="IATH" data-name-ru="Афины" data-name-en="Athens" data-region="europe">
+          <circle class="airport-glow" cx="548" cy="192" r="8" /><circle class="airport-dot" cx="548" cy="192" r="3" />
+          <text class="airport-label" x="560" y="192">IATH</text>
         </g>
-
-        <!-- New York IRFD -->
-        <g class="airport-group" data-code="IRFD" data-name="Нью-Йорк (IRFD)">
-          <circle class="airport-glow" cx="720" cy="280" r="10" />
-          <circle class="airport-dot" cx="720" cy="280" r="3.5" />
-          <text class="airport-label" x="720" y="300">IRFD Нью-Йорк</text>
+        <g class="airport-group" data-code="ILIS" data-name-ru="Лиссабон" data-name-en="Lisbon" data-region="europe">
+          <circle class="airport-glow" cx="400" cy="162" r="8" /><circle class="airport-dot" cx="400" cy="162" r="3" />
+          <text class="airport-label" x="400" y="178">ILIS</text>
+        </g>
+        <g class="airport-group" data-code="IPRA" data-name-ru="Прага" data-name-en="Prague" data-region="europe">
+          <circle class="airport-glow" cx="510" cy="112" r="8" /><circle class="airport-dot" cx="510" cy="112" r="3" />
+          <text class="airport-label" x="510" y="128">IPRA</text>
+        </g>
+        <g class="airport-group" data-code="IBUD" data-name-ru="Будапешт" data-name-en="Budapest" data-region="europe">
+          <circle class="airport-glow" cx="540" cy="140" r="8" /><circle class="airport-dot" cx="540" cy="140" r="3" />
+          <text class="airport-label" x="540" y="155">IBUD</text>
+        </g>
+        <g class="airport-group" data-code="ICOP" data-name-ru="Копенгаген" data-name-en="Copenhagen" data-region="europe">
+          <circle class="airport-glow" cx="485" cy="85" r="8" /><circle class="airport-dot" cx="485" cy="85" r="3" />
+          <text class="airport-label" x="485" y="100">ICOP</text>
+        </g>
+        <g class="airport-group" data-code="ISTO" data-name-ru="Стокгольм" data-name-en="Stockholm" data-region="europe">
+          <circle class="airport-glow" cx="508" cy="75" r="8" /><circle class="airport-dot" cx="508" cy="75" r="3" />
+          <text class="airport-label" x="508" y="90">ISTO</text>
+        </g>
+        <g class="airport-group" data-code="IDUB" data-name-ru="Дублин" data-name-en="Dublin" data-region="europe">
+          <circle class="airport-glow" cx="418" cy="88" r="8" /><circle class="airport-dot" cx="418" cy="88" r="3" />
+          <text class="airport-label" x="418" y="104">IDUB</text>
+        </g>
+        <g class="airport-group" data-code="IWAW" data-name-ru="Варшава" data-name-en="Warsaw" data-region="europe">
+          <circle class="airport-glow" cx="545" cy="108" r="8" /><circle class="airport-dot" cx="545" cy="108" r="3" />
+          <text class="airport-label" x="545" y="123">IWAW</text>
         </g>
 
-        <!-- Texas IJAF -->
-        <g class="airport-group" data-code="IJAF" data-name="Техас (IJAF)">
-          <circle class="airport-glow" cx="780" cy="260" r="10" />
-          <circle class="airport-dot" cx="780" cy="260" r="3.5" />
-          <text class="airport-label" x="780" y="280">IJAF Техас</text>
+        <!-- Americas -->
+        <g class="airport-group" data-code="IRFD" data-name-ru="Нью-Йорк" data-name-en="New York" data-region="america">
+          <circle class="airport-glow" cx="270" cy="185" r="8" /><circle class="airport-dot" cx="270" cy="185" r="3" />
+          <text class="airport-label" x="270" y="200">IRFD</text>
+        </g>
+        <g class="airport-group" data-code="IMIA" data-name-ru="Майами" data-name-en="Miami" data-region="america">
+          <circle class="airport-glow" cx="255" cy="220" r="8" /><circle class="airport-dot" cx="255" cy="220" r="3" />
+          <text class="airport-label" x="255" y="235">IMIA</text>
+        </g>
+        <g class="airport-group" data-code="ILAX" data-name-ru="Лос-Анджелес" data-name-en="Los Angeles" data-region="america">
+          <circle class="airport-glow" cx="145" cy="170" r="8" /><circle class="airport-dot" cx="145" cy="170" r="3" />
+          <text class="airport-label" x="145" y="185">ILAX</text>
+        </g>
+        <g class="airport-group" data-code="ICHI" data-name-ru="Чикаго" data-name-en="Chicago" data-region="america">
+          <circle class="airport-glow" cx="230" cy="165" r="8" /><circle class="airport-dot" cx="230" cy="165" r="3" />
+          <text class="airport-label" x="230" y="180">ICHI</text>
+        </g>
+        <g class="airport-group" data-code="IMON" data-name-ru="Монреаль" data-name-en="Montreal" data-region="america">
+          <circle class="airport-glow" cx="285" cy="155" r="8" /><circle class="airport-dot" cx="285" cy="155" r="3" />
+          <text class="airport-label" x="285" y="170">IMON</text>
+        </g>
+        <g class="airport-group" data-code="ISAO" data-name-ru="Сан-Паулу" data-name-en="São Paulo" data-region="america">
+          <circle class="airport-glow" cx="290" cy="410" r="8" /><circle class="airport-dot" cx="290" cy="410" r="3" />
+          <text class="airport-label" x="290" y="425">ISAO</text>
+        </g>
+        <g class="airport-group" data-code="IBUE" data-name-ru="Буэнос-Айрес" data-name-en="Buenos Aires" data-region="america">
+          <circle class="airport-glow" cx="275" cy="470" r="8" /><circle class="airport-dot" cx="275" cy="470" r="3" />
+          <text class="airport-label" x="275" y="485">IBUE</text>
         </g>
 
-        <!-- Astana IKFL -->
-        <g class="airport-group" data-code="IKFL" data-name="Астана (IKFL)">
-          <circle class="airport-glow" cx="460" cy="120" r="10" />
-          <circle class="airport-dot" cx="460" cy="120" r="3.5" />
-          <text class="airport-label" x="460" y="140">IKFL Астана</text>
+        <!-- Asia -->
+        <g class="airport-group" data-code="ITKY" data-name-ru="Токио" data-name-en="Tokyo" data-region="asia">
+          <circle class="airport-glow" cx="835" cy="180" r="8" /><circle class="airport-dot" cx="835" cy="180" r="3" />
+          <text class="airport-label" x="835" y="195">ITKY</text>
+        </g>
+        <g class="airport-group" data-code="IHKG" data-name-ru="Гонконг" data-name-en="Hong Kong" data-region="asia">
+          <circle class="airport-glow" cx="750" cy="250" r="8" /><circle class="airport-dot" cx="750" cy="250" r="3" />
+          <text class="airport-label" x="750" y="265">IHKG</text>
+        </g>
+        <g class="airport-group" data-code="ISIN" data-name-ru="Сингапур" data-name-en="Singapore" data-region="asia">
+          <circle class="airport-glow" cx="730" cy="310" r="8" /><circle class="airport-dot" cx="730" cy="310" r="3" />
+          <text class="airport-label" x="730" y="325">ISIN</text>
+        </g>
+        <g class="airport-group" data-code="IBKK" data-name-ru="Бангкок" data-name-en="Bangkok" data-region="asia">
+          <circle class="airport-glow" cx="700" cy="275" r="8" /><circle class="airport-dot" cx="700" cy="275" r="3" />
+          <text class="airport-label" x="700" y="290">IBKK</text>
+        </g>
+        <g class="airport-group" data-code="IDEL" data-name-ru="Дели" data-name-en="Delhi" data-region="asia">
+          <circle class="airport-glow" cx="625" cy="235" r="8" /><circle class="airport-dot" cx="625" cy="235" r="3" />
+          <text class="airport-label" x="625" y="250">IDEL</text>
+        </g>
+        <g class="airport-group" data-code="ISEL" data-name-ru="Сеул" data-name-en="Seoul" data-region="asia">
+          <circle class="airport-glow" cx="805" cy="178" r="8" /><circle class="airport-dot" cx="805" cy="178" r="3" />
+          <text class="airport-label" x="805" y="193">ISEL</text>
+        </g>
+        <g class="airport-group" data-code="ISHA" data-name-ru="Шанхай" data-name-en="Shanghai" data-region="asia">
+          <circle class="airport-glow" cx="770" cy="198" r="8" /><circle class="airport-dot" cx="770" cy="198" r="3" />
+          <text class="airport-label" x="770" y="213">ISHA</text>
+        </g>
+        <g class="airport-group" data-code="IPEK" data-name-ru="Пекин" data-name-en="Beijing" data-region="asia">
+          <circle class="airport-glow" cx="760" cy="165" r="8" /><circle class="airport-dot" cx="760" cy="165" r="3" />
+          <text class="airport-label" x="760" y="180">IPEK</text>
         </g>
 
-        <!-- Almaty ISAU -->
-        <g class="airport-group" data-code="ISAU" data-name="Алматы (ISAU)">
-          <circle class="airport-glow" cx="610" cy="170" r="10" />
-          <circle class="airport-dot" cx="610" cy="170" r="3.5" />
-          <text class="airport-label" x="610" y="190">ISAU Алматы</text>
+        <!-- Middle East -->
+        <g class="airport-group" data-code="IDBI" data-name-ru="Дубай" data-name-en="Dubai" data-region="middle-east">
+          <circle class="airport-glow" cx="585" cy="238" r="8" /><circle class="airport-dot" cx="585" cy="238" r="3" />
+          <text class="airport-label" x="585" y="253">IDBI</text>
+        </g>
+        <g class="airport-group" data-code="ITLV" data-name-ru="Тель-Авив" data-name-en="Tel Aviv" data-region="middle-east">
+          <circle class="airport-glow" cx="562" cy="218" r="8" /><circle class="airport-dot" cx="562" cy="218" r="3" />
+          <text class="airport-label" x="562" y="233">ITLV</text>
+        </g>
+        <g class="airport-group" data-code="IDOH" data-name-ru="Доха" data-name-en="Doha" data-region="middle-east">
+          <circle class="airport-glow" cx="595" cy="252" r="8" /><circle class="airport-dot" cx="595" cy="252" r="3" />
+          <text class="airport-label" x="595" y="267">IDOH</text>
         </g>
 
-        <!-- Larnaca ILAR -->
-        <g class="airport-group" data-code="ILAR" data-name="Ларнака (ILAR)">
-          <circle class="airport-glow" cx="550" cy="140" r="10" />
-          <circle class="airport-dot" cx="550" cy="140" r="3.5" />
-          <text class="airport-label" x="550" y="160">ILAR Ларнака</text>
+        <!-- Africa -->
+        <g class="airport-group" data-code="ICAI" data-name-ru="Каир" data-name-en="Cairo" data-region="africa">
+          <circle class="airport-glow" cx="548" cy="245" r="8" /><circle class="airport-dot" cx="548" cy="245" r="3" />
+          <text class="airport-label" x="548" y="260">ICAI</text>
         </g>
-
-        <!-- Paphos IPAP -->
-        <g class="airport-group" data-code="IPAP" data-name="Пафос (IPAP)">
-          <circle class="airport-glow" cx="420" cy="130" r="10" />
-          <circle class="airport-dot" cx="420" cy="130" r="3.5" />
-          <text class="airport-label" x="420" y="150">IPAP Пафос</text>
+        <g class="airport-group" data-code="IJNB" data-name-ru="Йоханнесбург" data-name-en="Johannesburg" data-region="africa">
+          <circle class="airport-glow" cx="510" cy="445" r="8" /><circle class="airport-dot" cx="510" cy="445" r="3" />
+          <text class="airport-label" x="510" y="460">IJNB</text>
+        </g>
+        <g class="airport-group" data-code="INBO" data-name-ru="Найроби" data-name-en="Nairobi" data-region="africa">
+          <circle class="airport-glow" cx="535" cy="370" r="8" /><circle class="airport-dot" cx="535" cy="370" r="3" />
+          <text class="airport-label" x="535" y="385">INBO</text>
+        </g>
+        <g class="airport-group" data-code="ICPT" data-name-ru="Кейптаун" data-name-en="Cape Town" data-region="africa">
+          <circle class="airport-glow" cx="498" cy="480" r="8" /><circle class="airport-dot" cx="498" cy="480" r="3" />
+          <text class="airport-label" x="498" y="495">ICPT</text>
         </g>
       </svg>
     </div>
 
-    <div class="map-legend">
-      <div class="legend-item"><div class="legend-dot hub"></div> Хаб</div>
-      <div class="legend-item"><div class="legend-dot"></div> Направление</div>
-      <div class="legend-item"><div class="legend-glow"></div> Активная зона</div>
-      <div class="legend-item"><div class="legend-line"></div> Маршрут</div>
+    <div class="map-legend" id="mapLegend">
+      <div class="legend-item"><div class="legend-dot hub"></div> <span data-i18n="legend-hub">Хаб</span></div>
+      <div class="legend-item"><div class="legend-dot"></div> <span data-i18n="legend-dest">Направление</span></div>
+      <div class="legend-item"><div class="legend-line eu"></div> <span data-i18n="legend-europe">Европа</span></div>
+      <div class="legend-item"><div class="legend-line am"></div> <span data-i18n="legend-america">Америка</span></div>
+      <div class="legend-item"><div class="legend-line as"></div> <span data-i18n="legend-asia">Азия</span></div>
+      <div class="legend-item"><div class="legend-line me"></div> <span data-i18n="legend-middle-east">Бл. Восток</span></div>
+      <div class="legend-item"><div class="legend-line af"></div> <span data-i18n="legend-africa">Африка</span></div>
+    </div>
+
+    <div class="region-filter">
+      <button class="region-btn active" data-region="all" data-i18n="filter-all">Все</button>
+      <button class="region-btn" data-region="europe" data-i18n="filter-europe">Европа</button>
+      <button class="region-btn" data-region="america" data-i18n="filter-america">Америка</button>
+      <button class="region-btn" data-region="asia" data-i18n="filter-asia">Азия</button>
+      <button class="region-btn" data-region="middle-east" data-i18n="filter-middle-east">Бл. Восток</button>
+      <button class="region-btn" data-region="africa" data-i18n="filter-africa">Африка</button>
     </div>
   </section>
 
-  <section class="route-list animate-on-scroll">
-    <div class="route-item">
-      <span class="route-plane">✈️</span>
-      <span class="route-fromto">Цюрих <span>→</span> Москва</span>
-      <span class="route-code">IPPH → Orenji</span>
-    </div>
-    <div class="route-item">
-      <span class="route-plane">✈️</span>
-      <span class="route-fromto">Цюрих <span>→</span> СПб</span>
-      <span class="route-code">IPPH → IMLR</span>
-    </div>
-    <div class="route-item">
-      <span class="route-plane">✈️</span>
-      <span class="route-fromto">Цюрих <span>→</span> Сочи</span>
-      <span class="route-code">IPPH → IBTH</span>
-    </div>
-    <div class="route-item">
-      <span class="route-plane">✈️</span>
-      <span class="route-fromto">Цюрих <span>→</span> Нью-Йорк</span>
-      <span class="route-code">IPPH → IRFD</span>
-    </div>
-    <div class="route-item">
-      <span class="route-plane">✈️</span>
-      <span class="route-fromto">Цюрих <span>→</span> Техас</span>
-      <span class="route-code">IPPH → IJAF</span>
-    </div>
-    <div class="route-item">
-      <span class="route-plane">✈️</span>
-      <span class="route-fromto">Цюрих <span>→</span> Астана</span>
-      <span class="route-code">IPPH → IKFL</span>
-    </div>
-    <div class="route-item">
-      <span class="route-plane">✈️</span>
-      <span class="route-fromto">Цюрих <span>→</span> Алматы</span>
-      <span class="route-code">IPPH → ISAU</span>
-    </div>
-    <div class="route-item">
-      <span class="route-plane">✈️</span>
-      <span class="route-fromto">Цюрих <span>→</span> Ларнака</span>
-      <span class="route-code">IPPH → ILAR</span>
-    </div>
-    <div class="route-item">
-      <span class="route-plane">✈️</span>
-      <span class="route-fromto">Цюрих <span>→</span> Пафос</span>
-      <span class="route-code">IPPH → IPAP</span>
-    </div>
-    <div class="route-item">
-      <span class="route-plane">✈️</span>
-      <span class="route-fromto">Женева <span>→</span> Ларнака</span>
-      <span class="route-code">IZOL → ILAR</span>
-    </div>
-    <div class="route-item">
-      <span class="route-plane">✈️</span>
-      <span class="route-fromto">Женева <span>→</span> Пафос</span>
-      <span class="route-code">IZOL → IPAP</span>
-    </div>
-    <div class="route-item">
-      <span class="route-plane">✈️</span>
-      <span class="route-fromto">Женева <span>→</span> Сочи</span>
-      <span class="route-code">IZOL → IBTH</span>
-    </div>
-    <div class="route-item">
-      <span class="route-plane">✈️</span>
-      <span class="route-fromto">Цюрих <span>→</span> Женева</span>
-      <span class="route-code">IPPH → IZOL</span>
-    </div>
+  <section class="route-list animate-on-scroll" id="routeListSection">
   </section>
 
   <footer class="footer">
@@ -569,28 +558,132 @@
       <div>SWISS AIRLINES</div>
     </div>
     <div class="footer-links">
-      <a href="index.html">Главная</a>
-      <a href="fleet.html">Флот</a>
-      <a href="routes.html">Маршруты</a>
-      <a href="map.html">Карта</a>
-      <a href="events.html">События</a>
-      <a href="history.html">История</a>
+      <a href="index.html" data-i18n="nav-home">Главная</a>
+      <a href="fleet.html" data-i18n="nav-fleet">Флот</a>
+      <a href="routes.html" data-i18n="nav-routes">Маршруты</a>
+      <a href="map.html" data-i18n="nav-map">Карта</a>
+      <a href="events.html" data-i18n="nav-events">События</a>
+      <a href="history.html" data-i18n="nav-history">История</a>
       <a href="https://discord.gg/6YA8t7GJr" target="_blank">Discord</a>
-      <a href="login.html">Админ</a>
-      <a href="patent.html">Патент</a>
+      <a href="login.html" data-i18n="nav-admin">Админ</a>
+      <a href="patent.html" data-i18n="nav-patent">Патент</a>
     </div>
     <div class="footer-right">
-      <div style="font-size:11px;color:var(--gray-500);margin-bottom:4px;">Неофициальный виртуальный патент № SW-VA-001 от 10.08.26 · <a href="patent.html" style="color:var(--swiss-red);text-decoration:none;">Подробнее →</a></div>
-      <div>Fly Together. Fly Swiss.</div>
+      <div style="font-size:11px;color:var(--gray-500);margin-bottom:4px;" data-i18n="footer-patent">Неофициальный виртуальный патент № SW-VA-001 от 10.08.26</div>
+      <div style="font-size:11px;color:var(--gray-500);">© 2026 Swiss Airlines Virtual</div>
     </div>
   </footer>
 
   <script>
+    // ============ i18n ============
+    const i18n = {
+      ru: {
+        'nav-home': 'Главная', 'nav-fleet': 'Флот', 'nav-routes': 'Маршруты',
+        'nav-map': 'Карта', 'nav-events': 'События', 'nav-history': 'История',
+        'nav-login': 'Вход', 'nav-admin': 'Админ', 'nav-patent': 'Патент',
+        'hero-title': 'Карта <span>маршрутов</span>',
+        'hero-desc': 'Наша сеть направлений в PTFS. Хабы в Цюрихе и Женеве, рейсы по всему миру.',
+        'legend-hub': 'Хаб', 'legend-dest': 'Направление',
+        'legend-europe': 'Европа', 'legend-america': 'Америка', 'legend-asia': 'Азия',
+        'legend-middle-east': 'Бл. Восток', 'legend-africa': 'Африка',
+        'filter-all': 'Все', 'filter-europe': 'Европа', 'filter-america': 'Америка',
+        'filter-asia': 'Азия', 'filter-middle-east': 'Бл. Восток', 'filter-africa': 'Африка',
+        'footer-patent': 'Неофициальный виртуальный патент № SW-VA-001 от 10.08.26'
+      },
+      en: {
+        'nav-home': 'Home', 'nav-fleet': 'Fleet', 'nav-routes': 'Routes',
+        'nav-map': 'Map', 'nav-events': 'Events', 'nav-history': 'History',
+        'nav-login': 'Login', 'nav-admin': 'Admin', 'nav-patent': 'Patent',
+        'hero-title': 'Route <span>map</span>',
+        'hero-desc': 'Our PTFS destination network. Hubs in Zurich and Geneva, flights worldwide.',
+        'legend-hub': 'Hub', 'legend-dest': 'Destination',
+        'legend-europe': 'Europe', 'legend-america': 'Americas', 'legend-asia': 'Asia',
+        'legend-middle-east': 'Mid East', 'legend-africa': 'Africa',
+        'filter-all': 'All', 'filter-europe': 'Europe', 'filter-america': 'Americas',
+        'filter-asia': 'Asia', 'filter-middle-east': 'Mid East', 'filter-africa': 'Africa',
+        'footer-patent': 'Unofficial virtual patent No. SW-VA-001 dated 10.08.26'
+      }
+    };
+    function t(key) { const lang = document.documentElement.getAttribute('lang') || 'ru'; return (i18n[lang] && i18n[lang][key]) || key; }
+    function applyLang() {
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        const val = t(key);
+        if (val) el.textContent = val;
+      });
+      document.querySelectorAll('[data-i18n-html]').forEach(el => {
+        const key = el.getAttribute('data-i18n-html');
+        const val = t(key);
+        if (val) el.innerHTML = val;
+      });
+      // Update airport tooltips
+      updateAirportNames();
+      renderRouteList();
+    }
+
+    // ============ ROUTE DATA ============
+    const routeList = [
+      // Europe from ZRH
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Лондон', to_en: 'London', to_code: 'ILND', region: 'europe' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Париж', to_en: 'Paris', to_code: 'IPAR', region: 'europe' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Берлин', to_en: 'Berlin', to_code: 'IBER', region: 'europe' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Рим', to_en: 'Rome', to_code: 'IROM', region: 'europe' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Мадрид', to_en: 'Madrid', to_code: 'IMAD', region: 'europe' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Амстердам', to_en: 'Amsterdam', to_code: 'IAMS', region: 'europe' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Вена', to_en: 'Vienna', to_code: 'IVIE', region: 'europe' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Барселона', to_en: 'Barcelona', to_code: 'IBCN', region: 'europe' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Афины', to_en: 'Athens', to_code: 'IATH', region: 'europe' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Лиссабон', to_en: 'Lisbon', to_code: 'ILIS', region: 'europe' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Прага', to_en: 'Prague', to_code: 'IPRA', region: 'europe' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Будапешт', to_en: 'Budapest', to_code: 'IBUD', region: 'europe' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Копенгаген', to_en: 'Copenhagen', to_code: 'ICOP', region: 'europe' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Стокгольм', to_en: 'Stockholm', to_code: 'ISTO', region: 'europe' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Дублин', to_en: 'Dublin', to_code: 'IDUB', region: 'europe' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Варшава', to_en: 'Warsaw', to_code: 'IWAW', region: 'europe' },
+      // Europe from GVA
+      { from: 'Женева', from_en: 'Geneva', from_code: 'IZOL', to: 'Лондон', to_en: 'London', to_code: 'ILND', region: 'europe' },
+      { from: 'Женева', from_en: 'Geneva', from_code: 'IZOL', to: 'Париж', to_en: 'Paris', to_code: 'IPAR', region: 'europe' },
+      { from: 'Женева', from_en: 'Geneva', from_code: 'IZOL', to: 'Барселона', to_en: 'Barcelona', to_code: 'IBCN', region: 'europe' },
+      { from: 'Женева', from_en: 'Geneva', from_code: 'IZOL', to: 'Рим', to_en: 'Rome', to_code: 'IROM', region: 'europe' },
+      { from: 'Женева', from_en: 'Geneva', from_code: 'IZOL', to: 'Афины', to_en: 'Athens', to_code: 'IATH', region: 'europe' },
+      // Americas
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Нью-Йорк', to_en: 'New York', to_code: 'IRFD', region: 'america' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Майами', to_en: 'Miami', to_code: 'IMIA', region: 'america' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Лос-Анджелес', to_en: 'Los Angeles', to_code: 'ILAX', region: 'america' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Чикаго', to_en: 'Chicago', to_code: 'ICHI', region: 'america' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Монреаль', to_en: 'Montreal', to_code: 'IMON', region: 'america' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Сан-Паулу', to_en: 'São Paulo', to_code: 'ISAO', region: 'america' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Буэнос-Айрес', to_en: 'Buenos Aires', to_code: 'IBUE', region: 'america' },
+      // Asia
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Токио', to_en: 'Tokyo', to_code: 'ITKY', region: 'asia' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Гонконг', to_en: 'Hong Kong', to_code: 'IHKG', region: 'asia' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Сингапур', to_en: 'Singapore', to_code: 'ISIN', region: 'asia' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Бангкок', to_en: 'Bangkok', to_code: 'IBKK', region: 'asia' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Дели', to_en: 'Delhi', to_code: 'IDEL', region: 'asia' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Сеул', to_en: 'Seoul', to_code: 'ISEL', region: 'asia' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Шанхай', to_en: 'Shanghai', to_code: 'ISHA', region: 'asia' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Пекин', to_en: 'Beijing', to_code: 'IPEK', region: 'asia' },
+      // Middle East
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Дубай', to_en: 'Dubai', to_code: 'IDBI', region: 'middle-east' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Тель-Авив', to_en: 'Tel Aviv', to_code: 'ITLV', region: 'middle-east' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Доха', to_en: 'Doha', to_code: 'IDOH', region: 'middle-east' },
+      // Africa
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Каир', to_en: 'Cairo', to_code: 'ICAI', region: 'africa' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Йоханнесбург', to_en: 'Johannesburg', to_code: 'IJNB', region: 'africa' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Найроби', to_en: 'Nairobi', to_code: 'INBO', region: 'africa' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Кейптаун', to_en: 'Cape Town', to_code: 'ICPT', region: 'africa' },
+      // Shuttle
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Женева', to_en: 'Geneva', to_code: 'IZOL', region: 'europe' }
+    ];
+
+    let currentRegion = 'all';
+
+    // ============ SCROLL OBSERVER ============
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
     }, { threshold: 0.1 });
-    document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
 
+    // ============ THEME / LANG ============
     function toggleTheme() {
       const current = document.documentElement.getAttribute('data-theme');
       const next = current === 'dark' ? 'light' : 'dark';
@@ -599,22 +692,28 @@
       document.getElementById('themeToggle').textContent = next === 'dark' ? '☀️' : '🌙';
     }
     function toggleLang() {
-      const current = document.documentElement.getAttribute('lang');
+      const current = document.documentElement.getAttribute('lang') || 'ru';
       const next = current === 'ru' ? 'en' : 'ru';
       document.documentElement.setAttribute('lang', next);
       localStorage.setItem('swiss-lang', next);
       document.getElementById('langToggle').textContent = next === 'ru' ? 'EN' : 'RU';
+      applyLang();
     }
-    const savedTheme = localStorage.getItem('swiss-theme');
-    if (savedTheme) { document.documentElement.setAttribute('data-theme', savedTheme); document.getElementById('themeToggle').textContent = savedTheme === 'dark' ? '☀️' : '🌙'; }
-    const savedLang = localStorage.getItem('swiss-lang');
-    if (savedLang) { document.documentElement.setAttribute('lang', savedLang); document.getElementById('langToggle').textContent = savedLang === 'ru' ? 'EN' : 'RU'; }
 
-    // Tooltip
+    // ============ AIRPORT TOOLTIPS ============
     const tooltip = document.getElementById('mapTooltip');
     const wrapper = document.getElementById('mapWrapper');
+
+    function updateAirportNames() {
+      const lang = document.documentElement.getAttribute('lang') || 'ru';
+      document.querySelectorAll('.airport-group').forEach(group => {
+        const nameKey = 'data-name-' + lang;
+        group.dataset.name = group.getAttribute(nameKey) || group.getAttribute('data-name-ru');
+      });
+    }
+
     document.querySelectorAll('.airport-group').forEach(group => {
-      group.addEventListener('mouseenter', (e) => {
+      group.addEventListener('mouseenter', () => {
         const code = group.dataset.code;
         const name = group.dataset.name;
         document.getElementById('ttCode').textContent = code;
@@ -630,6 +729,108 @@
         tooltip.classList.remove('visible');
       });
     });
+
+    // ============ REGION FILTER ============
+    function bindRegionFilters() {
+      document.querySelectorAll('.region-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.region-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentRegion = btn.dataset.region;
+          filterMap();
+          renderRouteList();
+        });
+      });
+    }
+
+    function filterMap() {
+      // Filter SVG route lines and airports
+      const svgEl = document.querySelector('.map-svg');
+      const routeLines = svgEl.querySelectorAll('.route-line');
+      const airportGroups = svgEl.querySelectorAll('.airport-group');
+
+      routeLines.forEach(line => {
+        const region = getLineRegion(line);
+        if (currentRegion === 'all' || region === currentRegion) {
+          line.style.opacity = '0.5';
+        } else {
+          line.style.opacity = '0.08';
+        }
+      });
+
+      // Highlight matching airports
+      const activeCodes = new Set();
+      routeList.forEach(r => {
+        if (currentRegion === 'all' || r.region === currentRegion) {
+          activeCodes.add(r.from_code);
+          activeCodes.add(r.to_code);
+        }
+      });
+
+      airportGroups.forEach(g => {
+        const code = g.dataset.code;
+        const region = g.dataset.region;
+        if (currentRegion === 'all') {
+          g.style.opacity = '1';
+        } else if (region === 'hub' || region === currentRegion || activeCodes.has(code)) {
+          g.style.opacity = '1';
+        } else {
+          g.style.opacity = '0.2';
+        }
+      });
+    }
+
+    function getLineRegion(line) {
+      if (line.classList.contains('eu')) return 'europe';
+      if (line.classList.contains('am')) return 'america';
+      if (line.classList.contains('as')) return 'asia';
+      if (line.classList.contains('me')) return 'middle-east';
+      if (line.classList.contains('af')) return 'africa';
+      return 'europe';
+    }
+
+    // ============ ROUTE LIST ============
+    function renderRouteList() {
+      const section = document.getElementById('routeListSection');
+      const lang = document.documentElement.getAttribute('lang') || 'ru';
+      const filtered = currentRegion === 'all' ? routeList : routeList.filter(r => r.region === currentRegion);
+
+      let html = '';
+      filtered.forEach(r => {
+        const fromName = lang === 'en' ? r.from_en : r.from;
+        const toName = lang === 'en' ? r.to_en : r.to;
+        const regionClass = r.region;
+        html += `
+        <div class="route-item" data-region="${r.region}">
+          <span class="route-plane">✈️</span>
+          <div class="route-region-dot ${regionClass.substring(0,2)}"></div>
+          <span class="route-fromto">${escapeHtml(fromName)} <span>→</span> ${escapeHtml(toName)}</span>
+          <span class="route-code">${r.from_code} → ${r.to_code}</span>
+        </div>`;
+      });
+      section.innerHTML = html;
+      document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // ============ INIT ============
+    const savedTheme = localStorage.getItem('swiss-theme');
+    if (savedTheme) { document.documentElement.setAttribute('data-theme', savedTheme); document.getElementById('themeToggle').textContent = savedTheme === 'dark' ? '☀️' : '🌙'; }
+    const savedLang = localStorage.getItem('swiss-lang');
+    if (savedLang) { document.documentElement.setAttribute('lang', savedLang); document.getElementById('langToggle').textContent = savedLang === 'ru' ? 'EN' : 'RU'; }
+
+    updateAirportNames();
+    bindRegionFilters();
+    renderRouteList();
+    applyLang();
+    filterMap();
+    document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
   </script>
 </body>
 </html>

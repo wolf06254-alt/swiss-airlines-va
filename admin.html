@@ -156,6 +156,16 @@
     /* ===== EXPAND ===== */
     .expand-btn { background: none; border: 1px solid var(--gray-300); width: 22px; height: 22px; cursor: pointer; font-size: 10px; color: var(--gray-500); transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
     .expand-btn:hover { border-color: var(--swiss-red); color: var(--swiss-red); }
+    .status-action-btns { display: flex; gap: 8px; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--gray-300); }
+    .status-action-btn { padding: 8px 16px; font-size: 12px; font-weight: 600; border: 1px solid var(--gray-300); cursor: pointer; transition: all 0.3s; font-family: inherit; display: inline-flex; align-items: center; gap: 6px; }
+    .status-action-btn:hover { transform: translateY(-1px); }
+    .status-action-btn.btn-review { background: #fef3c7; color: #92400e; border-color: #fbbf24; }
+    .status-action-btn.btn-review:hover { background: #fde68a; }
+    .status-action-btn.btn-accept { background: #d1fae5; color: #065f46; border-color: #34d399; }
+    .status-action-btn.btn-accept:hover { background: #a7f3d0; }
+    .status-action-btn.btn-reject { background: #fee2e2; color: #991b1b; border-color: #f87171; }
+    .status-action-btn.btn-reject:hover { background: #fecaca; }
+    .status-action-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
     @media (max-width: 1024px) {
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
@@ -224,6 +234,7 @@
       <div class="stat-card"><span class="stat-icon">🆕</span><div class="stat-value" id="newCount">0</div><div class="stat-label" data-i18n="stat-new">Новые</div></div>
       <div class="stat-card"><span class="stat-icon">✅</span><div class="stat-value" id="acceptedCount">0</div><div class="stat-label" data-i18n="stat-accepted">Принято</div></div>
       <div class="stat-card"><span class="stat-icon">❌</span><div class="stat-value" id="rejectedCount">0</div><div class="stat-label" data-i18n="stat-rejected">Отклонено</div></div>
+      <div class="stat-card"><span class="stat-icon">🔍</span><div class="stat-value" id="reviewCount">0</div><div class="stat-label" data-i18n="stat-review">На рассмотрении</div></div>
     </div>
     <div class="filters-bar">
       <span class="filter-btn active" data-filter="all" onclick="setAppFilter('all')" data-i18n="filter-all">Все</span>
@@ -336,7 +347,10 @@
         'app-detail-experience': 'Опыт', 'app-detail-why': 'Почему Swiss', 'app-detail-about': 'О себе',
         'btn-edit': 'Изменить', 'btn-delete': 'Удалить', 'confirm-delete': 'Удалить событие?',
         'cat-wide-body': 'Широкофюзеляжный', 'cat-narrow-body': 'Узкофюзеляжный', 'cat-cargo': 'Грузовой', 'cat-regional': 'Региональный',
-        'error-load': 'Ошибка загрузки'
+        'error-load': 'Ошибка загрузки',
+        'btn-status-review': '🔍 На рассмотрении', 'btn-status-accepted': '✅ Принять', 'btn-status-rejected': '❌ Отклонить',
+        'toast-status-review': 'Статус изменён: На рассмотрении', 'toast-status-accepted': 'Статус изменён: Принято', 'toast-status-rejected': 'Статус изменён: Отклонено',
+        'toast-status-error': 'Ошибка смены статуса', 'stat-review': 'На рассмотрении'
       },
       en: {
         'admin-badge': 'Admin Panel', 'admin-title': 'Admin Panel', 'admin-subtitle': 'Swiss Airlines website content management',
@@ -369,7 +383,10 @@
         'app-detail-experience': 'Experience', 'app-detail-why': 'Why Swiss', 'app-detail-about': 'About',
         'btn-edit': 'Edit', 'btn-delete': 'Delete', 'confirm-delete': 'Delete event?',
         'cat-wide-body': 'Wide-body', 'cat-narrow-body': 'Narrow-body', 'cat-cargo': 'Cargo', 'cat-regional': 'Regional',
-        'error-load': 'Loading error'
+        'error-load': 'Loading error',
+        'btn-status-review': '🔍 Under review', 'btn-status-accepted': '✅ Accept', 'btn-status-rejected': '❌ Reject',
+        'toast-status-review': 'Status changed: Under review', 'toast-status-accepted': 'Status changed: Accepted', 'toast-status-rejected': 'Status changed: Rejected',
+        'toast-status-error': 'Error changing status', 'stat-review': 'Under review'
       }
     };
 
@@ -457,6 +474,7 @@
       document.getElementById('newCount').textContent = allData.filter(a=>a.status==='new').length;
       document.getElementById('acceptedCount').textContent = allData.filter(a=>a.status==='accepted').length;
       document.getElementById('rejectedCount').textContent = allData.filter(a=>a.status==='rejected').length;
+      const revEl = document.getElementById('reviewCount'); if(revEl) revEl.textContent = allData.filter(a=>a.status==='review').length;
     }
     function setAppFilter(f){ appFilter=f; document.querySelectorAll('.filters-bar .filter-btn').forEach(b=>b.classList.toggle('active',b.dataset.filter===f)); renderApps(); }
     function renderApps() {
@@ -487,11 +505,37 @@
               <div style="grid-column:span 3"><strong style="color:var(--gray-500)">${t('app-detail-why')}:</strong><br>${escapeHtml(a.why_swiss)||'—'}</div>
               <div style="grid-column:span 3"><strong style="color:var(--gray-500)">${t('app-detail-about')}:</strong><br>${escapeHtml(a.about)||'—'}</div>
             </div>
+            <div class="status-action-btns">
+              <button class="status-action-btn btn-review" onclick="updateAppStatus(${a.id},'review')"${a.status==='review'?' disabled':''}>${t('btn-status-review')}</button>
+              <button class="status-action-btn btn-accept" onclick="updateAppStatus(${a.id},'accepted')"${a.status==='accepted'?' disabled':''}>${t('btn-status-accepted')}</button>
+              <button class="status-action-btn btn-reject" onclick="updateAppStatus(${a.id},'rejected')"${a.status==='rejected'?' disabled':''}>${t('btn-status-rejected')}</button>
+            </div>
           </td>
         </tr>
       `).join('');
     }
     function toggleAppDetail(id){ const row=document.getElementById('app-detail-'+id); row.style.display = row.style.display==='none'?'table-row':'none'; }
+
+    async function updateAppStatus(id, newStatus) {
+      try {
+        const r = await fetch('/api/applications/' + id, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus })
+        });
+        if (r.ok) {
+          const app = allData.find(a => a.id === id);
+          if (app) app.status = newStatus;
+          renderAppStats(); renderApps();
+          const toastKey = 'toast-status-' + newStatus;
+          showToast(t(toastKey) || ('Status: ' + newStatus), 'success');
+        } else {
+          showToast(t('toast-status-error'), 'error');
+        }
+      } catch(e) {
+        showToast(t('toast-status-error'), 'error');
+      }
+    }
 
     // ============ EVENTS ============
     async function loadEvents() {

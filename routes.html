@@ -29,6 +29,7 @@
       --nav-link-hover: var(--black);
     }
     [data-theme="dark"] {
+      --black: #f0f0f0;
       --bg: #0f0f0f;
       --text: #f0f0f0;
       --card: #1a1a1a;
@@ -108,6 +109,7 @@
       position: relative;
       overflow: hidden;
     }
+    [data-theme="dark"] .hero { background: #0a0a0a; }
     .hero::before {
       content: '';
       position: absolute;
@@ -117,7 +119,8 @@
     }
     .hero-icon { font-size: 72px; margin-bottom: 24px; animation: float 4s ease-in-out infinite; display: inline-block; filter: drop-shadow(0 10px 30px rgba(227,6,19,0.3)); }
     .hero-label { font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--swiss-red); margin-bottom: 16px; animation: fadeIn 1s ease-out; }
-    .hero h1 { font-size: clamp(36px, 6vw, 64px); font-weight: 800; color: var(--white); letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 16px; animation: fadeUp 0.8s ease-out; }
+    .hero h1 { font-size: clamp(36px, 6vw, 64px); font-weight: 800; color: #ffffff; letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 16px; animation: fadeUp 0.8s ease-out; }
+    [data-theme="dark"] .hero h1 { color: var(--black); }
     .hero h1 span { color: var(--swiss-red); position: relative; }
     .hero-desc { font-size: 17px; color: var(--gray-500); max-width: 640px; margin: 0 auto; animation: fadeUp 0.8s ease-out 0.2s both; }
 
@@ -166,12 +169,11 @@
       position: absolute; top: 16px; left: 16px; font-size: 10px; font-weight: 700;
       letter-spacing: 1px; text-transform: uppercase; padding: 4px 10px;
     }
-    .badge-swiss { background: var(--swiss-red); color: var(--white); }
-    .badge-russia { background: var(--gray-900); color: var(--white); }
-    .badge-usa { background: #1a3c6e; color: var(--white); }
-    .badge-cyprus { background: #8B6914; color: var(--white); }
-    .badge-kazakh { background: #2E7D32; color: var(--white); }
-    .badge-other { background: var(--gray-700); color: var(--white); }
+    .badge-europe { background: #1d4ed8; color: var(--white); }
+    .badge-america { background: #b91c1c; color: var(--white); }
+    .badge-asia { background: #92400e; color: var(--white); }
+    .badge-middle-east { background: #065f46; color: var(--white); }
+    .badge-africa { background: #7c2d12; color: var(--white); }
 
     .route-info { padding: 24px; }
     .route-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.3px; }
@@ -184,40 +186,31 @@
     .route-aircraft strong { color: var(--text); }
 
     .hub-banner {
-      background: var(--black); padding: 60px 40px; text-align: center; margin-bottom: 40px;
+      background: #0a0a0a; padding: 60px 40px; text-align: center; margin-bottom: 40px;
       position: relative; overflow: hidden;
     }
+    [data-theme="dark"] .hub-banner { background: #0a0a0a; }
     .hub-banner::before {
       content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
       background: radial-gradient(circle at 50% 50%, rgba(227,6,19,0.06) 0%, transparent 70%); pointer-events: none;
     }
-    .hub-title { font-size: 28px; font-weight: 800; color: var(--white); margin-bottom: 12px; position: relative; }
+    .hub-title { font-size: 28px; font-weight: 800; color: #ffffff; margin-bottom: 12px; position: relative; }
+    [data-theme="dark"] .hub-title { color: var(--black); }
     .hub-title span { color: var(--swiss-red); }
     .hub-desc { font-size: 15px; color: var(--gray-500); max-width: 600px; margin: 0 auto; position: relative; }
 
-    .coming-soon {
-      border: 2px dashed var(--gray-300); display: flex; flex-direction: column;
-      align-items: center; justify-content: center; padding: 60px 30px; text-align: center; min-height: 280px;
-    }
-    .coming-soon:hover { border-color: var(--swiss-red); box-shadow: none; transform: none; }
-    .coming-soon:hover::before { transform: scaleX(0); }
-    .coming-soon .cs-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
-    .coming-soon .cs-title { font-size: 16px; font-weight: 700; color: var(--gray-500); margin-bottom: 8px; }
-    .coming-soon .cs-text { font-size: 13px; color: var(--gray-500); }
-
-    .loading { text-align: center; padding: 40px; color: var(--gray-500); font-size: 14px; }
-    .error { text-align: center; padding: 40px; color: var(--swiss-red); font-size: 14px; }
-
     .footer {
-      background: var(--black); padding: 48px 40px; display: flex; justify-content: space-between;
+      background: #0a0a0a; padding: 48px 40px; display: flex; justify-content: space-between;
       align-items: center; flex-wrap: wrap; gap: 24px; position: relative; overflow: hidden;
     }
+    [data-theme="dark"] .footer { background: #0a0a0a; }
     .footer::before {
       content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
       background: repeating-linear-gradient(90deg, var(--swiss-red) 0, var(--swiss-red) 25px, transparent 25px, transparent 35px);
       opacity: 0.5; animation: stripeMove 2s linear infinite;
     }
-    .footer-logo { display: flex; align-items: center; gap: 10px; color: var(--white); font-weight: 700; font-size: 14px; letter-spacing: 1px; }
+    .footer-logo { display: flex; align-items: center; gap: 10px; color: #ffffff; font-weight: 700; font-size: 14px; letter-spacing: 1px; }
+    [data-theme="dark"] .footer-logo { color: var(--black); }
     .footer-cross { width: 24px; height: 24px; background: var(--swiss-red); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 300; color: var(--white); line-height: 1; }
     .footer-links { display: flex; gap: 28px; }
     .footer-links a { color: var(--gray-500); text-decoration: none; font-size: 13px; transition: color 0.3s; }
@@ -246,14 +239,14 @@
       <div>SWISS AIRLINES</div>
     </a>
     <nav class="nav">
-      <a href="index.html">Главная</a>
-      <a href="fleet.html">Флот</a>
-      <a href="routes.html" class="active">Маршруты</a>
-      <a href="map.html">Карта</a>
-      <a href="events.html">События</a>
-      <a href="history.html">История</a>
+      <a href="index.html" data-i18n="nav-home">Главная</a>
+      <a href="fleet.html" data-i18n="nav-fleet">Флот</a>
+      <a href="routes.html" class="active" data-i18n="nav-routes">Маршруты</a>
+      <a href="map.html" data-i18n="nav-map">Карта</a>
+      <a href="events.html" data-i18n="nav-events">События</a>
+      <a href="history.html" data-i18n="nav-history">История</a>
       <a href="https://discord.gg/6YA8t7GJr" target="_blank">Discord</a>
-      <a href="login.html">Вход</a>
+      <a href="login.html" data-i18n="nav-login">Вход</a>
     </nav>
     <div class="controls">
       <button class="lang-toggle" id="langToggle" onclick="toggleLang()">EN</button>
@@ -264,42 +257,45 @@
   <section class="hero">
     <div class="hero-icon">🗺️</div>
     <div class="hero-label">Swiss Airlines Virtual</div>
-    <h1>Новая сеть маршрутов<br><span>Swiss Airlines</span></h1>
-    <p class="hero-desc">Переработанная карта направлений из Цюриха и Женевы. Все города теперь соответствуют аэропортам PTFS — чётко, логично и атмосферно.</p>
+    <h1 data-i18n-html="hero-title">Наша сеть <span>маршрутов</span></h1>
+    <p class="hero-desc" data-i18n="hero-desc">Переработанная карта направлений из Цюриха и Женевы — чётко, логично и атмосферно.</p>
   </section>
 
   <section class="stats-bar">
     <div class="stat-item animate-on-scroll">
       <div class="stat-number" id="stat-routes">—</div>
-      <div class="stat-label">Направлений</div>
+      <div class="stat-label" data-i18n="stat-routes">Направлений</div>
     </div>
     <div class="stat-item animate-on-scroll delay-1">
       <div class="stat-number" id="stat-countries">—</div>
-      <div class="stat-label">Стран</div>
+      <div class="stat-label" data-i18n="stat-countries">Регионов</div>
     </div>
     <div class="stat-item animate-on-scroll delay-2">
       <div class="stat-number">2</div>
-      <div class="stat-label">Хаба</div>
+      <div class="stat-label" data-i18n="stat-hubs">Хаба</div>
     </div>
     <div class="stat-item animate-on-scroll delay-3">
       <div class="stat-number">∞</div>
-      <div class="stat-label">Впечатлений</div>
+      <div class="stat-label" data-i18n="stat-impressions">Впечатлений</div>
     </div>
   </section>
 
   <section class="hub-banner">
-    <div class="hub-title">🇨🇭 Главный хаб — <span>Цюрих (Perth International)</span></div>
-    <div class="hub-desc">Центр всех маршрутов и ключевая точка сети. Второй хаб — Женева (Izolirani).</div>
+    <div class="hub-title" data-i18n-html="hub-title">🇨🇭 Главный хаб — <span>Цюрих (IPPH)</span></div>
+    <div class="hub-desc" data-i18n="hub-desc">Центр всех маршрутов и ключевая точка сети. Второй хаб — Женева (IZOL).</div>
   </section>
 
   <section class="filter-section" id="filter-section">
-    <button class="filter-btn active" data-filter="all">Все</button>
+    <button class="filter-btn active" data-filter="all" data-i18n="filter-all">Все</button>
+    <button class="filter-btn" data-filter="europe" data-i18n="filter-europe">Европа</button>
+    <button class="filter-btn" data-filter="america" data-i18n="filter-america">Америка</button>
+    <button class="filter-btn" data-filter="asia" data-i18n="filter-asia">Азия</button>
+    <button class="filter-btn" data-filter="middle-east" data-i18n="filter-middle-east">Ближний Восток</button>
+    <button class="filter-btn" data-filter="africa" data-i18n="filter-africa">Африка</button>
   </section>
 
   <section class="routes-section">
-    <div id="routes-container">
-      <div class="loading">Загрузка маршрутов…</div>
-    </div>
+    <div id="routes-container"></div>
   </section>
 
   <footer class="footer">
@@ -308,32 +304,139 @@
       <div>SWISS AIRLINES</div>
     </div>
     <div class="footer-links">
-      <a href="index.html">Главная</a>
-      <a href="fleet.html">Флот</a>
-      <a href="routes.html">Маршруты</a>
-      <a href="map.html">Карта</a>
-      <a href="events.html">События</a>
-      <a href="history.html">История</a>
+      <a href="index.html" data-i18n="nav-home">Главная</a>
+      <a href="fleet.html" data-i18n="nav-fleet">Флот</a>
+      <a href="routes.html" data-i18n="nav-routes">Маршруты</a>
+      <a href="map.html" data-i18n="nav-map">Карта</a>
+      <a href="events.html" data-i18n="nav-events">События</a>
+      <a href="history.html" data-i18n="nav-history">История</a>
       <a href="https://discord.gg/6YA8t7GJr" target="_blank">Discord</a>
-      <a href="login.html">Админ</a>
-      <a href="patent.html">Патент</a>
+      <a href="login.html" data-i18n="nav-admin">Админ</a>
+      <a href="patent.html" data-i18n="nav-patent">Патент</a>
     </div>
     <div class="footer-right">
-      <div style="font-size:11px;color:var(--gray-500);margin-bottom:4px;">Неофициальный виртуальный патент № SW-VA-001 от 10.08.26 · <a href="patent.html" style="color:var(--swiss-red);text-decoration:none;">Подробнее →</a></div>
-      <div style="font-size:11px;color:var(--gray-500);">© 2026 Swiss Airlines Virtual. Все права защищены.</div>
+      <div style="font-size:11px;color:var(--gray-500);margin-bottom:4px;" data-i18n="footer-patent">Неофициальный виртуальный патент № SW-VA-001 от 10.08.26</div>
+      <div style="font-size:11px;color:var(--gray-500);">© 2026 Swiss Airlines Virtual</div>
     </div>
   </footer>
 
   <script>
-    const API_BASE = '';
-    let routesData = [];
+    // ============ i18n ============
+    const i18n = {
+      ru: {
+        'nav-home': 'Главная', 'nav-fleet': 'Флот', 'nav-routes': 'Маршруты',
+        'nav-map': 'Карта', 'nav-events': 'События', 'nav-history': 'История',
+        'nav-login': 'Вход', 'nav-admin': 'Админ', 'nav-patent': 'Патент',
+        'hero-title': 'Наша сеть <span>маршрутов</span>',
+        'hero-desc': 'Переработанная карта направлений из Цюриха и Женевы — чётко, логично и атмосферно.',
+        'stat-routes': 'Направлений', 'stat-countries': 'Регионов', 'stat-hubs': 'Хаба', 'stat-impressions': 'Впечатлений',
+        'hub-title': '🇨🇭 Главный хаб — <span>Цюрих (IPPH)</span>',
+        'hub-desc': 'Центр всех маршрутов и ключевая точка сети. Второй хаб — Женева (IZOL).',
+        'filter-all': 'Все', 'filter-europe': 'Европа', 'filter-america': 'Америка',
+        'filter-asia': 'Азия', 'filter-middle-east': 'Ближний Восток', 'filter-africa': 'Африка',
+        'spec-distance': 'Расстояние', 'spec-duration': 'Время полёта', 'spec-frequency': 'Частота', 'spec-class': 'Класс',
+        'aircraft-label': 'Типы ВС:', 'km': 'км', 'min': 'мин',
+        'freq-daily': 'Ежедневно', 'freq-weekly': 'Еженедельно', 'freq-seasonal': 'Сезонный',
+        'class-economy': 'Эконом', 'class-business': 'Бизнес', 'class-first': 'Первый',
+        'footer-patent': 'Неофициальный виртуальный патент № SW-VA-001 от 10.08.26'
+      },
+      en: {
+        'nav-home': 'Home', 'nav-fleet': 'Fleet', 'nav-routes': 'Routes',
+        'nav-map': 'Map', 'nav-events': 'Events', 'nav-history': 'History',
+        'nav-login': 'Login', 'nav-admin': 'Admin', 'nav-patent': 'Patent',
+        'hero-title': 'Our route <span>network</span>',
+        'hero-desc': 'Reimagined destinations from Zurich and Geneva — clear, logical and atmospheric.',
+        'stat-routes': 'Destinations', 'stat-countries': 'Regions', 'stat-hubs': 'Hubs', 'stat-impressions': 'Impressions',
+        'hub-title': '🇨🇭 Main hub — <span>Zurich (IPPH)</span>',
+        'hub-desc': 'The center of all routes and the key point of the network. Second hub — Geneva (IZOL).',
+        'filter-all': 'All', 'filter-europe': 'Europe', 'filter-america': 'Americas',
+        'filter-asia': 'Asia', 'filter-middle-east': 'Middle East', 'filter-africa': 'Africa',
+        'spec-distance': 'Distance', 'spec-duration': 'Flight time', 'spec-frequency': 'Frequency', 'spec-class': 'Class',
+        'aircraft-label': 'Aircraft:', 'km': 'km', 'min': 'min',
+        'freq-daily': 'Daily', 'freq-weekly': 'Weekly', 'freq-seasonal': 'Seasonal',
+        'class-economy': 'Economy', 'class-business': 'Business', 'class-first': 'First',
+        'footer-patent': 'Unofficial virtual patent No. SW-VA-001 dated 10.08.26'
+      }
+    };
+    function t(key) { const lang = document.documentElement.getAttribute('lang') || 'ru'; return (i18n[lang] && i18n[lang][key]) || key; }
+    function applyLang() {
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        const val = t(key);
+        if (val) el.textContent = val;
+      });
+      document.querySelectorAll('[data-i18n-html]').forEach(el => {
+        const key = el.getAttribute('data-i18n-html');
+        const val = t(key);
+        if (val) el.innerHTML = val;
+      });
+      renderRoutes();
+    }
+
+    // ============ STATIC ROUTES DATA ============
+    const routesData = [
+      // === EUROPE from ZRH ===
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Лондон', destination_code:'ILND', region:'europe', aircraft_type:'A220-300 / A320neo', distance_km:947, duration_min:105, frequency:'daily', class:'economy' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Париж', destination_code:'IPAR', region:'europe', aircraft_type:'A220-300 / A320-200', distance_km:615, duration_min:75, frequency:'daily', class:'business' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Берлин', destination_code:'IBER', region:'europe', aircraft_type:'A220-100 / A220-300', distance_km:710, duration_min:90, frequency:'daily', class:'economy' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Рим', destination_code:'IROM', region:'europe', aircraft_type:'A320-200 / A320neo', distance_km:867, duration_min:105, frequency:'daily', class:'business' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Мадрид', destination_code:'IMAD', region:'europe', aircraft_type:'A320neo / A321neo', distance_km:1379, duration_min:150, frequency:'daily', class:'economy' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Амстердам', destination_code:'IAMS', region:'europe', aircraft_type:'A220-300', distance_km:748, duration_min:90, frequency:'daily', class:'economy' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Вена', destination_code:'IVIE', region:'europe', aircraft_type:'A220-100 / A220-300', distance_km:608, duration_min:75, frequency:'daily', class:'economy' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Барселона', destination_code:'IBCN', region:'europe', aircraft_type:'A320neo / A321-100', distance_km:1068, duration_min:130, frequency:'daily', class:'economy' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Афины', destination_code:'IATH', region:'europe', aircraft_type:'A320-200 / A321neo', distance_km:1625, duration_min:170, frequency:'daily', class:'economy' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Лиссабон', destination_code:'ILIS', region:'europe', aircraft_type:'A320neo / A321neo', distance_km:1945, duration_min:195, frequency:'daily', class:'economy' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Прага', destination_code:'IPRA', region:'europe', aircraft_type:'A220-100', distance_km:567, duration_min:75, frequency:'daily', class:'economy' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Будапешт', destination_code:'IBUD', region:'europe', aircraft_type:'A220-300', distance_km:790, duration_min:95, frequency:'weekly', class:'economy' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Копенгаген', destination_code:'ICOP', region:'europe', aircraft_type:'A220-300', distance_km:955, duration_min:110, frequency:'daily', class:'economy' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Стокгольм', destination_code:'ISTO', region:'europe', aircraft_type:'A220-300 / A320neo', distance_km:1385, duration_min:150, frequency:'daily', class:'economy' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Дублин', destination_code:'IDUB', region:'europe', aircraft_type:'A220-300', distance_km:1230, duration_min:140, frequency:'daily', class:'economy' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Варшава', destination_code:'IWAW', region:'europe', aircraft_type:'A220-100 / A220-300', distance_km:1040, duration_min:120, frequency:'weekly', class:'economy' },
+      // === EUROPE from GVA ===
+      { origin:'Женева', origin_code:'IZOL', destination:'Лондон', destination_code:'ILND', region:'europe', aircraft_type:'A220-300 / A320neo', distance_km:815, duration_min:95, frequency:'daily', class:'business' },
+      { origin:'Женева', origin_code:'IZOL', destination:'Париж', destination_code:'IPAR', region:'europe', aircraft_type:'A220-300', distance_km:508, duration_min:65, frequency:'daily', class:'business' },
+      { origin:'Женева', origin_code:'IZOL', destination:'Барселона', destination_code:'IBCN', region:'europe', aircraft_type:'A220-300 / A320neo', distance_km:845, duration_min:105, frequency:'daily', class:'economy' },
+      { origin:'Женева', origin_code:'IZOL', destination:'Рим', destination_code:'IROM', region:'europe', aircraft_type:'A220-300 / A320-200', distance_km:1010, duration_min:120, frequency:'daily', class:'economy' },
+      { origin:'Женева', origin_code:'IZOL', destination:'Афины', destination_code:'IATH', region:'europe', aircraft_type:'A320neo', distance_km:1670, duration_min:175, frequency:'weekly', class:'economy' },
+      // === AMERICAS from ZRH ===
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Нью-Йорк', destination_code:'IRFD', region:'america', aircraft_type:'A330-300 / B777-300ER', distance_km:6980, duration_min:510, frequency:'daily', class:'first' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Майами', destination_code:'IMIA', region:'america', aircraft_type:'A330-300 / A340-300', distance_km:7905, duration_min:570, frequency:'daily', class:'business' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Лос-Анджелес', destination_code:'ILAX', region:'america', aircraft_type:'B777-300ER / A350-900', distance_km:9540, duration_min:690, frequency:'daily', class:'first' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Чикаго', destination_code:'ICHI', region:'america', aircraft_type:'A330-300 / A340-300', distance_km:7420, duration_min:540, frequency:'weekly', class:'business' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Монреаль', destination_code:'IMON', region:'america', aircraft_type:'A330-300', distance_km:6150, duration_min:460, frequency:'weekly', class:'business' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Сан-Паулу', destination_code:'ISAO', region:'america', aircraft_type:'B777-300ER', distance_km:9855, duration_min:720, frequency:'weekly', class:'business' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Буэнос-Айрес', destination_code:'IBUE', region:'america', aircraft_type:'B777-300ER', distance_km:11320, duration_min:810, frequency:'seasonal', class:'business' },
+      // === ASIA from ZRH ===
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Токио', destination_code:'ITKY', region:'asia', aircraft_type:'B777-300ER / A350-900', distance_km:9580, duration_min:690, frequency:'daily', class:'first' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Гонконг', destination_code:'IHKG', region:'asia', aircraft_type:'A340-300 / B777-300ER', distance_km:9380, duration_min:680, frequency:'daily', class:'business' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Сингапур', destination_code:'ISIN', region:'asia', aircraft_type:'A340-300 / B777-300ER', distance_km:10300, duration_min:750, frequency:'daily', class:'business' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Бангкок', destination_code:'IBKK', region:'asia', aircraft_type:'A340-300 / B777-300ER', distance_km:9050, duration_min:660, frequency:'daily', class:'business' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Дели', destination_code:'IDEL', region:'asia', aircraft_type:'A330-300 / B777-300ER', distance_km:6260, duration_min:470, frequency:'daily', class:'business' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Сеул', destination_code:'ISEL', region:'asia', aircraft_type:'A350-900 / B777-300ER', distance_km:8960, duration_min:650, frequency:'weekly', class:'first' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Шанхай', destination_code:'ISHA', region:'asia', aircraft_type:'A340-300 / A350-900', distance_km:8830, duration_min:640, frequency:'weekly', class:'business' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Пекин', destination_code:'IPEK', region:'asia', aircraft_type:'A350-900', distance_km:7990, duration_min:590, frequency:'weekly', class:'business' },
+      // === MIDDLE EAST from ZRH ===
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Дубай', destination_code:'IDBI', region:'middle-east', aircraft_type:'A330-300 / A340-300', distance_km:4860, duration_min:370, frequency:'daily', class:'business' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Тель-Авив', destination_code:'ITLV', region:'middle-east', aircraft_type:'A220-300 / A320neo', distance_km:3165, duration_min:260, frequency:'daily', class:'economy' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Доха', destination_code:'IDOH', region:'middle-east', aircraft_type:'A330-300', distance_km:4540, duration_min:350, frequency:'weekly', class:'business' },
+      // === AFRICA from ZRH ===
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Каир', destination_code:'ICAI', region:'africa', aircraft_type:'A220-300 / A320-200', distance_km:2840, duration_min:240, frequency:'daily', class:'economy' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Йоханнесбург', destination_code:'IJNB', region:'africa', aircraft_type:'A340-300 / B777-300ER', distance_km:8760, duration_min:640, frequency:'daily', class:'business' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Найроби', destination_code:'INBO', region:'africa', aircraft_type:'A330-300', distance_km:6460, duration_min:480, frequency:'weekly', class:'economy' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Кейптаун', destination_code:'ICPT', region:'africa', aircraft_type:'A340-300 / B777-300ER', distance_km:9295, duration_min:680, frequency:'seasonal', class:'business' },
+      // === ZRH ↔ GVA shuttle ===
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Женева', destination_code:'IZOL', region:'europe', aircraft_type:'A220-100 / A220-300', distance_km:230, duration_min:45, frequency:'daily', class:'economy' }
+    ];
+
+    // ============ STATE ============
     let currentFilter = 'all';
 
+    // ============ SCROLL OBSERVER ============
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
     }, { threshold: 0.1 });
-    document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
 
+    // ============ THEME / LANG ============
     function toggleTheme() {
       const current = document.documentElement.getAttribute('data-theme');
       const next = current === 'dark' ? 'light' : 'dark';
@@ -342,66 +445,15 @@
       document.getElementById('themeToggle').textContent = next === 'dark' ? '☀️' : '🌙';
     }
     function toggleLang() {
-      const current = document.documentElement.getAttribute('lang') || 'en';
-      const next = current === 'en' ? 'ru' : 'en';
+      const current = document.documentElement.getAttribute('lang') || 'ru';
+      const next = current === 'ru' ? 'en' : 'ru';
       document.documentElement.setAttribute('lang', next);
       localStorage.setItem('swiss-lang', next);
-      document.getElementById('langToggle').textContent = next === 'en' ? 'EN' : 'RU';
-    }
-    (function() {
-      const savedTheme = localStorage.getItem('swiss-theme');
-      if (savedTheme) { document.documentElement.setAttribute('data-theme', savedTheme); document.getElementById('themeToggle').textContent = savedTheme === 'dark' ? '☀️' : '🌙'; }
-      const savedLang = localStorage.getItem('swiss-lang');
-      if (savedLang) { document.documentElement.setAttribute('lang', savedLang); document.getElementById('langToggle').textContent = savedLang === 'en' ? 'EN' : 'RU'; }
-    })();
-
-    const badgeMap = {
-      'Швейцария': 'badge-swiss',
-      'Россия': 'badge-russia',
-      'США': 'badge-usa',
-      'Кипр': 'badge-cyprus',
-      'Казахстан': 'badge-kazakh',
-      'default': 'badge-other'
-    };
-    const countryKeyMap = {
-      'Швейцария': 'swiss',
-      'Россия': 'russia',
-      'США': 'usa',
-      'Кипр': 'cyprus',
-      'Казахстан': 'kazakh'
-    };
-
-    async function loadRoutes() {
-      const container = document.getElementById('routes-container');
-      try {
-        const res = await fetch(API_BASE + '/api/routes');
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        routesData = await res.json();
-      } catch (e) {
-        container.innerHTML = '<div class="error">Не удалось загрузить маршруты. Проверьте соединение.</div>';
-        console.error(e);
-        return;
-      }
-
-      const countries = [...new Set(routesData.map(r => r.origin).filter(Boolean))];
-      const filterSection = document.getElementById('filter-section');
-      filterSection.innerHTML = '<button class="filter-btn active" data-filter="all">Все</button>';
-      countries.forEach(c => {
-        const key = countryKeyMap[c] || c.toLowerCase().replace(/[^a-z]/g,'');
-        const btn = document.createElement('button');
-        btn.className = 'filter-btn';
-        btn.dataset.filter = key;
-        btn.textContent = c;
-        filterSection.appendChild(btn);
-      });
-      bindFilters();
-
-      document.getElementById('stat-routes').textContent = routesData.length;
-      document.getElementById('stat-countries').textContent = countries.length;
-
-      renderRoutes();
+      document.getElementById('langToggle').textContent = next === 'ru' ? 'EN' : 'RU';
+      applyLang();
     }
 
+    // ============ FILTERS ============
     function bindFilters() {
       document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -413,44 +465,66 @@
       });
     }
 
+    // ============ RENDER ============
     function renderRoutes() {
       const container = document.getElementById('routes-container');
-      const filtered = currentFilter === 'all' ? routesData : routesData.filter(r => {
-        const key = countryKeyMap[r.origin] || r.origin.toLowerCase().replace(/[^a-z]/g,'');
-        return key === currentFilter;
-      });
+      const filtered = currentFilter === 'all' ? routesData : routesData.filter(r => r.region === currentFilter);
+
+      const regions = [...new Set(routesData.map(r => r.region))];
+      const uniqueDests = [...new Set(routesData.map(r => r.destination))];
+      document.getElementById('stat-routes').textContent = routesData.length;
+      document.getElementById('stat-countries').textContent = regions.length;
+
+      const badgeClassMap = {
+        'europe': 'badge-europe',
+        'america': 'badge-america',
+        'asia': 'badge-asia',
+        'middle-east': 'badge-middle-east',
+        'africa': 'badge-africa'
+      };
+      const regionLabelMap = {
+        'europe': t('filter-europe'),
+        'america': t('filter-america'),
+        'asia': t('filter-asia'),
+        'middle-east': t('filter-middle-east'),
+        'africa': t('filter-africa')
+      };
+      const freqMap = {
+        'daily': t('freq-daily'),
+        'weekly': t('freq-weekly'),
+        'seasonal': t('freq-seasonal')
+      };
+      const classMap = {
+        'economy': t('class-economy'),
+        'business': t('class-business'),
+        'first': t('class-first')
+      };
 
       let html = '<div class="routes-grid">';
       filtered.forEach((r, idx) => {
-        const badgeClass = badgeMap[r.origin] || 'badge-other';
+        const badgeClass = badgeClassMap[r.region] || 'badge-europe';
+        const regionLabel = regionLabelMap[r.region] || r.region;
         const delay = idx % 3 === 1 ? 'delay-1' : idx % 3 === 2 ? 'delay-2' : '';
         html += `
-        <div class="route-card animate-on-scroll ${delay}" data-category="${escapeHtml(countryKeyMap[r.origin] || r.origin.toLowerCase().replace(/[^a-z]/g,''))}">
+        <div class="route-card animate-on-scroll ${delay}" data-region="${r.region}">
           <div class="route-visual">
-            <span class="route-badge ${badgeClass}">${escapeHtml(r.origin || '—')}</span>
+            <span class="route-badge ${badgeClass}">${regionLabel}</span>
             <div class="route-airports">${escapeHtml(r.origin_code)} <span class="route-arrow">→</span> ${escapeHtml(r.destination_code)}</div>
             <div class="route-distance">${escapeHtml(r.origin)} — ${escapeHtml(r.destination)}</div>
           </div>
           <div class="route-info">
             <div class="route-name">${escapeHtml(r.origin)} — ${escapeHtml(r.destination)}</div>
-            <div class="route-type">${escapeHtml(r.origin || '—')} / ${escapeHtml(r.aircraft_type || '—')}</div>
+            <div class="route-type">${regionLabel} / ${escapeHtml(r.aircraft_type)}</div>
             <div class="route-specs">
-              <div class="spec"><span class="spec-label">Расстояние</span><span class="spec-value">${escapeHtml(r.distance_km + ' км' || '—')}</span></div>
-              <div class="spec"><span class="spec-label">Время полёта</span><span class="spec-value">${escapeHtml(r.duration_min + ' мин' || '—')}</span></div>
-              <div class="spec"><span class="spec-label">Частота</span><span class="spec-value">${escapeHtml(r.frequency || '—')}</span></div>
-              <div class="spec"><span class="spec-label">Класс</span><span class="spec-value">${escapeHtml(r.status || '—')}</span></div>
+              <div class="spec"><span class="spec-label">${t('spec-distance')}</span><span class="spec-value">${r.distance_km} ${t('km')}</span></div>
+              <div class="spec"><span class="spec-label">${t('spec-duration')}</span><span class="spec-value">${r.duration_min} ${t('min')}</span></div>
+              <div class="spec"><span class="spec-label">${t('spec-frequency')}</span><span class="spec-value">${freqMap[r.frequency] || r.frequency}</span></div>
+              <div class="spec"><span class="spec-label">${t('spec-class')}</span><span class="spec-value">${classMap[r.class] || r.class}</span></div>
             </div>
-            <div class="route-aircraft"><strong>Типы ВС:</strong> ${escapeHtml(r.aircraft_type || '—')}</div>
+            <div class="route-aircraft"><strong>${t('aircraft-label')}</strong> ${escapeHtml(r.aircraft_type)}</div>
           </div>
         </div>`;
       });
-
-      html += `
-      <div class="route-card coming-soon animate-on-scroll delay-3">
-        <div class="cs-icon">✈️</div>
-        <div class="cs-title">Новые направления</div>
-        <div class="cs-text">Добавляйте маршруты через админ-панель — они появятся здесь автоматически.</div>
-      </div>`;
       html += '</div>';
       container.innerHTML = html;
       document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
@@ -463,7 +537,16 @@
       return div.innerHTML;
     }
 
-    loadRoutes();
+    // ============ INIT ============
+    const savedTheme = localStorage.getItem('swiss-theme');
+    if (savedTheme) { document.documentElement.setAttribute('data-theme', savedTheme); document.getElementById('themeToggle').textContent = savedTheme === 'dark' ? '☀️' : '🌙'; }
+    const savedLang = localStorage.getItem('swiss-lang');
+    if (savedLang) { document.documentElement.setAttribute('lang', savedLang); document.getElementById('langToggle').textContent = savedLang === 'ru' ? 'EN' : 'RU'; }
+
+    bindFilters();
+    renderRoutes();
+    applyLang();
+    document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
   </script>
 </body>
 </html>

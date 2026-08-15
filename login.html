@@ -3,544 +3,302 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Вход администратора — Swiss Airlines</title>
+  <title data-i18n-title="login-title">Вход — Swiss Airlines VA</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
       --swiss-red: #e30613;
-      --swiss-red-dark: #b8050f;
-      --black: #0a0a0a;
-      --gray-900: #1a1a1a;
-      --gray-700: #4a4a4a;
-      --gray-500: #737373;
-      --gray-300: #d4d4d4;
-      --gray-100: #f5f5f5;
+      --swiss-red-dark: #b0050f;
       --white: #ffffff;
+      --black: #0a0a0a;
+      --gray-100: #f5f5f5;
+      --gray-200: #e5e5e5;
+      --gray-300: #d4d4d4;
+      --gray-500: #737373;
+      --gray-700: #404040;
+      --gray-900: #171717;
       --bg: var(--white);
       --text: var(--gray-900);
       --card: var(--white);
       --border: var(--gray-300);
       --transition: cubic-bezier(0.4, 0, 0.2, 1);
-      --header-bg: #ffffff;
-      --header-text: #0a0a0a;
-      --header-link: #737373;
-      --header-border: #d4d4d4;
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      transition: background 0.4s var(--transition), color 0.4s var(--transition);
     }
     [data-theme="dark"] {
       --bg: #0f0f0f;
       --text: #f0f0f0;
       --card: #1a1a1a;
       --border: #333333;
+      --black: #f0f0f0;
       --gray-100: #1a1a1a;
-      --header-bg: #0a0a0a;
-      --header-text: #ffffff;
-      --header-link: #888888;
-      --header-border: #4a4a4a;
+      --gray-200: #2a2a2a;
+      --gray-300: #444444;
       --gray-500: #888888;
+      --gray-700: #bbbbbb;
+      --gray-900: #f0f0f0;
     }
-
-
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-    @keyframes planeFloat { 0%, 100% { transform: translateY(0) rotate(-5deg); } 50% { transform: translateY(-12px) rotate(-3deg); } }
-    @keyframes radarSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 0.8; }
-      50% { transform: scale(1.05); opacity: 1; }
-    }
-    @keyframes cloudFloat {
-      0%, 100% { transform: translateX(0); }
-      50% { transform: translateX(15px); }
-    }
-    @keyframes shieldPulse {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(227,6,19,0.3); }
-      50% { box-shadow: 0 0 0 12px rgba(227,6,19,0); }
-    }
-
-    .login-container {
-      position: relative;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      width: 100%;
-      max-width: 1100px;
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
       min-height: 100vh;
-      animation: fadeIn 0.6s ease;
-    }
-
-    .login-left {
-      background: var(--black);
       display: flex;
-      flex-direction: column;
+      align-items: center;
       justify-content: center;
-      padding: 64px;
-      position: relative;
-      overflow: hidden;
-      animation: slideUp 0.8s var(--transition) 0.2s both;
+      padding: 20px;
+      transition: background 0.4s var(--transition), color 0.4s var(--transition);
     }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes stripeMove { from { background-position: 0 0; } to { background-position: 40px 0; } }
 
-    .login-left::before {
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 48px;
+      animation: fadeUp 0.8s ease-out;
+      position: relative;
+    }
+    .login-card::before {
       content: '';
       position: absolute;
-      top: 0; right: 0;
-      width: 200px; height: 100%;
-      background: var(--swiss-red);
-      opacity: 0.08;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: repeating-linear-gradient(90deg, var(--swiss-red) 0, var(--swiss-red) 25px, transparent 25px, transparent 35px);
+      background-size: 40px 4px;
+      animation: stripeMove 2s linear infinite;
     }
 
-    /* Radar decoration */
-    .radar {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 400px;
-      height: 400px;
-      opacity: 0.06;
-      pointer-events: none;
-    }
-    .radar-ring {
-      position: absolute;
-      border: 1px solid var(--white);
-      border-radius: 50%;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-    }
-    .radar-ring:nth-child(1) { width: 100px; height: 100px; }
-    .radar-ring:nth-child(2) { width: 200px; height: 200px; }
-    .radar-ring:nth-child(3) { width: 300px; height: 300px; }
-    .radar-ring:nth-child(4) { width: 400px; height: 400px; }
-    .radar-sweep {
-      position: absolute;
-      top: 50%; left: 50%;
-      width: 200px; height: 2px;
-      background: linear-gradient(90deg, transparent, var(--swiss-red), transparent);
-      transform-origin: left center;
-      animation: radarSpin 4s linear infinite;
-    }
-
-    .plane-deco {
-      position: absolute;
-      font-size: 200px;
-      opacity: 0.03;
-      right: -20px;
-      top: 50%;
-      transform: translateY(-50%);
-      animation: planeFloat 8s ease-in-out infinite;
-      pointer-events: none;
-    }
-
-    .cloud {
-      position: absolute;
-      background: rgba(255,255,255,0.03);
-      border-radius: 50px;
-      pointer-events: none;
-    }
-    .cloud-1 { width: 120px; height: 40px; top: 15%; left: 10%; animation: cloudFloat 10s ease-in-out infinite; }
-    .cloud-2 { width: 80px; height: 30px; top: 70%; left: 20%; animation: cloudFloat 12s ease-in-out infinite 2s; }
-
-    .login-logo {
+    .logo-row {
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 48px;
-      position: relative;
-      z-index: 1;
+      gap: 14px;
+      margin-bottom: 36px;
     }
-    .login-logo-cross {
-      width: 32px; height: 32px;
+    .logo-cross {
+      width: 44px; height: 44px;
       background: var(--swiss-red);
+      color: var(--white);
       display: flex; align-items: center; justify-content: center;
-      color: white; font-size: 16px; font-weight: 700;
+      font-size: 24px; font-weight: 300;
+      line-height: 1;
     }
-    .login-logo-text {
-      color: var(--white);
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-    }
-
-    .login-left h2 {
-      color: var(--white);
-      font-size: 36px;
-      font-weight: 800;
-      letter-spacing: -1.5px;
-      line-height: 1.1;
-      margin-bottom: 20px;
-      position: relative;
-      z-index: 1;
-    }
-    .login-left h2 span { color: var(--swiss-red); }
-
-    .login-left p {
-      color: var(--gray-500);
-      font-size: 15px;
-      line-height: 1.7;
-      max-width: 320px;
-      position: relative;
-      z-index: 1;
+    .logo-text {
+      font-size: 15px; font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--text);
     }
 
-    .login-left .features {
-      margin-top: 40px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      position: relative;
-      z-index: 1;
-    }
-    .login-left .feature {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: var(--gray-500);
-      font-size: 13px;
-      font-weight: 500;
-    }
-    .login-left .feature-dot {
-      width: 6px; height: 6px;
-      background: var(--swiss-red);
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .login-right {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 64px;
-      background: var(--bg);
-      animation: slideUp 0.8s var(--transition) 0.4s both;
-      position: relative;
-    }
-
-    /* Admin badge */
-    .admin-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--swiss-red);
-      color: white;
-      padding: 8px 16px;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      margin-bottom: 32px;
-      width: fit-content;
-      animation: shieldPulse 2s ease-in-out infinite;
-    }
-    .admin-badge .shield {
-      font-size: 14px;
-    }
-
-    .login-right h3 {
-      font-size: 24px;
-      font-weight: 700;
+    .login-heading {
+      font-size: 22px; font-weight: 700;
       letter-spacing: -0.5px;
       margin-bottom: 8px;
     }
-    .login-right .subtitle {
-      font-size: 14px;
+    .login-subheading {
+      font-size: 13px;
       color: var(--gray-500);
-      margin-bottom: 40px;
+      margin-bottom: 32px;
     }
-
-    .restricted-note {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: var(--gray-100);
-      border-left: 3px solid var(--swiss-red);
-      padding: 12px 16px;
-      font-size: 12px;
-      color: var(--gray-700);
-      margin-bottom: 24px;
-    }
-    .restricted-note .lock { font-size: 14px; }
 
     .form-group {
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
-    .form-group label {
+    .form-label {
       display: block;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 1px;
+      font-size: 12px; font-weight: 600;
+      letter-spacing: 0.5px;
       text-transform: uppercase;
       color: var(--gray-500);
       margin-bottom: 8px;
     }
-    .form-group input {
+    .form-input {
       width: 100%;
-      padding: 14px 18px;
-      border: 1.5px solid var(--gray-300);
-      font-size: 15px;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      background: var(--gray-100);
       font-family: inherit;
+      font-size: 14px;
       color: var(--text);
-      background: var(--bg);
-      transition: all 0.3s var(--transition);
+      border-radius: 4px;
+      transition: border-color 0.3s;
       outline: none;
     }
-    .form-group input:focus {
+    .form-input:focus {
       border-color: var(--swiss-red);
-      box-shadow: 0 0 0 4px rgba(227,6,19,0.08);
     }
-    .form-group input::placeholder { color: var(--gray-300); }
+    .form-input::placeholder {
+      color: var(--gray-500);
+    }
 
-    .btn-login {
+    .login-btn {
       width: 100%;
+      padding: 14px;
       background: var(--swiss-red);
-      color: white;
+      color: var(--white);
       border: none;
-      padding: 16px;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase;
+      font-family: inherit;
+      font-size: 14px; font-weight: 700;
+      letter-spacing: 0.5px;
       cursor: pointer;
-      transition: all 0.4s var(--transition);
-      position: relative;
-      overflow: hidden;
+      transition: background 0.3s;
+      border-radius: 4px;
       margin-top: 8px;
     }
-    .btn-login::before {
-      content: '';
-      position: absolute;
-      top: 0; left: -100%;
-      width: 100%; height: 100%;
-      background: var(--black);
-      transition: left 0.5s var(--transition);
-      z-index: 0;
-    }
-    .btn-login:hover::before { left: 0; }
-    .btn-login:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(227,6,19,0.25); }
-    .btn-login span { position: relative; z-index: 1; }
-    .btn-login:disabled { background: var(--gray-300); cursor: not-allowed; transform: none; box-shadow: none; }
-    .btn-login:disabled::before { display: none; }
-
-    .back-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 32px;
-      color: var(--gray-500);
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 500;
-      transition: color 0.3s;
-    }
-    .back-link:hover { color: var(--black); }
+    .login-btn:hover { background: var(--swiss-red-dark); }
+    .login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
     .error-msg {
-      background: rgba(227,6,19,0.06);
-      border-left: 3px solid var(--swiss-red);
-      padding: 12px 16px;
-      font-size: 13px;
-      color: var(--swiss-red-dark);
-      margin-bottom: 24px;
       display: none;
-      animation: scaleIn 0.3s ease;
+      color: var(--swiss-red);
+      font-size: 13px;
+      margin-top: 12px;
+      text-align: center;
     }
-    .error-msg.active { display: block; }
+    .error-msg.visible { display: block; }
 
-    /* Runway stripes at bottom */
-    .runway-stripes {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
+    .features {
+      margin-top: 40px;
+      padding-top: 24px;
+      border-top: 1px solid var(--gray-200);
+    }
+    .feature-row {
       display: flex;
-      gap: 6px;
-      padding: 20px 0;
-      overflow: hidden;
-      opacity: 0.1;
-      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      color: var(--gray-500);
+      margin-bottom: 12px;
     }
-    .runway-stripe {
-      width: 40px; height: 3px;
-      background: var(--black);
-      flex-shrink: 0;
-    }
+    .feature-icon { font-size: 16px; flex-shrink: 0; }
 
-    @media (max-width: 768px) {
-      .login-container {
-      position: relative; grid-template-columns: 1fr; }
-      .login-left { padding: 40px 32px; min-height: auto; }
-      .login-left h2 { font-size: 28px; }
-      .login-right { padding: 40px 32px; }
-      .plane-deco { font-size: 120px; }
-      .radar { width: 250px; height: 250px; }
-      .radar-ring:nth-child(1) { width: 60px; height: 60px; }
-      .radar-ring:nth-child(2) { width: 120px; height: 120px; }
-      .radar-ring:nth-child(3) { width: 180px; height: 180px; }
-      .radar-ring:nth-child(4) { width: 250px; height: 250px; }
-      .radar-sweep { width: 125px; }
-    }
-
-    .login-toggles {
-      position: absolute;
-      top: 20px;
-      right: 20px;
+    .controls-row {
       display: flex;
       gap: 8px;
-      z-index: 100;
+      margin-top: 20px;
+      justify-content: flex-end;
     }
-    .login-toggles .lang-toggle, .login-toggles .theme-toggle {
+    .ctrl-btn {
       background: transparent;
       border: 1px solid var(--border);
       color: var(--gray-500);
       padding: 6px 14px;
       font-family: inherit;
-      font-size: 12px;
-      font-weight: 600;
+      font-size: 12px; font-weight: 600;
       cursor: pointer;
       transition: all 0.3s;
       letter-spacing: 0.5px;
       border-radius: 4px;
     }
-    .login-toggles .lang-toggle:hover, .login-toggles .theme-toggle:hover {
-      color: var(--text);
-      border-color: var(--text);
+    .ctrl-btn:hover { color: var(--text); border-color: var(--text); }
+
+    @media (max-width: 480px) {
+      .login-card { padding: 32px 24px; }
+      .login-heading { font-size: 18px; }
     }
   </style>
 </head>
 <body>
-  <div class="login-container">
-    <div class="login-toggles">
-      <button class="lang-toggle" id="langToggle" onclick="toggleLang()">EN</button>
-      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙</button>
-    </div>
-    <div class="login-left">
-      <div class="radar">
-        <div class="radar-ring"></div>
-        <div class="radar-ring"></div>
-        <div class="radar-ring"></div>
-        <div class="radar-ring"></div>
-        <div class="radar-sweep"></div>
-      </div>
-      <div class="plane-deco">✈</div>
-      <div class="cloud cloud-1"></div>
-      <div class="cloud cloud-2"></div>
-      <div class="login-logo">
-        <div class="login-logo-cross">+</div>
-        <div class="login-logo-text">SWISS AIRLINES</div>
-      </div>
-      <h2>Доступ к<br><span>админ-панели</span></h2>
-      <p>Управление анкетами, просмотр заявок и работа с кандидатами виртуальной авиакомпании.</p>
-      <div class="features">
-        <div class="feature"><div class="feature-dot"></div>Просмотр всех анкет</div>
-        <div class="feature"><div class="feature-dot"></div>Управление статусами</div>
-        <div class="feature"><div class="feature-dot"></div>Экспорт данных</div>
-        <div class="feature"><div class="feature-dot"></div>Только для администратора</div>
-      </div>
+  <div class="login-card">
+    <div class="logo-row">
+      <div class="logo-cross">+</div>
+      <div class="logo-text">SWISS AIRLINES VA</div>
     </div>
 
-    <div class="login-right">
-      <div class="admin-badge">
-        <span class="shield">🛡</span>
-        <span>Только для администратора</span>
+    <h2 class="login-heading" data-i18n="login-heading">Панель администратора</h2>
+    <p class="login-subheading" data-i18n="login-subheading">Войдите для управления анкетами и контентом</p>
+
+    <form id="loginForm" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label class="form-label" data-i18n="login-username-label">Логин</label>
+        <input type="text" class="form-input" id="username" data-i18n-placeholder="login-username-ph" placeholder="Имя пользователя" autocomplete="off">
       </div>
-
-      <h3>Вход в систему</h3>
-      <p class="subtitle">Введите учётные данные администратора</p>
-
-      <div class="restricted-note">
-        <span class="lock">🔒</span>
-        <span>Данный раздел предназначен только для руководства Swiss Airlines. Несанкционированный доступ запрещён.</span>
+      <div class="form-group">
+        <label class="form-label" data-i18n="login-password-label">Пароль</label>
+        <input type="password" class="form-input" id="password" data-i18n-placeholder="login-password-ph" placeholder="••••••••">
       </div>
+      <button type="submit" class="login-btn" id="loginBtn">
+        <span data-i18n="login-btn">Войти</span>
+      </button>
+      <div class="error-msg" id="errorMsg" data-i18n="login-error">Неверный логин или пароль</div>
+    </form>
 
-      <div class="error-msg" id="errorMsg">Неверный логин или пароль</div>
-
-      <form id="loginForm">
-        <div class="form-group">
-          <label>Логин администратора</label>
-          <input type="text" id="username" name="username" placeholder="Введите логин" required autocomplete="username">
-        </div>
-        <div class="form-group">
-          <label>Пароль</label>
-          <input type="password" id="password" name="password" placeholder="Введите пароль" required autocomplete="current-password">
-        </div>
-        <button type="submit" class="btn-login" id="loginBtn">
-          <span>🔐 Войти как администратор</span>
-        </button>
-      </form>
-
-      <div style="display:flex;gap:16px;justify-content:center;margin-top:8px;">
-        <a href="index.html" class="back-link">← Главная</a>
-        <a href="fleet.html" class="back-link">✈️ Наш флот</a>
-        <a href="routes.html" class="back-link">🗺️ Маршруты</a>
+    <div class="features">
+      <div class="feature-row">
+        <span class="feature-icon">📋</span>
+        <span data-i18n="login-feat-1">Просмотр и управление анкетами</span>
       </div>
-
-      <div class="runway-stripes">
-        <div class="runway-stripe"></div>
-        <div class="runway-stripe"></div>
-        <div class="runway-stripe"></div>
-        <div class="runway-stripe"></div>
-        <div class="runway-stripe"></div>
-        <div class="runway-stripe"></div>
-        <div class="runway-stripe"></div>
-        <div class="runway-stripe"></div>
-        <div class="runway-stripe"></div>
-        <div class="runway-stripe"></div>
-        <div class="runway-stripe"></div>
-        <div class="runway-stripe"></div>
+      <div class="feature-row">
+        <span class="feature-icon">🛫</span>
+        <span data-i18n="login-feat-2">Управление событиями и рейсами</span>
       </div>
+      <div class="feature-row">
+        <span class="feature-icon">📊</span>
+        <span data-i18n="login-feat-3">Мониторинг статистики VA</span>
+      </div>
+    </div>
+
+    <div class="controls-row">
+      <button class="ctrl-btn" id="langToggle" onclick="toggleLang()">EN</button>
+      <button class="ctrl-btn" id="themeToggle" onclick="toggleTheme()">🌙</button>
     </div>
   </div>
 
   <script>
-    document.getElementById('loginForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const btn = document.getElementById('loginBtn');
-      const errorMsg = document.getElementById('errorMsg');
-      btn.disabled = true;
-      btn.querySelector('span').textContent = 'Проверка доступа...';
-      errorMsg.classList.remove('active');
-
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000);
-        const response = await fetch('/api/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            username: document.getElementById('username').value,
-            password: document.getElementById('password').value
-          }),
-          signal: controller.signal
-        });
-        clearTimeout(timeoutId);
-        const result = await response.json();
-        if (response.ok && result.success) {
-          window.location.href = 'admin.html';
-        } else {
-          errorMsg.textContent = result.error || 'Неверный логин или пароль';
-          errorMsg.classList.add('active');
-        }
-      } catch (err) {
-        errorMsg.textContent = 'Ошибка соединения с сервером';
-        errorMsg.classList.add('active');
-      } finally {
-        btn.disabled = false;
-        btn.querySelector('span').textContent = '🔐 Войти как администратор';
+    const i18n = {
+      ru: {
+        'login-title': 'Вход — Swiss Airlines VA',
+        'login-heading': 'Панель администратора',
+        'login-subheading': 'Войдите для управления анкетами и контентом',
+        'login-username-label': 'Логин',
+        'login-username-ph': 'Имя пользователя',
+        'login-password-label': 'Пароль',
+        'login-password-ph': '••••••••',
+        'login-btn': 'Войти',
+        'login-btn-loading': 'Входим…',
+        'login-error': 'Неверный логин или пароль',
+        'login-feat-1': 'Просмотр и управление анкетами',
+        'login-feat-2': 'Управление событиями и рейсами',
+        'login-feat-3': 'Мониторинг статистики VA'
+      },
+      en: {
+        'login-title': 'Login — Swiss Airlines VA',
+        'login-heading': 'Admin Panel',
+        'login-subheading': 'Sign in to manage applications and content',
+        'login-username-label': 'Username',
+        'login-username-ph': 'Enter username',
+        'login-password-label': 'Password',
+        'login-password-ph': '••••••••',
+        'login-btn': 'Sign In',
+        'login-btn-loading': 'Signing in…',
+        'login-error': 'Invalid username or password',
+        'login-feat-1': 'View and manage applications',
+        'login-feat-2': 'Manage events and flights',
+        'login-feat-3': 'Monitor VA statistics'
       }
-    });
-  </script>
+    };
 
-  <script>
+    function t(key) {
+      const lang = document.documentElement.getAttribute('lang') || 'ru';
+      return (i18n[lang] && i18n[lang][key]) || (i18n.ru[key]) || key;
+    }
+
+    function applyLang() {
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        const val = t(key);
+        if (val) el.textContent = val;
+      });
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        const val = t(key);
+        if (val) el.placeholder = val;
+      });
+      document.title = t('login-title');
+    }
+
     function toggleTheme() {
       const current = document.documentElement.getAttribute('data-theme');
       const next = current === 'dark' ? 'light' : 'dark';
@@ -550,17 +308,53 @@
       if (btn) btn.textContent = next === 'dark' ? '☀️' : '🌙';
     }
     function toggleLang() {
-      const current = document.documentElement.getAttribute('lang');
+      const current = document.documentElement.getAttribute('lang') || 'ru';
       const next = current === 'ru' ? 'en' : 'ru';
       document.documentElement.setAttribute('lang', next);
       localStorage.setItem('swiss-lang', next);
       const btn = document.getElementById('langToggle');
       if (btn) btn.textContent = next === 'ru' ? 'EN' : 'RU';
+      applyLang();
     }
     const savedTheme = localStorage.getItem('swiss-theme');
     if (savedTheme) { document.documentElement.setAttribute('data-theme', savedTheme); document.getElementById('themeToggle').textContent = savedTheme === 'dark' ? '☀️' : '🌙'; }
     const savedLang = localStorage.getItem('swiss-lang');
-    if (savedLang) { document.documentElement.setAttribute('lang', savedLang); document.getElementById('langToggle').textContent = savedLang === 'ru' ? 'EN' : 'RU'; }
+    if (savedLang) { document.documentElement.setAttribute('lang', savedLang); document.getElementById('langToggle').textContent = savedLang === 'ru' ? 'EN' : 'RU'; applyLang(); }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const btn = document.getElementById('loginBtn');
+      const btnSpan = btn.querySelector('span');
+      const errorEl = document.getElementById('errorMsg');
+      const u = document.getElementById('username').value.trim();
+      const p = document.getElementById('password').value;
+      if (!u || !p) { errorEl.textContent = t('login-error'); errorEl.classList.add('visible'); return; }
+      btn.disabled = true;
+      btnSpan.textContent = t('login-btn-loading');
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: u, password: p })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.token) {
+            localStorage.setItem('swiss-admin-token', data.token);
+            window.location.href = 'admin.html';
+          }
+        } else {
+          errorEl.textContent = t('login-error');
+          errorEl.classList.add('visible');
+        }
+      } catch (err) {
+        errorEl.textContent = t('login-error');
+        errorEl.classList.add('visible');
+      } finally {
+        btn.disabled = false;
+        btnSpan.textContent = t('login-btn');
+      }
+    }
   </script>
 </body>
 </html>
