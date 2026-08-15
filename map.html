@@ -294,237 +294,173 @@
         <path class="map-land" d="M780,380 L800,370 L825,365 L850,370 L870,380 L880,395 L882,415 L875,435 L860,450 L840,460 L815,462 L795,455 L778,440 L770,420 L768,400 Z"/>
 
         <!-- ===== ROUTE LINES ===== -->
-        <!-- Europe routes from ZRH (IPPH at 490,190) -->
-        <path class="route-line eu" d="M490,190 Q470,155 435,110" />
-        <path class="route-line eu" d="M490,190 Q478,150 448,95" />
-        <path class="route-line eu" d="M490,190 Q508,145 518,105" />
-        <path class="route-line eu" d="M490,190 Q515,178 530,162" />
-        <path class="route-line eu" d="M490,190 Q520,188 550,180" />
-        <path class="route-line eu" d="M490,190 Q508,195 520,205" />
-        <path class="route-line eu" d="M490,190 Q530,200 565,210" />
-        <path class="route-line eu" d="M490,190 Q548,215 590,240" />
-        <path class="route-line eu" d="M490,190 Q460,180 435,165" />
-        <path class="route-line eu" d="M490,190 Q440,180 415,172" />
-        <path class="route-line eu" d="M490,190 Q548,172 600,148" />
-        <path class="route-line eu" d="M490,190 Q560,175 620,158" />
-        <path class="route-line eu" d="M490,190 Q575,165 650,140" />
-        <path class="route-line eu" d="M490,190 Q590,160 690,130" />
-        <path class="route-line eu" d="M490,190 Q555,155 615,108" />
-        <path class="route-line eu" d="M490,190 Q530,168 570,128" />
-        <!-- Europe routes from GVA (IZOL at 460,215) -->
-        <path class="route-line eu" d="M460,215 Q440,155 430,105" />
-        <path class="route-line eu" d="M460,215 Q455,160 445,110" />
-        <path class="route-line eu" d="M460,215 Q490,198 515,180" />
-        <path class="route-line eu" d="M460,215 Q480,195 508,170" />
-        <path class="route-line eu" d="M460,215 Q498,218 548,218" />
-
-        <!-- Americas routes from ZRH -->
-        <path class="route-line am" d="M490,190 Q380,168 270,185" />
-        <path class="route-line am" d="M490,190 Q360,182 250,205" />
-        <path class="route-line am" d="M490,190 Q370,148 240,125" />
-        <path class="route-line am" d="M490,190 Q400,168 310,155" />
-        <path class="route-line am" d="M490,190 Q385,158 290,138" />
-        <path class="route-line am" d="M490,190 Q330,230 250,385" />
-        <path class="route-line am" d="M490,190 Q310,280 230,460" />
-
-        <!-- Asia routes from ZRH -->
-        <path class="route-line as" d="M490,190 Q640,145 800,175" />
-        <path class="route-line as" d="M490,190 Q640,150 750,230" />
-        <path class="route-line as" d="M490,190 Q630,170 740,260" />
-        <path class="route-line as" d="M490,190 Q630,178 730,290" />
-        <path class="route-line as" d="M490,190 Q580,195 630,260" />
-        <path class="route-line as" d="M490,190 Q650,148 800,185" />
-        <path class="route-line as" d="M490,190 Q660,148 720,168" />
-        <path class="route-line as" d="M490,190 Q650,142 680,140" />
-
-        <!-- Middle East routes from ZRH -->
-        <path class="route-line me" d="M490,190 Q520,200 560,230" />
-        <path class="route-line me" d="M490,190 Q545,195 578,218" />
-        <path class="route-line me" d="M490,190 Q560,205 600,230" />
-
-        <!-- Africa routes from ZRH -->
-        <path class="route-line af" d="M490,190 Q500,260 480,320" />
-        <path class="route-line af" d="M490,190 Q510,310 500,440" />
-        <path class="route-line af" d="M490,190 Q515,310 510,395" />
-        <path class="route-line af" d="M490,190 Q518,320 505,465" />
-
-        <!-- ZRH-GVA shuttle -->
+        <!-- ZRH-IPPH (490,190) hub routes -->
+        <!-- ZRH → IZOL Женева (460,215) -->
         <path class="route-line eu" d="M490,190 Q475,200 460,215" />
+        <!-- ZRH → ILKL Лугано (510,210) -->
+        <path class="route-line eu" d="M490,190 Q498,198 510,210" />
+        <!-- ZRH → IJAF Берн (480,195) -->
+        <path class="route-line eu" d="M490,190 Q485,192 480,195" />
+        <!-- ZRH → IKFL Лондон (435,110) -->
+        <path class="route-line eu" d="M490,190 Q470,155 435,110" />
+        <!-- ZRH → ITEY Манчестер (425,100) -->
+        <path class="route-line eu" d="M490,190 Q465,150 425,100" />
+        <!-- ZRH → IRFD Москва (600,108) -->
+        <path class="route-line eu" d="M490,190 Q540,155 600,108" />
+        <!-- ZRH → IMLR СПб (610,80) -->
+        <path class="route-line eu" d="M490,190 Q545,140 610,80" />
+        <!-- ZRH → IBLT Сочи (610,145) -->
+        <path class="route-line eu" d="M490,190 Q545,168 610,145" />
+        <!-- GVA → IKFL Лондон -->
+        <path class="route-line eu" d="M460,215 Q448,168 435,110" />
+        <!-- GVA → IRFD Москва -->
+        <path class="route-line eu" d="M460,215 Q530,170 600,108" />
+        <!-- GVA → ILKL Лугано -->
+        <path class="route-line eu" d="M460,215 Q485,212 510,210" />
+
+        <!-- Americas from ZRH -->
+        <!-- ZRH → ITKO Нью-Йорк (270,185) -->
+        <path class="route-line am" d="M490,190 Q380,168 270,185" />
+        <!-- ZRH → IDCS Чикаго (240,170) -->
+        <path class="route-line am" d="M490,190 Q370,175 240,170" />
+        <!-- ZRH → IBRD Лос-Анджелес (145,175) -->
+        <path class="route-line am" d="M490,190 Q320,170 145,175" />
+        <!-- ZRH → ISAU Сан-Паулу (290,410) -->
+        <path class="route-line am" d="M490,190 Q390,290 290,410" />
+
+        <!-- Middle East from ZRH -->
+        <!-- ZRH → ISKP Дубай (585,238) -->
+        <path class="route-line me" d="M490,190 Q535,210 585,238" />
+
+        <!-- Africa from ZRH -->
+        <!-- ZRH → ILAR Каир (548,265) -->
+        <path class="route-line af" d="M490,190 Q515,225 548,265" />
+        <!-- ZRH → IPAP Найроби (535,370) -->
+        <path class="route-line af" d="M490,190 Q510,275 535,370" />
+        <!-- ZRH → IBAR Шарм (565,280) -->
+        <path class="route-line af" d="M490,190 Q525,230 565,280" />
+        <!-- ZRH → IHEN Дар-эс-Салам (545,385) -->
+        <path class="route-line af" d="M490,190 Q515,285 545,385" />
+
+        <!-- Asia from ZRH -->
+        <!-- ZRH → IBTH Сингапур (730,310) -->
+        <path class="route-line as" d="M490,190 Q610,245 730,310" />
+
+        <!-- Cross-regional routes -->
+        <!-- IRFD Москва → ISKP Дубай -->
+        <path class="route-line me" d="M600,108 Q595,170 585,238" />
+        <!-- IRFD Москва → IBLT Сочи -->
+        <path class="route-line eu" d="M600,108 Q605,125 610,145" />
+        <!-- IRFD Москва → IMLR СПб -->
+        <path class="route-line eu" d="M600,108 Q605,95 610,80" />
+        <!-- IKFL Лондон → ITKO Нью-Йорк -->
+        <path class="route-line am" d="M435,110 Q350,140 270,185" />
+        <!-- ISKP Дубай → IBTH Сингапур -->
+        <path class="route-line as" d="M585,238 Q660,270 730,310" />
+        <!-- ISKP Дубай → IPAP Найроби -->
+        <path class="route-line af" d="M585,238 Q560,300 535,370" />
+        <!-- ILAR Каир → IHEN Дар-эс-Салам -->
+        <path class="route-line af" d="M548,265 Q545,320 545,385" />
+        <!-- ISAU Сан-Паулу → ITKO Нью-Йорк -->
+        <path class="route-line am" d="M290,410 Q275,300 270,185" />
 
         <!-- ===== AIRPORTS ===== -->
-        <!-- ZRH Hub -->
-        <g class="airport-group" data-code="IPPH" data-name-ru="Цюрих (Perth International)" data-name-en="Zurich (Perth International)" data-region="hub">
+        <!-- IPPH — Цюрих (Hub) -->
+        <g class="airport-group" data-code="IPPH" data-name-ru="Цюрих" data-name-en="Zurich" data-region="hub">
           <circle class="airport-glow hub" cx="490" cy="190" r="16" />
           <circle class="airport-dot hub" cx="490" cy="190" r="5" />
           <text class="airport-label" x="490" y="215">IPPH</text>
         </g>
-        <!-- GVA Hub -->
-        <g class="airport-group" data-code="IZOL" data-name-ru="Женева (Izolirani)" data-name-en="Geneva (Izolirani)" data-region="hub">
+        <!-- IZOL — Женева (Hub) -->
+        <g class="airport-group" data-code="IZOL" data-name-ru="Женева" data-name-en="Geneva" data-region="hub">
           <circle class="airport-glow hub" cx="460" cy="215" r="14" />
           <circle class="airport-dot hub" cx="460" cy="215" r="4.5" />
           <text class="airport-label" x="460" y="240">IZOL</text>
         </g>
-
-        <!-- Europe -->
-        <g class="airport-group" data-code="ILND" data-name-ru="Лондон" data-name-en="London" data-region="europe">
+        <!-- ILKL — Лугано -->
+        <g class="airport-group" data-code="ILKL" data-name-ru="Лугано" data-name-en="Lugano" data-region="europe">
+          <circle class="airport-glow" cx="510" cy="210" r="8" /><circle class="airport-dot" cx="510" cy="210" r="3" />
+          <text class="airport-label" x="510" y="226">ILKL</text>
+        </g>
+        <!-- IJAF — Берн -->
+        <g class="airport-group" data-code="IJAF" data-name-ru="Берн" data-name-en="Bern" data-region="europe">
+          <circle class="airport-glow" cx="480" cy="195" r="8" /><circle class="airport-dot" cx="480" cy="195" r="3" />
+          <text class="airport-label" x="480" y="183">IJAF</text>
+        </g>
+        <!-- IKFL — Лондон Хитроу -->
+        <g class="airport-group" data-code="IKFL" data-name-ru="Лондон Хитроу" data-name-en="London Heathrow" data-region="europe">
           <circle class="airport-glow" cx="435" cy="110" r="8" /><circle class="airport-dot" cx="435" cy="110" r="3" />
-          <text class="airport-label" x="435" y="126">ILND</text>
+          <text class="airport-label" x="435" y="126">IKFL</text>
         </g>
-        <g class="airport-group" data-code="IPAR" data-name-ru="Париж" data-name-en="Paris" data-region="europe">
-          <circle class="airport-glow" cx="448" cy="95" r="8" /><circle class="airport-dot" cx="448" cy="95" r="3" />
-          <text class="airport-label" x="448" y="110">IPAR</text>
+        <!-- ITEY — Манчестер -->
+        <g class="airport-group" data-code="ITEY" data-name-ru="Манчестер" data-name-en="Manchester" data-region="europe">
+          <circle class="airport-glow" cx="425" cy="100" r="8" /><circle class="airport-dot" cx="425" cy="100" r="3" />
+          <text class="airport-label" x="410" y="96">ITEY</text>
         </g>
-        <g class="airport-group" data-code="IBER" data-name-ru="Берлин" data-name-en="Berlin" data-region="europe">
-          <circle class="airport-glow" cx="518" cy="105" r="8" /><circle class="airport-dot" cx="518" cy="105" r="3" />
-          <text class="airport-label" x="518" y="120">IBER</text>
+        <!-- IRFD — Москва Шереметьево -->
+        <g class="airport-group" data-code="IRFD" data-name-ru="Москва Шереметьево" data-name-en="Moscow Sheremetyevo" data-region="europe">
+          <circle class="airport-glow" cx="600" cy="108" r="8" /><circle class="airport-dot" cx="600" cy="108" r="3" />
+          <text class="airport-label" x="600" y="124">IRFD</text>
         </g>
-        <g class="airport-group" data-code="IROM" data-name-ru="Рим" data-name-en="Rome" data-region="europe">
-          <circle class="airport-glow" cx="530" cy="162" r="8" /><circle class="airport-dot" cx="530" cy="162" r="3" />
-          <text class="airport-label" x="530" y="178">IROM</text>
+        <!-- IMLR — Санкт-Петербург -->
+        <g class="airport-group" data-code="IMLR" data-name-ru="Санкт-Петербург" data-name-en="Saint Petersburg" data-region="europe">
+          <circle class="airport-glow" cx="610" cy="80" r="8" /><circle class="airport-dot" cx="610" cy="80" r="3" />
+          <text class="airport-label" x="610" y="96">IMLR</text>
         </g>
-        <g class="airport-group" data-code="IMAD" data-name-ru="Мадрид" data-name-en="Madrid" data-region="europe">
-          <circle class="airport-glow" cx="420" cy="150" r="8" /><circle class="airport-dot" cx="420" cy="150" r="3" />
-          <text class="airport-label" x="420" y="166">IMAD</text>
+        <!-- IBLT — Сочи -->
+        <g class="airport-group" data-code="IBLT" data-name-ru="Сочи" data-name-en="Sochi" data-region="europe">
+          <circle class="airport-glow" cx="610" cy="145" r="8" /><circle class="airport-dot" cx="610" cy="145" r="3" />
+          <text class="airport-label" x="610" y="161">IBLT</text>
         </g>
-        <g class="airport-group" data-code="IAMS" data-name-ru="Амстердам" data-name-en="Amsterdam" data-region="europe">
-          <circle class="airport-glow" cx="468" cy="88" r="8" /><circle class="airport-dot" cx="468" cy="88" r="3" />
-          <text class="airport-label" x="468" y="104">IAMS</text>
-        </g>
-        <g class="airport-group" data-code="IVIE" data-name-ru="Вена" data-name-en="Vienna" data-region="europe">
-          <circle class="airport-glow" cx="520" cy="148" r="8" /><circle class="airport-dot" cx="520" cy="148" r="3" />
-          <text class="airport-label" x="520" y="163">IVIE</text>
-        </g>
-        <g class="airport-group" data-code="IBCN" data-name-ru="Барселона" data-name-en="Barcelona" data-region="europe">
-          <circle class="airport-glow" cx="415" cy="155" r="8" /><circle class="airport-dot" cx="415" cy="155" r="3" />
-          <text class="airport-label" x="415" y="170">IBCN</text>
-        </g>
-        <g class="airport-group" data-code="IATH" data-name-ru="Афины" data-name-en="Athens" data-region="europe">
-          <circle class="airport-glow" cx="548" cy="192" r="8" /><circle class="airport-dot" cx="548" cy="192" r="3" />
-          <text class="airport-label" x="560" y="192">IATH</text>
-        </g>
-        <g class="airport-group" data-code="ILIS" data-name-ru="Лиссабон" data-name-en="Lisbon" data-region="europe">
-          <circle class="airport-glow" cx="400" cy="162" r="8" /><circle class="airport-dot" cx="400" cy="162" r="3" />
-          <text class="airport-label" x="400" y="178">ILIS</text>
-        </g>
-        <g class="airport-group" data-code="IPRA" data-name-ru="Прага" data-name-en="Prague" data-region="europe">
-          <circle class="airport-glow" cx="510" cy="112" r="8" /><circle class="airport-dot" cx="510" cy="112" r="3" />
-          <text class="airport-label" x="510" y="128">IPRA</text>
-        </g>
-        <g class="airport-group" data-code="IBUD" data-name-ru="Будапешт" data-name-en="Budapest" data-region="europe">
-          <circle class="airport-glow" cx="540" cy="140" r="8" /><circle class="airport-dot" cx="540" cy="140" r="3" />
-          <text class="airport-label" x="540" y="155">IBUD</text>
-        </g>
-        <g class="airport-group" data-code="ICOP" data-name-ru="Копенгаген" data-name-en="Copenhagen" data-region="europe">
-          <circle class="airport-glow" cx="485" cy="85" r="8" /><circle class="airport-dot" cx="485" cy="85" r="3" />
-          <text class="airport-label" x="485" y="100">ICOP</text>
-        </g>
-        <g class="airport-group" data-code="ISTO" data-name-ru="Стокгольм" data-name-en="Stockholm" data-region="europe">
-          <circle class="airport-glow" cx="508" cy="75" r="8" /><circle class="airport-dot" cx="508" cy="75" r="3" />
-          <text class="airport-label" x="508" y="90">ISTO</text>
-        </g>
-        <g class="airport-group" data-code="IDUB" data-name-ru="Дублин" data-name-en="Dublin" data-region="europe">
-          <circle class="airport-glow" cx="418" cy="88" r="8" /><circle class="airport-dot" cx="418" cy="88" r="3" />
-          <text class="airport-label" x="418" y="104">IDUB</text>
-        </g>
-        <g class="airport-group" data-code="IWAW" data-name-ru="Варшава" data-name-en="Warsaw" data-region="europe">
-          <circle class="airport-glow" cx="545" cy="108" r="8" /><circle class="airport-dot" cx="545" cy="108" r="3" />
-          <text class="airport-label" x="545" y="123">IWAW</text>
-        </g>
-
-        <!-- Americas -->
-        <g class="airport-group" data-code="IRFD" data-name-ru="Нью-Йорк" data-name-en="New York" data-region="america">
+        <!-- ITKO — Нью-Йорк JFK -->
+        <g class="airport-group" data-code="ITKO" data-name-ru="Нью-Йорк JFK" data-name-en="New York JFK" data-region="america">
           <circle class="airport-glow" cx="270" cy="185" r="8" /><circle class="airport-dot" cx="270" cy="185" r="3" />
-          <text class="airport-label" x="270" y="200">IRFD</text>
+          <text class="airport-label" x="270" y="200">ITKO</text>
         </g>
-        <g class="airport-group" data-code="IMIA" data-name-ru="Майами" data-name-en="Miami" data-region="america">
-          <circle class="airport-glow" cx="255" cy="220" r="8" /><circle class="airport-dot" cx="255" cy="220" r="3" />
-          <text class="airport-label" x="255" y="235">IMIA</text>
+        <!-- IDCS — Чикаго -->
+        <g class="airport-group" data-code="IDCS" data-name-ru="Чикаго" data-name-en="Chicago" data-region="america">
+          <circle class="airport-glow" cx="240" cy="170" r="8" /><circle class="airport-dot" cx="240" cy="170" r="3" />
+          <text class="airport-label" x="240" y="185">IDCS</text>
         </g>
-        <g class="airport-group" data-code="ILAX" data-name-ru="Лос-Анджелес" data-name-en="Los Angeles" data-region="america">
-          <circle class="airport-glow" cx="145" cy="170" r="8" /><circle class="airport-dot" cx="145" cy="170" r="3" />
-          <text class="airport-label" x="145" y="185">ILAX</text>
+        <!-- IBRD — Лос-Анджелес -->
+        <g class="airport-group" data-code="IBRD" data-name-ru="Лос-Анджелес" data-name-en="Los Angeles" data-region="america">
+          <circle class="airport-glow" cx="145" cy="175" r="8" /><circle class="airport-dot" cx="145" cy="175" r="3" />
+          <text class="airport-label" x="145" y="190">IBRD</text>
         </g>
-        <g class="airport-group" data-code="ICHI" data-name-ru="Чикаго" data-name-en="Chicago" data-region="america">
-          <circle class="airport-glow" cx="230" cy="165" r="8" /><circle class="airport-dot" cx="230" cy="165" r="3" />
-          <text class="airport-label" x="230" y="180">ICHI</text>
-        </g>
-        <g class="airport-group" data-code="IMON" data-name-ru="Монреаль" data-name-en="Montreal" data-region="america">
-          <circle class="airport-glow" cx="285" cy="155" r="8" /><circle class="airport-dot" cx="285" cy="155" r="3" />
-          <text class="airport-label" x="285" y="170">IMON</text>
-        </g>
-        <g class="airport-group" data-code="ISAO" data-name-ru="Сан-Паулу" data-name-en="São Paulo" data-region="america">
+        <!-- ISAU — Сан-Паулу -->
+        <g class="airport-group" data-code="ISAU" data-name-ru="Сан-Паулу" data-name-en="São Paulo" data-region="america">
           <circle class="airport-glow" cx="290" cy="410" r="8" /><circle class="airport-dot" cx="290" cy="410" r="3" />
-          <text class="airport-label" x="290" y="425">ISAO</text>
+          <text class="airport-label" x="290" y="425">ISAU</text>
         </g>
-        <g class="airport-group" data-code="IBUE" data-name-ru="Буэнос-Айрес" data-name-en="Buenos Aires" data-region="america">
-          <circle class="airport-glow" cx="275" cy="470" r="8" /><circle class="airport-dot" cx="275" cy="470" r="3" />
-          <text class="airport-label" x="275" y="485">IBUE</text>
+        <!-- ILAR — Каир -->
+        <g class="airport-group" data-code="ILAR" data-name-ru="Каир" data-name-en="Cairo" data-region="africa">
+          <circle class="airport-glow" cx="548" cy="265" r="8" /><circle class="airport-dot" cx="548" cy="265" r="3" />
+          <text class="airport-label" x="548" y="280">ILAR</text>
         </g>
-
-        <!-- Asia -->
-        <g class="airport-group" data-code="ITKY" data-name-ru="Токио" data-name-en="Tokyo" data-region="asia">
-          <circle class="airport-glow" cx="835" cy="180" r="8" /><circle class="airport-dot" cx="835" cy="180" r="3" />
-          <text class="airport-label" x="835" y="195">ITKY</text>
-        </g>
-        <g class="airport-group" data-code="IHKG" data-name-ru="Гонконг" data-name-en="Hong Kong" data-region="asia">
-          <circle class="airport-glow" cx="750" cy="250" r="8" /><circle class="airport-dot" cx="750" cy="250" r="3" />
-          <text class="airport-label" x="750" y="265">IHKG</text>
-        </g>
-        <g class="airport-group" data-code="ISIN" data-name-ru="Сингапур" data-name-en="Singapore" data-region="asia">
-          <circle class="airport-glow" cx="730" cy="310" r="8" /><circle class="airport-dot" cx="730" cy="310" r="3" />
-          <text class="airport-label" x="730" y="325">ISIN</text>
-        </g>
-        <g class="airport-group" data-code="IBKK" data-name-ru="Бангкок" data-name-en="Bangkok" data-region="asia">
-          <circle class="airport-glow" cx="700" cy="275" r="8" /><circle class="airport-dot" cx="700" cy="275" r="3" />
-          <text class="airport-label" x="700" y="290">IBKK</text>
-        </g>
-        <g class="airport-group" data-code="IDEL" data-name-ru="Дели" data-name-en="Delhi" data-region="asia">
-          <circle class="airport-glow" cx="625" cy="235" r="8" /><circle class="airport-dot" cx="625" cy="235" r="3" />
-          <text class="airport-label" x="625" y="250">IDEL</text>
-        </g>
-        <g class="airport-group" data-code="ISEL" data-name-ru="Сеул" data-name-en="Seoul" data-region="asia">
-          <circle class="airport-glow" cx="805" cy="178" r="8" /><circle class="airport-dot" cx="805" cy="178" r="3" />
-          <text class="airport-label" x="805" y="193">ISEL</text>
-        </g>
-        <g class="airport-group" data-code="ISHA" data-name-ru="Шанхай" data-name-en="Shanghai" data-region="asia">
-          <circle class="airport-glow" cx="770" cy="198" r="8" /><circle class="airport-dot" cx="770" cy="198" r="3" />
-          <text class="airport-label" x="770" y="213">ISHA</text>
-        </g>
-        <g class="airport-group" data-code="IPEK" data-name-ru="Пекин" data-name-en="Beijing" data-region="asia">
-          <circle class="airport-glow" cx="760" cy="165" r="8" /><circle class="airport-dot" cx="760" cy="165" r="3" />
-          <text class="airport-label" x="760" y="180">IPEK</text>
-        </g>
-
-        <!-- Middle East -->
-        <g class="airport-group" data-code="IDBI" data-name-ru="Дубай" data-name-en="Dubai" data-region="middle-east">
-          <circle class="airport-glow" cx="585" cy="238" r="8" /><circle class="airport-dot" cx="585" cy="238" r="3" />
-          <text class="airport-label" x="585" y="253">IDBI</text>
-        </g>
-        <g class="airport-group" data-code="ITLV" data-name-ru="Тель-Авив" data-name-en="Tel Aviv" data-region="middle-east">
-          <circle class="airport-glow" cx="562" cy="218" r="8" /><circle class="airport-dot" cx="562" cy="218" r="3" />
-          <text class="airport-label" x="562" y="233">ITLV</text>
-        </g>
-        <g class="airport-group" data-code="IDOH" data-name-ru="Доха" data-name-en="Doha" data-region="middle-east">
-          <circle class="airport-glow" cx="595" cy="252" r="8" /><circle class="airport-dot" cx="595" cy="252" r="3" />
-          <text class="airport-label" x="595" y="267">IDOH</text>
-        </g>
-
-        <!-- Africa -->
-        <g class="airport-group" data-code="ICAI" data-name-ru="Каир" data-name-en="Cairo" data-region="africa">
-          <circle class="airport-glow" cx="548" cy="245" r="8" /><circle class="airport-dot" cx="548" cy="245" r="3" />
-          <text class="airport-label" x="548" y="260">ICAI</text>
-        </g>
-        <g class="airport-group" data-code="IJNB" data-name-ru="Йоханнесбург" data-name-en="Johannesburg" data-region="africa">
-          <circle class="airport-glow" cx="510" cy="445" r="8" /><circle class="airport-dot" cx="510" cy="445" r="3" />
-          <text class="airport-label" x="510" y="460">IJNB</text>
-        </g>
-        <g class="airport-group" data-code="INBO" data-name-ru="Найроби" data-name-en="Nairobi" data-region="africa">
+        <!-- IPAP — Найроби -->
+        <g class="airport-group" data-code="IPAP" data-name-ru="Найроби" data-name-en="Nairobi" data-region="africa">
           <circle class="airport-glow" cx="535" cy="370" r="8" /><circle class="airport-dot" cx="535" cy="370" r="3" />
-          <text class="airport-label" x="535" y="385">INBO</text>
+          <text class="airport-label" x="535" y="385">IPAP</text>
         </g>
-        <g class="airport-group" data-code="ICPT" data-name-ru="Кейптаун" data-name-en="Cape Town" data-region="africa">
-          <circle class="airport-glow" cx="498" cy="480" r="8" /><circle class="airport-dot" cx="498" cy="480" r="3" />
-          <text class="airport-label" x="498" y="495">ICPT</text>
+        <!-- IBAR — Шарм-эль-Шейх -->
+        <g class="airport-group" data-code="IBAR" data-name-ru="Шарм-эль-Шейх" data-name-en="Sharm El Sheikh" data-region="africa">
+          <circle class="airport-glow" cx="565" cy="280" r="8" /><circle class="airport-dot" cx="565" cy="280" r="3" />
+          <text class="airport-label" x="565" y="295">IBAR</text>
+        </g>
+        <!-- IHEN — Дар-эс-Салам -->
+        <g class="airport-group" data-code="IHEN" data-name-ru="Дар-эс-Салам" data-name-en="Dar es Salaam" data-region="africa">
+          <circle class="airport-glow" cx="545" cy="385" r="8" /><circle class="airport-dot" cx="545" cy="385" r="3" />
+          <text class="airport-label" x="545" y="400">IHEN</text>
+        </g>
+        <!-- ISKP — Дубай -->
+        <g class="airport-group" data-code="ISKP" data-name-ru="Дубай" data-name-en="Dubai" data-region="middle-east">
+          <circle class="airport-glow" cx="585" cy="238" r="8" /><circle class="airport-dot" cx="585" cy="238" r="3" />
+          <text class="airport-label" x="585" y="253">ISKP</text>
+        </g>
+        <!-- IBTH — Сингапур Чанги -->
+        <g class="airport-group" data-code="IBTH" data-name-ru="Сингапур Чанги" data-name-en="Singapore Changi" data-region="asia">
+          <circle class="airport-glow" cx="730" cy="310" r="8" /><circle class="airport-dot" cx="730" cy="310" r="3" />
+          <text class="airport-label" x="730" y="325">IBTH</text>
         </g>
       </svg>
     </div>
@@ -623,57 +559,43 @@
 
     // ============ ROUTE DATA ============
     const routeList = [
-      // Europe from ZRH
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Лондон', to_en: 'London', to_code: 'ILND', region: 'europe' },
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Париж', to_en: 'Paris', to_code: 'IPAR', region: 'europe' },
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Берлин', to_en: 'Berlin', to_code: 'IBER', region: 'europe' },
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Рим', to_en: 'Rome', to_code: 'IROM', region: 'europe' },
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Мадрид', to_en: 'Madrid', to_code: 'IMAD', region: 'europe' },
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Амстердам', to_en: 'Amsterdam', to_code: 'IAMS', region: 'europe' },
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Вена', to_en: 'Vienna', to_code: 'IVIE', region: 'europe' },
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Барселона', to_en: 'Barcelona', to_code: 'IBCN', region: 'europe' },
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Афины', to_en: 'Athens', to_code: 'IATH', region: 'europe' },
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Лиссабон', to_en: 'Lisbon', to_code: 'ILIS', region: 'europe' },
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Прага', to_en: 'Prague', to_code: 'IPRA', region: 'europe' },
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Будапешт', to_en: 'Budapest', to_code: 'IBUD', region: 'europe' },
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Копенгаген', to_en: 'Copenhagen', to_code: 'ICOP', region: 'europe' },
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Стокгольм', to_en: 'Stockholm', to_code: 'ISTO', region: 'europe' },
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Дублин', to_en: 'Dublin', to_code: 'IDUB', region: 'europe' },
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Варшава', to_en: 'Warsaw', to_code: 'IWAW', region: 'europe' },
-      // Europe from GVA
-      { from: 'Женева', from_en: 'Geneva', from_code: 'IZOL', to: 'Лондон', to_en: 'London', to_code: 'ILND', region: 'europe' },
-      { from: 'Женева', from_en: 'Geneva', from_code: 'IZOL', to: 'Париж', to_en: 'Paris', to_code: 'IPAR', region: 'europe' },
-      { from: 'Женева', from_en: 'Geneva', from_code: 'IZOL', to: 'Барселона', to_en: 'Barcelona', to_code: 'IBCN', region: 'europe' },
-      { from: 'Женева', from_en: 'Geneva', from_code: 'IZOL', to: 'Рим', to_en: 'Rome', to_code: 'IROM', region: 'europe' },
-      { from: 'Женева', from_en: 'Geneva', from_code: 'IZOL', to: 'Афины', to_en: 'Athens', to_code: 'IATH', region: 'europe' },
-      // Americas
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Нью-Йорк', to_en: 'New York', to_code: 'IRFD', region: 'america' },
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Майами', to_en: 'Miami', to_code: 'IMIA', region: 'america' },
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Лос-Анджелес', to_en: 'Los Angeles', to_code: 'ILAX', region: 'america' },
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Чикаго', to_en: 'Chicago', to_code: 'ICHI', region: 'america' },
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Монреаль', to_en: 'Montreal', to_code: 'IMON', region: 'america' },
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Сан-Паулу', to_en: 'São Paulo', to_code: 'ISAO', region: 'america' },
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Буэнос-Айрес', to_en: 'Buenos Aires', to_code: 'IBUE', region: 'america' },
-      // Asia
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Токио', to_en: 'Tokyo', to_code: 'ITKY', region: 'asia' },
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Гонконг', to_en: 'Hong Kong', to_code: 'IHKG', region: 'asia' },
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Сингапур', to_en: 'Singapore', to_code: 'ISIN', region: 'asia' },
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Бангкок', to_en: 'Bangkok', to_code: 'IBKK', region: 'asia' },
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Дели', to_en: 'Delhi', to_code: 'IDEL', region: 'asia' },
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Сеул', to_en: 'Seoul', to_code: 'ISEL', region: 'asia' },
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Шанхай', to_en: 'Shanghai', to_code: 'ISHA', region: 'asia' },
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Пекин', to_en: 'Beijing', to_code: 'IPEK', region: 'asia' },
-      // Middle East
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Дубай', to_en: 'Dubai', to_code: 'IDBI', region: 'middle-east' },
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Тель-Авив', to_en: 'Tel Aviv', to_code: 'ITLV', region: 'middle-east' },
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Доха', to_en: 'Doha', to_code: 'IDOH', region: 'middle-east' },
-      // Africa
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Каир', to_en: 'Cairo', to_code: 'ICAI', region: 'africa' },
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Йоханнесбург', to_en: 'Johannesburg', to_code: 'IJNB', region: 'africa' },
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Найроби', to_en: 'Nairobi', to_code: 'INBO', region: 'africa' },
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Кейптаун', to_en: 'Cape Town', to_code: 'ICPT', region: 'africa' },
-      // Shuttle
-      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Женева', to_en: 'Geneva', to_code: 'IZOL', region: 'europe' }
+      // Швейцарские внутренние
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Женева', to_en: 'Geneva', to_code: 'IZOL', region: 'europe' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Лугано', to_en: 'Lugano', to_code: 'ILKL', region: 'europe' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Берн', to_en: 'Bern', to_code: 'IJAF', region: 'europe' },
+      // Европа из Цюриха
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Лондон', to_en: 'London', to_code: 'IKFL', region: 'europe' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Манчестер', to_en: 'Manchester', to_code: 'ITEY', region: 'europe' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Москва', to_en: 'Moscow', to_code: 'IRFD', region: 'europe' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Санкт-Петербург', to_en: 'Saint Petersburg', to_code: 'IMLR', region: 'europe' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Сочи', to_en: 'Sochi', to_code: 'IBLT', region: 'europe' },
+      // Европа из Женевы
+      { from: 'Женева', from_en: 'Geneva', from_code: 'IZOL', to: 'Лондон', to_en: 'London', to_code: 'IKFL', region: 'europe' },
+      { from: 'Женева', from_en: 'Geneva', from_code: 'IZOL', to: 'Москва', to_en: 'Moscow', to_code: 'IRFD', region: 'europe' },
+      { from: 'Женева', from_en: 'Geneva', from_code: 'IZOL', to: 'Лугано', to_en: 'Lugano', to_code: 'ILKL', region: 'europe' },
+      // Америка
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Нью-Йорк', to_en: 'New York', to_code: 'ITKO', region: 'america' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Чикаго', to_en: 'Chicago', to_code: 'IDCS', region: 'america' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Лос-Анджелес', to_en: 'Los Angeles', to_code: 'IBRD', region: 'america' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Сан-Паулу', to_en: 'São Paulo', to_code: 'ISAU', region: 'america' },
+      // Ближний Восток
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Дубай', to_en: 'Dubai', to_code: 'ISKP', region: 'middle-east' },
+      // Африка
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Каир', to_en: 'Cairo', to_code: 'ILAR', region: 'africa' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Найроби', to_en: 'Nairobi', to_code: 'IPAP', region: 'africa' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Шарм-эль-Шейх', to_en: 'Sharm El Sheikh', to_code: 'IBAR', region: 'africa' },
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Дар-эс-Салам', to_en: 'Dar es Salaam', to_code: 'IHEN', region: 'africa' },
+      // Азия
+      { from: 'Цюрих', from_en: 'Zurich', from_code: 'IPPH', to: 'Сингапур', to_en: 'Singapore', to_code: 'IBTH', region: 'asia' },
+      // Межрегиональные
+      { from: 'Москва', from_en: 'Moscow', from_code: 'IRFD', to: 'Дубай', to_en: 'Dubai', to_code: 'ISKP', region: 'middle-east' },
+      { from: 'Москва', from_en: 'Moscow', from_code: 'IRFD', to: 'Сочи', to_en: 'Sochi', to_code: 'IBLT', region: 'europe' },
+      { from: 'Москва', from_en: 'Moscow', from_code: 'IRFD', to: 'Санкт-Петербург', to_en: 'Saint Petersburg', to_code: 'IMLR', region: 'europe' },
+      { from: 'Лондон', from_en: 'London', from_code: 'IKFL', to: 'Нью-Йорк', to_en: 'New York', to_code: 'ITKO', region: 'america' },
+      { from: 'Дубай', from_en: 'Dubai', from_code: 'ISKP', to: 'Сингапур', to_en: 'Singapore', to_code: 'IBTH', region: 'asia' },
+      { from: 'Дубай', from_en: 'Dubai', from_code: 'ISKP', to: 'Найроби', to_en: 'Nairobi', to_code: 'IPAP', region: 'africa' },
+      { from: 'Каир', from_en: 'Cairo', from_code: 'ILAR', to: 'Дар-эс-Салам', to_en: 'Dar es Salaam', to_code: 'IHEN', region: 'africa' },
+      { from: 'Сан-Паулу', from_en: 'São Paulo', from_code: 'ISAU', to: 'Нью-Йорк', to_en: 'New York', to_code: 'ITKO', region: 'america' }
     ];
 
     let currentRegion = 'all';

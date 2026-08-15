@@ -663,6 +663,19 @@
     // ============ INIT ============
     const savedTheme=localStorage.getItem('swiss-theme'); if(savedTheme){ document.documentElement.setAttribute('data-theme',savedTheme); document.getElementById('themeToggle').textContent=savedTheme==='dark'?'☀️':'🌙'; }
     const savedLang=localStorage.getItem('swiss-lang'); if(savedLang){ document.documentElement.setAttribute('lang',savedLang); document.getElementById('langToggle').textContent=savedLang==='ru'?'EN':'RU'; }
+    async function checkAuth() {
+      try {
+        const r = await fetch('/api/me');
+        if (!r.ok) { window.location.href = 'login.html'; return; }
+        const d = await r.json();
+        if (!d.isAdmin) { window.location.href = 'login.html'; return; }
+        const avatar = document.getElementById('userAvatar');
+        const nameEl = document.getElementById('userName');
+        if (d.username && avatar) avatar.textContent = d.username.charAt(0).toUpperCase();
+        if (d.username && nameEl) nameEl.textContent = d.username;
+      } catch(e) { window.location.href = 'login.html'; }
+    }
+    checkAuth();
     loadApplications();
   </script>
 </body>

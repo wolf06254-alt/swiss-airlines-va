@@ -339,8 +339,7 @@
         });
         if (res.ok) {
           const data = await res.json();
-          if (data.token) {
-            localStorage.setItem('swiss-admin-token', data.token);
+          if (data.success) {
             window.location.href = 'admin.html';
           }
         } else {

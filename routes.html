@@ -375,57 +375,43 @@
 
     // ============ STATIC ROUTES DATA ============
     const routesData = [
-      // === EUROPE from ZRH ===
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Лондон', destination_code:'ILND', region:'europe', aircraft_type:'A220-300 / A320neo', distance_km:947, duration_min:105, frequency:'daily', class:'economy' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Париж', destination_code:'IPAR', region:'europe', aircraft_type:'A220-300 / A320-200', distance_km:615, duration_min:75, frequency:'daily', class:'business' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Берлин', destination_code:'IBER', region:'europe', aircraft_type:'A220-100 / A220-300', distance_km:710, duration_min:90, frequency:'daily', class:'economy' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Рим', destination_code:'IROM', region:'europe', aircraft_type:'A320-200 / A320neo', distance_km:867, duration_min:105, frequency:'daily', class:'business' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Мадрид', destination_code:'IMAD', region:'europe', aircraft_type:'A320neo / A321neo', distance_km:1379, duration_min:150, frequency:'daily', class:'economy' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Амстердам', destination_code:'IAMS', region:'europe', aircraft_type:'A220-300', distance_km:748, duration_min:90, frequency:'daily', class:'economy' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Вена', destination_code:'IVIE', region:'europe', aircraft_type:'A220-100 / A220-300', distance_km:608, duration_min:75, frequency:'daily', class:'economy' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Барселона', destination_code:'IBCN', region:'europe', aircraft_type:'A320neo / A321-100', distance_km:1068, duration_min:130, frequency:'daily', class:'economy' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Афины', destination_code:'IATH', region:'europe', aircraft_type:'A320-200 / A321neo', distance_km:1625, duration_min:170, frequency:'daily', class:'economy' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Лиссабон', destination_code:'ILIS', region:'europe', aircraft_type:'A320neo / A321neo', distance_km:1945, duration_min:195, frequency:'daily', class:'economy' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Прага', destination_code:'IPRA', region:'europe', aircraft_type:'A220-100', distance_km:567, duration_min:75, frequency:'daily', class:'economy' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Будапешт', destination_code:'IBUD', region:'europe', aircraft_type:'A220-300', distance_km:790, duration_min:95, frequency:'weekly', class:'economy' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Копенгаген', destination_code:'ICOP', region:'europe', aircraft_type:'A220-300', distance_km:955, duration_min:110, frequency:'daily', class:'economy' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Стокгольм', destination_code:'ISTO', region:'europe', aircraft_type:'A220-300 / A320neo', distance_km:1385, duration_min:150, frequency:'daily', class:'economy' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Дублин', destination_code:'IDUB', region:'europe', aircraft_type:'A220-300', distance_km:1230, duration_min:140, frequency:'daily', class:'economy' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Варшава', destination_code:'IWAW', region:'europe', aircraft_type:'A220-100 / A220-300', distance_km:1040, duration_min:120, frequency:'weekly', class:'economy' },
-      // === EUROPE from GVA ===
-      { origin:'Женева', origin_code:'IZOL', destination:'Лондон', destination_code:'ILND', region:'europe', aircraft_type:'A220-300 / A320neo', distance_km:815, duration_min:95, frequency:'daily', class:'business' },
-      { origin:'Женева', origin_code:'IZOL', destination:'Париж', destination_code:'IPAR', region:'europe', aircraft_type:'A220-300', distance_km:508, duration_min:65, frequency:'daily', class:'business' },
-      { origin:'Женева', origin_code:'IZOL', destination:'Барселона', destination_code:'IBCN', region:'europe', aircraft_type:'A220-300 / A320neo', distance_km:845, duration_min:105, frequency:'daily', class:'economy' },
-      { origin:'Женева', origin_code:'IZOL', destination:'Рим', destination_code:'IROM', region:'europe', aircraft_type:'A220-300 / A320-200', distance_km:1010, duration_min:120, frequency:'daily', class:'economy' },
-      { origin:'Женева', origin_code:'IZOL', destination:'Афины', destination_code:'IATH', region:'europe', aircraft_type:'A320neo', distance_km:1670, duration_min:175, frequency:'weekly', class:'economy' },
-      // === AMERICAS from ZRH ===
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Нью-Йорк', destination_code:'IRFD', region:'america', aircraft_type:'A330-300 / B777-300ER', distance_km:6980, duration_min:510, frequency:'daily', class:'first' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Майами', destination_code:'IMIA', region:'america', aircraft_type:'A330-300 / A340-300', distance_km:7905, duration_min:570, frequency:'daily', class:'business' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Лос-Анджелес', destination_code:'ILAX', region:'america', aircraft_type:'B777-300ER / A350-900', distance_km:9540, duration_min:690, frequency:'daily', class:'first' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Чикаго', destination_code:'ICHI', region:'america', aircraft_type:'A330-300 / A340-300', distance_km:7420, duration_min:540, frequency:'weekly', class:'business' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Монреаль', destination_code:'IMON', region:'america', aircraft_type:'A330-300', distance_km:6150, duration_min:460, frequency:'weekly', class:'business' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Сан-Паулу', destination_code:'ISAO', region:'america', aircraft_type:'B777-300ER', distance_km:9855, duration_min:720, frequency:'weekly', class:'business' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Буэнос-Айрес', destination_code:'IBUE', region:'america', aircraft_type:'B777-300ER', distance_km:11320, duration_min:810, frequency:'seasonal', class:'business' },
-      // === ASIA from ZRH ===
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Токио', destination_code:'ITKY', region:'asia', aircraft_type:'B777-300ER / A350-900', distance_km:9580, duration_min:690, frequency:'daily', class:'first' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Гонконг', destination_code:'IHKG', region:'asia', aircraft_type:'A340-300 / B777-300ER', distance_km:9380, duration_min:680, frequency:'daily', class:'business' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Сингапур', destination_code:'ISIN', region:'asia', aircraft_type:'A340-300 / B777-300ER', distance_km:10300, duration_min:750, frequency:'daily', class:'business' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Бангкок', destination_code:'IBKK', region:'asia', aircraft_type:'A340-300 / B777-300ER', distance_km:9050, duration_min:660, frequency:'daily', class:'business' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Дели', destination_code:'IDEL', region:'asia', aircraft_type:'A330-300 / B777-300ER', distance_km:6260, duration_min:470, frequency:'daily', class:'business' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Сеул', destination_code:'ISEL', region:'asia', aircraft_type:'A350-900 / B777-300ER', distance_km:8960, duration_min:650, frequency:'weekly', class:'first' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Шанхай', destination_code:'ISHA', region:'asia', aircraft_type:'A340-300 / A350-900', distance_km:8830, duration_min:640, frequency:'weekly', class:'business' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Пекин', destination_code:'IPEK', region:'asia', aircraft_type:'A350-900', distance_km:7990, duration_min:590, frequency:'weekly', class:'business' },
-      // === MIDDLE EAST from ZRH ===
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Дубай', destination_code:'IDBI', region:'middle-east', aircraft_type:'A330-300 / A340-300', distance_km:4860, duration_min:370, frequency:'daily', class:'business' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Тель-Авив', destination_code:'ITLV', region:'middle-east', aircraft_type:'A220-300 / A320neo', distance_km:3165, duration_min:260, frequency:'daily', class:'economy' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Доха', destination_code:'IDOH', region:'middle-east', aircraft_type:'A330-300', distance_km:4540, duration_min:350, frequency:'weekly', class:'business' },
-      // === AFRICA from ZRH ===
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Каир', destination_code:'ICAI', region:'africa', aircraft_type:'A220-300 / A320-200', distance_km:2840, duration_min:240, frequency:'daily', class:'economy' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Йоханнесбург', destination_code:'IJNB', region:'africa', aircraft_type:'A340-300 / B777-300ER', distance_km:8760, duration_min:640, frequency:'daily', class:'business' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Найроби', destination_code:'INBO', region:'africa', aircraft_type:'A330-300', distance_km:6460, duration_min:480, frequency:'weekly', class:'economy' },
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Кейптаун', destination_code:'ICPT', region:'africa', aircraft_type:'A340-300 / B777-300ER', distance_km:9295, duration_min:680, frequency:'seasonal', class:'business' },
-      // === ZRH ↔ GVA shuttle ===
-      { origin:'Цюрих', origin_code:'IPPH', destination:'Женева', destination_code:'IZOL', region:'europe', aircraft_type:'A220-100 / A220-300', distance_km:230, duration_min:45, frequency:'daily', class:'economy' }
+      // === EUROPE — внутришвейцарские ===
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Женева', destination_code:'IZOL', region:'europe', aircraft_type:'A220-100 / A220-300', distance_km:230, duration_min:45, frequency:'daily', class:'economy' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Лугано', destination_code:'ILKL', region:'europe', aircraft_type:'A220-100', distance_km:210, duration_min:40, frequency:'daily', class:'economy' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Берн', destination_code:'IJAF', region:'europe', aircraft_type:'A220-100', distance_km:120, duration_min:30, frequency:'daily', class:'economy' },
+      // === EUROPE — Цюрих → Европа ===
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Лондон', destination_code:'IKFL', region:'europe', aircraft_type:'A220-300 / A320neo', distance_km:947, duration_min:105, frequency:'daily', class:'economy' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Манчестер', destination_code:'ITEY', region:'europe', aircraft_type:'A220-300', distance_km:1020, duration_min:115, frequency:'daily', class:'economy' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Москва', destination_code:'IRFD', region:'europe', aircraft_type:'A320-200 / A320neo', distance_km:2200, duration_min:195, frequency:'daily', class:'business' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Санкт-Петербург', destination_code:'IMLR', region:'europe', aircraft_type:'A320neo', distance_km:2100, duration_min:190, frequency:'weekly', class:'economy' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Сочи', destination_code:'IBLT', region:'europe', aircraft_type:'A320-200 / A321neo', distance_km:2450, duration_min:215, frequency:'seasonal', class:'economy' },
+      // === EUROPE — Женева → Европа ===
+      { origin:'Женева', origin_code:'IZOL', destination:'Лондон', destination_code:'IKFL', region:'europe', aircraft_type:'A220-300 / A320neo', distance_km:815, duration_min:95, frequency:'daily', class:'business' },
+      { origin:'Женева', origin_code:'IZOL', destination:'Москва', destination_code:'IRFD', region:'europe', aircraft_type:'A320neo / A321neo', distance_km:2500, duration_min:210, frequency:'weekly', class:'business' },
+      { origin:'Женева', origin_code:'IZOL', destination:'Лугано', destination_code:'ILKL', region:'europe', aircraft_type:'A220-100', distance_km:270, duration_min:50, frequency:'daily', class:'economy' },
+      // === AMERICAS — Цюрих → Америка ===
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Нью-Йорк', destination_code:'ITKO', region:'america', aircraft_type:'A330-300 / B777-300ER', distance_km:6980, duration_min:510, frequency:'daily', class:'first' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Чикаго', destination_code:'IDCS', region:'america', aircraft_type:'A330-300 / A340-300', distance_km:7420, duration_min:540, frequency:'weekly', class:'business' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Лос-Анджелес', destination_code:'IBRD', region:'america', aircraft_type:'B777-300ER / A350-900', distance_km:9540, duration_min:690, frequency:'daily', class:'first' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Сан-Паулу', destination_code:'ISAU', region:'america', aircraft_type:'B777-300ER', distance_km:9855, duration_min:720, frequency:'weekly', class:'business' },
+      // === MIDDLE EAST — Цюрих → Ближний Восток ===
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Дубай', destination_code:'ISKP', region:'middle-east', aircraft_type:'A330-300 / A340-300', distance_km:4860, duration_min:370, frequency:'daily', class:'business' },
+      // === AFRICA — Цюрих → Африка ===
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Каир', destination_code:'ILAR', region:'africa', aircraft_type:'A220-300 / A320-200', distance_km:2840, duration_min:240, frequency:'daily', class:'economy' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Найроби', destination_code:'IPAP', region:'africa', aircraft_type:'A330-300', distance_km:6460, duration_min:480, frequency:'weekly', class:'economy' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Шарм-эль-Шейх', destination_code:'IBAR', region:'africa', aircraft_type:'A220-300 / A320neo', distance_km:3100, duration_min:255, frequency:'seasonal', class:'economy' },
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Дар-эс-Салам', destination_code:'IHEN', region:'africa', aircraft_type:'A330-300', distance_km:7000, duration_min:500, frequency:'weekly', class:'economy' },
+      // === ASIA — Цюрих → Азия ===
+      { origin:'Цюрих', origin_code:'IPPH', destination:'Сингапур', destination_code:'IBTH', region:'asia', aircraft_type:'A340-300 / B777-300ER', distance_km:10300, duration_min:750, frequency:'daily', class:'business' },
+      // === Межрегиональные маршруты ===
+      { origin:'Москва', origin_code:'IRFD', destination:'Дубай', destination_code:'ISKP', region:'middle-east', aircraft_type:'A320neo / A321neo', distance_km:3600, duration_min:280, frequency:'daily', class:'business' },
+      { origin:'Москва', origin_code:'IRFD', destination:'Сочи', destination_code:'IBLT', region:'europe', aircraft_type:'A220-300 / A320-200', distance_km:1500, duration_min:145, frequency:'daily', class:'economy' },
+      { origin:'Москва', origin_code:'IRFD', destination:'Санкт-Петербург', destination_code:'IMLR', region:'europe', aircraft_type:'A220-300 / A320neo', distance_km:700, duration_min:90, frequency:'daily', class:'economy' },
+      { origin:'Лондон', origin_code:'IKFL', destination:'Нью-Йорк', destination_code:'ITKO', region:'america', aircraft_type:'A330-300 / B777-300ER', distance_km:5570, duration_min:420, frequency:'daily', class:'first' },
+      { origin:'Дубай', origin_code:'ISKP', destination:'Сингапур', destination_code:'IBTH', region:'asia', aircraft_type:'A330-300 / B777-300ER', distance_km:5900, duration_min:430, frequency:'daily', class:'business' },
+      { origin:'Дубай', origin_code:'ISKP', destination:'Найроби', destination_code:'IPAP', region:'africa', aircraft_type:'A320neo / A321neo', distance_km:3500, duration_min:270, frequency:'daily', class:'economy' },
+      { origin:'Каир', origin_code:'ILAR', destination:'Дар-эс-Салам', destination_code:'IHEN', region:'africa', aircraft_type:'A220-300 / A320-200', distance_km:4300, duration_min:320, frequency:'weekly', class:'economy' },
+      { origin:'Сан-Паулу', origin_code:'ISAU', destination:'Нью-Йорк', destination_code:'ITKO', region:'america', aircraft_type:'A330-300 / B777-300ER', distance_km:7700, duration_min:570, frequency:'daily', class:'business' }
     ];
 
     // ============ STATE ============
