@@ -259,7 +259,7 @@
     <div class="table-wrapper">
       <div class="loading" id="eventsLoading" data-i18n="loading-events">Загрузка событий...</div>
       <table id="eventsTable" style="display:none;">
-        <thead><tr><th data-i18n="th-title">Название</th><th data-i18n="th-date">Дата</th><th data-i18n="th-time">Время</th><th data-i18n="th-location">Локация</th><th data-i18n="th-status">Статус</th><th data-i18n="th-actions">Действия</th></tr></thead>
+        <thead><tr><th data-i18n="th-title">Название</th><th data-i18n="th-date">Дата</th><th data-i18n="th-time">Время</th><th data-i18n="th-location">Локация</th><th data-i18n="th-image">Фото</th><th data-i18n="th-status">Статус</th><th data-i18n="th-actions">Действия</th></tr></thead>
         <tbody id="eventsBody"></tbody>
       </table>
       <div class="empty-state" id="eventsEmpty" style="display:none;"><h3 data-i18n="empty-events-title">Нет событий</h3><p data-i18n="empty-events-desc">Добавьте первое событие</p></div>
@@ -324,7 +324,7 @@
         'filter-all': 'Все', 'filter-new': '🆕 Новые', 'filter-review': '🔍 На рассмотрении', 'filter-accepted': '✅ Принято', 'filter-rejected': '❌ Отклонено',
         'loading-apps': 'Загрузка анкет...', 'loading-events': 'Загрузка событий...', 'loading-routes': 'Загрузка маршрутов...', 'loading-fleet': 'Загрузка флота...', 'loading-timeline': 'Загрузка истории...',
         'th-roblox': 'Roblox', 'th-telegram': 'Telegram', 'th-age': 'Возраст', 'th-role': 'Роль', 'th-status': 'Статус', 'th-date': 'Дата',
-        'th-title': 'Название', 'th-time': 'Время', 'th-location': 'Локация', 'th-actions': 'Действия',
+        'th-title': 'Название', 'th-time': 'Время', 'th-location': 'Локация', 'th-image': 'Фото', 'th-actions': 'Действия',
         'th-origin': 'Откуда', 'th-destination': 'Куда', 'th-distance': 'Дистанция', 'th-duration': 'Время', 'th-aircraft': 'Самолёт',
         'th-model': 'Модель', 'th-manufacturer': 'Производитель', 'th-category': 'Категория', 'th-capacity': 'Мест', 'th-range': 'Дальность', 'th-speed': 'Скорость',
         'th-year': 'Год', 'th-description': 'Описание', 'th-icon': 'Иконка',
@@ -334,6 +334,7 @@
         'empty-fleet-title': 'Нет ВС', 'empty-fleet-desc': 'Флот не найден',
         'empty-timeline-title': 'Нет записей', 'empty-timeline-desc': 'Записи загружаются из базы данных',
         'btn-add': '+ Добавить событие',
+        'label-image-url': 'URL изображения', 'btn-ai-image': '🤎 AI-генерация фото', 'ai-generating': 'Генерация изображения...', 'ai-generated': 'Изображение сгенерировано!', 'ai-error': 'Ошибка генерации изображения',
         'modal-add-title': 'Новое событие', 'modal-edit-title': 'Редактировать событие',
         'label-title': 'Название', 'label-date': 'Дата', 'label-time': 'Время', 'label-location': 'Локация', 'label-description': 'Описание', 'label-status': 'Статус',
         'btn-save': 'Сохранить', 'btn-cancel': 'Отмена',
@@ -360,7 +361,7 @@
         'filter-all': 'All', 'filter-new': '🆕 New', 'filter-review': '🔍 Under review', 'filter-accepted': '✅ Accepted', 'filter-rejected': '❌ Rejected',
         'loading-apps': 'Loading applications...', 'loading-events': 'Loading events...', 'loading-routes': 'Loading routes...', 'loading-fleet': 'Loading fleet...', 'loading-timeline': 'Loading timeline...',
         'th-roblox': 'Roblox', 'th-telegram': 'Telegram', 'th-age': 'Age', 'th-role': 'Role', 'th-status': 'Status', 'th-date': 'Date',
-        'th-title': 'Title', 'th-time': 'Time', 'th-location': 'Location', 'th-actions': 'Actions',
+        'th-title': 'Title', 'th-time': 'Time', 'th-location': 'Location', 'th-image': 'Image', 'th-actions': 'Actions',
         'th-origin': 'From', 'th-destination': 'To', 'th-distance': 'Distance', 'th-duration': 'Duration', 'th-aircraft': 'Aircraft',
         'th-model': 'Model', 'th-manufacturer': 'Manufacturer', 'th-category': 'Category', 'th-capacity': 'Seats', 'th-range': 'Range', 'th-speed': 'Speed',
         'th-year': 'Year', 'th-description': 'Description', 'th-icon': 'Icon',
@@ -370,6 +371,7 @@
         'empty-fleet-title': 'No aircraft', 'empty-fleet-desc': 'Fleet not found',
         'empty-timeline-title': 'No records', 'empty-timeline-desc': 'Records are loaded from the database',
         'btn-add': '+ Add Event',
+        'label-image-url': 'Image URL', 'btn-ai-image': '🤎 AI Generate Photo', 'ai-generating': 'Generating image...', 'ai-generated': 'Image generated!', 'ai-error': 'Image generation error',
         'modal-add-title': 'New Event', 'modal-edit-title': 'Edit Event',
         'label-title': 'Title', 'label-date': 'Date', 'label-time': 'Time', 'label-location': 'Location', 'label-description': 'Description', 'label-status': 'Status',
         'btn-save': 'Save', 'btn-cancel': 'Cancel',
@@ -445,7 +447,7 @@
         } else if (f.type === 'select') {
           html += '<div class="form-row"><label>'+f.label+'</label><select id="field-'+f.name+'">' + f.options.map(o => '<option value="'+o.value+'"'+(val===o.value?' selected':'')+'>'+o.label+'</option>').join('') + '</select></div>';
         } else {
-          html += '<div class="form-row"><label>'+f.label+'</label><input type="'+(f.type||'text')+'" id="field-'+f.name+'" value="'+val+'"'+(f.placeholder?' placeholder="'+f.placeholder+'"':'')+'></div>';
+          html += '<div class="form-row"><label>'+f.label+'</label><input type="'+(f.type||'text')+'" id="field-'+f.name+'" value="'+val+'"'+(f.placeholder?' placeholder="'+f.placeholder+'"':'')+'>'+(f.extra||'')+'</div>';
         }
       });
       html += '</div><div class="modal-footer"><button class="btn-cancel" onclick="closeModal()">'+t('btn-cancel')+'</button><button class="btn-save" onclick="modalSave()">'+t('btn-save')+'</button></div>';
@@ -539,7 +541,7 @@
 
     // ============ EVENTS ============
     async function loadEvents() {
-      try { const r=await fetch('/api/admin/events'); const d=await r.json(); eventsData=d.events||[]; document.getElementById('eventsLoading').style.display='none'; renderEvents(); } catch(e){ document.getElementById('eventsLoading').textContent=t('error-load'); }
+      try { const r=await fetch('/api/admin/events'); if(r.status===401){window.location.href='login.html';return;} const d=await r.json(); eventsData=d.events||[]; document.getElementById('eventsLoading').style.display='none'; renderEvents(); } catch(e){ document.getElementById('eventsLoading').textContent=t('error-load'); }
     }
     function renderEvents() {
       const tbody=document.getElementById('eventsBody');
@@ -551,10 +553,27 @@
           <td class="cell-small">${escapeHtml(e.date)}</td>
           <td class="cell-small">${escapeHtml(e.time)||'—'}</td>
           <td class="cell-small">${escapeHtml(e.location)||'—'}</td>
+          <td>${e.image_url ? '<img src="'+e.image_url+'" style="max-width:60px;max-height:40px;border-radius:4px;object-fit:cover" onerror="this.style.display=\'none\'">' : '—'}</td>
           <td><span class="status-badge status-${e.status||'upcoming'}">${getStatusText(e.status)}</span></td>
           <td><div class="cell-actions"><button class="action-btn" onclick="editEvent(${e.id})">${t('btn-edit')}</button><button class="action-btn delete" onclick="deleteEvent(${e.id})">${t('btn-delete')}</button></div></td>
         </tr>
       `).join('');
+    }
+    async function generateEventImage() {
+      const title = getField('title');
+      const desc = getField('description');
+      const location = getField('location');
+      if(!title) { showToast(t('error-required'),'error'); return; }
+      const btn = document.getElementById('aiImageBtn');
+      if(btn) { btn.disabled=true; btn.textContent=t('ai-generating'); }
+      try {
+        const prompt = `Aviation event banner: ${title}${location ? ', location: '+location : ''}${desc ? ', '+desc.substring(0,100) : ''}, Swiss Airlines virtual airline, red and white Swiss branding, professional aviation photography style, scenic airport or sky background, high quality, 16:9 aspect`;
+        const r = await fetch('/api/admin/generate-event-image',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
+        const d = await r.json();
+        if(r.ok && d.image_url) { document.getElementById('field-image_url').value = d.image_url; showToast(t('ai-generated'),'success'); }
+        else showToast(d.error||t('ai-error'),'error');
+      } catch(e){ showToast(t('ai-error'),'error'); }
+      if(btn) { btn.disabled=false; btn.textContent=t('btn-ai-image'); }
     }
     function openEventModal(id){
       const e = id ? eventsData.find(x=>x.id===id) : null;
@@ -562,7 +581,7 @@
         {name:'title',label:t('label-title'),type:'text'},{name:'date',label:t('label-date'),type:'text',placeholder:'2026-08-20'},
         {name:'time',label:t('label-time'),type:'text',placeholder:'19:00'},{name:'location',label:t('label-location'),type:'text'},
         {name:'status',label:t('label-status'),type:'select',options:[{value:'upcoming',label:t('status-upcoming')},{value:'past',label:t('status-past')}]},
-        {name:'description',label:t('label-description'),type:'textarea'},{name:'image_url',label:'URL',type:'text'}
+        {name:'description',label:t('label-description'),type:'textarea'},{name:'image_url',label:t('label-image-url'),type:'text',extra:`<button id="aiImageBtn" type="button" onclick="generateEventImage()" style="margin-top:4px;padding:6px 14px;background:var(--swiss-red);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;">${t('btn-ai-image')}</button>`}
       ], async ()=>{
         const payload = {title:getField('title'),date:getField('date'),time:getField('time'),location:getField('location'),status:getField('status'),description:getField('description'),image_url:getField('image_url')};
         if(!payload.title||!payload.date){ showToast(t('error-required'),'error'); return; }
@@ -666,17 +685,17 @@
     async function checkAuth() {
       try {
         const r = await fetch('/api/me');
-        if (!r.ok) { window.location.href = 'login.html'; return; }
+        if (!r.ok) { window.location.href = 'login.html'; return false; }
         const d = await r.json();
-        if (!d.isAdmin) { window.location.href = 'login.html'; return; }
+        if (!d.isAdmin) { window.location.href = 'login.html'; return false; }
         const avatar = document.getElementById('userAvatar');
         const nameEl = document.getElementById('userName');
         if (d.username && avatar) avatar.textContent = d.username.charAt(0).toUpperCase();
         if (d.username && nameEl) nameEl.textContent = d.username;
-      } catch(e) { window.location.href = 'login.html'; }
+        return true;
+      } catch(e) { window.location.href = 'login.html'; return false; }
     }
-    checkAuth();
-    loadApplications();
+    checkAuth().then(ok => { if (ok) loadApplications(); });
   </script>
 </body>
 </html>

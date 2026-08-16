@@ -420,7 +420,8 @@
       try {
         const res = await fetch(API_BASE + '/api/events');
         if (!res.ok) throw new Error('HTTP ' + res.status);
-        eventsData = await res.json();
+        const data = await res.json();
+        eventsData = data.events || [];
       } catch (e) {
         container.innerHTML = '<div class="error">' + t('error-load') + '</div>';
         console.error(e);
@@ -448,6 +449,7 @@
               <div class="event-title">${escapeHtml(ev.title)}</div>
               <div class="event-date">${formatDate(ev.date)}</div>
             </div>
+            ${ev.image_url ? `<div class="event-image" style="width:100%;max-height:240px;overflow:hidden;border-radius:8px;margin-bottom:8px;"><img src="${escapeHtml(ev.image_url)}" alt="${escapeHtml(ev.title)}" style="width:100%;object-fit:cover;display:block;" onerror="this.parentElement.style.display='none'"></div>` : ''}
             <div class="event-body">
               ${ev.location ? `<div class="event-route"><span class="from">📍 ${escapeHtml(ev.location)}</span></div>` : ''}
               ${ev.time ? `<div class="event-date" style="margin-bottom:12px;text-align:center;font-size:12px;color:var(--swiss-red);font-weight:600;">${escapeHtml(ev.time)}</div>` : ''}
@@ -475,6 +477,7 @@
         past.forEach(ev => {
           html += `
           <div class="past-item">
+            ${ev.image_url ? `<img src="${escapeHtml(ev.image_url)}" alt="${escapeHtml(ev.title)}" style="width:48px;height:48px;object-fit:cover;border-radius:8px;margin-right:8px;flex-shrink:0;" onerror="this.style.display='none'">` : ''}
             <span class="past-icon">✅</span>
             <div class="past-info">
               <div class="past-title">${escapeHtml(ev.title)}</div>

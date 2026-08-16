@@ -210,6 +210,110 @@ async function initDb() {
         )`, (err) => err ? reject(err) : resolve());
       });
     }
+
+    // ============ SEED DATA ============
+    const seedRoutes = [
+      {origin:'Zurich',origin_code:'ZRH',destination:'Geneva',destination_code:'GVA',distance_km:230,duration_min:50,aircraft_type:'A220',frequency:'Daily'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'London',destination_code:'LHR',distance_km:940,duration_min:110,aircraft_type:'A320',frequency:'Daily'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Paris',destination_code:'CDG',distance_km:620,duration_min:90,aircraft_type:'A220',frequency:'Daily'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Berlin',destination_code:'BER',distance_km:700,duration_min:100,aircraft_type:'A220',frequency:'Daily'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Rome',destination_code:'FCO',distance_km:870,duration_min:120,aircraft_type:'A320',frequency:'Daily'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Madrid',destination_code:'MAD',distance_km:1250,duration_min:150,aircraft_type:'A320',frequency:'Daily'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Amsterdam',destination_code:'AMS',distance_km:600,duration_min:85,aircraft_type:'A220',frequency:'Daily'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Vienna',destination_code:'VIE',distance_km:600,duration_min:80,aircraft_type:'A220',frequency:'Daily'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Barcelona',destination_code:'BCN',distance_km:1100,duration_min:135,aircraft_type:'A320',frequency:'4x/week'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Istanbul',destination_code:'IST',distance_km:1800,duration_min:180,aircraft_type:'A321',frequency:'Daily'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Dubai',destination_code:'DXB',distance_km:4700,duration_min:360,aircraft_type:'A330',frequency:'Daily'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'New York',destination_code:'JFK',distance_km:6300,duration_min:510,aircraft_type:'A330',frequency:'Daily'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Tokyo',destination_code:'NRT',distance_km:9500,duration_min:720,aircraft_type:'A350',frequency:'4x/week'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Singapore',destination_code:'SIN',distance_km:10300,duration_min:780,aircraft_type:'A350',frequency:'3x/week'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Hong Kong',destination_code:'HKG',distance_km:9300,duration_min:690,aircraft_type:'A350',frequency:'4x/week'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Bangkok',destination_code:'BKK',distance_km:8900,duration_min:660,aircraft_type:'A350',frequency:'3x/week'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Mumbai',destination_code:'BOM',distance_km:6500,duration_min:480,aircraft_type:'A330',frequency:'4x/week'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Shanghai',destination_code:'PVG',distance_km:8800,duration_min:660,aircraft_type:'A350',frequency:'3x/week'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Montreal',destination_code:'YUL',distance_km:5900,duration_min:480,aircraft_type:'A330',frequency:'3x/week'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'São Paulo',destination_code:'GRU',distance_km:9500,duration_min:720,aircraft_type:'A350',frequency:'3x/week'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Cairo',destination_code:'CAI',distance_km:2700,duration_min:210,aircraft_type:'A321',frequency:'4x/week'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Moscow',destination_code:'SVO',distance_km:2200,duration_min:180,aircraft_type:'A321',frequency:'Daily'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Athens',destination_code:'ATH',distance_km:1600,duration_min:150,aircraft_type:'A320',frequency:'4x/week'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Lisbon',destination_code:'LIS',distance_km:1700,duration_min:160,aircraft_type:'A320',frequency:'4x/week'},
+      {origin:'Geneva',origin_code:'GVA',destination:'London',destination_code:'LHR',distance_km:800,duration_min:100,aircraft_type:'A220',frequency:'Daily'},
+      {origin:'Geneva',origin_code:'GVA',destination:'New York',destination_code:'JFK',distance_km:6200,duration_min:500,aircraft_type:'A330',frequency:'4x/week'}
+    ];
+    const seedFleet = [
+      {model:'Airbus A220-300',manufacturer:'Airbus',category:'Regional',capacity:145,range_km:6300,speed_kmh:829,description:'Versatile regional jet, Swiss flagship short-haul'},
+      {model:'Airbus A320neo',manufacturer:'Airbus',category:'Short-haul',capacity:180,range_km:6500,speed_kmh:833,description:'Efficient narrow-body for European routes'},
+      {model:'Airbus A321neo',manufacturer:'Airbus',category:'Short-haul',capacity:220,range_km:7400,speed_kmh:833,description:'Larger narrow-body, medium-range'},
+      {model:'Airbus A330-300',manufacturer:'Airbus',category:'Long-haul',capacity:300,range_km:11750,speed_kmh:871,description:'Wide-body long-haul workhorse'},
+      {model:'Airbus A350-900',manufacturer:'Airbus',category:'Long-haul',capacity:315,range_km:15000,speed_kmh:903,description:'Next-gen ultra-long-haul flagship'},
+      {model:'Boeing 777-300ER',manufacturer:'Boeing',category:'Long-haul',capacity:340,range_km:13650,speed_kmh:905,description:'Long-range wide-body trijet'}
+    ];
+    const seedTimeline = [
+      {year:'2002',title:'Swiss International Air Lines',description:'Founded after the collapse of Swissair, continuing Swiss aviation heritage',icon:'✈️'},
+      {year:'2005',title:'Lufthansa Group',description:'Joined the Lufthansa Group as a subsidiary airline',icon:'🤝'},
+      {year:'2006',title:'New Fleet Program',description:'Began modernizing fleet with Airbus A330 and A340',icon:'🔄'},
+      {year:'2009',title:'A330-300 Arrival',description:'First Airbus A330-300 delivered for long-haul operations',icon:'🛩️'},
+      {year:'2013',title:'A320 Family',description:'Transitioned to A320 family for short-haul European network',icon:'✈️'},
+      {year:'2016',title:'CSeries/A220 Order',description:'Ordered Bombardier CSeries (later Airbus A220) for regional routes',icon:'📋'},
+      {year:'2017',title:'A220-300 Service',description:'Swiss became launch operator of the Airbus A220-300',icon:'🚀'},
+      {year:'2019',title:'A350-900 Order',description:'Ordered Airbus A350-900 to replace aging A340 fleet',icon:'🌟'},
+      {year:'2022',title:'PTFS Virtual Airline',description:'Founded Swiss Airlines VA for Pilot Training Flight Simulator on Roblox',icon:'🎮'},
+      {year:'2023',title:'50+ Routes',description:'Expanded to over 50 virtual routes across 4 continents in PTFS',icon:'🌍'},
+      {year:'2024',title:'100+ Pilots',description:'Reached 100+ active virtual pilots in the community',icon:'👨‍✈️'},
+      {year:'2025',title:'A350 Service Begins',description:'First Airbus A350-900 entered service, replacing A340s',icon:'🛫'},
+      {year:'2026',title:'New Website Launch',description:'Launched modern Swiss Airlines VA website with admin panel',icon:'🌐'}
+    ];
+
+    // Seed routes (if empty)
+    if (dbType === 'postgres') {
+      const rc = (await db.query('SELECT COUNT(*) as c FROM routes')).rows[0].c;
+      if (parseInt(rc) === 0) {
+        for (const r of seedRoutes) {
+          await db.query('INSERT INTO routes (origin, origin_code, destination, destination_code, distance_km, duration_min, aircraft_type, frequency) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)',
+            [r.origin, r.origin_code, r.destination, r.destination_code, r.distance_km, r.duration_min, r.aircraft_type, r.frequency]);
+        }
+        console.log('✅ Seeded', seedRoutes.length, 'routes');
+      }
+      const fc = (await db.query('SELECT COUNT(*) as c FROM fleet')).rows[0].c;
+      if (parseInt(fc) === 0) {
+        for (const f of seedFleet) {
+          await db.query('INSERT INTO fleet (model, manufacturer, category, capacity, range_km, speed_kmh, description) VALUES ($1,$2,$3,$4,$5,$6,$7)',
+            [f.model, f.manufacturer, f.category, f.capacity, f.range_km, f.speed_kmh, f.description]);
+        }
+        console.log('✅ Seeded', seedFleet.length, 'fleet items');
+      }
+      const tc = (await db.query('SELECT COUNT(*) as c FROM timeline')).rows[0].c;
+      if (parseInt(tc) === 0) {
+        for (const t of seedTimeline) {
+          await db.query('INSERT INTO timeline (year, title, description, icon) VALUES ($1,$2,$3,$4)',
+            [t.year, t.title, t.description, t.icon]);
+        }
+        console.log('✅ Seeded', seedTimeline.length, 'timeline entries');
+      }
+    } else {
+      const rc = await new Promise((resolve, reject) => db.get('SELECT COUNT(*) as c FROM routes', [], (err, r) => err ? reject(err) : resolve(r)));
+      if (rc && rc.c === 0) {
+        const stmt = db.prepare('INSERT INTO routes (origin, origin_code, destination, destination_code, distance_km, duration_min, aircraft_type, frequency) VALUES (?,?,?,?,?,?,?,?)');
+        for (const r of seedRoutes) stmt.run(r.origin, r.origin_code, r.destination, r.destination_code, r.distance_km, r.duration_min, r.aircraft_type, r.frequency);
+        stmt.finalize();
+        console.log('✅ Seeded', seedRoutes.length, 'routes');
+      }
+      const fc = await new Promise((resolve, reject) => db.get('SELECT COUNT(*) as c FROM fleet', [], (err, r) => err ? reject(err) : resolve(r)));
+      if (fc && fc.c === 0) {
+        const stmt = db.prepare('INSERT INTO fleet (model, manufacturer, category, capacity, range_km, speed_kmh, description) VALUES (?,?,?,?,?,?,?)');
+        for (const f of seedFleet) stmt.run(f.model, f.manufacturer, f.category, f.capacity, f.range_km, f.speed_kmh, f.description);
+        stmt.finalize();
+        console.log('✅ Seeded', seedFleet.length, 'fleet items');
+      }
+      const tc = await new Promise((resolve, reject) => db.get('SELECT COUNT(*) as c FROM timeline', [], (err, r) => err ? reject(err) : resolve(r)));
+      if (tc && tc.c === 0) {
+        const stmt = db.prepare('INSERT INTO timeline (year, title, description, icon) VALUES (?,?,?,?)');
+        for (const t of seedTimeline) stmt.run(t.year, t.title, t.description, t.icon);
+        stmt.finalize();
+        console.log('✅ Seeded', seedTimeline.length, 'timeline entries');
+      }
+    }
+
     console.log('✅ Database initialized');
   } catch (err) {
     console.error('❌ Database initialization error:', err);
@@ -491,6 +595,52 @@ app.get('/api/admin/timeline', requireAuth, async (req, res) => {
     else { rows = await new Promise((resolve, reject) => db.all('SELECT * FROM timeline ORDER BY year DESC', [], (err, r) => err ? reject(err) : resolve(r))); }
     res.json({ timeline: rows });
   } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+/* ============================================================
+   ADMIN CMS API — AI IMAGE GENERATION
+   ============================================================ */
+app.post('/api/admin/generate-event-image', requireAuth, async (req, res) => {
+  const { prompt } = req.body;
+  if (!prompt || prompt.trim().length < 5) {
+    return res.status(400).json({ error: 'Prompt too short (min 5 chars)' });
+  }
+  if (prompt.length > 1000) {
+    return res.status(400).json({ error: 'Prompt too long (max 1000 chars)' });
+  }
+  try {
+    const { exec } = require('child_process');
+    const scriptPath = path.join(__dirname, '..', '..', '..', 'skills', 'image_generator', 'image_generator.py');
+    const filename = 'swiss_event_' + Date.now();
+    const outputDir = path.join(__dirname, 'generated');
+    const fs = require('fs');
+    if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
+
+    const command = `python3 "${scriptPath}" --prompt "${prompt.replace(/"/g, '\\"')}" --ratio 16:9 --resolution 2K --filename "${filename}"`;
+
+    exec(command, { timeout: 120000 }, (error, stdout, stderr) => {
+      if (error) {
+        console.error('❌ [AI-IMG] Generation error:', error.message);
+        return res.status(500).json({ error: 'Image generation failed: ' + error.message });
+      }
+      try {
+        const result = JSON.parse(stdout.trim());
+        if (result.status === 0 && result.data && result.data.image_urls && result.data.image_urls.length > 0) {
+          console.log('✅ [AI-IMG] Generated image:', result.data.image_urls[0]);
+          res.json({ success: true, image_url: result.data.image_urls[0] });
+        } else {
+          console.error('❌ [AI-IMG] Bad result:', result);
+          res.status(500).json({ error: result.message || 'Image generation returned no URL' });
+        }
+      } catch (parseErr) {
+        console.error('❌ [AI-IMG] Parse error:', parseErr.message, 'stdout:', stdout);
+        res.status(500).json({ error: 'Failed to parse generation result' });
+      }
+    });
+  } catch (err) {
+    console.error('❌ [AI-IMG] Error:', err);
+    res.status(500).json({ error: 'Image generation error: ' + err.message });
+  }
 });
 
 /* ============================================================
