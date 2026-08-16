@@ -12,7 +12,7 @@ services:
       - key: ADMIN_PASSWORD
         value: 123789
       - key: SESSION_SECRET
-        generateValue: true
+        value: swiss-va-session-secret-2026-stable
       - key: DATABASE_URL
         fromDatabase:
           name: swiss-airlines-db

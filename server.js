@@ -16,17 +16,18 @@ const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'Gregory';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '123789';
 const ADMIN_PASSWORD_HASH = bcrypt.hashSync(ADMIN_PASSWORD, 10);
 
-const SESSION_SECRET = process.env.SESSION_SECRET || 'swiss-airlines-va-secret-key-' + Math.random().toString(36);
+const SESSION_SECRET = process.env.SESSION_SECRET || 'swiss-airlines-va-secret-key-2026';
 
 /* ============================================================
    DATABASE SETUP
    ============================================================ */
-let db, dbType;
+let db, dbType, pgPool;
 const pgConn = process.env.DATABASE_URL || process.env.POSTGRES_URL || '';
 
 if (pgConn && pgConn.startsWith('postgres')) {
   const { Pool } = require('pg');
-  db = new Pool({ connectionString: pgConn, ssl: { rejectUnauthorized: false } });
+  pgPool = new Pool({ connectionString: pgConn, ssl: { rejectUnauthorized: false } });
+  db = pgPool;
   dbType = 'postgres';
   console.log('🗄️  Using PostgreSQL');
 } else {
@@ -34,6 +35,24 @@ if (pgConn && pgConn.startsWith('postgres')) {
   db = new sqlite3.Database('./swiss_airlines.db');
   dbType = 'sqlite';
   console.log('🗄️  Using SQLite');
+}
+
+/* ============================================================
+   SESSION STORE — persistent with PostgreSQL
+   ============================================================ */
+let sessionStore;
+if (dbType === 'postgres') {
+  const pgSession = require('connect-pg-simple')(session);
+  sessionStore = new pgSession({
+    pool: pgPool,
+    tableName: 'session',
+    createTableIfMissing: true
+  });
+  console.log('🔒 Session store: PostgreSQL (persistent)');
+} else {
+  // SQLite — sessions stored in memory (resets on restart, acceptable for local dev)
+  sessionStore = undefined;
+  console.log('🔒 Session store: Memory (resets on restart)');
 }
 
 /* ============================================================
@@ -45,12 +64,13 @@ app.use(express.static(path.join(__dirname, '.')));
 
 app.use(session({
   secret: SESSION_SECRET,
+  store: sessionStore,
   resave: false,
   saveUninitialized: false,
   cookie: {
     secure: false,
     httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000,
+    maxAge: 7 * 24 * 60 * 60 * 1000,  // 7 days
     sameSite: 'lax'
   },
   name: 'swiss_session'
@@ -212,8 +232,32 @@ async function initDb() {
     }
 
     // ============ SEED DATA ============
+    const seedEvents = [
+      {title:'Zurich – Geneva Group Flight',description:'Join our scenic group flight across Switzerland from ZRH to GVA. Fly in formation over the Alps with fellow Swiss pilots! All ranks welcome, ATC provided.',date:'2026-08-22',time:'18:00 UTC',location:'ZRH → GVA',status:'upcoming',image_url:null},
+      {title:'Cross-Atlantic Challenge',description:'Long-haul endurance event: Zurich to New York JFK. Compete for the best landing score on the A330! Top 3 pilots get the Transatlantic badge.',date:'2026-09-05',time:'18:00 UTC',location:'ZRH → JFK',status:'upcoming',image_url:null},
+      {title:'Night Cargo Run',description:'Special night-time cargo operation. Fly the A321 from Zurich to Istanbul under the stars. Limited slots — first come, first served!',date:'2026-07-19',time:'21:00 UTC',location:'ZRH → IST',status:'completed',image_url:null},
+      {title:'Alpine Scenic Tour',description:'Low-altitude sightseeing flight through the Swiss Alps. Route: Zurich → Interlaken → Lucerne → Zurich. A220 only, VFR rules!',date:'2026-08-30',time:'15:00 UTC',location:'ZRH → Interlaken → ZRH',status:'upcoming',image_url:null},
+      {title:'Dubai Express Race',description:'Speed challenge on the Zurich–Dubai route! Who can complete the A330 flight with the best fuel efficiency? Sponsored event with prizes.',date:'2026-09-12',time:'20:00 UTC',location:'ZRH → DXB',status:'upcoming',image_url:null},
+      {title:'Pilot Graduation Ceremony',description:'Monthly ceremony for newly accepted pilots. Welcome flight Zurich → Vienna for all cadets who passed training this month!',date:'2026-08-28',time:'17:00 UTC',location:'ZRH → VIE',status:'upcoming',image_url:null},
+      {title:'Tokyo inaugural flight',description:'Inaugural A350 flight to Tokyo Narita! Celebrate the launch of our newest long-haul route. Full ATC coverage, group departure.',date:'2026-06-14',time:'10:00 UTC',location:'ZRH → NRT',status:'completed',image_url:null},
+      {title:'Summer Mediterranean Hop',description:'Multi-stop tour: Zurich → Rome → Athens → Barcelona → Zurich. Complete all legs for the Mediterranean Tour badge!',date:'2026-07-05',time:'12:00 UTC',location:'ZRH → FCO → ATH → BCN → ZRH',status:'completed',image_url:null}
+    ];
+    const seedApplications = [
+      {roblox_name:'SkyPilot_2026',char_age:'28',real_age:'19',experience:'2 years in PTFS, flew with Lufthansa VA',role:'First Officer',online_time:'15h/week',why_swiss:'Swiss Airlines has the best routes and professional community',rules:'Yes',fro:'Yes',flight_minutes:'3400',telegram:'@skypilot26',about:'Aviation enthusiast, training for ATPL in real life',status:'review'},
+      {roblox_name:'AlpineFlyer',char_age:'32',real_age:'22',experience:'1 year in various VAs, 2000+ flight minutes',role:'Captain',online_time:'20h/week',why_swiss:'Love the Swiss precision and the A220 fleet',rules:'Yes',fro:'Yes',flight_minutes:'5200',telegram:'@alpineflyer',about:'Real-world PPL holder, enjoy realistic flying in PTFS',status:'new'},
+      {roblox_name:'CloudChaser_RU',char_age:'25',real_age:'17',experience:'6 months in PTFS, learning fast',role:'Cadet',online_time:'10h/week',why_swiss:'My friend recommended Swiss VA, looks cool',rules:'Yes',fro:'No',flight_minutes:'800',telegram:'@cloudchaser',about:'New to aviation but very motivated to learn',status:'new'},
+      {roblox_name:'CaptainSwiss',char_age:'35',real_age:'25',experience:'3 years PTFS, former VA leader',role:'Captain',online_time:'25h/week',why_swiss:'Want to help build the best Swiss community in PTFS',rules:'Yes',fro:'Yes',flight_minutes:'8700',telegram:'@captainswiss',about:'Former Lufthansa VA captain, ready to bring experience to Swiss',status:'accepted'},
+      {roblox_name:'NightOwl_Flyer',char_age:'30',real_age:'20',experience:'1.5 years, mostly long-haul',role:'First Officer',online_time:'12h/week',why_swiss:'Swiss has amazing long-haul routes, A350 is my dream plane',rules:'Yes',fro:'Yes',flight_minutes:'4100',telegram:'@nightowl_flyer',about:'Night owl who loves overnight flights and realistic ATC',status:'review'},
+      {roblox_name:'AviationKid_2010',char_age:'22',real_age:'15',experience:'3 months in PTFS',role:'Cadet',online_time:'8h/week',why_swiss:'Swiss seems really cool and professional',rules:'Yes',fro:'No',flight_minutes:'200',telegram:'@avia_kid10',about:'Just started playing PTFS, want to learn from the best',status:'new'},
+      {roblox_name:'JetSetter_Pro',char_age:'40',real_age:'28',experience:'4 years PTFS, 10000+ minutes',role:'Senior Captain',online_time:'30h/week',why_swiss:'Looking for a serious VA with real structure and events',rules:'Yes',fro:'Yes',flight_minutes:'10200',telegram:'@jetsetter_pro',about:'Veteran PTFS pilot, IFR specialist, love precision approaches',status:'accepted'},
+      {roblox_name:'RusAviator',char_age:'27',real_age:'18',experience:'1 year, Russian VA experience',role:'First Officer',online_time:'14h/week',why_swiss:'Swiss quality and discipline, plus Moscow route!',rules:'Yes',fro:'Yes',flight_minutes:'2800',telegram:'@rusaviator',about:'From Moscow, love the ZRH-SVO route, aviation student',status:'rejected'},
+      {roblox_name:'SwissMountainPilot',char_age:'33',real_age:'21',experience:'2 years, specialist in mountain approaches',role:'Captain',online_time:'18h/week',why_swiss:'Born in Switzerland, this is my home airline!',rules:'Yes',fro:'Yes',flight_minutes:'6300',telegram:'@swissmt_pilot',about:'Swiss native, love Alpine approaches, Innsbruck specialist',status:'accepted'},
+      {roblox_name:'BeginnerWings',char_age:'20',real_age:'14',experience:'1 month, just started',role:'Cadet',online_time:'5h/week',why_swiss:'My older brother is in Swiss VA and says its great',rules:'Yes',fro:'No',flight_minutes:'50',telegram:'@beginner_wings',about:'Total beginner but excited to learn everything about flying',status:'new'}
+    ];
     const seedRoutes = [
+      // === Swiss Domestic ===
       {origin:'Zurich',origin_code:'ZRH',destination:'Geneva',destination_code:'GVA',distance_km:230,duration_min:50,aircraft_type:'A220',frequency:'Daily'},
+      // === European Short-Haul from ZRH ===
       {origin:'Zurich',origin_code:'ZRH',destination:'London',destination_code:'LHR',distance_km:940,duration_min:110,aircraft_type:'A320',frequency:'Daily'},
       {origin:'Zurich',origin_code:'ZRH',destination:'Paris',destination_code:'CDG',distance_km:620,duration_min:90,aircraft_type:'A220',frequency:'Daily'},
       {origin:'Zurich',origin_code:'ZRH',destination:'Berlin',destination_code:'BER',distance_km:700,duration_min:100,aircraft_type:'A220',frequency:'Daily'},
@@ -222,46 +266,92 @@ async function initDb() {
       {origin:'Zurich',origin_code:'ZRH',destination:'Amsterdam',destination_code:'AMS',distance_km:600,duration_min:85,aircraft_type:'A220',frequency:'Daily'},
       {origin:'Zurich',origin_code:'ZRH',destination:'Vienna',destination_code:'VIE',distance_km:600,duration_min:80,aircraft_type:'A220',frequency:'Daily'},
       {origin:'Zurich',origin_code:'ZRH',destination:'Barcelona',destination_code:'BCN',distance_km:1100,duration_min:135,aircraft_type:'A320',frequency:'4x/week'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Prague',destination_code:'PRG',distance_km:550,duration_min:80,aircraft_type:'A220',frequency:'Daily'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Warsaw',destination_code:'WAW',distance_km:1050,duration_min:130,aircraft_type:'A320',frequency:'4x/week'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Copenhagen',destination_code:'CPH',distance_km:1050,duration_min:130,aircraft_type:'A220',frequency:'Daily'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Stockholm',destination_code:'ARN',distance_km:1450,duration_min:160,aircraft_type:'A320',frequency:'4x/week'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Helsinki',destination_code:'HEL',distance_km:1780,duration_min:180,aircraft_type:'A321',frequency:'3x/week'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Dublin',destination_code:'DUB',distance_km:1250,duration_min:145,aircraft_type:'A220',frequency:'4x/week'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Brussels',destination_code:'BRU',distance_km:500,duration_min:75,aircraft_type:'A220',frequency:'Daily'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Munich',destination_code:'MUC',distance_km:350,duration_min:55,aircraft_type:'A220',frequency:'Daily'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Frankfurt',destination_code:'FRA',distance_km:380,duration_min:60,aircraft_type:'A220',frequency:'Daily'},
+      // === European Medium-Haul ===
       {origin:'Zurich',origin_code:'ZRH',destination:'Istanbul',destination_code:'IST',distance_km:1800,duration_min:180,aircraft_type:'A321',frequency:'Daily'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Athens',destination_code:'ATH',distance_km:1600,duration_min:150,aircraft_type:'A320',frequency:'4x/week'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Lisbon',destination_code:'LIS',distance_km:1700,duration_min:160,aircraft_type:'A320',frequency:'4x/week'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Cairo',destination_code:'CAI',distance_km:2700,duration_min:210,aircraft_type:'A321',frequency:'4x/week'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Moscow',destination_code:'SVO',distance_km:2200,duration_min:180,aircraft_type:'A321',frequency:'Daily'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Tel Aviv',destination_code:'TLV',distance_km:2800,duration_min:220,aircraft_type:'A321',frequency:'4x/week'},
+      // === Long-Haul from ZRH ===
       {origin:'Zurich',origin_code:'ZRH',destination:'Dubai',destination_code:'DXB',distance_km:4700,duration_min:360,aircraft_type:'A330',frequency:'Daily'},
       {origin:'Zurich',origin_code:'ZRH',destination:'New York',destination_code:'JFK',distance_km:6300,duration_min:510,aircraft_type:'A330',frequency:'Daily'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Newark',destination_code:'EWR',distance_km:6350,duration_min:515,aircraft_type:'A330',frequency:'4x/week'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Chicago',destination_code:'ORD',distance_km:7100,duration_min:570,aircraft_type:'A330',frequency:'3x/week'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Los Angeles',destination_code:'LAX',distance_km:9400,duration_min:720,aircraft_type:'A350',frequency:'3x/week'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Montreal',destination_code:'YUL',distance_km:5900,duration_min:480,aircraft_type:'A330',frequency:'3x/week'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Miami',destination_code:'MIA',distance_km:7900,duration_min:630,aircraft_type:'A330',frequency:'3x/week'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'São Paulo',destination_code:'GRU',distance_km:9500,duration_min:720,aircraft_type:'A350',frequency:'3x/week'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Buenos Aires',destination_code:'EZE',distance_km:11200,duration_min:840,aircraft_type:'A350',frequency:'2x/week'},
+      // === Ultra Long-Haul Asia ===
       {origin:'Zurich',origin_code:'ZRH',destination:'Tokyo',destination_code:'NRT',distance_km:9500,duration_min:720,aircraft_type:'A350',frequency:'4x/week'},
       {origin:'Zurich',origin_code:'ZRH',destination:'Singapore',destination_code:'SIN',distance_km:10300,duration_min:780,aircraft_type:'A350',frequency:'3x/week'},
       {origin:'Zurich',origin_code:'ZRH',destination:'Hong Kong',destination_code:'HKG',distance_km:9300,duration_min:690,aircraft_type:'A350',frequency:'4x/week'},
       {origin:'Zurich',origin_code:'ZRH',destination:'Bangkok',destination_code:'BKK',distance_km:8900,duration_min:660,aircraft_type:'A350',frequency:'3x/week'},
       {origin:'Zurich',origin_code:'ZRH',destination:'Mumbai',destination_code:'BOM',distance_km:6500,duration_min:480,aircraft_type:'A330',frequency:'4x/week'},
       {origin:'Zurich',origin_code:'ZRH',destination:'Shanghai',destination_code:'PVG',distance_km:8800,duration_min:660,aircraft_type:'A350',frequency:'3x/week'},
-      {origin:'Zurich',origin_code:'ZRH',destination:'Montreal',destination_code:'YUL',distance_km:5900,duration_min:480,aircraft_type:'A330',frequency:'3x/week'},
-      {origin:'Zurich',origin_code:'ZRH',destination:'São Paulo',destination_code:'GRU',distance_km:9500,duration_min:720,aircraft_type:'A350',frequency:'3x/week'},
-      {origin:'Zurich',origin_code:'ZRH',destination:'Cairo',destination_code:'CAI',distance_km:2700,duration_min:210,aircraft_type:'A321',frequency:'4x/week'},
-      {origin:'Zurich',origin_code:'ZRH',destination:'Moscow',destination_code:'SVO',distance_km:2200,duration_min:180,aircraft_type:'A321',frequency:'Daily'},
-      {origin:'Zurich',origin_code:'ZRH',destination:'Athens',destination_code:'ATH',distance_km:1600,duration_min:150,aircraft_type:'A320',frequency:'4x/week'},
-      {origin:'Zurich',origin_code:'ZRH',destination:'Lisbon',destination_code:'LIS',distance_km:1700,duration_min:160,aircraft_type:'A320',frequency:'4x/week'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Seoul',destination_code:'ICN',distance_km:8700,duration_min:660,aircraft_type:'A350',frequency:'3x/week'},
+      // === Geneva Hub ===
       {origin:'Geneva',origin_code:'GVA',destination:'London',destination_code:'LHR',distance_km:800,duration_min:100,aircraft_type:'A220',frequency:'Daily'},
-      {origin:'Geneva',origin_code:'GVA',destination:'New York',destination_code:'JFK',distance_km:6200,duration_min:500,aircraft_type:'A330',frequency:'4x/week'}
+      {origin:'Geneva',origin_code:'GVA',destination:'Paris',destination_code:'CDG',distance_km:420,duration_min:65,aircraft_type:'A220',frequency:'Daily'},
+      {origin:'Geneva',origin_code:'GVA',destination:'New York',destination_code:'JFK',distance_km:6200,duration_min:500,aircraft_type:'A330',frequency:'4x/week'},
+      {origin:'Geneva',origin_code:'GVA',destination:'Dubai',destination_code:'DXB',distance_km:4900,duration_min:370,aircraft_type:'A330',frequency:'3x/week'},
+      {origin:'Geneva',origin_code:'GVA',destination:'Rome',destination_code:'FCO',distance_km:700,duration_min:95,aircraft_type:'A220',frequency:'Daily'},
+      {origin:'Geneva',origin_code:'GVA',destination:'Barcelona',destination_code:'BCN',distance_km:650,duration_min:90,aircraft_type:'A220',frequency:'4x/week'},
+      // === Seasonal / Charter ===
+      {origin:'Zurich',origin_code:'ZRH',destination:'Maldives',destination_code:'MLE',distance_km:7800,duration_min:600,aircraft_type:'A350',frequency:'Seasonal'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Santorini',destination_code:'JTR',distance_km:1800,duration_min:170,aircraft_type:'A321',frequency:'Seasonal'},
+      {origin:'Zurich',origin_code:'ZRH',destination:'Marrakech',destination_code:'RAK',distance_km:2000,duration_min:190,aircraft_type:'A320',frequency:'Seasonal'}
     ];
     const seedFleet = [
-      {model:'Airbus A220-300',manufacturer:'Airbus',category:'Regional',capacity:145,range_km:6300,speed_kmh:829,description:'Versatile regional jet, Swiss flagship short-haul'},
-      {model:'Airbus A320neo',manufacturer:'Airbus',category:'Short-haul',capacity:180,range_km:6500,speed_kmh:833,description:'Efficient narrow-body for European routes'},
-      {model:'Airbus A321neo',manufacturer:'Airbus',category:'Short-haul',capacity:220,range_km:7400,speed_kmh:833,description:'Larger narrow-body, medium-range'},
-      {model:'Airbus A330-300',manufacturer:'Airbus',category:'Long-haul',capacity:300,range_km:11750,speed_kmh:871,description:'Wide-body long-haul workhorse'},
-      {model:'Airbus A350-900',manufacturer:'Airbus',category:'Long-haul',capacity:315,range_km:15000,speed_kmh:903,description:'Next-gen ultra-long-haul flagship'},
-      {model:'Boeing 777-300ER',manufacturer:'Boeing',category:'Long-haul',capacity:340,range_km:13650,speed_kmh:905,description:'Long-range wide-body trijet'}
+      {model:'Airbus A220-100',manufacturer:'Airbus',category:'Regional',capacity:125,range_km:5400,speed_kmh:829,description:'Smallest A220 variant, perfect for thin regional routes and Swiss domestic flights'},
+      {model:'Airbus A220-300',manufacturer:'Airbus',category:'Regional',capacity:145,range_km:6300,speed_kmh:829,description:'Swiss flagship regional jet, the backbone of European short-haul operations'},
+      {model:'Airbus A319neo',manufacturer:'Airbus',category:'Short-haul',capacity:140,range_km:6850,speed_kmh:833,description:'Compact narrow-body for lower-demand European city pairs'},
+      {model:'Airbus A320neo',manufacturer:'Airbus',category:'Short-haul',capacity:180,range_km:6500,speed_kmh:833,description:'Efficient narrow-body workhorse for high-demand European routes'},
+      {model:'Airbus A321neo',manufacturer:'Airbus',category:'Short-haul',capacity:220,range_km:7400,speed_kmh:833,description:'Larger narrow-body for medium-range and busy European corridors'},
+      {model:'Airbus A330-300',manufacturer:'Airbus',category:'Long-haul',capacity:300,range_km:11750,speed_kmh:871,description:'Wide-body long-haul workhorse, serving North America and Middle East'},
+      {model:'Airbus A340-300',manufacturer:'Airbus',category:'Long-haul',capacity:275,range_km:13200,speed_kmh:871,description:'Four-engine classic, being phased out in favor of A350. Last flights in 2025.'},
+      {model:'Airbus A350-900',manufacturer:'Airbus',category:'Long-haul',capacity:315,range_km:15000,speed_kmh:903,description:'Next-gen ultra-long-haul flagship. Replacing A340 on Asia and Americas routes.'},
+      {model:'Boeing 777-300ER',manufacturer:'Boeing',category:'Long-haul',capacity:340,range_km:13650,speed_kmh:905,description:'Long-range wide-body for highest-demand intercontinental routes'},
+      {model:'Boeing 787-9 Dreamliner',manufacturer:'Boeing',category:'Long-haul',capacity:296,range_km:14140,speed_kmh:903,description:'Modern composite long-haul, fuel efficient for secondary long-haul routes'}
     ];
     const seedTimeline = [
-      {year:'2002',title:'Swiss International Air Lines',description:'Founded after the collapse of Swissair, continuing Swiss aviation heritage',icon:'✈️'},
-      {year:'2005',title:'Lufthansa Group',description:'Joined the Lufthansa Group as a subsidiary airline',icon:'🤝'},
-      {year:'2006',title:'New Fleet Program',description:'Began modernizing fleet with Airbus A330 and A340',icon:'🔄'},
-      {year:'2009',title:'A330-300 Arrival',description:'First Airbus A330-300 delivered for long-haul operations',icon:'🛩️'},
-      {year:'2013',title:'A320 Family',description:'Transitioned to A320 family for short-haul European network',icon:'✈️'},
-      {year:'2016',title:'CSeries/A220 Order',description:'Ordered Bombardier CSeries (later Airbus A220) for regional routes',icon:'📋'},
-      {year:'2017',title:'A220-300 Service',description:'Swiss became launch operator of the Airbus A220-300',icon:'🚀'},
-      {year:'2019',title:'A350-900 Order',description:'Ordered Airbus A350-900 to replace aging A340 fleet',icon:'🌟'},
-      {year:'2022',title:'PTFS Virtual Airline',description:'Founded Swiss Airlines VA for Pilot Training Flight Simulator on Roblox',icon:'🎮'},
-      {year:'2023',title:'50+ Routes',description:'Expanded to over 50 virtual routes across 4 continents in PTFS',icon:'🌍'},
-      {year:'2024',title:'100+ Pilots',description:'Reached 100+ active virtual pilots in the community',icon:'👨‍✈️'},
-      {year:'2025',title:'A350 Service Begins',description:'First Airbus A350-900 entered service, replacing A340s',icon:'🛫'},
-      {year:'2026',title:'New Website Launch',description:'Launched modern Swiss Airlines VA website with admin panel',icon:'🌐'}
+      {year:'1931',title:'Swissair Founded',description:'Swiss national airline Swissair was established, beginning nearly a century of Swiss aviation excellence',icon:'🏗️'},
+      {year:'1952',title:'First Transatlantic Flight',description:'Swissair began service to New York, opening Swiss aviation to the world',icon:'🌊'},
+      {year:'1971',title:'Jumbo Jet Era',description:'Swissair received its first Boeing 747, revolutionizing long-haul travel from Switzerland',icon:'✈️'},
+      {year:'1995',title:'Qualiflyer Alliance',description:'Swissair formed the Qualiflyer Group, precursor to modern airline alliances',icon:'🤝'},
+      {year:'2001',title:'Swissair Collapse',description:'After the historic grounding of Swissair flights on October 2, 2001, Swiss aviation entered a new chapter',icon:'💔'},
+      {year:'2002',title:'Swiss International Air Lines',description:'Founded after the collapse of Swissair, continuing Swiss aviation heritage with a new name and fresh start',icon:'✈️'},
+      {year:'2004',title:'First A340 Delivery',description:'Swiss received its first Airbus A340-300 for long-haul operations',icon:'🛩️'},
+      {year:'2005',title:'Lufthansa Group',description:'Joined the Lufthansa Group as a subsidiary airline, securing financial stability',icon:'🤝'},
+      {year:'2006',title:'New Fleet Program',description:'Began modernizing fleet with Airbus A330-300 to replace older wide-bodies',icon:'🔄'},
+      {year:'2007',title:'Star Alliance Member',description:'Swiss became a full member of Star Alliance through Lufthansa Group',icon:'⭐'},
+      {year:'2009',title:'A330-300 Arrival',description:'First modern Airbus A330-300 delivered, becoming the long-haul workhorse',icon:'🛩️'},
+      {year:'2013',title:'A320 Family',description:'Transitioned to A320neo family for short-haul European network, improving fuel efficiency 15%',icon:'✈️'},
+      {year:'2015',title:'New Zurich Hub',description:'Opened the new Zurich Airport Terminal E for Swiss long-haul operations',icon:'🏢'},
+      {year:'2016',title:'CSeries/A220 Order',description:'Ordered Bombardier CSeries (later rebranded Airbus A220) for regional routes',icon:'📋'},
+      {year:'2017',title:'A220-300 Launch Operator',description:'Swiss became the global launch operator of the Airbus A220-300, a historic milestone',icon:'🚀'},
+      {year:'2019',title:'A350-900 Order',description:'Ordered 5 Airbus A350-900 aircraft to replace aging A340 fleet, committing to next-gen efficiency',icon:'🌟'},
+      {year:'2020',title:'COVID Challenge',description:'Navigated the pandemic crisis with reduced schedule, maintaining essential connectivity for Switzerland',icon:'😷'},
+      {year:'2021',title:'Recovery Begins',description:'Gradually restored network to 80% of pre-COVID capacity as travel demand returned',icon:'📈'},
+      {year:'2022',title:'PTFS Virtual Airline',description:'Founded Swiss Airlines VA for Pilot Training Flight Simulator on Roblox — bringing Swiss quality to virtual skies',icon:'🎮'},
+      {year:'2023',title:'40+ Routes in PTFS',description:'Expanded to over 40 virtual routes across Europe, Americas, Asia and Middle East in PTFS',icon:'🌍'},
+      {year:'2023',title:'First Group Flight',description:'Organized the first official Swiss VA group flight with 20+ pilots flying ZRH to LHR',icon:'🛫'},
+      {year:'2024',title:'80+ Pilots',description:'Reached 80+ active virtual pilots in the community with regular events every week',icon:'👨‍✈️'},
+      {year:'2024',title:'A350 Enters PTFS',description:'First Airbus A350-900 entered virtual service in PTFS, opening ultra-long-haul routes to Asia',icon:'🛫'},
+      {year:'2025',title:'100+ Pilots',description:'Milestone: over 100 active virtual pilots, making Swiss VA one of the largest in PTFS',icon:'🏆'},
+      {year:'2025',title:'A340 Retirement',description:'Last Airbus A340-300 retired from service, fleet now fully modernized with A330/A350',icon:'👋'},
+      {year:'2026',title:'New Website Launch',description:'Launched modern Swiss Airlines VA website with admin panel, AI image generation, and full CMS',icon:'🌐'},
+      {year:'2026',title:'Global Network',description:'50+ routes spanning 5 continents with 10 aircraft types — the most complete Swiss VA network ever',icon:'🌏'}
     ];
 
     // Seed routes (if empty)
@@ -290,6 +380,22 @@ async function initDb() {
         }
         console.log('✅ Seeded', seedTimeline.length, 'timeline entries');
       }
+      const ec = (await db.query('SELECT COUNT(*) as c FROM events')).rows[0].c;
+      if (parseInt(ec) === 0) {
+        for (const e of seedEvents) {
+          await db.query('INSERT INTO events (title, description, date, time, location, status, image_url) VALUES ($1,$2,$3,$4,$5,$6,$7)',
+            [e.title, e.description, e.date, e.time, e.location, e.status, e.image_url || null]);
+        }
+        console.log('✅ Seeded', seedEvents.length, 'events');
+      }
+      const ac = (await db.query('SELECT COUNT(*) as c FROM applications')).rows[0].c;
+      if (parseInt(ac) === 0) {
+        for (const a of seedApplications) {
+          await db.query('INSERT INTO applications (roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about, status) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)',
+            [a.roblox_name, a.char_age, a.real_age, a.experience, a.role, a.online_time, a.why_swiss, a.rules, a.fro, a.flight_minutes, a.telegram, a.about, a.status]);
+        }
+        console.log('✅ Seeded', seedApplications.length, 'applications');
+      }
     } else {
       const rc = await new Promise((resolve, reject) => db.get('SELECT COUNT(*) as c FROM routes', [], (err, r) => err ? reject(err) : resolve(r)));
       if (rc && rc.c === 0) {
@@ -311,6 +417,20 @@ async function initDb() {
         for (const t of seedTimeline) stmt.run(t.year, t.title, t.description, t.icon);
         stmt.finalize();
         console.log('✅ Seeded', seedTimeline.length, 'timeline entries');
+      }
+      const ec = await new Promise((resolve, reject) => db.get('SELECT COUNT(*) as c FROM events', [], (err, r) => err ? reject(err) : resolve(r)));
+      if (ec && ec.c === 0) {
+        const stmt = db.prepare('INSERT INTO events (title, description, date, time, location, status, image_url) VALUES (?,?,?,?,?,?,?)');
+        for (const e of seedEvents) stmt.run(e.title, e.description, e.date, e.time, e.location, e.status, e.image_url || null);
+        stmt.finalize();
+        console.log('✅ Seeded', seedEvents.length, 'events');
+      }
+      const ac = await new Promise((resolve, reject) => db.get('SELECT COUNT(*) as c FROM applications', [], (err, r) => err ? reject(err) : resolve(r)));
+      if (ac && ac.c === 0) {
+        const stmt = db.prepare('INSERT INTO applications (roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about, status) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)');
+        for (const a of seedApplications) stmt.run(a.roblox_name, a.char_age, a.real_age, a.experience, a.role, a.online_time, a.why_swiss, a.rules, a.fro, a.flight_minutes, a.telegram, a.about, a.status);
+        stmt.finalize();
+        console.log('✅ Seeded', seedApplications.length, 'applications');
       }
     }
 
