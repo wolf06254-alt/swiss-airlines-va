@@ -463,13 +463,25 @@
     async function loadApplications() {
       try {
         const r = await fetch('/api/applications');
-        if (!r.ok) { if (r.status===401) { window.location='login.html'; return; } throw new Error('Failed'); }
+        if (!r.ok) {
+          if (r.status===401) {
+            // Session expired — redirect to login with message
+            window.location='login.html?reason=session_expired';
+            return;
+          }
+          if (r.status===503) {
+            document.getElementById('appsLoading').textContent='⏳ База данных подключается... Попробуйте через 5 секунд';
+            setTimeout(loadApplications, 5000);
+            return;
+          }
+          throw new Error('Failed: ' + r.status);
+        }
         const data = await r.json();
         if (data.user) { document.getElementById('userName').textContent = data.user.username || t('admin-badge'); document.getElementById('userAvatar').textContent = (data.user.username || 'A').charAt(0).toUpperCase(); }
         allData = data.applications || [];
         document.getElementById('appsLoading').style.display='none';
         renderAppStats(); renderApps();
-      } catch(e) { document.getElementById('appsLoading').textContent=t('error-load'); }
+      } catch(e) { document.getElementById('appsLoading').textContent=t('error-load') + ' (' + e.message + ')'; }
     }
     function renderAppStats() {
       document.getElementById('totalCount').textContent = allData.length;
@@ -685,15 +697,19 @@
     async function checkAuth() {
       try {
         const r = await fetch('/api/me');
-        if (!r.ok) { window.location.href = 'login.html'; return false; }
+        if (!r.ok) { window.location.href = 'login.html?reason=not_auth'; return false; }
         const d = await r.json();
-        if (!d.isAdmin) { window.location.href = 'login.html'; return false; }
+        if (!d.isAdmin) { window.location.href = 'login.html?reason=not_admin'; return false; }
         const avatar = document.getElementById('userAvatar');
         const nameEl = document.getElementById('userName');
         if (d.username && avatar) avatar.textContent = d.username.charAt(0).toUpperCase();
         if (d.username && nameEl) nameEl.textContent = d.username;
         return true;
-      } catch(e) { window.location.href = 'login.html'; return false; }
+      } catch(e) {
+        console.error('checkAuth error:', e);
+        window.location.href = 'login.html?reason=error';
+        return false;
+      }
     }
     checkAuth().then(ok => { if (ok) loadApplications(); });
   </script>

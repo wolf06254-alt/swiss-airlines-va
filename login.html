@@ -259,6 +259,9 @@
         'login-btn': 'Войти',
         'login-btn-loading': 'Входим…',
         'login-error': 'Неверный логин или пароль',
+        'login-session-expired': '⏳ Сессия истекла. Пожалуйста, войдите заново.',
+        'login-not-admin': '🚫 Доступ запрещён. Требуются права администратора.',
+        'login-auth-error': '⚠️ Ошибка авторизации. Попробуйте снова.',
         'login-feat-1': 'Просмотр и управление анкетами',
         'login-feat-2': 'Управление событиями и рейсами',
         'login-feat-3': 'Мониторинг статистики VA'
@@ -274,6 +277,9 @@
         'login-btn': 'Sign In',
         'login-btn-loading': 'Signing in…',
         'login-error': 'Invalid username or password',
+        'login-session-expired': '⏳ Session expired. Please sign in again.',
+        'login-not-admin': '🚫 Access denied. Admin rights required.',
+        'login-auth-error': '⚠️ Authorization error. Please try again.',
         'login-feat-1': 'View and manage applications',
         'login-feat-2': 'Manage events and flights',
         'login-feat-3': 'Monitor VA statistics'
@@ -316,6 +322,27 @@
       if (btn) btn.textContent = next === 'ru' ? 'EN' : 'RU';
       applyLang();
     }
+    // Show session-expired / not-admin / error message based on ?reason= param
+    (function() {
+      const params = new URLSearchParams(window.location.search);
+      const reason = params.get('reason');
+      const errorEl = document.getElementById('errorMsg');
+      if (reason && errorEl) {
+        const keyMap = {
+          'session_expired': 'login-session-expired',
+          'not_auth': 'login-session-expired',
+          'not_admin': 'login-not-admin',
+          'error': 'login-auth-error'
+        };
+        const key = keyMap[reason] || 'login-session-expired';
+        errorEl.textContent = t(key);
+        errorEl.classList.add('visible');
+        // Clean URL so message doesn't persist on refresh
+        const cleanUrl = window.location.pathname;
+        window.history.replaceState({}, '', cleanUrl);
+      }
+    })();
+
     const savedTheme = localStorage.getItem('swiss-theme');
     if (savedTheme) { document.documentElement.setAttribute('data-theme', savedTheme); document.getElementById('themeToggle').textContent = savedTheme === 'dark' ? '☀️' : '🌙'; }
     const savedLang = localStorage.getItem('swiss-lang');

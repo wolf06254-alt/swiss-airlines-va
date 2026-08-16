@@ -19,14 +19,42 @@ const ADMIN_PASSWORD_HASH = bcrypt.hashSync(ADMIN_PASSWORD, 10);
 const SESSION_SECRET = process.env.SESSION_SECRET || 'swiss-airlines-va-secret-key-2026';
 
 /* ============================================================
-   DATABASE SETUP
+   DATABASE SETUP — with robust connection handling
    ============================================================ */
 let db, dbType, pgPool;
 const pgConn = process.env.DATABASE_URL || process.env.POSTGRES_URL || '';
 
 if (pgConn && pgConn.startsWith('postgres')) {
   const { Pool } = require('pg');
-  pgPool = new Pool({ connectionString: pgConn, ssl: { rejectUnauthorized: false } });
+  pgPool = new Pool({
+    connectionString: pgConn,
+    ssl: { rejectUnauthorized: false },
+    // Robust connection settings for Render
+    max: 10,                          // max pool connections
+    idleTimeoutMillis: 30000,         // close idle connections after 30s
+    connectionTimeoutMillis: 10000,   // timeout connecting after 10s
+    keepAlive: true,                   // enable TCP keepalive
+    keepAliveInitialDelayMillis: 10000 // initial delay before first keepalive
+  });
+
+  // Handle pool-level errors (prevents uncaught exceptions crashing the process)
+  pgPool.on('error', (err) => {
+    console.error('❌ [PG POOL] Unexpected error on idle client:', err.message);
+  });
+
+  // Handle pool connection events
+  pgPool.on('connect', (client) => {
+    console.log('🔗 [PG POOL] New client connected');
+  });
+
+  // Test connection immediately
+  pgPool.query('SELECT NOW() as now').then(r => {
+    console.log('✅ [PG POOL] Connected to PostgreSQL at:', r.rows[0].now);
+  }).catch(err => {
+    console.error('❌ [PG POOL] Initial connection failed:', err.message);
+    console.error('❌ [PG POOL] Will retry on next query...');
+  });
+
   db = pgPool;
   dbType = 'postgres';
   console.log('🗄️  Using PostgreSQL');
@@ -46,9 +74,11 @@ if (dbType === 'postgres') {
   sessionStore = new pgSession({
     pool: pgPool,
     tableName: 'session',
-    createTableIfMissing: true
+    createTableIfMissing: true,
+    // Prune expired sessions every 15 minutes
+    pruneSessionInterval: 15 * 60 * 1000
   });
-  console.log('🔒 Session store: PostgreSQL (persistent)');
+  console.log('🔒 Session store: PostgreSQL (persistent across deploys)');
 } else {
   // SQLite — sessions stored in memory (resets on restart, acceptable for local dev)
   sessionStore = undefined;
@@ -68,13 +98,16 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: false,
+    secure: false,                    // Render uses proxy, no HTTPS on app level
     httpOnly: true,
     maxAge: 7 * 24 * 60 * 60 * 1000,  // 7 days
     sameSite: 'lax'
   },
   name: 'swiss_session'
 }));
+
+// Trust proxy — required for Render (reverse proxy)
+app.set('trust proxy', 1);
 
 /* ============================================================
    SECURITY HEADERS
@@ -117,9 +150,27 @@ app.get('/admin.html', (req, res) => res.sendFile(path.join(__dirname, 'admin.ht
 /* ============================================================
    DATABASE INITIALIZATION
    ============================================================ */
+let dbReady = false;
+
 async function initDb() {
   try {
     if (dbType === 'postgres') {
+      // First, verify the connection works
+      try {
+        await db.query('SELECT 1 as test');
+        console.log('✅ [DB] PostgreSQL connection verified');
+      } catch (connErr) {
+        console.error('❌ [DB] PostgreSQL connection failed, retrying in 3s...', connErr.message);
+        await new Promise(r => setTimeout(r, 3000));
+        try {
+          await db.query('SELECT 1 as test');
+          console.log('✅ [DB] PostgreSQL connection retry succeeded');
+        } catch (retryErr) {
+          console.error('❌ [DB] PostgreSQL connection retry failed. Tables may not be created.');
+          throw retryErr;
+        }
+      }
+
       await db.query(`
         CREATE TABLE IF NOT EXISTS applications (
           id SERIAL PRIMARY KEY,
@@ -291,6 +342,14 @@ async function initDb() {
         }
         console.log('✅ Seeded', seedApplications.length, 'applications');
       }
+
+      // ============ LOG EXISTING DATA COUNTS ============
+      const appCount = (await db.query('SELECT COUNT(*) as c FROM applications')).rows[0].c;
+      const eventCount = (await db.query('SELECT COUNT(*) as c FROM events')).rows[0].c;
+      const routeCount = (await db.query('SELECT COUNT(*) as c FROM routes')).rows[0].c;
+      console.log('📊 [DB] Applications in DB:', appCount);
+      console.log('📊 [DB] Events in DB:', eventCount);
+      console.log('📊 [DB] Routes in DB:', routeCount);
     } else {
       const rc = await new Promise((resolve, reject) => db.get('SELECT COUNT(*) as c FROM routes', [], (err, r) => err ? reject(err) : resolve(r)));
       if (rc && rc.c === 0) {
@@ -327,49 +386,76 @@ async function initDb() {
         stmt.finalize();
         console.log('✅ Seeded', seedApplications.length, 'applications');
       }
+
+      // ============ LOG EXISTING DATA COUNTS ============
+      const appCount = await new Promise((resolve, reject) => db.get('SELECT COUNT(*) as c FROM applications', [], (err, r) => err ? reject(err) : resolve(r)));
+      console.log('📊 [DB] Applications in DB:', appCount ? appCount.c : 0);
     }
 
-    console.log('✅ Database initialized');
+    dbReady = true;
+    console.log('✅ Database initialized and ready');
   } catch (err) {
     console.error('❌ Database initialization error:', err);
+    // Don't crash — server can still serve static files, API will return 503
+    dbReady = false;
   }
 }
-initDb();
 
 /* ============================================================
    AUTH MIDDLEWARE
    ============================================================ */
 function requireAuth(req, res, next) {
   if (req.session && req.session.isAdmin) { next(); }
-  else { res.status(401).json({ error: 'Unauthorized' }); }
+  else { res.status(401).json({ error: 'Unauthorized', needLogin: true }); }
 }
 
 /* ============================================================
-   HEALTH CHECK
+   DB READY MIDDLEWARE — blocks API calls until DB is ready
+   ============================================================ */
+function requireDb(req, res, next) {
+  if (dbReady) return next();
+  res.status(503).json({ error: 'Database is not ready yet. Please try again in a few seconds.' });
+}
+
+/* ============================================================
+   HEALTH CHECK — comprehensive status
    ============================================================ */
 app.get('/api/health', async (req, res) => {
   try {
     let count = 0;
+    let sessionCount = 0;
     if (dbType === 'postgres') {
       const result = await db.query('SELECT COUNT(*) as count FROM applications');
       count = parseInt(result.rows[0].count);
+      try {
+        const sessResult = await db.query('SELECT COUNT(*) as count FROM session');
+        sessionCount = parseInt(sessResult.rows[0].count);
+      } catch (e) { /* session table might not exist yet */ }
     } else {
       const row = await new Promise((resolve, reject) => {
         db.get('SELECT COUNT(*) as count FROM applications', [], (err, r) => err ? reject(err) : resolve(r));
       });
       count = row ? row.count : 0;
     }
-    res.json({ status: 'ok', db: dbType, applications_count: count, timestamp: new Date().toISOString() });
+    res.json({
+      status: 'ok',
+      db: dbType,
+      dbReady,
+      applications_count: count,
+      active_sessions: sessionCount,
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime()
+    });
   } catch (err) {
     console.error('❌ [HEALTH] DB check failed:', err.message);
-    res.status(500).json({ status: 'error', db: dbType, error: err.message });
+    res.status(500).json({ status: 'error', db: dbType, dbReady, error: err.message });
   }
 });
 
 /* ============================================================
    PUBLIC API
    ============================================================ */
-app.post('/api/submit', rateLimit(60000, 10), async (req, res) => {
+app.post('/api/submit', rateLimit(60000, 10), requireDb, async (req, res) => {
   const { roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about } = req.body;
   console.log('📥 [SUBMIT] Received application from:', roblox_name);
   if (!roblox_name || !experience || !rules || !telegram) {
@@ -389,11 +475,13 @@ app.post('/api/submit', rateLimit(60000, 10), async (req, res) => {
         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING id`,
         [roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about]
       );
+      console.log('✅ [SUBMIT] Application saved, ID:', result.rows[0].id);
       res.json({ success: true, id: result.rows[0].id });
     } else {
       const stmt = db.prepare(`INSERT INTO applications (roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
       stmt.run(roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about, function(err) {
         if (err) { stmt.finalize(); return res.status(500).json({ success: false, error: 'DB error: ' + err.message }); }
+        console.log('✅ [SUBMIT] Application saved, ID:', this.lastID);
         res.json({ success: true, id: this.lastID });
         stmt.finalize();
       });
@@ -409,7 +497,7 @@ app.post('/api/submit', rateLimit(60000, 10), async (req, res) => {
    ============================================================ */
 
 // Events
-app.get('/api/events', async (req, res) => {
+app.get('/api/events', requireDb, async (req, res) => {
   try {
     let rows;
     if (dbType === 'postgres') { const r = await db.query('SELECT * FROM events ORDER BY date DESC'); rows = r.rows; }
@@ -418,18 +506,8 @@ app.get('/api/events', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// Routes
-app.get('/api/routes', async (req, res) => {
-  try {
-    let rows;
-    if (dbType === 'postgres') { const r = await db.query('SELECT * FROM routes ORDER BY origin, destination'); rows = r.rows; }
-    else { rows = await new Promise((resolve, reject) => db.all('SELECT * FROM routes ORDER BY origin, destination', [], (err, r) => err ? reject(err) : resolve(r))); }
-    res.json({ routes: rows });
-  } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
 // Fleet
-app.get('/api/fleet', async (req, res) => {
+app.get('/api/fleet', requireDb, async (req, res) => {
   try {
     let rows;
     if (dbType === 'postgres') { const r = await db.query('SELECT * FROM fleet ORDER BY category, model'); rows = r.rows; }
@@ -438,32 +516,51 @@ app.get('/api/fleet', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// Timeline
-app.get('/api/timeline', async (req, res) => {
+// Routes
+app.get('/api/routes', requireDb, async (req, res) => {
   try {
     let rows;
-    if (dbType === 'postgres') { const r = await db.query('SELECT * FROM timeline ORDER BY year DESC'); rows = r.rows; }
-    else { rows = await new Promise((resolve, reject) => db.all('SELECT * FROM timeline ORDER BY year DESC', [], (err, r) => err ? reject(err) : resolve(r))); }
+    if (dbType === 'postgres') { const r = await db.query('SELECT * FROM routes WHERE active = true ORDER BY origin'); rows = r.rows; }
+    else { rows = await new Promise((resolve, reject) => db.all('SELECT * FROM routes WHERE active = 1 ORDER BY origin', [], (err, r) => err ? reject(err) : resolve(r))); }
+    res.json({ routes: rows });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Timeline
+app.get('/api/timeline', requireDb, async (req, res) => {
+  try {
+    let rows;
+    if (dbType === 'postgres') { const r = await db.query('SELECT * FROM timeline ORDER BY year'); rows = r.rows; }
+    else { rows = await new Promise((resolve, reject) => db.all('SELECT * FROM timeline ORDER BY year', [], (err, r) => err ? reject(err) : resolve(r))); }
     res.json({ timeline: rows });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 /* ============================================================
-   ADMIN AUTH
+   AUTH API
    ============================================================ */
 app.post('/api/login', rateLimit(60000, 5), (req, res) => {
   const { username, password } = req.body;
   if (username === ADMIN_USERNAME && bcrypt.compareSync(password, ADMIN_PASSWORD_HASH)) {
     req.session.isAdmin = true;
     req.session.username = username;
-    res.json({ success: true });
+    // Explicitly save session before responding
+    req.session.save((err) => {
+      if (err) {
+        console.error('❌ [LOGIN] Session save error:', err);
+        return res.status(500).json({ success: false, error: 'Session save failed' });
+      }
+      console.log('✅ [LOGIN] Admin logged in:', username, '| Session ID:', req.sessionID);
+      res.json({ success: true });
+    });
   } else {
+    console.log('⚠️ [LOGIN] Failed login attempt for:', username);
     res.status(401).json({ success: false, error: 'Неверный логин или пароль' });
   }
 });
 
 app.get('/api/me', (req, res) => {
-  res.json({ isAdmin: !!req.session.isAdmin, username: req.session.username || null });
+  res.json({ isAdmin: !!(req.session && req.session.isAdmin), username: req.session.username || null });
 });
 
 app.post('/api/logout', (req, res) => {
@@ -473,16 +570,20 @@ app.post('/api/logout', (req, res) => {
 /* ============================================================
    ADMIN APPLICATIONS API
    ============================================================ */
-app.get('/api/applications', requireAuth, async (req, res) => {
+app.get('/api/applications', requireAuth, requireDb, async (req, res) => {
   try {
     let rows;
     if (dbType === 'postgres') { const r = await db.query('SELECT * FROM applications ORDER BY created_at DESC'); rows = r.rows; }
     else { rows = await new Promise((resolve, reject) => db.all('SELECT * FROM applications ORDER BY created_at DESC', [], (err, r) => err ? reject(err) : resolve(r))); }
+    console.log('📋 [APPLICATIONS] Returning', rows.length, 'applications to admin');
     res.json({ applications: rows, user: { username: req.session.username || 'Администратор' } });
-  } catch (err) { res.status(500).json({ error: err.message }); }
+  } catch (err) {
+    console.error('❌ [APPLICATIONS] Error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
 });
 
-app.put('/api/applications/:id', requireAuth, async (req, res) => {
+app.put('/api/applications/:id', requireAuth, requireDb, async (req, res) => {
   const { id } = req.params; const { status } = req.body;
   const validStatuses = ['new', 'review', 'accepted', 'rejected'];
   if (!validStatuses.includes(status)) return res.status(400).json({ error: 'Invalid status' });
@@ -494,41 +595,51 @@ app.put('/api/applications/:id', requireAuth, async (req, res) => {
       const result = await new Promise((resolve, reject) => db.run('UPDATE applications SET status = ? WHERE id = ?', [status, id], function(err) { err ? reject(err) : resolve({ changes: this.changes }); }));
       if (result.changes === 0) return res.status(404).json({ error: 'Not found' });
     }
+    console.log('✅ [APPLICATION] Status updated:', id, '→', status);
     res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-app.delete('/api/applications/:id', requireAuth, async (req, res) => {
+app.delete('/api/applications/:id', requireAuth, requireDb, async (req, res) => {
   const { id } = req.params;
   try {
-    if (dbType === 'postgres') { const result = await db.query('DELETE FROM applications WHERE id = $1', [id]); if (result.rowCount === 0) return res.status(404).json({ error: 'Not found' }); }
-    else { const result = await new Promise((resolve, reject) => db.run('DELETE FROM applications WHERE id = ?', [id], function(err) { err ? reject(err) : resolve({ changes: this.changes }); })); if (result.changes === 0) return res.status(404).json({ error: 'Not found' }); }
-    res.json({ success: true });
-  } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-app.get('/api/stats', requireAuth, async (req, res) => {
-  try {
-    let total, n, accepted, rejected;
     if (dbType === 'postgres') {
-      total = parseInt((await db.query('SELECT COUNT(*) as total FROM applications')).rows[0].total);
-      n = parseInt((await db.query('SELECT COUNT(*) as count FROM applications WHERE status = $1', ['new'])).rows[0].count);
-      accepted = parseInt((await db.query('SELECT COUNT(*) as count FROM applications WHERE status = $1', ['accepted'])).rows[0].count);
-      rejected = parseInt((await db.query('SELECT COUNT(*) as count FROM applications WHERE status = $1', ['rejected'])).rows[0].count);
+      const result = await db.query('DELETE FROM applications WHERE id = $1', [id]);
+      if (result.rowCount === 0) return res.status(404).json({ error: 'Not found' });
     } else {
-      total = (await new Promise((resolve, reject) => db.get('SELECT COUNT(*) as total FROM applications', [], (err, r) => err ? reject(err) : resolve(r)))).total;
-      n = (await new Promise((resolve, reject) => db.get('SELECT COUNT(*) as count FROM applications WHERE status = ?', ['new'], (err, r) => err ? reject(err) : resolve(r)))).count || 0;
-      accepted = (await new Promise((resolve, reject) => db.get('SELECT COUNT(*) as count FROM applications WHERE status = ?', ['accepted'], (err, r) => err ? reject(err) : resolve(r)))).count || 0;
-      rejected = (await new Promise((resolve, reject) => db.get('SELECT COUNT(*) as count FROM applications WHERE status = ?', ['rejected'], (err, r) => err ? reject(err) : resolve(r)))).count || 0;
+      const result = await new Promise((resolve, reject) => db.run('DELETE FROM applications WHERE id = ?', [id], function(err) { err ? reject(err) : resolve({ changes: this.changes }); }));
+      if (result.changes === 0) return res.status(404).json({ error: 'Not found' });
     }
-    res.json({ total, new: n, accepted, rejected });
+    console.log('🗑️ [APPLICATION] Deleted:', id);
+    res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 /* ============================================================
-   ADMIN CMS API — EVENTS (full CRUD)
+   ADMIN STATS API
    ============================================================ */
-app.get('/api/admin/events', requireAuth, async (req, res) => {
+app.get('/api/stats', requireAuth, requireDb, async (req, res) => {
+  try {
+    const stats = {};
+    if (dbType === 'postgres') {
+      const ar = await db.query('SELECT COUNT(*) as c FROM applications'); stats.applications = parseInt(ar.rows[0].c);
+      const er = await db.query('SELECT COUNT(*) as c FROM events'); stats.events = parseInt(er.rows[0].c);
+      const rr = await db.query('SELECT COUNT(*) as c FROM routes'); stats.routes = parseInt(rr.rows[0].c);
+      const fr = await db.query('SELECT COUNT(*) as c FROM fleet'); stats.fleet = parseInt(fr.rows[0].c);
+    } else {
+      const ar = await new Promise((resolve, reject) => db.get('SELECT COUNT(*) as c FROM applications', [], (err, r) => err ? reject(err) : resolve(r))); stats.applications = ar ? ar.c : 0;
+      const er = await new Promise((resolve, reject) => db.get('SELECT COUNT(*) as c FROM events', [], (err, r) => err ? reject(err) : resolve(r))); stats.events = er ? er.c : 0;
+      const rr = await new Promise((resolve, reject) => db.get('SELECT COUNT(*) as c FROM routes', [], (err, r) => err ? reject(err) : resolve(r))); stats.routes = rr ? rr.c : 0;
+      const fr = await new Promise((resolve, reject) => db.get('SELECT COUNT(*) as c FROM fleet', [], (err, r) => err ? reject(err) : resolve(r))); stats.fleet = fr ? fr.c : 0;
+    }
+    res.json(stats);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+/* ============================================================
+   ADMIN EVENTS API
+   ============================================================ */
+app.get('/api/admin/events', requireAuth, requireDb, async (req, res) => {
   try {
     let rows;
     if (dbType === 'postgres') { const r = await db.query('SELECT * FROM events ORDER BY date DESC'); rows = r.rows; }
@@ -537,61 +648,129 @@ app.get('/api/admin/events', requireAuth, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-app.post('/api/admin/events', requireAuth, async (req, res) => {
+app.post('/api/admin/events', requireAuth, requireDb, async (req, res) => {
   const { title, description, date, time, location, status, image_url } = req.body;
   if (!title || !date) return res.status(400).json({ error: 'Title and date required' });
   try {
     if (dbType === 'postgres') {
-      const r = await db.query('INSERT INTO events (title,description,date,time,location,status,image_url) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id', [title, description, date, time, location, status || 'upcoming', image_url]);
-      res.json({ success: true, id: r.rows[0].id });
+      const result = await db.query('INSERT INTO events (title, description, date, time, location, status, image_url) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id',
+        [title, description || null, date, time || null, location || null, status || 'upcoming', image_url || null]);
+      res.json({ success: true, id: result.rows[0].id });
     } else {
-      db.run('INSERT INTO events (title,description,date,time,location,status,image_url) VALUES (?,?,?,?,?,?,?)', [title, description, date, time, location, status || 'upcoming', image_url], function(err) {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json({ success: true, id: this.lastID });
-      });
+      db.run('INSERT INTO events (title, description, date, time, location, status, image_url) VALUES (?,?,?,?,?,?,?)',
+        [title, description || null, date, time || null, location || null, status || 'upcoming', image_url || null],
+        function(err) { if (err) return res.status(500).json({ error: err.message }); res.json({ success: true, id: this.lastID }); });
     }
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-app.put('/api/admin/events/:id', requireAuth, async (req, res) => {
-  const { id } = req.params; const { title, description, date, time, location, status, image_url } = req.body;
+app.put('/api/admin/events/:id', requireAuth, requireDb, async (req, res) => {
+  const { id } = req.params;
+  const { title, description, date, time, location, status, image_url } = req.body;
   try {
     if (dbType === 'postgres') {
-      const r = await db.query('UPDATE events SET title=$1,description=$2,date=$3,time=$4,location=$5,status=$6,image_url=$7 WHERE id=$8', [title, description, date, time, location, status, image_url, id]);
-      if (r.rowCount === 0) return res.status(404).json({ error: 'Not found' });
+      const result = await db.query('UPDATE events SET title=$1, description=$2, date=$3, time=$4, location=$5, status=$6, image_url=$7 WHERE id=$8',
+        [title, description || null, date, time || null, location || null, status || 'upcoming', image_url || null, id]);
+      if (result.rowCount === 0) return res.status(404).json({ error: 'Not found' });
     } else {
-      const r = await new Promise((resolve, reject) => db.run('UPDATE events SET title=?,description=?,date=?,time=?,location=?,status=?,image_url=? WHERE id=?', [title, description, date, time, location, status, image_url, id], function(err) { err ? reject(err) : resolve({ changes: this.changes }); }));
-      if (r.changes === 0) return res.status(404).json({ error: 'Not found' });
+      const result = await new Promise((resolve, reject) => db.run('UPDATE events SET title=?, description=?, date=?, time=?, location=?, status=?, image_url=? WHERE id=?',
+        [title, description || null, date, time || null, location || null, status || 'upcoming', image_url || null, id], function(err) { err ? reject(err) : resolve({ changes: this.changes }); }));
+      if (result.changes === 0) return res.status(404).json({ error: 'Not found' });
     }
     res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-app.delete('/api/admin/events/:id', requireAuth, async (req, res) => {
+app.delete('/api/admin/events/:id', requireAuth, requireDb, async (req, res) => {
   const { id } = req.params;
   try {
-    if (dbType === 'postgres') { const r = await db.query('DELETE FROM events WHERE id=$1', [id]); if (r.rowCount === 0) return res.status(404).json({ error: 'Not found' }); }
-    else { const r = await new Promise((resolve, reject) => db.run('DELETE FROM events WHERE id=?', [id], function(err) { err ? reject(err) : resolve({ changes: this.changes }); })); if (r.changes === 0) return res.status(404).json({ error: 'Not found' }); }
+    if (dbType === 'postgres') {
+      const result = await db.query('DELETE FROM events WHERE id = $1', [id]);
+      if (result.rowCount === 0) return res.status(404).json({ error: 'Not found' });
+    } else {
+      const result = await new Promise((resolve, reject) => db.run('DELETE FROM events WHERE id = ?', [id], function(err) { err ? reject(err) : resolve({ changes: this.changes }); }));
+      if (result.changes === 0) return res.status(404).json({ error: 'Not found' });
+    }
     res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 /* ============================================================
-   ADMIN CMS API — ROUTES (read-only GET)
+   AI IMAGE GENERATION API
    ============================================================ */
-app.get('/api/admin/routes', requireAuth, async (req, res) => {
+app.post('/api/admin/generate-event-image', requireAuth, requireDb, async (req, res) => {
+  const { title, description, location } = req.body;
+  if (!title) return res.status(400).json({ error: 'Event title required' });
+
+  // For now, return a placeholder Swiss-themed image URL
+  // In production, integrate with an image generation API
+  const imageUrl = `https://images.unsplash.com/photo-1436491865332-7a61d109a5d2?w=800&h=400&fit=crop&q=80&sig=${encodeURIComponent(title)}`;
+  res.json({ success: true, image_url: imageUrl });
+});
+
+/* ============================================================
+   ADMIN ROUTES API
+   ============================================================ */
+app.get('/api/admin/routes', requireAuth, requireDb, async (req, res) => {
   try {
     let rows;
-    if (dbType === 'postgres') { const r = await db.query('SELECT * FROM routes ORDER BY origin, destination'); rows = r.rows; }
-    else { rows = await new Promise((resolve, reject) => db.all('SELECT * FROM routes ORDER BY origin, destination', [], (err, r) => err ? reject(err) : resolve(r))); }
+    if (dbType === 'postgres') { const r = await db.query('SELECT * FROM routes ORDER BY origin'); rows = r.rows; }
+    else { rows = await new Promise((resolve, reject) => db.all('SELECT * FROM routes ORDER BY origin', [], (err, r) => err ? reject(err) : resolve(r))); }
     res.json({ routes: rows });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+app.post('/api/admin/routes', requireAuth, requireDb, async (req, res) => {
+  const { origin, origin_code, destination, destination_code, distance_km, duration_min, aircraft_type, frequency } = req.body;
+  if (!origin || !destination) return res.status(400).json({ error: 'Origin and destination required' });
+  try {
+    if (dbType === 'postgres') {
+      const result = await db.query('INSERT INTO routes (origin, origin_code, destination, destination_code, distance_km, duration_min, aircraft_type, frequency) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id',
+        [origin, origin_code || null, destination, destination_code || null, distance_km || null, duration_min || null, aircraft_type || null, frequency || null]);
+      res.json({ success: true, id: result.rows[0].id });
+    } else {
+      db.run('INSERT INTO routes (origin, origin_code, destination, destination_code, distance_km, duration_min, aircraft_type, frequency) VALUES (?,?,?,?,?,?,?,?)',
+        [origin, origin_code || null, destination, destination_code || null, distance_km || null, duration_min || null, aircraft_type || null, frequency || null],
+        function(err) { if (err) return res.status(500).json({ error: err.message }); res.json({ success: true, id: this.lastID }); });
+    }
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.put('/api/admin/routes/:id', requireAuth, requireDb, async (req, res) => {
+  const { id } = req.params;
+  const { origin, origin_code, destination, destination_code, distance_km, duration_min, aircraft_type, frequency, active } = req.body;
+  try {
+    if (dbType === 'postgres') {
+      const result = await db.query('UPDATE routes SET origin=$1, origin_code=$2, destination=$3, destination_code=$4, distance_km=$5, duration_min=$6, aircraft_type=$7, frequency=$8, active=$9 WHERE id=$10',
+        [origin, origin_code || null, destination, destination_code || null, distance_km || null, duration_min || null, aircraft_type || null, frequency || null, active !== false, id]);
+      if (result.rowCount === 0) return res.status(404).json({ error: 'Not found' });
+    } else {
+      const result = await new Promise((resolve, reject) => db.run('UPDATE routes SET origin=?, origin_code=?, destination=?, destination_code=?, distance_km=?, duration_min=?, aircraft_type=?, frequency=?, active=? WHERE id=?',
+        [origin, origin_code || null, destination, destination_code || null, distance_km || null, duration_min || null, aircraft_type || null, frequency || null, active !== false ? 1 : 0, id], function(err) { err ? reject(err) : resolve({ changes: this.changes }); }));
+      if (result.changes === 0) return res.status(404).json({ error: 'Not found' });
+    }
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.delete('/api/admin/routes/:id', requireAuth, requireDb, async (req, res) => {
+  const { id } = req.params;
+  try {
+    if (dbType === 'postgres') {
+      const result = await db.query('DELETE FROM routes WHERE id = $1', [id]);
+      if (result.rowCount === 0) return res.status(404).json({ error: 'Not found' });
+    } else {
+      const result = await new Promise((resolve, reject) => db.run('DELETE FROM routes WHERE id = ?', [id], function(err) { err ? reject(err) : resolve({ changes: this.changes }); }));
+      if (result.changes === 0) return res.status(404).json({ error: 'Not found' });
+    }
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 /* ============================================================
-   ADMIN CMS API — FLEET (read-only GET, static in admin.html)
+   ADMIN FLEET API
    ============================================================ */
-app.get('/api/admin/fleet', requireAuth, async (req, res) => {
+app.get('/api/admin/fleet', requireAuth, requireDb, async (req, res) => {
   try {
     let rows;
     if (dbType === 'postgres') { const r = await db.query('SELECT * FROM fleet ORDER BY category, model'); rows = r.rows; }
@@ -600,70 +779,118 @@ app.get('/api/admin/fleet', requireAuth, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-/* ============================================================
-   ADMIN CMS API — TIMELINE (read-only GET)
-   ============================================================ */
-app.get('/api/admin/timeline', requireAuth, async (req, res) => {
+app.post('/api/admin/fleet', requireAuth, requireDb, async (req, res) => {
+  const { model, manufacturer, category, capacity, range_km, speed_kmh, description, image_url } = req.body;
+  if (!model) return res.status(400).json({ error: 'Model required' });
   try {
-    let rows;
-    if (dbType === 'postgres') { const r = await db.query('SELECT * FROM timeline ORDER BY year DESC'); rows = r.rows; }
-    else { rows = await new Promise((resolve, reject) => db.all('SELECT * FROM timeline ORDER BY year DESC', [], (err, r) => err ? reject(err) : resolve(r))); }
-    res.json({ timeline: rows });
+    if (dbType === 'postgres') {
+      const result = await db.query('INSERT INTO fleet (model, manufacturer, category, capacity, range_km, speed_kmh, description, image_url) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id',
+        [model, manufacturer || null, category || null, capacity || null, range_km || null, speed_kmh || null, description || null, image_url || null]);
+      res.json({ success: true, id: result.rows[0].id });
+    } else {
+      db.run('INSERT INTO fleet (model, manufacturer, category, capacity, range_km, speed_kmh, description, image_url) VALUES (?,?,?,?,?,?,?,?)',
+        [model, manufacturer || null, category || null, capacity || null, range_km || null, speed_kmh || null, description || null, image_url || null],
+        function(err) { if (err) return res.status(500).json({ error: err.message }); res.json({ success: true, id: this.lastID }); });
+    }
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.put('/api/admin/fleet/:id', requireAuth, requireDb, async (req, res) => {
+  const { id } = req.params;
+  const { model, manufacturer, category, capacity, range_km, speed_kmh, description, image_url, status } = req.body;
+  try {
+    if (dbType === 'postgres') {
+      const result = await db.query('UPDATE fleet SET model=$1, manufacturer=$2, category=$3, capacity=$4, range_km=$5, speed_kmh=$6, description=$7, image_url=$8, status=$9 WHERE id=$10',
+        [model, manufacturer || null, category || null, capacity || null, range_km || null, speed_kmh || null, description || null, image_url || null, status || 'active', id]);
+      if (result.rowCount === 0) return res.status(404).json({ error: 'Not found' });
+    } else {
+      const result = await new Promise((resolve, reject) => db.run('UPDATE fleet SET model=?, manufacturer=?, category=?, capacity=?, range_km=?, speed_kmh=?, description=?, image_url=?, status=? WHERE id=?',
+        [model, manufacturer || null, category || null, capacity || null, range_km || null, speed_kmh || null, description || null, image_url || null, status || 'active', id], function(err) { err ? reject(err) : resolve({ changes: this.changes }); }));
+      if (result.changes === 0) return res.status(404).json({ error: 'Not found' });
+    }
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.delete('/api/admin/fleet/:id', requireAuth, requireDb, async (req, res) => {
+  const { id } = req.params;
+  try {
+    if (dbType === 'postgres') {
+      const result = await db.query('DELETE FROM fleet WHERE id = $1', [id]);
+      if (result.rowCount === 0) return res.status(404).json({ error: 'Not found' });
+    } else {
+      const result = await new Promise((resolve, reject) => db.run('DELETE FROM fleet WHERE id = ?', [id], function(err) { err ? reject(err) : resolve({ changes: this.changes }); }));
+      if (result.changes === 0) return res.status(404).json({ error: 'Not found' });
+    }
+    res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 /* ============================================================
-   ADMIN CMS API — AI IMAGE GENERATION
+   ADMIN TIMELINE API
    ============================================================ */
-app.post('/api/admin/generate-event-image', requireAuth, async (req, res) => {
-  const { prompt } = req.body;
-  if (!prompt || prompt.trim().length < 5) {
-    return res.status(400).json({ error: 'Prompt too short (min 5 chars)' });
-  }
-  if (prompt.length > 1000) {
-    return res.status(400).json({ error: 'Prompt too long (max 1000 chars)' });
-  }
+app.get('/api/admin/timeline', requireAuth, requireDb, async (req, res) => {
   try {
-    const { exec } = require('child_process');
-    const scriptPath = path.join(__dirname, '..', '..', '..', 'skills', 'image_generator', 'image_generator.py');
-    const filename = 'swiss_event_' + Date.now();
-    const outputDir = path.join(__dirname, 'generated');
-    const fs = require('fs');
-    if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
+    let rows;
+    if (dbType === 'postgres') { const r = await db.query('SELECT * FROM timeline ORDER BY year'); rows = r.rows; }
+    else { rows = await new Promise((resolve, reject) => db.all('SELECT * FROM timeline ORDER BY year', [], (err, r) => err ? reject(err) : resolve(r))); }
+    res.json({ timeline: rows });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
 
-    const command = `python3 "${scriptPath}" --prompt "${prompt.replace(/"/g, '\\"')}" --ratio 16:9 --resolution 2K --filename "${filename}"`;
+app.post('/api/admin/timeline', requireAuth, requireDb, async (req, res) => {
+  const { year, title, description, icon } = req.body;
+  if (!year || !title) return res.status(400).json({ error: 'Year and title required' });
+  try {
+    if (dbType === 'postgres') {
+      const result = await db.query('INSERT INTO timeline (year, title, description, icon) VALUES ($1,$2,$3,$4) RETURNING id',
+        [year, title, description || null, icon || null]);
+      res.json({ success: true, id: result.rows[0].id });
+    } else {
+      db.run('INSERT INTO timeline (year, title, description, icon) VALUES (?,?,?,?)',
+        [year, title, description || null, icon || null],
+        function(err) { if (err) return res.status(500).json({ error: err.message }); res.json({ success: true, id: this.lastID }); });
+    }
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
 
-    exec(command, { timeout: 120000 }, (error, stdout, stderr) => {
-      if (error) {
-        console.error('❌ [AI-IMG] Generation error:', error.message);
-        return res.status(500).json({ error: 'Image generation failed: ' + error.message });
-      }
-      try {
-        const result = JSON.parse(stdout.trim());
-        if (result.status === 0 && result.data && result.data.image_urls && result.data.image_urls.length > 0) {
-          console.log('✅ [AI-IMG] Generated image:', result.data.image_urls[0]);
-          res.json({ success: true, image_url: result.data.image_urls[0] });
-        } else {
-          console.error('❌ [AI-IMG] Bad result:', result);
-          res.status(500).json({ error: result.message || 'Image generation returned no URL' });
-        }
-      } catch (parseErr) {
-        console.error('❌ [AI-IMG] Parse error:', parseErr.message, 'stdout:', stdout);
-        res.status(500).json({ error: 'Failed to parse generation result' });
-      }
-    });
-  } catch (err) {
-    console.error('❌ [AI-IMG] Error:', err);
-    res.status(500).json({ error: 'Image generation error: ' + err.message });
-  }
+app.put('/api/admin/timeline/:id', requireAuth, requireDb, async (req, res) => {
+  const { id } = req.params;
+  const { year, title, description, icon } = req.body;
+  try {
+    if (dbType === 'postgres') {
+      const result = await db.query('UPDATE timeline SET year=$1, title=$2, description=$3, icon=$4 WHERE id=$5',
+        [year, title, description || null, icon || null, id]);
+      if (result.rowCount === 0) return res.status(404).json({ error: 'Not found' });
+    } else {
+      const result = await new Promise((resolve, reject) => db.run('UPDATE timeline SET year=?, title=?, description=?, icon=? WHERE id=?',
+        [year, title, description || null, icon || null, id], function(err) { err ? reject(err) : resolve({ changes: this.changes }); }));
+      if (result.changes === 0) return res.status(404).json({ error: 'Not found' });
+    }
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.delete('/api/admin/timeline/:id', requireAuth, requireDb, async (req, res) => {
+  const { id } = req.params;
+  try {
+    if (dbType === 'postgres') {
+      const result = await db.query('DELETE FROM timeline WHERE id = $1', [id]);
+      if (result.rowCount === 0) return res.status(404).json({ error: 'Not found' });
+    } else {
+      const result = await new Promise((resolve, reject) => db.run('DELETE FROM timeline WHERE id = ?', [id], function(err) { err ? reject(err) : resolve({ changes: this.changes }); }));
+      if (result.changes === 0) return res.status(404).json({ error: 'Not found' });
+    }
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 /* ============================================================
-   PUBLIC MAIL API
+   PTFS NOTIFICATION API
    ============================================================ */
-app.get('/api/notifications', async (req, res) => {
+app.get('/api/notifications', requireDb, async (req, res) => {
   const { ptfs_nick } = req.query;
-  if (!ptfs_nick) return res.status(400).json({ error: 'Ник не указан' });
+  if (!ptfs_nick) return res.json({ notifications: [] });
   try {
     let rows;
     if (dbType === 'postgres') {
@@ -678,34 +905,42 @@ app.get('/api/notifications', async (req, res) => {
 });
 
 /* ============================================================
-   START SERVER
+   START SERVER — wait for DB init first
    ============================================================ */
-const server = app.listen(PORT, () => {
-  console.log(`✈️  Swiss Airlines server running on port ${PORT}`);
-  console.log(`🗄️  Database: ${dbType.toUpperCase()}`);
-  console.log(`📝 Public form: http://localhost:${PORT}`);
-  console.log(`🔐 Admin panel: http://localhost:${PORT}/login.html`);
-  console.log(`🔑 Default admin: ${ADMIN_USERNAME}`);
-  console.log(`💡 To change credentials, set ADMIN_USERNAME and ADMIN_PASSWORD environment variables`);
-});
-
-/* ============================================================
-   GRACEFUL SHUTDOWN
-   ============================================================ */
-function shutdown(signal) {
-  console.log(`\n${signal} received. Closing server gracefully...`);
-  server.close(() => {
-    console.log('🛑 HTTP server closed');
-    if (dbType === 'sqlite') {
-      db.close((err) => {
-        if (err) console.error('❌ Error closing SQLite:', err.message);
-        else console.log('✅ SQLite connection closed');
-        process.exit(0);
-      });
-    } else {
-      db.end().then(() => { console.log('✅ PostgreSQL pool closed'); process.exit(0); }).catch((err) => { console.error('❌ Error closing PostgreSQL:', err.message); process.exit(1); });
-    }
+initDb().then(() => {
+  const server = app.listen(PORT, () => {
+    console.log(`✈️  Swiss Airlines server running on port ${PORT}`);
+    console.log(`🗄️  Database: ${dbType.toUpperCase()}`);
+    console.log(`📝 Public form: http://localhost:${PORT}`);
+    console.log(`🔐 Admin panel: http://localhost:${PORT}/login.html`);
+    console.log(`🔑 Default admin: ${ADMIN_USERNAME}`);
+    console.log(`💡 To change credentials, set ADMIN_USERNAME and ADMIN_PASSWORD environment variables`);
+    console.log(`🏥 Health check: http://localhost:${PORT}/api/health`);
   });
-}
-process.on('SIGTERM', () => shutdown('SIGTERM'));
-process.on('SIGINT', () => shutdown('SIGINT'));
+
+  /* ============================================================
+     GRACEFUL SHUTDOWN
+     ============================================================ */
+  function shutdown(signal) {
+    console.log(`\n${signal} received. Closing server gracefully...`);
+    server.close(() => {
+      console.log('🛑 HTTP server closed');
+      if (dbType === 'sqlite') {
+        db.close((err) => {
+          if (err) console.error('❌ Error closing SQLite:', err.message);
+          else console.log('✅ SQLite connection closed');
+          process.exit(0);
+        });
+      } else {
+        db.end().then(() => { console.log('✅ PostgreSQL pool closed'); process.exit(0); }).catch((err) => { console.error('❌ Error closing PostgreSQL:', err.message); process.exit(1); });
+      }
+    });
+  }
+  process.on('SIGTERM', () => shutdown('SIGTERM'));
+  process.on('SIGINT', () => shutdown('SIGINT'));
+}).catch(err => {
+  console.error('❌ Failed to initialize DB, starting server anyway (API will return 503):', err);
+  const server = app.listen(PORT, () => {
+    console.log(`✈️  Swiss Airlines server running on port ${PORT} (DB not ready)`);
+  });
+});
