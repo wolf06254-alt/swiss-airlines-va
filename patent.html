@@ -40,6 +40,14 @@
       --header-text: #ffffff;
       --header-link: #888888;
       --header-border: #4a4a4a;
+      --nav-link: var(--gray-300);
+      --nav-link-hover: var(--white);
+    }
+    :root {
+      --header-bg: rgba(255,255,255,0.92);
+      --header-text: var(--gray-900);
+      --nav-link: var(--gray-700);
+      --nav-link-hover: var(--gray-900);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -50,10 +58,42 @@
       line-height: 1.7;
       min-height: 100vh;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      padding: 40px 20px;
+      justify-content: flex-start;
+      padding: 0 20px;
     }
+    .top-header {
+      width: 100%;
+      background: var(--header-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--header-text); font-weight: 700; font-size: 16px; letter-spacing: 1px; z-index: 1; }
+    .logo-cross { width: 28px; height: 28px; background: var(--swiss-red); color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 300; line-height: 1; }
+    .nav { display: flex; gap: 28px; align-items: center; z-index: 1; }
+    .nav a { color: var(--nav-link); text-decoration: none; font-size: 13px; font-weight: 500; letter-spacing: 0.5px; transition: color 0.3s; position: relative; }
+    .nav a:hover { color: var(--nav-link-hover); }
+    .nav a.active { color: var(--swiss-red); }
+    .nav a.active::after { content: ''; position: absolute; bottom: -6px; left: 0; width: 100%; height: 2px; background: var(--swiss-red); }
+    .nav a::after { content: ''; position: absolute; bottom: -6px; left: 0; width: 0; height: 2px; background: var(--swiss-red); transition: width 0.3s; }
+    .nav a:hover::after { width: 100%; }
+    .nav-login-btn { background: var(--swiss-red); color: var(--white) !important; padding: 6px 16px; border-radius: 4px; font-size: 12px; font-weight: 600; letter-spacing: 0.5px; transition: all 0.3s; }
+    .nav-login-btn:hover { background: var(--swiss-red-dark); color: var(--white) !important; }
+    .nav-login-btn::after { display: none !important; }
+    .controls { display: flex; gap: 10px; z-index: 1; }
+    .controls button { background: transparent; border: 1px solid var(--nav-link); color: var(--nav-link); padding: 6px 14px; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s; letter-spacing: 0.5px; border-radius: 4px; }
+    .controls button:hover { border-color: var(--nav-link-hover); color: var(--nav-link-hover); }
+    .patent-body { padding: 60px 20px; width: 100%; max-width: 760px; margin: 0 auto; }
     .patent-card {
       max-width: 720px;
       width: 100%;
@@ -165,42 +205,39 @@
     }
     @media (max-width: 600px) {
       .patent-card { padding: 36px 24px; }
-      .meta { grid-template-columns: 1fr; }
-      .header-text h1 { font-size: 18px; }
-    }
-
-    .patent-toggles {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      display: flex;
-      gap: 8px;
-      z-index: 100;
-    }
-    .patent-toggles .lang-toggle, .patent-toggles .theme-toggle {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--gray-500);
-      padding: 6px 14px;
-      font-family: inherit;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-      letter-spacing: 0.5px;
-      border-radius: 4px;
-    }
-    .patent-toggles .lang-toggle:hover, .patent-toggles .theme-toggle:hover {
-      color: var(--text);
-      border-color: var(--text);
-    }
+    .meta { grid-template-columns: 1fr; }
+    .header-text h1 { font-size: 18px; }
+    .top-header { padding: 0 20px; }
+    .nav { gap: 14px; }
+    .nav a { font-size: 11px; }
+    .nav-login-btn { padding: 4px 12px; font-size: 11px; }
+    .patent-body { padding: 40px 16px; }
+  }
   </style>
 </head>
 <body>
-  <div class="patent-toggles">
-    <button class="lang-toggle" id="langToggle" onclick="toggleLang()">EN</button>
-    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙</button>
-  </div>
+  <header class="top-header">
+    <a href="index.html" class="logo">
+      <div class="logo-cross">+</div>
+      <div>SWISS AIRLINES</div>
+    </a>
+    <nav class="nav">
+      <a href="index.html" data-i18n="nav-home">Главная</a>
+      <a href="fleet.html" data-i18n="nav-fleet">Флот</a>
+      <a href="routes.html" data-i18n="nav-routes">Маршруты</a>
+      <a href="map.html" data-i18n="nav-map">Карта</a>
+      <a href="events.html" data-i18n="nav-events">События</a>
+      <a href="history.html" data-i18n="nav-history">История</a>
+      <a href="https://discord.gg/6YA8t7GJr" target="_blank">Discord</a>
+      <a href="login.html" class="nav-login-btn" data-i18n="nav-login">Вход</a>
+    </nav>
+    <div class="controls">
+      <button id="langToggle" onclick="toggleLang()">EN</button>
+      <button id="themeToggle" onclick="toggleTheme()">🌙</button>
+    </div>
+  </header>
+
+  <div class="patent-body">
   <div class="patent-card">
     <div class="header">
       <div class="cross">+</div>
@@ -262,6 +299,7 @@
       <div class="stamp"><a href="index.html" style="color:var(--gray-500);text-decoration:none;" data-i18n="nav-home">Главная</a> · <a href="fleet.html" style="color:var(--gray-500);text-decoration:none;" data-i18n="nav-fleet">Флот</a> · <a href="routes.html" style="color:var(--gray-500);text-decoration:none;" data-i18n="nav-routes">Маршруты</a> · <a href="patent.html" style="color:var(--gray-500);text-decoration:none;" data-i18n="nav-patent">Патент</a> · <a href="map.html" style="color:var(--gray-500);text-decoration:none;" data-i18n="nav-map">Карта</a> · <a href="events.html" style="color:var(--gray-500);text-decoration:none;" data-i18n="nav-events">События</a> · <a href="history.html" style="color:var(--gray-500);text-decoration:none;" data-i18n="nav-history">История</a> · discord.gg/6YA8t7GJr</div>
     </div>
   </div>
+  </div>
 
   <script>
     const i18n = {
@@ -287,11 +325,7 @@
         'patent-copyright': '© 2026 Swiss Airlines VA. Все права защищены.',
         'nav-home': 'Главная',
         'nav-fleet': 'Флот',
-        'nav-routes': 'Маршруты',
-        'nav-patent': 'Патент',
-        'nav-map': 'Карта',
-        'nav-events': 'События',
-        'nav-history': 'История'
+        'nav-home': 'Главная', 'nav-fleet': 'Флот', 'nav-routes': 'Маршруты', 'nav-map': 'Карта', 'nav-events': 'События', 'nav-history': 'История', 'nav-login': 'Вход', 'nav-patent': 'Патент'
       },
       en: {
         'patent-title': 'Unofficial Virtual Patent — Swiss Airlines VA',
@@ -313,13 +347,7 @@
         'patent-terms-title': 'Terms of Use',
         'patent-terms-text': 'Any use of design elements, code, structure, and branding is only possible with written permission from the administration. Referencing (mentioning) is allowed with attribution.',
         'patent-copyright': '© 2026 Swiss Airlines VA. All rights reserved.',
-        'nav-home': 'Home',
-        'nav-fleet': 'Fleet',
-        'nav-routes': 'Routes',
-        'nav-patent': 'Patent',
-        'nav-map': 'Map',
-        'nav-events': 'Events',
-        'nav-history': 'History'
+        'nav-home': 'Home', 'nav-fleet': 'Fleet', 'nav-routes': 'Routes', 'nav-map': 'Map', 'nav-events': 'Events', 'nav-history': 'History', 'nav-login': 'Login', 'nav-patent': 'Patent'
       }
     };
 

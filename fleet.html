@@ -23,10 +23,10 @@
       --card: var(--white);
       --border: var(--gray-300);
       --transition: cubic-bezier(0.4, 0, 0.2, 1);
-      --header-bg: rgba(10,10,10,0.92);
-      --header-text: var(--white);
-      --nav-link: var(--gray-300);
-      --nav-link-hover: var(--white);
+      --header-bg: rgba(255,255,255,0.92);
+      --header-text: var(--gray-900);
+      --nav-link: var(--gray-700);
+      --nav-link-hover: var(--gray-900);
     }
     [data-theme="dark"] {
       --bg: #0f0f0f;
@@ -82,6 +82,9 @@
     .nav a.active::after { content: ''; position: absolute; bottom: -6px; left: 0; width: 100%; height: 2px; background: var(--swiss-red); }
     .nav a::after { content: ''; position: absolute; bottom: -6px; left: 0; width: 0; height: 2px; background: var(--swiss-red); transition: width 0.3s var(--transition); }
     .nav a:hover::after { width: 100%; }
+    .nav-login-btn { background: var(--swiss-red); color: var(--white) !important; padding: 6px 16px; border-radius: 4px; font-size: 12px; font-weight: 600; letter-spacing: 0.5px; transition: all 0.3s; text-decoration: none; display: inline-block; }
+    .nav-login-btn:hover { background: var(--swiss-red-dark); color: var(--white) !important; transform: translateY(-1px); }
+    .nav-login-btn::after { display: none !important; }
 
     .controls { display: flex; gap: 12px; align-items: center; z-index: 1; }
     .lang-toggle, .theme-toggle { background: transparent; border: 1px solid var(--nav-link); color: var(--nav-link); padding: 6px 14px; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s var(--transition); letter-spacing: 0.5px; border-radius: 4px; }
@@ -147,6 +150,7 @@
       .top-header { padding: 0 20px; }
       .nav { gap: 16px; }
       .nav a { font-size: 12px; }
+      .nav-login-btn { padding: 4px 12px; font-size: 11px; }
       .hero { padding: 60px 20px 50px; }
       .stats-bar { gap: 30px; padding: 30px 20px; }
       .stat-number { font-size: 28px; }
@@ -172,7 +176,7 @@
       <a href="events.html" data-i18n="nav-events">События</a>
       <a href="history.html" data-i18n="nav-history">История</a>
       <a href="https://discord.gg/6YA8t7GJr" target="_blank">Discord</a>
-      <a href="login.html" data-i18n="nav-login">Вход</a>
+      <a href="login.html" class="nav-login-btn" data-i18n="nav-login">Вход</a>
     </nav>
     <div class="controls">
       <button class="lang-toggle" id="langToggle" onclick="toggleLang()">EN</button>

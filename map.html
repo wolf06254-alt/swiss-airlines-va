@@ -93,6 +93,9 @@
     .nav a.active::after { content: ''; position: absolute; bottom: -6px; left: 0; width: 100%; height: 2px; background: var(--swiss-red); }
     .nav a::after { content: ''; position: absolute; bottom: -6px; left: 0; width: 0; height: 2px; background: var(--swiss-red); transition: width 0.3s; }
     .nav a:hover::after { width: 100%; }
+    .nav-login-btn { background: var(--swiss-red); color: var(--white) !important; padding: 6px 16px; border-radius: 4px; font-size: 12px; font-weight: 600; letter-spacing: 0.5px; transition: all 0.3s; text-decoration: none; display: inline-block; }
+    .nav-login-btn:hover { background: var(--swiss-red-dark); color: var(--white) !important; transform: translateY(-1px); }
+    .nav-login-btn::after { display: none !important; }
 
     .controls { display: flex; gap: 12px; align-items: center; z-index: 1; }
     .lang-toggle, .theme-toggle {
@@ -217,6 +220,7 @@
       .top-header { padding: 0 20px; }
       .nav { gap: 16px; }
       .nav a { font-size: 12px; }
+      .nav-login-btn { padding: 4px 12px; font-size: 11px; }
       .hero { padding: 60px 20px 40px; }
       .map-container { padding: 20px; }
       .map-wrapper { aspect-ratio: 4/3; }
@@ -242,7 +246,7 @@
       <a href="events.html" data-i18n="nav-events">События</a>
       <a href="history.html" data-i18n="nav-history">История</a>
       <a href="https://discord.gg/6YA8t7GJr" target="_blank">Discord</a>
-      <a href="login.html" data-i18n="nav-login">Вход</a>
+      <a href="login.html" class="nav-login-btn" data-i18n="nav-login">Вход</a>
     </nav>
     <div class="controls">
       <button class="lang-toggle" id="langToggle" onclick="toggleLang()">EN</button>
