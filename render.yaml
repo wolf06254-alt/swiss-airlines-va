@@ -4,15 +4,18 @@ services:
     runtime: node
     buildCommand: npm install
     startCommand: node server.js
+    healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
+      - key: PORT
+        value: 10000
       - key: ADMIN_USERNAME
-        value: Gregory
+        sync: false
       - key: ADMIN_PASSWORD
-        value: 123789
+        sync: false
       - key: SESSION_SECRET
-        value: swiss-va-session-secret-2026-stable
+        generateValue: true
       - key: DATABASE_URL
         fromDatabase:
           name: swiss-airlines-db

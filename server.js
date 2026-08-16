@@ -19,9 +19,11 @@ const ADMIN_PASSWORD_HASH = bcrypt.hashSync(ADMIN_PASSWORD, 10);
 const SESSION_SECRET = process.env.SESSION_SECRET || 'swiss-airlines-va-secret-key-2026';
 
 /* ============================================================
-   DATABASE SETUP — with robust connection handling
+   DATABASE SETUP — with robust connection handling + auto-reconnect
    ============================================================ */
 let db, dbType, pgPool;
+let pgReconnectAttempts = 0;
+const PG_MAX_RECONNECT = 10;
 const pgConn = process.env.DATABASE_URL || process.env.POSTGRES_URL || '';
 
 if (pgConn && pgConn.startsWith('postgres')) {
@@ -40,6 +42,26 @@ if (pgConn && pgConn.startsWith('postgres')) {
   // Handle pool-level errors (prevents uncaught exceptions crashing the process)
   pgPool.on('error', (err) => {
     console.error('❌ [PG POOL] Unexpected error on idle client:', err.message);
+    console.error('❌ [PG POOL] This may indicate lost DB connection. Setting dbReady=false for reconnect.');
+    dbReady = false;
+    // Schedule reconnection attempt
+    if (pgReconnectAttempts < PG_MAX_RECONNECT) {
+      const delay = Math.min(5000 * (pgReconnectAttempts + 1), 30000);
+      console.log(`🔄 [PG POOL] Will attempt reconnect in ${delay}ms (attempt ${pgReconnectAttempts + 1}/${PG_MAX_RECONNECT})`);
+      setTimeout(async () => {
+        try {
+          await db.query('SELECT 1 as test');
+          console.log('✅ [PG POOL] Reconnection succeeded after pool error');
+          dbReady = true;
+          pgReconnectAttempts = 0;
+        } catch (e) {
+          pgReconnectAttempts++;
+          console.error('❌ [PG POOL] Reconnection failed:', e.message);
+          // Try full re-init
+          initDb().catch(err => console.error('❌ [PG POOL] Re-init failed:', err.message));
+        }
+      }, delay);
+    }
   });
 
   // Handle pool connection events
@@ -393,11 +415,19 @@ async function initDb() {
     }
 
     dbReady = true;
+    pgReconnectAttempts = 0;
     console.log('✅ Database initialized and ready');
   } catch (err) {
     console.error('❌ Database initialization error:', err);
     // Don't crash — server can still serve static files, API will return 503
     dbReady = false;
+    // Auto-retry: schedule another initDb attempt after 10 seconds
+    const retryDelay = Math.min(10000 * (pgReconnectAttempts + 1), 60000);
+    pgReconnectAttempts++;
+    console.log(`🔄 [INIT_DB] Will retry in ${retryDelay}ms (attempt ${pgReconnectAttempts})`);
+    setTimeout(() => {
+      initDb().catch(e => console.error('❌ [INIT_DB] Retry failed:', e.message));
+    }, retryDelay);
   }
 }
 
@@ -414,7 +444,20 @@ function requireAuth(req, res, next) {
    ============================================================ */
 function requireDb(req, res, next) {
   if (dbReady) return next();
-  res.status(503).json({ error: 'Database is not ready yet. Please try again in a few seconds.' });
+  // Auto-reconnect: try to re-initialize DB if not ready
+  console.log('⏳ [REQUIRE_DB] DB not ready, attempting re-init...');
+  initDb().then(() => {
+    if (dbReady) {
+      console.log('✅ [REQUIRE_DB] Re-init succeeded, proceeding');
+      next();
+    } else {
+      console.error('❌ [REQUIRE_DB] Re-init failed, returning 503');
+      res.status(503).json({ error: 'Database is not ready yet. Please try again in a few seconds.', retry: true });
+    }
+  }).catch(err => {
+    console.error('❌ [REQUIRE_DB] Re-init error:', err.message);
+    res.status(503).json({ error: 'Database is not ready yet. Please try again in a few seconds.', retry: true });
+  });
 }
 
 /* ============================================================
@@ -444,11 +487,66 @@ app.get('/api/health', async (req, res) => {
       applications_count: count,
       active_sessions: sessionCount,
       timestamp: new Date().toISOString(),
-      uptime: process.uptime()
+      uptime: process.uptime(),
+      pgReconnectAttempts,
+      env: process.env.NODE_ENV || 'development'
     });
   } catch (err) {
     console.error('❌ [HEALTH] DB check failed:', err.message);
-    res.status(500).json({ status: 'error', db: dbType, dbReady, error: err.message });
+    res.status(500).json({ status: 'error', db: dbType, dbReady, error: err.message, pgReconnectAttempts });
+  }
+});
+
+/* ============================================================
+   DB STATUS — comprehensive diagnostics
+   ============================================================ */
+app.get('/api/db-status', requireAuth, async (req, res) => {
+  try {
+    const counts = {};
+    const tables = ['applications', 'events', 'routes', 'fleet', 'timeline'];
+    for (const t of tables) {
+      try {
+        if (dbType === 'postgres') {
+          const r = await db.query(`SELECT COUNT(*) as c FROM ${t}`);
+          counts[t] = parseInt(r.rows[0].c);
+        } else {
+          const r = await new Promise((resolve, reject) => db.get(`SELECT COUNT(*) as c FROM ${t}`, [], (err, row) => err ? reject(err) : resolve(row)));
+          counts[t] = r ? r.c : 0;
+        }
+      } catch (e) {
+        counts[t] = `ERROR: ${e.message}`;
+      }
+    }
+    // Session count
+    try {
+      if (dbType === 'postgres') {
+        const sr = await db.query('SELECT COUNT(*) as c FROM session');
+        counts.session = parseInt(sr.rows[0].c);
+      }
+    } catch (e) {
+      counts.session = `ERROR: ${e.message}`;
+    }
+    // Latest application info
+    let latestApp = null;
+    try {
+      if (dbType === 'postgres') {
+        const lr = await db.query('SELECT id, roblox_name, status, created_at FROM applications ORDER BY created_at DESC LIMIT 1');
+        latestApp = lr.rows[0] || null;
+      } else {
+        latestApp = await new Promise((resolve, reject) => db.get('SELECT id, roblox_name, status, created_at FROM applications ORDER BY created_at DESC LIMIT 1', [], (err, r) => err ? reject(err) : resolve(r)));
+      }
+    } catch (e) { /* ignore */ }
+    
+    res.json({
+      dbType,
+      dbReady,
+      pgReconnectAttempts,
+      counts,
+      latestApplication: latestApp,
+      timestamp: new Date().toISOString()
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message, dbReady, pgReconnectAttempts });
   }
 });
 
@@ -468,27 +566,40 @@ app.post('/api/submit', rateLimit(60000, 10), requireDb, async (req, res) => {
   if (about && about.length > 2000) return res.status(400).json({ success: false, error: 'About too long' });
   if (why_swiss && why_swiss.length > 2000) return res.status(400).json({ success: false, error: 'Why Swiss too long' });
 
-  try {
-    if (dbType === 'postgres') {
-      const result = await db.query(
-        `INSERT INTO applications (roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about)
-        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING id`,
-        [roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about]
-      );
-      console.log('✅ [SUBMIT] Application saved, ID:', result.rows[0].id);
-      res.json({ success: true, id: result.rows[0].id });
-    } else {
-      const stmt = db.prepare(`INSERT INTO applications (roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
-      stmt.run(roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about, function(err) {
-        if (err) { stmt.finalize(); return res.status(500).json({ success: false, error: 'DB error: ' + err.message }); }
-        console.log('✅ [SUBMIT] Application saved, ID:', this.lastID);
-        res.json({ success: true, id: this.lastID });
-        stmt.finalize();
-      });
+  const maxRetries = 2;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      if (dbType === 'postgres') {
+        const result = await db.query(
+          `INSERT INTO applications (roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about)
+          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING id`,
+          [roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about]
+        );
+        console.log('✅ [SUBMIT] Application saved, ID:', result.rows[0].id, '(attempt', attempt, ')');
+        if (attempt > 0) { dbReady = true; pgReconnectAttempts = 0; }
+        return res.json({ success: true, id: result.rows[0].id });
+      } else {
+        const stmt = db.prepare(`INSERT INTO applications (roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+        const id = await new Promise((resolve, reject) => {
+          stmt.run(roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about, function(err) {
+            if (err) { stmt.finalize(); reject(err); return; }
+            resolve(this.lastID);
+            stmt.finalize();
+          });
+        });
+        console.log('✅ [SUBMIT] Application saved, ID:', id, '(attempt', attempt, ')');
+        return res.json({ success: true, id });
+      }
+    } catch (err) {
+      console.error('❌ [SUBMIT] Error on attempt', attempt, ':', err.message);
+      if (attempt < maxRetries) {
+        console.log('🔄 [SUBMIT] Retrying in 2s...');
+        await new Promise(r => setTimeout(r, 2000));
+        try { await initDb(); } catch(e) { /* ignore */ }
+        continue;
+      }
+      return res.status(500).json({ success: false, error: 'Database error: ' + err.message });
     }
-  } catch (err) {
-    console.error('❌ [SUBMIT] Error:', err);
-    res.status(500).json({ success: false, error: 'Database error: ' + err.message });
   }
 });
 
@@ -571,15 +682,31 @@ app.post('/api/logout', (req, res) => {
    ADMIN APPLICATIONS API
    ============================================================ */
 app.get('/api/applications', requireAuth, requireDb, async (req, res) => {
-  try {
-    let rows;
-    if (dbType === 'postgres') { const r = await db.query('SELECT * FROM applications ORDER BY created_at DESC'); rows = r.rows; }
-    else { rows = await new Promise((resolve, reject) => db.all('SELECT * FROM applications ORDER BY created_at DESC', [], (err, r) => err ? reject(err) : resolve(r))); }
-    console.log('📋 [APPLICATIONS] Returning', rows.length, 'applications to admin');
-    res.json({ applications: rows, user: { username: req.session.username || 'Администратор' } });
-  } catch (err) {
-    console.error('❌ [APPLICATIONS] Error:', err.message);
-    res.status(500).json({ error: err.message });
+  const maxRetries = 2;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      let rows;
+      if (dbType === 'postgres') {
+        const r = await db.query('SELECT * FROM applications ORDER BY created_at DESC');
+        rows = r.rows;
+      } else {
+        rows = await new Promise((resolve, reject) => db.all('SELECT * FROM applications ORDER BY created_at DESC', [], (err, r) => err ? reject(err) : resolve(r)));
+      }
+      console.log('📋 [APPLICATIONS] Returning', rows.length, 'applications to admin (attempt', attempt, ')');
+      // If we got here after a retry, DB is working again
+      if (attempt > 0) { dbReady = true; pgReconnectAttempts = 0; }
+      return res.json({ applications: rows, user: { username: req.session.username || 'Администратор' } });
+    } catch (err) {
+      console.error('❌ [APPLICATIONS] Error on attempt', attempt, ':', err.message);
+      if (attempt < maxRetries) {
+        console.log('🔄 [APPLICATIONS] Retrying in 2s...');
+        await new Promise(r => setTimeout(r, 2000));
+        // Try to re-init DB
+        try { await initDb(); } catch(e) { /* ignore */ }
+        continue;
+      }
+      return res.status(500).json({ error: err.message, retry: true });
+    }
   }
 });
 
