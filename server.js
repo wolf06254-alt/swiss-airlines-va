@@ -88,6 +88,28 @@ if (pgConn && pgConn.startsWith('postgres')) {
 }
 
 /* ============================================================
+   DB HELPERS — unified access for PostgreSQL + SQLite
+   sqlPg uses $1,$2...   sqlLite uses ?,?...
+   ============================================================ */
+async function dbAll(sqlPg, sqlLite, params = []) {
+  if (dbType === 'postgres') return (await db.query(sqlPg, params)).rows;
+  return await new Promise((resolve, reject) => db.all(sqlLite, params, (err, rows) => err ? reject(err) : resolve(rows || [])));
+}
+async function dbGet(sqlPg, sqlLite, params = []) {
+  const rows = await dbAll(sqlPg, sqlLite, params);
+  return rows.length ? rows[0] : null;
+}
+async function dbRun(sqlPg, sqlLite, params = []) {
+  if (dbType === 'postgres') {
+    const r = await db.query(sqlPg, params);
+    return { rowCount: r.rowCount, rows: r.rows, lastID: r.rows && r.rows[0] ? r.rows[0].id : null };
+  }
+  return await new Promise((resolve, reject) => db.run(sqlLite, params, function (err) {
+    if (err) reject(err); else resolve({ rowCount: this.changes, lastID: this.lastID, rows: [] });
+  }));
+}
+
+/* ============================================================
    SESSION STORE — persistent with PostgreSQL
    ============================================================ */
 let sessionStore;
@@ -168,6 +190,7 @@ function rateLimit(windowMs = 60000, max = 5) {
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 app.get('/login.html', (req, res) => res.sendFile(path.join(__dirname, 'login.html')));
 app.get('/admin.html', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
+app.get('/pilot.html', (req, res) => res.sendFile(path.join(__dirname, 'pilot.html')));
 
 /* ============================================================
    DATABASE INITIALIZATION
@@ -257,6 +280,44 @@ async function initDb() {
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
       `);
+      // ===== PILOTS (личные кабинеты) =====
+      await db.query(`
+        CREATE TABLE IF NOT EXISTS pilots (
+          id SERIAL PRIMARY KEY,
+          callsign TEXT UNIQUE NOT NULL,
+          roblox_name TEXT NOT NULL,
+          username TEXT UNIQUE NOT NULL,
+          password_hash TEXT NOT NULL,
+          application_id INTEGER,
+          rank TEXT DEFAULT 'Кадет',
+          total_minutes INTEGER DEFAULT 0,
+          total_flights INTEGER DEFAULT 0,
+          status TEXT DEFAULT 'active',
+          telegram TEXT,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          last_login TIMESTAMP
+        )
+      `);
+      await db.query(`
+        CREATE TABLE IF NOT EXISTS flight_reports (
+          id SERIAL PRIMARY KEY,
+          pilot_id INTEGER NOT NULL,
+          flight_number TEXT,
+          departure TEXT NOT NULL,
+          arrival TEXT NOT NULL,
+          aircraft TEXT,
+          duration_min INTEGER NOT NULL,
+          pax INTEGER,
+          landing_rate INTEGER,
+          comment TEXT,
+          status TEXT DEFAULT 'pending',
+          admin_comment TEXT,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          reviewed_at TIMESTAMP
+        )
+      `);
+      await db.query('CREATE INDEX IF NOT EXISTS idx_reports_pilot ON flight_reports(pilot_id)');
+      await db.query('CREATE INDEX IF NOT EXISTS idx_reports_status ON flight_reports(status)');
     } else {
       await new Promise((resolve, reject) => {
         db.run(`CREATE TABLE IF NOT EXISTS applications (
@@ -302,12 +363,87 @@ async function initDb() {
           created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )`, (err) => err ? reject(err) : resolve());
       });
+      await new Promise((resolve, reject) => {
+        db.run(`CREATE TABLE IF NOT EXISTS pilots (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          callsign TEXT UNIQUE NOT NULL,
+          roblox_name TEXT NOT NULL,
+          username TEXT UNIQUE NOT NULL,
+          password_hash TEXT NOT NULL,
+          application_id INTEGER,
+          rank TEXT DEFAULT 'Кадет',
+          total_minutes INTEGER DEFAULT 0,
+          total_flights INTEGER DEFAULT 0,
+          status TEXT DEFAULT 'active',
+          telegram TEXT,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          last_login DATETIME
+        )`, (err) => err ? reject(err) : resolve());
+      });
+      await new Promise((resolve, reject) => {
+        db.run(`CREATE TABLE IF NOT EXISTS flight_reports (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          pilot_id INTEGER NOT NULL,
+          flight_number TEXT,
+          departure TEXT NOT NULL,
+          arrival TEXT NOT NULL,
+          aircraft TEXT,
+          duration_min INTEGER NOT NULL,
+          pax INTEGER,
+          landing_rate INTEGER,
+          comment TEXT,
+          status TEXT DEFAULT 'pending',
+          admin_comment TEXT,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          reviewed_at DATETIME
+        )`, (err) => err ? reject(err) : resolve());
+      });
+      await new Promise((resolve) => db.run('CREATE INDEX IF NOT EXISTS idx_reports_pilot ON flight_reports(pilot_id)', () => resolve()));
+      await new Promise((resolve) => db.run('CREATE INDEX IF NOT EXISTS idx_reports_status ON flight_reports(status)', () => resolve()));
     }
 
     // ============ SEED DATA ============
     const seedEvents = [];
     const seedApplications = [];
-    const seedRoutes = [];
+    const seedRoutes = [
+      // Внутренние — Швейцария
+      {origin:'Цюрих',origin_code:'IPPH',destination:'Женева',destination_code:'IZOL',distance_km:230,duration_min:45,aircraft_type:'Airbus A220-100',frequency:'ежедневно'},
+      {origin:'Цюрих',origin_code:'IPPH',destination:'Лугано',destination_code:'ILKL',distance_km:210,duration_min:40,aircraft_type:'Airbus A220-100',frequency:'ежедневно'},
+      {origin:'Женева',origin_code:'IZOL',destination:'Берн',destination_code:'IJAF',distance_km:160,duration_min:35,aircraft_type:'Airbus A220-100',frequency:'ежедневно'},
+      // Европа из Цюриха
+      {origin:'Цюрих',origin_code:'IPPH',destination:'Лондон',destination_code:'IKFL',distance_km:947,duration_min:105,aircraft_type:'Airbus A320neo',frequency:'ежедневно'},
+      {origin:'Цюрих',origin_code:'IPPH',destination:'Москва',destination_code:'IRFD',distance_km:2200,duration_min:195,aircraft_type:'Airbus A320-200',frequency:'ежедневно'},
+      {origin:'Цюрих',origin_code:'IPPH',destination:'Манчестер',destination_code:'ITEY',distance_km:1050,duration_min:120,aircraft_type:'Airbus A220-300',frequency:'5x в неделю'},
+      {origin:'Цюрих',origin_code:'IPPH',destination:'Санкт-Петербург',destination_code:'IMLR',distance_km:2400,duration_min:205,aircraft_type:'Airbus A320neo',frequency:'3x в неделю'},
+      // Америка
+      {origin:'Цюрих',origin_code:'IPPH',destination:'Нью-Йорк',destination_code:'ITKO',distance_km:6980,duration_min:510,aircraft_type:'Boeing 777-300ER',frequency:'ежедневно'},
+      {origin:'Цюрих',origin_code:'IPPH',destination:'Чикаго',destination_code:'IDCS',distance_km:7420,duration_min:540,aircraft_type:'Airbus A340-300',frequency:'еженедельно'},
+      {origin:'Цюрих',origin_code:'IPPH',destination:'Лос-Анджелес',destination_code:'IBRD',distance_km:9540,duration_min:690,aircraft_type:'Airbus A350-900',frequency:'ежедневно'},
+      {origin:'Цюрих',origin_code:'IPPH',destination:'Сан-Паулу',destination_code:'ISAU',distance_km:9855,duration_min:720,aircraft_type:'Boeing 777-300ER',frequency:'еженедельно'},
+      // Африка и Ближний Восток
+      {origin:'Цюрих',origin_code:'IPPH',destination:'Каир',destination_code:'ILAR',distance_km:2840,duration_min:240,aircraft_type:'Airbus A220-300',frequency:'ежедневно'},
+      {origin:'Цюрих',origin_code:'IPPH',destination:'Найроби',destination_code:'IPAP',distance_km:6460,duration_min:480,aircraft_type:'Airbus A330-300',frequency:'еженедельно'},
+      {origin:'Цюрих',origin_code:'IPPH',destination:'Дубай',destination_code:'ISKP',distance_km:4860,duration_min:370,aircraft_type:'Airbus A330-300',frequency:'ежедневно'},
+      // Азия
+      {origin:'Цюрих',origin_code:'IPPH',destination:'Сингапур',destination_code:'IBTH',distance_km:10300,duration_min:750,aircraft_type:'Boeing 777-300ER',frequency:'ежедневно'},
+      // Из Женевы
+      {origin:'Женева',origin_code:'IZOL',destination:'Лондон',destination_code:'IKFL',distance_km:815,duration_min:95,aircraft_type:'Airbus A220-300',frequency:'ежедневно'},
+      {origin:'Женева',origin_code:'IZOL',destination:'Москва',destination_code:'IRFD',distance_km:2500,duration_min:210,aircraft_type:'Airbus A321neo',frequency:'еженедельно'},
+      {origin:'Женева',origin_code:'IZOL',destination:'Нью-Йорк',destination_code:'ITKO',distance_km:6900,duration_min:505,aircraft_type:'Airbus A330-300',frequency:'ежедневно'},
+      {origin:'Женева',origin_code:'IZOL',destination:'Дубай',destination_code:'ISKP',distance_km:4800,duration_min:365,aircraft_type:'Airbus A330-300',frequency:'4x в неделю'},
+      // Региональные / фидерные
+      {origin:'Москва',origin_code:'IRFD',destination:'Санкт-Петербург',destination_code:'IMLR',distance_km:700,duration_min:90,aircraft_type:'Airbus A220-300',frequency:'ежедневно'},
+      {origin:'Москва',origin_code:'IRFD',destination:'Сочи',destination_code:'IBLT',distance_km:1500,duration_min:145,aircraft_type:'Airbus A320-200',frequency:'ежедневно'},
+      {origin:'Москва',origin_code:'IRFD',destination:'Дубай',destination_code:'ISKP',distance_km:3600,duration_min:280,aircraft_type:'Airbus A321neo',frequency:'ежедневно'},
+      {origin:'Нью-Йорк',origin_code:'ITKO',destination:'Чикаго',destination_code:'IDCS',distance_km:1190,duration_min:150,aircraft_type:'Airbus A320neo',frequency:'ежедневно'},
+      {origin:'Нью-Йорк',origin_code:'ITKO',destination:'Лос-Анджелес',destination_code:'IBRD',distance_km:3940,duration_min:330,aircraft_type:'Airbus A321neo',frequency:'ежедневно'},
+      {origin:'Лондон',origin_code:'IKFL',destination:'Манчестер',destination_code:'ITEY',distance_km:300,duration_min:55,aircraft_type:'Airbus A220-100',frequency:'ежедневно'},
+      {origin:'Лондон',origin_code:'IKFL',destination:'Нью-Йорк',destination_code:'ITKO',distance_km:5570,duration_min:420,aircraft_type:'Boeing 777-300ER',frequency:'ежедневно'},
+      {origin:'Каир',origin_code:'ILAR',destination:'Шарм-эль-Шейх',destination_code:'IBAR',distance_km:500,duration_min:60,aircraft_type:'Airbus A220-300',frequency:'ежедневно'},
+      {origin:'Найроби',origin_code:'IPAP',destination:'Дар-эс-Салам',destination_code:'IHEN',distance_km:1100,duration_min:90,aircraft_type:'Airbus A220-300',frequency:'ежедневно'},
+      {origin:'Дубай',origin_code:'ISKP',destination:'Сингапур',destination_code:'IBTH',distance_km:5900,duration_min:430,aircraft_type:'Airbus A330-300',frequency:'ежедневно'},
+      {origin:'Сан-Паулу',origin_code:'ISAU',destination:'Нью-Йорк',destination_code:'ITKO',distance_km:7700,duration_min:570,aircraft_type:'Boeing 777-300ER',frequency:'ежедневно'}
+    ];
     const seedFleet = [
       {model:'Airbus A220-100',manufacturer:'Airbus',category:'Regional',capacity:125,range_km:5400,speed_kmh:829,description:'Smallest A220 variant, perfect for thin regional routes and Swiss domestic flights'},
       {model:'Airbus A220-300',manufacturer:'Airbus',category:'Regional',capacity:145,range_km:6300,speed_kmh:829,description:'Swiss flagship regional jet, the backbone of European short-haul operations'},
@@ -1028,6 +1164,281 @@ app.get('/api/notifications', requireDb, async (req, res) => {
     if (rows.length === 0) return res.json({ notifications: [] });
     const app = rows[0];
     res.json({ notifications: [{ title: 'Анкета', message: 'Ваша анкета найдена', status: app.status, created_at: app.created_at, data: app }] });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+/* ============================================================
+   PILOT CABINET — ranks, auth, reports, leaderboard
+   ============================================================ */
+const RANKS = [
+  { key: 'cadet',   ru: 'Кадет',           en: 'Cadet',         minHours: 0 },
+  { key: 'fo',      ru: 'Второй пилот',    en: 'First Officer', minHours: 10 },
+  { key: 'cpt',     ru: 'Капитан',         en: 'Captain',       minHours: 30 },
+  { key: 'senior',  ru: 'Старший капитан', en: 'Senior Captain',minHours: 75 }
+];
+function rankForMinutes(min) {
+  const h = (min || 0) / 60;
+  let r = RANKS[0];
+  for (const x of RANKS) if (h >= x.minHours) r = x;
+  return r.ru;
+}
+function requirePilot(req, res, next) {
+  if (req.session && req.session.pilotId) return next();
+  res.status(401).json({ error: 'Требуется вход в кабинет пилота', needLogin: true });
+}
+function publicPilot(p) {
+  if (!p) return null;
+  return {
+    id: p.id, callsign: p.callsign, roblox_name: p.roblox_name, username: p.username,
+    rank: p.rank, total_minutes: p.total_minutes || 0,
+    total_hours: Math.round(((p.total_minutes || 0) / 60) * 10) / 10,
+    total_flights: p.total_flights || 0, status: p.status,
+    created_at: p.created_at, last_login: p.last_login
+  };
+}
+async function nextCallsign() {
+  const row = await dbGet(
+    "SELECT callsign FROM pilots WHERE callsign LIKE 'SWR-%' ORDER BY id DESC LIMIT 1",
+    "SELECT callsign FROM pilots WHERE callsign LIKE 'SWR-%' ORDER BY id DESC LIMIT 1"
+  );
+  let n = 100;
+  const all = await dbAll('SELECT callsign FROM pilots', 'SELECT callsign FROM pilots');
+  for (const r of all) {
+    const m = /^SWR-(\d+)$/.exec(r.callsign || '');
+    if (m) n = Math.max(n, parseInt(m[1], 10));
+  }
+  if (row) { /* keep linter calm */ }
+  return 'SWR-' + String(n + 1).padStart(3, '0');
+}
+
+// Проверка: есть ли принятая анкета на этот ник (шаг 1 регистрации)
+app.get('/api/pilot/check', requireDb, rateLimit(60000, 30), async (req, res) => {
+  const nick = (req.query.roblox_name || '').trim();
+  if (!nick) return res.status(400).json({ error: 'Укажите ник Roblox' });
+  try {
+    const appRow = await dbGet(
+      "SELECT * FROM applications WHERE LOWER(roblox_name)=LOWER($1) AND status='accepted' ORDER BY created_at DESC LIMIT 1",
+      "SELECT * FROM applications WHERE LOWER(roblox_name)=LOWER(?) AND status='accepted' ORDER BY created_at DESC LIMIT 1",
+      [nick]
+    );
+    if (!appRow) return res.json({ eligible: false, reason: 'Принятая анкета с таким ником не найдена' });
+    const exists = await dbGet(
+      'SELECT id, callsign FROM pilots WHERE LOWER(roblox_name)=LOWER($1)',
+      'SELECT id, callsign FROM pilots WHERE LOWER(roblox_name)=LOWER(?)', [nick]
+    );
+    if (exists) return res.json({ eligible: false, reason: 'Аккаунт пилота уже создан (' + exists.callsign + ')' });
+    res.json({ eligible: true, roblox_name: appRow.roblox_name });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Регистрация пилота — только по принятой анкете
+app.post('/api/pilot/register', requireDb, rateLimit(60000, 5), async (req, res) => {
+  const { roblox_name, username, password } = req.body || {};
+  if (!roblox_name || !username || !password) return res.status(400).json({ error: 'Заполните все поля' });
+  if (String(username).length < 3) return res.status(400).json({ error: 'Логин слишком короткий (мин. 3 символа)' });
+  if (String(password).length < 6) return res.status(400).json({ error: 'Пароль слишком короткий (мин. 6 символов)' });
+  try {
+    const appRow = await dbGet(
+      "SELECT * FROM applications WHERE LOWER(roblox_name)=LOWER($1) AND status='accepted' ORDER BY created_at DESC LIMIT 1",
+      "SELECT * FROM applications WHERE LOWER(roblox_name)=LOWER(?) AND status='accepted' ORDER BY created_at DESC LIMIT 1",
+      [roblox_name]
+    );
+    if (!appRow) return res.status(403).json({ error: 'Регистрация доступна только пилотам с принятой анкетой' });
+    const dupNick = await dbGet('SELECT id FROM pilots WHERE LOWER(roblox_name)=LOWER($1)', 'SELECT id FROM pilots WHERE LOWER(roblox_name)=LOWER(?)', [roblox_name]);
+    if (dupNick) return res.status(409).json({ error: 'Аккаунт для этого ника уже существует' });
+    const dupUser = await dbGet('SELECT id FROM pilots WHERE LOWER(username)=LOWER($1)', 'SELECT id FROM pilots WHERE LOWER(username)=LOWER(?)', [username]);
+    if (dupUser) return res.status(409).json({ error: 'Такой логин уже занят' });
+
+    const callsign = await nextCallsign();
+    const hash = bcrypt.hashSync(String(password), 10);
+    const r = await dbRun(
+      'INSERT INTO pilots (callsign, roblox_name, username, password_hash, application_id, rank, telegram) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id',
+      'INSERT INTO pilots (callsign, roblox_name, username, password_hash, application_id, rank, telegram) VALUES (?,?,?,?,?,?,?)',
+      [callsign, appRow.roblox_name, username, hash, appRow.id, RANKS[0].ru, appRow.telegram || null]
+    );
+    req.session.pilotId = r.lastID;
+    req.session.pilotCallsign = callsign;
+    req.session.save(() => res.json({ success: true, callsign, rank: RANKS[0].ru }));
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/pilot/login', requireDb, rateLimit(60000, 10), async (req, res) => {
+  const { username, password } = req.body || {};
+  if (!username || !password) return res.status(400).json({ error: 'Введите логин и пароль' });
+  try {
+    const p = await dbGet('SELECT * FROM pilots WHERE LOWER(username)=LOWER($1)', 'SELECT * FROM pilots WHERE LOWER(username)=LOWER(?)', [username]);
+    if (!p || !bcrypt.compareSync(String(password), p.password_hash)) return res.status(401).json({ error: 'Неверный логин или пароль' });
+    if (p.status === 'suspended') return res.status(403).json({ error: 'Аккаунт приостановлен. Свяжитесь с администрацией.' });
+    await dbRun('UPDATE pilots SET last_login=CURRENT_TIMESTAMP WHERE id=$1', 'UPDATE pilots SET last_login=CURRENT_TIMESTAMP WHERE id=?', [p.id]);
+    req.session.pilotId = p.id;
+    req.session.pilotCallsign = p.callsign;
+    req.session.save(() => res.json({ success: true, pilot: publicPilot(p) }));
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/pilot/logout', (req, res) => {
+  if (req.session) { delete req.session.pilotId; delete req.session.pilotCallsign; }
+  res.json({ success: true });
+});
+
+app.get('/api/pilot/me', requireDb, async (req, res) => {
+  if (!req.session || !req.session.pilotId) return res.json({ loggedIn: false });
+  try {
+    const p = await dbGet('SELECT * FROM pilots WHERE id=$1', 'SELECT * FROM pilots WHERE id=?', [req.session.pilotId]);
+    if (!p) { delete req.session.pilotId; return res.json({ loggedIn: false }); }
+    const nextRank = RANKS.find(r => (p.total_minutes || 0) / 60 < r.minHours) || null;
+    res.json({
+      loggedIn: true, pilot: publicPilot(p), ranks: RANKS,
+      next_rank: nextRank ? { name: nextRank.ru, hours_needed: Math.round((nextRank.minHours - (p.total_minutes || 0) / 60) * 10) / 10 } : null
+    });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/pilot/password', requireDb, requirePilot, async (req, res) => {
+  const { old_password, new_password } = req.body || {};
+  if (!old_password || !new_password) return res.status(400).json({ error: 'Заполните оба поля' });
+  if (String(new_password).length < 6) return res.status(400).json({ error: 'Новый пароль слишком короткий (мин. 6 символов)' });
+  try {
+    const p = await dbGet('SELECT * FROM pilots WHERE id=$1', 'SELECT * FROM pilots WHERE id=?', [req.session.pilotId]);
+    if (!p || !bcrypt.compareSync(String(old_password), p.password_hash)) return res.status(401).json({ error: 'Текущий пароль неверен' });
+    await dbRun('UPDATE pilots SET password_hash=$1 WHERE id=$2', 'UPDATE pilots SET password_hash=? WHERE id=?', [bcrypt.hashSync(String(new_password), 10), p.id]);
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Отчёты пилота
+app.get('/api/pilot/reports', requireDb, requirePilot, async (req, res) => {
+  try {
+    const rows = await dbAll(
+      'SELECT * FROM flight_reports WHERE pilot_id=$1 ORDER BY created_at DESC',
+      'SELECT * FROM flight_reports WHERE pilot_id=? ORDER BY created_at DESC', [req.session.pilotId]
+    );
+    res.json(rows);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/pilot/reports', requireDb, requirePilot, rateLimit(60000, 10), async (req, res) => {
+  const b = req.body || {};
+  const dur = parseInt(b.duration_min, 10);
+  if (!b.departure || !b.arrival) return res.status(400).json({ error: 'Укажите аэропорт вылета и прилёта' });
+  if (!dur || dur < 5 || dur > 900) return res.status(400).json({ error: 'Длительность рейса должна быть от 5 до 900 минут' });
+  try {
+    await dbRun(
+      'INSERT INTO flight_reports (pilot_id, flight_number, departure, arrival, aircraft, duration_min, pax, landing_rate, comment) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)',
+      'INSERT INTO flight_reports (pilot_id, flight_number, departure, arrival, aircraft, duration_min, pax, landing_rate, comment) VALUES (?,?,?,?,?,?,?,?,?)',
+      [req.session.pilotId, b.flight_number || null, b.departure, b.arrival, b.aircraft || null, dur,
+       b.pax ? parseInt(b.pax, 10) : null, b.landing_rate ? parseInt(b.landing_rate, 10) : null, b.comment || null]
+    );
+    res.json({ success: true, message: 'Отчёт отправлен на проверку администратору' });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.delete('/api/pilot/reports/:id', requireDb, requirePilot, async (req, res) => {
+  try {
+    const r = await dbRun(
+      "DELETE FROM flight_reports WHERE id=$1 AND pilot_id=$2 AND status='pending'",
+      "DELETE FROM flight_reports WHERE id=? AND pilot_id=? AND status='pending'",
+      [req.params.id, req.session.pilotId]
+    );
+    if (!r.rowCount) return res.status(404).json({ error: 'Отчёт не найден или уже проверен' });
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Публичный лидерборд
+app.get('/api/leaderboard', requireDb, async (req, res) => {
+  try {
+    const rows = await dbAll(
+      "SELECT callsign, roblox_name, rank, total_minutes, total_flights FROM pilots WHERE status='active' ORDER BY total_minutes DESC, total_flights DESC LIMIT 50",
+      "SELECT callsign, roblox_name, rank, total_minutes, total_flights FROM pilots WHERE status='active' ORDER BY total_minutes DESC, total_flights DESC LIMIT 50"
+    );
+    res.json(rows.map((p, i) => ({
+      position: i + 1, callsign: p.callsign, roblox_name: p.roblox_name, rank: p.rank,
+      total_hours: Math.round(((p.total_minutes || 0) / 60) * 10) / 10, total_flights: p.total_flights || 0
+    })));
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+/* ---------- АДМИН: пилоты и отчёты ---------- */
+app.get('/api/admin/pilots', requireAuth, requireDb, async (req, res) => {
+  try {
+    const rows = await dbAll('SELECT * FROM pilots ORDER BY total_minutes DESC, id ASC', 'SELECT * FROM pilots ORDER BY total_minutes DESC, id ASC');
+    res.json(rows.map(publicPilot));
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.put('/api/admin/pilots/:id', requireAuth, requireDb, async (req, res) => {
+  const b = req.body || {};
+  try {
+    const p = await dbGet('SELECT * FROM pilots WHERE id=$1', 'SELECT * FROM pilots WHERE id=?', [req.params.id]);
+    if (!p) return res.status(404).json({ error: 'Пилот не найден' });
+    const minutes = b.total_minutes !== undefined ? Math.max(0, parseInt(b.total_minutes, 10) || 0) : p.total_minutes;
+    const status = b.status || p.status;
+    const rank = b.rank || rankForMinutes(minutes);
+    await dbRun(
+      'UPDATE pilots SET total_minutes=$1, status=$2, rank=$3 WHERE id=$4',
+      'UPDATE pilots SET total_minutes=?, status=?, rank=? WHERE id=?', [minutes, status, rank, p.id]
+    );
+    res.json({ success: true, rank });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/admin/pilots/:id/reset-password', requireAuth, requireDb, async (req, res) => {
+  const { new_password } = req.body || {};
+  if (!new_password || String(new_password).length < 6) return res.status(400).json({ error: 'Пароль должен быть минимум 6 символов' });
+  try {
+    const r = await dbRun('UPDATE pilots SET password_hash=$1 WHERE id=$2', 'UPDATE pilots SET password_hash=? WHERE id=?', [bcrypt.hashSync(String(new_password), 10), req.params.id]);
+    if (!r.rowCount) return res.status(404).json({ error: 'Пилот не найден' });
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.delete('/api/admin/pilots/:id', requireAuth, requireDb, async (req, res) => {
+  try {
+    await dbRun('DELETE FROM flight_reports WHERE pilot_id=$1', 'DELETE FROM flight_reports WHERE pilot_id=?', [req.params.id]);
+    const r = await dbRun('DELETE FROM pilots WHERE id=$1', 'DELETE FROM pilots WHERE id=?', [req.params.id]);
+    if (!r.rowCount) return res.status(404).json({ error: 'Пилот не найден' });
+    res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.get('/api/admin/reports', requireAuth, requireDb, async (req, res) => {
+  try {
+    const rows = await dbAll(
+      'SELECT r.*, p.callsign, p.roblox_name, p.rank FROM flight_reports r JOIN pilots p ON p.id=r.pilot_id ORDER BY CASE WHEN r.status=\'pending\' THEN 0 ELSE 1 END, r.created_at DESC',
+      'SELECT r.*, p.callsign, p.roblox_name, p.rank FROM flight_reports r JOIN pilots p ON p.id=r.pilot_id ORDER BY CASE WHEN r.status=\'pending\' THEN 0 ELSE 1 END, r.created_at DESC'
+    );
+    res.json(rows);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Проверка отчёта: approved → часы начисляются, звание пересчитывается
+app.put('/api/admin/reports/:id', requireAuth, requireDb, async (req, res) => {
+  const { status, admin_comment } = req.body || {};
+  if (!['approved', 'rejected', 'pending'].includes(status)) return res.status(400).json({ error: 'Недопустимый статус' });
+  try {
+    const rep = await dbGet('SELECT * FROM flight_reports WHERE id=$1', 'SELECT * FROM flight_reports WHERE id=?', [req.params.id]);
+    if (!rep) return res.status(404).json({ error: 'Отчёт не найден' });
+    const pilot = await dbGet('SELECT * FROM pilots WHERE id=$1', 'SELECT * FROM pilots WHERE id=?', [rep.pilot_id]);
+    if (!pilot) return res.status(404).json({ error: 'Пилот не найден' });
+
+    let minutes = pilot.total_minutes || 0;
+    let flights = pilot.total_flights || 0;
+    if (rep.status === 'approved' && status !== 'approved') { minutes -= rep.duration_min; flights -= 1; }
+    if (rep.status !== 'approved' && status === 'approved') { minutes += rep.duration_min; flights += 1; }
+    minutes = Math.max(0, minutes); flights = Math.max(0, flights);
+    const newRank = rankForMinutes(minutes);
+
+    await dbRun(
+      'UPDATE flight_reports SET status=$1, admin_comment=$2, reviewed_at=CURRENT_TIMESTAMP WHERE id=$3',
+      'UPDATE flight_reports SET status=?, admin_comment=?, reviewed_at=CURRENT_TIMESTAMP WHERE id=?',
+      [status, admin_comment || null, rep.id]
+    );
+    await dbRun(
+      'UPDATE pilots SET total_minutes=$1, total_flights=$2, rank=$3 WHERE id=$4',
+      'UPDATE pilots SET total_minutes=?, total_flights=?, rank=? WHERE id=?', [minutes, flights, newRank, pilot.id]
+    );
+    res.json({ success: true, promoted: newRank !== pilot.rank, rank: newRank, total_hours: Math.round((minutes / 60) * 10) / 10 });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
