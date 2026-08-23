@@ -634,7 +634,6 @@
       opacity: 0.5;
       pointer-events: none;
     }
-    .apply-col.staff { border-top-color: var(--black); }
     .apply-head { margin-bottom: 28px; position: relative; z-index: 1; }
     .apply-kicker {
       display: inline-flex;
@@ -647,7 +646,6 @@
       color: var(--swiss-red);
       margin-bottom: 14px;
     }
-    .apply-col.staff .apply-kicker { color: var(--black); }
     .apply-dot {
       width: 7px; height: 7px;
       border-radius: 50%;
@@ -655,7 +653,6 @@
       box-shadow: 0 0 0 4px rgba(227,6,19,0.14);
       animation: pulseDot 2.4s infinite;
     }
-    .apply-col.staff .apply-dot { background: var(--black); box-shadow: 0 0 0 4px rgba(0,0,0,0.10); }
     @keyframes pulseDot { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.35); opacity: 0.6; } }
     .apply-title {
       font-size: 30px;
@@ -679,14 +676,13 @@
       transition: all 0.3s var(--transition);
     }
     .apply-col:hover .apply-tag { border-color: var(--swiss-red); color: var(--swiss-red); }
-    .apply-col.staff:hover .apply-tag { border-color: var(--black); color: var(--black); }
     .staff-note {
       display: flex;
       align-items: flex-start;
       gap: 12px;
       background: var(--bg);
       border: 1px dashed var(--gray-300);
-      border-left: 3px solid var(--black);
+      border-left: 3px solid var(--swiss-red);
       padding: 18px 20px;
       font-size: 13px;
       line-height: 1.7;
@@ -702,9 +698,6 @@
     .apply-col .q-desc, .apply-col .q-body { padding-left: 42px; }
     .apply-col .submit-area { margin-top: 32px; padding-top: 32px; }
     .apply-col .btn-submit { width: 100%; padding: 16px 24px; }
-    .apply-col.staff .btn-submit { background: var(--black); }
-    .apply-col.staff .btn-submit::before { background: var(--swiss-red); }
-    .apply-col.staff .btn-submit:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.28); }
     .opt-mark { font-size: 12px; font-weight: 500; color: var(--gray-500); margin-left: 6px; letter-spacing: 0; }
     .apply-footer {
       margin-top: 48px;
@@ -1229,21 +1222,21 @@
         </div>
 
         <!-- ============ RIGHT: STAFF HIRING ============ -->
-        <div class="apply-col staff animate-on-scroll delay-1">
+        <div class="apply-col intake animate-on-scroll delay-1">
           <div class="apply-head">
             <div class="apply-kicker"><span class="apply-dot"></span><span data-i18n="st-kicker">Приём в экипаж</span></div>
             <h2 class="apply-title" data-i18n="st-title">Сразу в экипаж</h2>
-            <p class="apply-sub" data-i18n="st-sub">Обычная анкета для опытных пилотов, диспетчеров и наземных служб с налётом от 1000 минут. Без экзамена — собеседование и чек-флайт.</p>
+            <p class="apply-sub" data-i18n="st-sub">Самостоятельная анкета для опытных пилотов, диспетчеров и наземных служб с налётом от 1000 минут. К экзамену Академии не привязана: только собеседование и чек-флайт.</p>
             <div class="apply-tags">
               <span class="apply-tag" data-i18n="st-tag-1">Опытным пилотам</span>
               <span class="apply-tag" data-i18n="st-tag-2">1000+ минут</span>
-              <span class="apply-tag" data-i18n="st-tag-3">Без экзамена</span>
+              <span class="apply-tag" data-i18n="st-tag-3">Без экзамена Академии</span>
             </div>
           </div>
 
           <div class="staff-note">
-            <span style="font-size:16px;">✈</span>
-            <span data-i18n="st-note">Экзамен не требуется: квалификацию проверит старший состав на собеседовании и в контрольном полёте.</span>
+            <span style="color:var(--swiss-red); font-size:16px;">✈</span>
+            <span data-i18n="st-note">Эта анкета не связана с экзаменом Академии и отправляется отдельно. Квалификацию проверит старший состав на собеседовании и в контрольном полёте.</span>
           </div>
 
           <form id="staffForm">
@@ -1335,6 +1328,7 @@
                 <div class="q-number">07</div>
                 <div class="q-title" data-i18n="st-q7-title">Когда ты обычно онлайн? <span class="req">*</span></div>
               </div>
+              <div class="q-desc" data-i18n="st-q7-desc">Собеседование и контрольный полёт назначаются на удобное время, время по МСК.</div>
               <div class="q-body">
                 <input type="text" name="online_time" placeholder="Ежедневно 19:00-23:00 (МСК)" required maxlength="200" data-i18n-placeholder="st-q7-ph">
               </div>
@@ -1950,11 +1944,11 @@
         'ac-submit-note': 'Сначала сдайте экзамен выше — 8 правильных ответов из 10',
         'st-kicker': 'Приём в экипаж',
         'st-title': 'Сразу в экипаж',
-        'st-sub': 'Обычная анкета для опытных пилотов, диспетчеров и наземных служб с налётом от 1000 минут. Без экзамена — собеседование и чек-флайт.',
+        'st-sub': 'Самостоятельная анкета для опытных пилотов, диспетчеров и наземных служб с налётом от 1000 минут. К экзамену Академии не привязана: только собеседование и чек-флайт.',
         'st-tag-1': 'Опытным пилотам',
         'st-tag-2': '1000+ минут',
-        'st-tag-3': 'Без экзамена',
-        'st-note': 'Экзамен не требуется: квалификацию проверит старший состав на собеседовании и в контрольном полёте.',
+        'st-tag-3': 'Без экзамена Академии',
+        'st-note': 'Эта анкета не связана с экзаменом Академии и отправляется отдельно. Квалификацию проверит старший состав на собеседовании и в контрольном полёте.',
         'st-q1-title': 'Ник в Roblox (PTFS) <span class="req">*</span>',
         'st-q1-ph': 'Например: CaptainSwiss',
         'st-q2-title': 'Возраст персонажа и реальный возраст <span class="req">*</span>',
@@ -1977,6 +1971,7 @@
         'st-q6-title': 'Почему именно Swiss Airlines? <span class="req">*</span>',
         'st-q6-ph': 'Твой ответ...',
         'st-q7-title': 'Когда ты обычно онлайн? <span class="req">*</span>',
+        'st-q7-desc': 'Собеседование и контрольный полёт назначаются на удобное время, время по МСК.',
         'st-q7-ph': 'Ежедневно 19:00-23:00 (МСК)',
         'st-q8-title': 'Знаешь ФРО и готов работать по нему в голосе? <span class="req">*</span>',
         'st-q8-opt-1': 'Знаю и готов',
@@ -2057,11 +2052,11 @@
         'ac-submit-note': 'Pass the exam above first — 8 correct answers out of 10',
         'st-kicker': 'Crew intake',
         'st-title': 'Straight to the crew',
-        'st-sub': 'Our regular application for experienced pilots, controllers and ground crew with 1000+ flight minutes. No exam — an interview and a check flight instead.',
+        'st-sub': 'A standalone application for experienced pilots, controllers and ground crew with 1000+ flight minutes. Not tied to the Academy exam — just an interview and a check flight.',
         'st-tag-1': 'Experienced pilots',
         'st-tag-2': '1000+ minutes',
-        'st-tag-3': 'No exam',
-        'st-note': 'No exam required: senior staff will assess your skills in an interview and a check flight.',
+        'st-tag-3': 'No Academy exam',
+        'st-note': 'This application is separate from the Academy exam and is submitted on its own. Senior staff will assess your skills in an interview and a check flight.',
         'st-q1-title': 'Roblox nickname (PTFS) <span class="req">*</span>',
         'st-q1-ph': 'e.g. CaptainSwiss',
         'st-q2-title': 'Character age and real age <span class="req">*</span>',
@@ -2084,6 +2079,7 @@
         'st-q6-title': 'Why Swiss Airlines? <span class="req">*</span>',
         'st-q6-ph': 'Your answer...',
         'st-q7-title': 'When are you usually online? <span class="req">*</span>',
+        'st-q7-desc': 'The interview and check flight are scheduled at a convenient time, all times in MSK.',
         'st-q7-ph': 'Daily 19:00-23:00 (MSK)',
         'st-q8-title': 'Do you know radio phraseology and can you use it on voice? <span class="req">*</span>',
         'st-q8-opt-1': 'Yes, confident',
