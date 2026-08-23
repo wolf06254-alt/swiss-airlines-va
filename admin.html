@@ -149,6 +149,9 @@
     .stat-value { font-size: 32px; font-weight: 800; letter-spacing: -1px; color: var(--black); }
     .stat-label { font-size: 12px; color: var(--gray-500); font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 4px; }
 
+    .type-badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; font-size: 11px; font-weight: 700; letter-spacing: 0.3px; border-radius: 20px; white-space: nowrap; }
+    .type-badge.type-academy { background: rgba(227,6,19,0.10); color: #E30613; border: 1px solid rgba(227,6,19,0.30); }
+    .type-badge.type-staff { background: rgba(10,110,200,0.10); color: #0a6ec8; border: 1px solid rgba(10,110,200,0.30); }
     .filters-bar { padding: 0 40px 20px; max-width: 1400px; margin: 0 auto; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
     .filter-btn { padding: 7px 14px; font-size: 12px; font-weight: 500; border: 1px solid var(--gray-300); background: var(--bg); color: var(--gray-700); cursor: pointer; transition: all 0.3s var(--transition); display: inline-flex; align-items: center; gap: 6px; }
     .filter-btn:hover, .filter-btn.active { border-color: var(--swiss-red); color: var(--swiss-red); background: rgba(227,6,19,0.04); }
@@ -245,10 +248,16 @@
       <span class="filter-btn" data-filter="rejected" onclick="setAppFilter('rejected')" data-i18n="filter-rejected">❌ Отклонено</span>
       <button class="filter-btn" style="margin-left:auto;background:#E30613;color:#fff;border:none;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:12px;" onclick="checkDbStatus()" title="Проверить состояние базы данных">🔍 DB Status</button>
     </div>
+    <div class="filters-bar" style="padding-top:0;">
+      <span style="font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--gray-500);" data-i18n="filter-type-label">Тип анкеты</span>
+      <span class="filter-btn active" data-typefilter="all" onclick="setAppTypeFilter('all')" data-i18n="type-all">Все типы</span>
+      <span class="filter-btn" data-typefilter="academy" onclick="setAppTypeFilter('academy')" data-i18n="type-academy">🎓 Академия пилотов</span>
+      <span class="filter-btn" data-typefilter="staff" onclick="setAppTypeFilter('staff')" data-i18n="type-staff">💼 Приём на работу</span>
+    </div>
     <div class="table-wrapper">
       <div class="loading" id="appsLoading" data-i18n="loading-apps">Загрузка анкет...</div>
       <table id="appsTable" style="display:none;">
-        <thead><tr><th></th><th data-i18n="th-roblox">Roblox</th><th data-i18n="th-telegram">Telegram</th><th data-i18n="th-age">Возраст</th><th data-i18n="th-role">Роль</th><th data-i18n="th-status">Статус</th><th data-i18n="th-date">Дата</th></tr></thead>
+        <thead><tr><th></th><th data-i18n="th-roblox">Roblox</th><th data-i18n="th-type">Тип</th><th data-i18n="th-telegram">Telegram</th><th data-i18n="th-age">Возраст</th><th data-i18n="th-role">Роль</th><th data-i18n="th-status">Статус</th><th data-i18n="th-date">Дата</th></tr></thead>
         <tbody id="appsBody"></tbody>
       </table>
       <div class="empty-state" id="appsEmpty" style="display:none;"><h3 data-i18n="empty-apps-title">Нет анкет</h3><p data-i18n="empty-apps-desc">Пока никто не отправил заявку</p></div>
@@ -341,6 +350,7 @@
     let currentTab = 'applications';
     let allData = [];
     let appFilter = 'all';
+    let appTypeFilter = 'all';
     let eventsData = [];
     let routesData = [];
     let fleetData = [];
@@ -353,6 +363,7 @@
         'btn-home': '🏠 Главная', 'btn-logout': '↪ Выйти', 'btn-csv': 'Экспорт CSV',
         'tab-applications': '📋 Анкеты', 'tab-events': '📅 События', 'tab-routes': '🗺️ Маршруты', 'tab-fleet': '✈️ Флот', 'tab-timeline': '📜 История',
         'stat-total': 'Всего анкет', 'stat-new': 'Новые', 'stat-accepted': 'Принято', 'stat-rejected': 'Отклонено',
+        'filter-type-label': 'Тип анкеты', 'type-all': 'Все типы', 'type-academy': '🎓 Академия пилотов', 'type-staff': '💼 Приём на работу', 'th-type': 'Тип', 'badge-academy': 'Академия', 'badge-staff': 'Штат', 'app-detail-type': 'Тип анкеты', 'exam-not-required': 'Не требуется',
         'filter-all': 'Все', 'filter-new': '🆕 Новые', 'filter-review': '🔍 На рассмотрении', 'filter-accepted': '✅ Принято', 'filter-rejected': '❌ Отклонено',
         'loading-apps': 'Загрузка анкет...', 'loading-events': 'Загрузка событий...', 'loading-routes': 'Загрузка маршрутов...', 'loading-fleet': 'Загрузка флота...', 'loading-timeline': 'Загрузка истории...',
         'th-roblox': 'Roblox', 'th-telegram': 'Telegram', 'th-age': 'Возраст', 'th-role': 'Роль', 'th-status': 'Статус', 'th-date': 'Дата',
@@ -397,6 +408,7 @@
         'btn-home': '🏠 Home', 'btn-logout': '↪ Logout', 'btn-csv': 'Export CSV',
         'tab-applications': '📋 Applications', 'tab-events': '📅 Events', 'tab-routes': '🗺️ Routes', 'tab-fleet': '✈️ Fleet', 'tab-timeline': '📜 Timeline',
         'stat-total': 'Total applications', 'stat-new': 'New', 'stat-accepted': 'Accepted', 'stat-rejected': 'Rejected',
+        'filter-type-label': 'Application type', 'type-all': 'All types', 'type-academy': '🎓 Pilot Academy', 'type-staff': '💼 Staff hiring', 'th-type': 'Type', 'badge-academy': 'Academy', 'badge-staff': 'Staff', 'app-detail-type': 'Application type', 'exam-not-required': 'Not required',
         'filter-all': 'All', 'filter-new': '🆕 New', 'filter-review': '🔍 Under review', 'filter-accepted': '✅ Accepted', 'filter-rejected': '❌ Rejected',
         'loading-apps': 'Loading applications...', 'loading-events': 'Loading events...', 'loading-routes': 'Loading routes...', 'loading-fleet': 'Loading fleet...', 'loading-timeline': 'Loading timeline...',
         'th-roblox': 'Roblox', 'th-telegram': 'Telegram', 'th-age': 'Age', 'th-role': 'Role', 'th-status': 'Status', 'th-date': 'Date',
@@ -592,9 +604,12 @@
       document.getElementById('rejectedCount').textContent = allData.filter(a=>a.status==='rejected').length;
       const revEl = document.getElementById('reviewCount'); if(revEl) revEl.textContent = allData.filter(a=>a.status==='review').length;
     }
-    function setAppFilter(f){ appFilter=f; document.querySelectorAll('.filters-bar .filter-btn').forEach(b=>b.classList.toggle('active',b.dataset.filter===f)); renderApps(); }
+    function setAppFilter(f){ appFilter=f; document.querySelectorAll('.filters-bar .filter-btn[data-filter]').forEach(b=>b.classList.toggle('active',b.dataset.filter===f)); renderApps(); }
+    function appTypeOf(a){ return (a.application_type === 'staff') ? 'staff' : 'academy'; }
+    function setAppTypeFilter(f){ appTypeFilter=f; document.querySelectorAll('.filters-bar .filter-btn[data-typefilter]').forEach(b=>b.classList.toggle('active',b.dataset.typefilter===f)); renderApps(); }
+    function typeBadge(a){ const ty=appTypeOf(a); const label=ty==='staff'?t('badge-staff'):t('badge-academy'); const icon=ty==='staff'?'💼':'🎓'; return '<span class="type-badge type-'+ty+'">'+icon+' '+label+'</span>'; }
     function renderApps() {
-      const filtered = appFilter==='all' ? allData : allData.filter(a=>a.status===appFilter);
+      const filtered = allData.filter(a => (appFilter==='all' || a.status===appFilter) && (appTypeFilter==='all' || appTypeOf(a)===appTypeFilter));
       const tbody = document.getElementById('appsBody');
       if (!filtered.length) { document.getElementById('appsTable').style.display='none'; document.getElementById('appsEmpty').style.display='block'; return; }
       document.getElementById('appsTable').style.display='table'; document.getElementById('appsEmpty').style.display='none';
@@ -602,6 +617,7 @@
         <tr>
           <td><button class="expand-btn" onclick="toggleAppDetail(${a.id})">▶</button></td>
           <td><div class="cell-name">${escapeHtml(a.roblox_name)||'—'}</div></td>
+          <td>${typeBadge(a)}</td>
           <td><div class="cell-muted">${escapeHtml(a.telegram)||'—'}</div></td>
           <td class="cell-small">${escapeHtml(a.real_age)||'—'}</td>
           <td class="cell-small">${escapeHtml(a.role)||'—'}</td>
@@ -609,9 +625,10 @@
           <td class="cell-small">${formatDate(a.created_at)}</td>
         </tr>
         <tr class="detail-row" id="app-detail-${a.id}" style="display:none;">
-          <td colspan="7" style="background:var(--gray-100);padding:16px 24px;">
+          <td colspan="8" style="background:var(--gray-100);padding:16px 24px;">
             <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;font-size:12px;">
               <div><strong style="color:var(--gray-500)">${t('app-detail-name')}:</strong> ${escapeHtml(a.roblox_name)||'—'}</div>
+              <div><strong style="color:var(--gray-500)">${t('app-detail-type')}:</strong> ${typeBadge(a)}</div>
               <div><strong style="color:var(--gray-500)">${t('app-detail-char-age')}:</strong> ${escapeHtml(a.char_age)||'—'}</div>
               <div><strong style="color:var(--gray-500)">${t('app-detail-real-age')}:</strong> ${escapeHtml(a.real_age)||'—'}</div>
               <div><strong style="color:var(--gray-500)">${t('app-detail-role')}:</strong> ${escapeHtml(a.role)||'—'}</div>
@@ -731,6 +748,9 @@
     }
 
     function examBadge(a) {
+      if (appTypeOf(a) === 'staff') {
+        return '<span class="cell-muted">' + t('exam-not-required') + '</span>';
+      }
       if (a.exam_score === null || a.exam_score === undefined || a.exam_score === '') {
         return '<span class="cell-muted">' + t('exam-none') + '</span>';
       }
@@ -869,8 +889,8 @@
 
     // ============ EXPORT / UTILS ============
     function exportCSV() {
-      const headers = ['ID','Roblox Name','Char Age','Real Age','Experience','Role','Online Time','Why Swiss','Rules','FRO','Flight Minutes','Telegram','About','Status','Exam Score','Exam Total','Exam Passed','Date'];
-      const rows = allData.map(a => [a.id, a.roblox_name, a.char_age, a.real_age, a.experience, a.role, a.online_time, a.why_swiss, a.rules, a.fro, a.flight_minutes, a.telegram, a.about, getStatusText(a.status), (a.exam_score === null || a.exam_score === undefined ? '' : a.exam_score), (a.exam_total === null || a.exam_total === undefined ? '' : a.exam_total), (a.exam_score === null || a.exam_score === undefined ? '' : ((a.exam_passed === true || a.exam_passed === 1) ? 'yes' : 'no')), a.created_at]);
+      const headers = ['ID','Roblox Name','Application Type','Char Age','Real Age','Experience','Role','Online Time','Why Swiss','Rules','FRO','Flight Minutes','Telegram','About','Status','Exam Score','Exam Total','Exam Passed','Date'];
+      const rows = allData.map(a => [a.id, a.roblox_name, appTypeOf(a), a.char_age, a.real_age, a.experience, a.role, a.online_time, a.why_swiss, a.rules, a.fro, a.flight_minutes, a.telegram, a.about, getStatusText(a.status), (a.exam_score === null || a.exam_score === undefined ? '' : a.exam_score), (a.exam_total === null || a.exam_total === undefined ? '' : a.exam_total), (a.exam_score === null || a.exam_score === undefined ? '' : ((a.exam_passed === true || a.exam_passed === 1) ? 'yes' : 'no')), a.created_at]);
       let csv = '\uFEFF' + headers.join(',') + '\n';
       rows.forEach(r => { csv += r.map(v => '"'+String(v||'').replace(/"/g,'""')+'"').join(',') + '\n'; });
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });

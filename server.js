@@ -257,6 +257,7 @@ async function initDb() {
           online_time TEXT, why_swiss TEXT, rules TEXT, fro TEXT,
           flight_minutes TEXT, telegram TEXT, about TEXT,
           exam_score INTEGER, exam_total INTEGER, exam_passed BOOLEAN DEFAULT false,
+          application_type TEXT DEFAULT 'academy',
           status TEXT DEFAULT 'new',
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
@@ -265,6 +266,7 @@ async function initDb() {
       await db.query('ALTER TABLE applications ADD COLUMN IF NOT EXISTS exam_score INTEGER');
       await db.query('ALTER TABLE applications ADD COLUMN IF NOT EXISTS exam_total INTEGER');
       await db.query('ALTER TABLE applications ADD COLUMN IF NOT EXISTS exam_passed BOOLEAN DEFAULT false');
+      await db.query("ALTER TABLE applications ADD COLUMN IF NOT EXISTS application_type TEXT DEFAULT 'academy'");
       // BETA: live site statistics counters
       await db.query(`
         CREATE TABLE IF NOT EXISTS site_stats (
@@ -337,13 +339,14 @@ async function initDb() {
           online_time TEXT, why_swiss TEXT, rules TEXT, fro TEXT,
           flight_minutes TEXT, telegram TEXT, about TEXT,
           exam_score INTEGER, exam_total INTEGER, exam_passed INTEGER DEFAULT 0,
+          application_type TEXT DEFAULT 'academy',
           status TEXT DEFAULT 'new', created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )`, (err) => err ? reject(err) : resolve());
       });
       // BETA: exam columns migration for already existing SQLite files
       const appCols = await new Promise((resolve) => db.all("PRAGMA table_info(applications)", [], (err, r) => resolve(err ? [] : (r || []))));
       const haveCols = appCols.map(c => c.name);
-      for (const [col, ddl] of [['exam_score', 'INTEGER'], ['exam_total', 'INTEGER'], ['exam_passed', 'INTEGER DEFAULT 0']]) {
+      for (const [col, ddl] of [['exam_score', 'INTEGER'], ['exam_total', 'INTEGER'], ['exam_passed', 'INTEGER DEFAULT 0'], ['application_type', "TEXT DEFAULT 'academy'"]]) {
         if (!haveCols.includes(col)) {
           await new Promise((resolve) => db.run('ALTER TABLE applications ADD COLUMN ' + col + ' ' + ddl, [], () => resolve()));
           console.log('[DB] Added applications.' + col);
@@ -646,12 +649,14 @@ app.get('/api/db-status', requireAuth, async (req, res) => {
    PUBLIC API
    ============================================================ */
 app.post('/api/submit', rateLimit(60000, 10), requireDb, async (req, res) => {
-  const { roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about, exam_score, exam_total, exam_passed } = req.body;
+  const { roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about, exam_score, exam_total, exam_passed, application_type } = req.body;
+  // Application type: 'academy' (pilot academy, with exam) or 'staff' (hiring, no exam)
+  const appType = (application_type === 'staff') ? 'staff' : 'academy';
   // BETA: entrance exam result (optional, validated but never trusted for anything critical)
   const examScore = (exam_score === undefined || exam_score === null || exam_score === '') ? null : Math.max(0, parseInt(exam_score) || 0);
   const examTotal = (exam_total === undefined || exam_total === null || exam_total === '') ? null : Math.max(0, parseInt(exam_total) || 0);
   const examPassed = (exam_passed === true || exam_passed === 'true' || exam_passed === 1 || exam_passed === '1');
-  console.log('📥 [SUBMIT] Received application from:', roblox_name);
+  console.log('📥 [SUBMIT] Received', appType, 'application from:', roblox_name);
   if (!roblox_name || !experience || !rules || !telegram) {
     return res.status(400).json({ success: false, error: 'Required fields missing' });
   }
@@ -667,17 +672,17 @@ app.post('/api/submit', rateLimit(60000, 10), requireDb, async (req, res) => {
     try {
       if (dbType === 'postgres') {
         const result = await db.query(
-          `INSERT INTO applications (roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about, exam_score, exam_total, exam_passed)
-          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) RETURNING id`,
-          [roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about, examScore, examTotal, examPassed]
+          `INSERT INTO applications (roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about, exam_score, exam_total, exam_passed, application_type)
+          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16) RETURNING id`,
+          [roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about, examScore, examTotal, examPassed, appType]
         );
         console.log('✅ [SUBMIT] Application saved, ID:', result.rows[0].id, '(attempt', attempt, ')');
         if (attempt > 0) { dbReady = true; pgReconnectAttempts = 0; }
         return res.json({ success: true, id: result.rows[0].id });
       } else {
-        const stmt = db.prepare(`INSERT INTO applications (roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about, exam_score, exam_total, exam_passed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+        const stmt = db.prepare(`INSERT INTO applications (roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about, exam_score, exam_total, exam_passed, application_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
         const id = await new Promise((resolve, reject) => {
-          stmt.run(roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about, examScore, examTotal, examPassed ? 1 : 0, function(err) {
+          stmt.run(roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about, examScore, examTotal, examPassed ? 1 : 0, appType, function(err) {
             if (err) { stmt.finalize(); reject(err); return; }
             resolve(this.lastID);
             stmt.finalize();

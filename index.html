@@ -589,7 +589,7 @@
       opacity: 0.3;
     }
     .form-wrapper {
-      max-width: 760px;
+      max-width: 1280px;
       margin: 0 auto;
     }
     .section-label {
@@ -604,6 +604,114 @@
       margin-bottom: 48px;
     }
     .section-label::before { content: ''; width: 40px; height: 1px; background: var(--swiss-red); }
+
+    /* ===== TWO APPLICATIONS GRID ===== */
+    .apply-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+    .apply-col {
+      background: rgba(255,255,255,0.55);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--gray-300);
+      border-top: 3px solid var(--swiss-red);
+      padding: 36px 28px 32px;
+      position: relative;
+      overflow: hidden;
+      transition: box-shadow 0.4s var(--transition), transform 0.4s var(--transition);
+    }
+    .apply-col:hover { box-shadow: 0 18px 60px rgba(0,0,0,0.09); transform: translateY(-3px); }
+    .apply-col::after {
+      content: '';
+      position: absolute;
+      right: -40px; bottom: -40px;
+      width: 180px; height: 180px;
+      border: 1px solid var(--gray-300);
+      border-radius: 50%;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    .apply-col.staff { border-top-color: var(--black); }
+    .apply-head { margin-bottom: 28px; position: relative; z-index: 1; }
+    .apply-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--swiss-red);
+      margin-bottom: 14px;
+    }
+    .apply-col.staff .apply-kicker { color: var(--black); }
+    .apply-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--swiss-red);
+      box-shadow: 0 0 0 4px rgba(227,6,19,0.14);
+      animation: pulseDot 2.4s infinite;
+    }
+    .apply-col.staff .apply-dot { background: var(--black); box-shadow: 0 0 0 4px rgba(0,0,0,0.10); }
+    @keyframes pulseDot { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.35); opacity: 0.6; } }
+    .apply-title {
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      line-height: 1.15;
+      color: var(--black);
+      margin-bottom: 12px;
+    }
+    .apply-sub { font-size: 14px; line-height: 1.75; color: var(--gray-700); }
+    .apply-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+    .apply-tag {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      padding: 6px 12px;
+      border: 1px solid var(--gray-300);
+      color: var(--gray-700);
+      background: var(--bg);
+      transition: all 0.3s var(--transition);
+    }
+    .apply-col:hover .apply-tag { border-color: var(--swiss-red); color: var(--swiss-red); }
+    .apply-col.staff:hover .apply-tag { border-color: var(--black); color: var(--black); }
+    .staff-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: var(--bg);
+      border: 1px dashed var(--gray-300);
+      border-left: 3px solid var(--black);
+      padding: 18px 20px;
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--gray-700);
+      margin-bottom: 24px;
+      position: relative;
+      z-index: 1;
+    }
+    .apply-col .question { padding: 26px 24px; }
+    .apply-col .q-header { gap: 14px; margin-bottom: 16px; }
+    .apply-col .q-number { min-width: 28px; }
+    .apply-col .q-title { font-size: 16px; }
+    .apply-col .q-desc, .apply-col .q-body { padding-left: 42px; }
+    .apply-col .submit-area { margin-top: 32px; padding-top: 32px; }
+    .apply-col .btn-submit { width: 100%; padding: 16px 24px; }
+    .apply-col.staff .btn-submit { background: var(--black); }
+    .apply-col.staff .btn-submit::before { background: var(--swiss-red); }
+    .apply-col.staff .btn-submit:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.28); }
+    .opt-mark { font-size: 12px; font-weight: 500; color: var(--gray-500); margin-left: 6px; letter-spacing: 0; }
+    .apply-footer {
+      margin-top: 48px;
+      padding-top: 40px;
+      border-top: 1px solid var(--gray-300);
+      text-align: center;
+    }
 
     .question {
       background: var(--bg);
@@ -802,6 +910,13 @@
       .q-desc, .q-body { padding-left: 0; }
       .q-header { margin-bottom: 16px; }
       .two-cols { grid-template-columns: 1fr; }
+      .apply-grid { grid-template-columns: 1fr; gap: 24px; }
+      .apply-col { padding: 28px 18px 26px; }
+      .apply-title { font-size: 24px; }
+      .apply-col .question { padding: 22px 16px; }
+      .apply-col .q-desc, .apply-col .q-body { padding-left: 0; }
+      .apply-col .q-header { gap: 10px; }
+
       .modal { padding: 36px 24px; margin: 20px; }
       .footer { flex-direction: column; gap: 16px; text-align: center; padding: 32px 20px; }
       .route-cities { flex-direction: column; gap: 8px; align-items: center; }
@@ -938,190 +1053,359 @@
 
   <section class="form-section">
     <div class="form-wrapper">
-      <div class="section-label" data-i18n="form-label">Анкета кандидата</div>
+      <div class="section-label" data-i18n="form-label">Две анкеты · выбери свой путь</div>
 
-      <!-- ENTRANCE EXAM (BETA) -->
-      <div class="exam-box animate-on-scroll" id="examBox">
-        <div class="exam-top">
-          <div>
-            <div class="exam-title"><span data-i18n="exam-title">Вступительный экзамен</span><span class="beta-badge">BETA</span></div>
-            <div class="exam-desc" data-i18n="exam-desc">Перед анкетой ответьте на 8 вопросов о авиации и правилах PTFS. Проходной балл — 6 из 8. Результат отправляется вместе с анкетой.</div>
+      <div class="apply-grid">
+
+        <!-- ============ LEFT: PILOT ACADEMY ============ -->
+        <div class="apply-col animate-on-scroll">
+          <div class="apply-head">
+            <div class="apply-kicker"><span class="apply-dot"></span><span data-i18n="ac-kicker">Академия пилотов</span></div>
+            <h2 class="apply-title" data-i18n="ac-title">Обучение с нуля</h2>
+            <p class="apply-sub" data-i18n="ac-sub">Для новичков и пилотов с налётом менее 1000 минут. Инструкторы, теория, тренировочные рейсы. Сначала — вступительный экзамен.</p>
+            <div class="apply-tags">
+              <span class="apply-tag" data-i18n="ac-tag-1">Новичкам</span>
+              <span class="apply-tag" data-i18n="ac-tag-2">Экзамен 8/10</span>
+              <span class="apply-tag" data-i18n="ac-tag-3">Инструктор</span>
+            </div>
           </div>
-          <div class="exam-progress-text"><span id="examCounter">0</span> / <span id="examTotalLabel">8</span></div>
+
+          <!-- ENTRANCE EXAM -->
+          <div class="exam-box" id="examBox">
+            <div class="exam-top">
+              <div>
+                <div class="exam-title"><span data-i18n="exam-title">Вступительный экзамен</span><span class="beta-badge">10 ВОПРОСОВ</span></div>
+                <div class="exam-desc" data-i18n="exam-desc">Профессиональный тест по ФРО, аварийным сигналам и процедурам PTFS. Проходной балл — 8 из 10. Без зачёта анкета в Академию не отправляется, но попыток сколько угодно.</div>
+              </div>
+              <div class="exam-progress-text"><span id="examCounter">0</span> / <span id="examTotalLabel">10</span></div>
+            </div>
+
+            <div class="exam-progress"><span id="examBar"></span></div>
+
+            <div id="examQuestions"></div>
+
+            <div class="exam-actions">
+              <button type="button" class="exam-btn" id="examCheckBtn" onclick="checkExam()" data-i18n="exam-check">Проверить ответы</button>
+              <button type="button" class="exam-btn ghost" onclick="resetExam()" data-i18n="exam-reset">Пройти заново</button>
+            </div>
+
+            <div class="exam-result" id="examResult">
+              <div class="exam-score" id="examScoreText">0 / 10</div>
+              <div class="exam-msg" id="examMsgText"></div>
+            </div>
+          </div>
+
+          <form id="academyForm">
+            <input type="hidden" name="role" value="Курсант Академии">
+
+            <div class="question">
+              <div class="q-header">
+                <div class="q-number">01</div>
+                <div class="q-title" data-i18n="ac-q1-title">Ник в Roblox (PTFS) <span class="req">*</span></div>
+              </div>
+              <div class="q-body">
+                <input type="text" name="roblox_name" placeholder="Например: PilotAlex" required maxlength="50" data-i18n-placeholder="ac-q1-ph">
+              </div>
+            </div>
+
+            <div class="question">
+              <div class="q-header">
+                <div class="q-number">02</div>
+                <div class="q-title" data-i18n="ac-q2-title">Возраст персонажа и реальный возраст <span class="req">*</span></div>
+              </div>
+              <div class="q-body">
+                <div class="two-cols">
+                  <div>
+                    <label class="field-label" data-i18n="ac-q2-label-char">Возраст персонажа</label>
+                    <input type="text" name="char_age" placeholder="25" required maxlength="10">
+                  </div>
+                  <div>
+                    <label class="field-label" data-i18n="ac-q2-label-real">Реальный возраст</label>
+                    <input type="text" name="real_age" placeholder="16" required maxlength="10">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="question">
+              <div class="q-header">
+                <div class="q-number">03</div>
+                <div class="q-title" data-i18n="ac-q3-title">Налёт в PTFS (минут) <span class="req">*</span></div>
+              </div>
+              <div class="q-body">
+                <input type="text" name="flight_minutes" placeholder="340" required maxlength="20">
+                <div class="note-box">
+                  <span style="color:var(--swiss-red); font-size:16px;">✦</span>
+                  <span data-i18n="ac-q3-note">Менее 1000 минут — это ваш путь: Академия пилотов</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="question">
+              <div class="q-header">
+                <div class="q-number">04</div>
+                <div class="q-title" data-i18n="ac-q4-title">Твой опыт в авиации <span class="req">*</span></div>
+              </div>
+              <div class="q-desc" data-i18n="ac-q4-desc">Даже если опыта нет — напиши честно. Это не влияет на приём в Академию.</div>
+              <div class="q-body">
+                <textarea name="experience" placeholder="PTFS, авиасимуляторы, другие VA..." required maxlength="2000" data-i18n-placeholder="ac-q4-ph"></textarea>
+              </div>
+            </div>
+
+            <div class="question">
+              <div class="q-header">
+                <div class="q-number">05</div>
+                <div class="q-title" data-i18n="ac-q5-title">Почему хочешь учиться у нас? <span class="req">*</span></div>
+              </div>
+              <div class="q-body">
+                <textarea name="why_swiss" placeholder="Твой ответ..." required maxlength="2000" data-i18n-placeholder="ac-q5-ph"></textarea>
+              </div>
+            </div>
+
+            <div class="question">
+              <div class="q-header">
+                <div class="q-number">06</div>
+                <div class="q-title" data-i18n="ac-q6-title">Когда ты обычно онлайн? <span class="req">*</span></div>
+              </div>
+              <div class="q-desc" data-i18n="ac-q6-desc">Занятия с инструктором проходят по расписанию, время по МСК.</div>
+              <div class="q-body">
+                <input type="text" name="online_time" placeholder="Пн, Ср, Пт с 18:00 до 22:00 (МСК)" required maxlength="200" data-i18n-placeholder="ac-q6-ph">
+              </div>
+            </div>
+
+            <div class="question">
+              <div class="q-header">
+                <div class="q-number">07</div>
+                <div class="q-title" data-i18n="ac-q7-title">Готов учить наше упрощённое ФРО? <span class="req">*</span></div>
+              </div>
+              <div class="q-body">
+                <div class="options">
+                  <label class="option"><input type="radio" name="fro" value="Да, готов" required> <span data-i18n="ac-q7-opt-1">Да, готов</span></label>
+                  <label class="option"><input type="radio" name="fro" value="Нет, не готов"> <span data-i18n="ac-q7-opt-2">Нет, не готов</span></label>
+                </div>
+              </div>
+            </div>
+
+            <div class="question">
+              <div class="q-header">
+                <div class="q-number">08</div>
+                <div class="q-title" data-i18n="ac-q8-title">Согласен соблюдать правила авиакомпании? <span class="req">*</span></div>
+              </div>
+              <div class="q-body">
+                <div class="options">
+                  <label class="option"><input type="radio" name="rules" value="Да" required> <span data-i18n="ac-q8-opt-1">Да, я согласен</span></label>
+                  <label class="option"><input type="radio" name="rules" value="Нет"> <span data-i18n="ac-q8-opt-2">Нет, не согласен</span></label>
+                </div>
+              </div>
+            </div>
+
+            <div class="question">
+              <div class="q-header">
+                <div class="q-number">09</div>
+                <div class="q-title" data-i18n="ac-q9-title">Telegram <span class="req">*</span></div>
+              </div>
+              <div class="q-body">
+                <input type="text" name="telegram" placeholder="@username" required maxlength="50">
+              </div>
+            </div>
+
+            <div class="question">
+              <div class="q-header">
+                <div class="q-number">10</div>
+                <div class="q-title" data-i18n="ac-q10-title">Что-нибудь о себе <span class="opt-mark">(необязательно)</span></div>
+              </div>
+              <div class="q-body">
+                <textarea name="about" placeholder="Расскажи о себе..." maxlength="2000" data-i18n-placeholder="ac-q10-ph"></textarea>
+              </div>
+            </div>
+
+            <div class="submit-area">
+              <button type="submit" class="btn-submit" id="acSubmitBtn">
+                <span data-i18n="ac-btn-submit">Подать заявку в Академию</span>
+              </button>
+              <div class="security-note" data-i18n="ac-submit-note">Сначала сдайте экзамен выше — 8 правильных ответов из 10</div>
+            </div>
+          </form>
         </div>
 
-        <div class="exam-progress"><span id="examBar"></span></div>
+        <!-- ============ RIGHT: STAFF HIRING ============ -->
+        <div class="apply-col staff animate-on-scroll delay-1">
+          <div class="apply-head">
+            <div class="apply-kicker"><span class="apply-dot"></span><span data-i18n="st-kicker">Приём на работу</span></div>
+            <h2 class="apply-title" data-i18n="st-title">Вакансии в штат</h2>
+            <p class="apply-sub" data-i18n="st-sub">Для опытных пилотов, диспетчеров и наземных служб с налётом от 1000 минут. Без экзамена — вас ждёт собеседование и чек-флайт.</p>
+            <div class="apply-tags">
+              <span class="apply-tag" data-i18n="st-tag-1">Опытным</span>
+              <span class="apply-tag" data-i18n="st-tag-2">1000+ минут</span>
+              <span class="apply-tag" data-i18n="st-tag-3">Чек-флайт</span>
+            </div>
+          </div>
 
-        <div id="examQuestions"></div>
+          <div class="staff-note">
+            <span style="font-size:16px;">✈</span>
+            <span data-i18n="st-note">Экзамен не требуется: квалификацию проверит старший состав на собеседовании и в контрольном полёте.</span>
+          </div>
 
-        <div class="exam-actions">
-          <button type="button" class="exam-btn" id="examCheckBtn" onclick="checkExam()" data-i18n="exam-check">Проверить ответы</button>
-          <button type="button" class="exam-btn ghost" onclick="resetExam()" data-i18n="exam-reset">Пройти заново</button>
+          <form id="staffForm">
+            <div class="question">
+              <div class="q-header">
+                <div class="q-number">01</div>
+                <div class="q-title" data-i18n="st-q1-title">Ник в Roblox (PTFS) <span class="req">*</span></div>
+              </div>
+              <div class="q-body">
+                <input type="text" name="roblox_name" placeholder="Например: CaptainSwiss" required maxlength="50" data-i18n-placeholder="st-q1-ph">
+              </div>
+            </div>
+
+            <div class="question">
+              <div class="q-header">
+                <div class="q-number">02</div>
+                <div class="q-title" data-i18n="st-q2-title">Возраст персонажа и реальный возраст <span class="req">*</span></div>
+              </div>
+              <div class="q-body">
+                <div class="two-cols">
+                  <div>
+                    <label class="field-label" data-i18n="st-q2-label-char">Возраст персонажа</label>
+                    <input type="text" name="char_age" placeholder="32" required maxlength="10">
+                  </div>
+                  <div>
+                    <label class="field-label" data-i18n="st-q2-label-real">Реальный возраст</label>
+                    <input type="text" name="real_age" placeholder="18" required maxlength="10">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="question">
+              <div class="q-header">
+                <div class="q-number">03</div>
+                <div class="q-title" data-i18n="st-q3-title">Налёт в PTFS (минут) <span class="req">*</span></div>
+              </div>
+              <div class="q-body">
+                <input type="text" name="flight_minutes" placeholder="1520" required maxlength="20">
+                <div class="note-box">
+                  <span style="color:var(--swiss-red); font-size:16px;">✦</span>
+                  <span data-i18n="st-q3-note">Менее 1000 минут — подайте заявку в Академию слева</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="question">
+              <div class="q-header">
+                <div class="q-number">04</div>
+                <div class="q-title" data-i18n="st-q4-title">Желаемая должность <span class="req">*</span></div>
+              </div>
+              <div class="q-desc" data-i18n="st-q4-desc">Можно выбрать несколько вариантов.</div>
+              <div class="q-body">
+                <div class="options">
+                  <label class="option"><input type="checkbox" name="role" value="Капитан"> <span data-i18n="st-q4-opt-1">Капитан</span></label>
+                  <label class="option"><input type="checkbox" name="role" value="Второй пилот"> <span data-i18n="st-q4-opt-2">Второй пилот</span></label>
+                  <label class="option"><input type="checkbox" name="role" value="Диспетчер УВД"> <span data-i18n="st-q4-opt-3">Диспетчер УВД</span></label>
+                  <label class="option"><input type="checkbox" name="role" value="Инструктор Академии"> <span data-i18n="st-q4-opt-4">Инструктор Академии</span></label>
+                  <label class="option"><input type="checkbox" name="role" value="Бортпроводник"> <span data-i18n="st-q4-opt-5">Бортпроводник</span></label>
+                  <label class="option"><input type="checkbox" name="role" value="Наземная служба"> <span data-i18n="st-q4-opt-6">Наземная служба</span></label>
+                  <label class="option"><input type="checkbox" name="role" value="Агент регистрации"> <span data-i18n="st-q4-opt-7">Агент регистрации</span></label>
+                </div>
+              </div>
+            </div>
+
+            <div class="question">
+              <div class="q-header">
+                <div class="q-number">05</div>
+                <div class="q-title" data-i18n="st-q5-title">Профессиональный опыт <span class="req">*</span></div>
+              </div>
+              <div class="q-desc" data-i18n="st-q5-desc">Другие виртуальные авиакомпании, должности, типы ВС, работа диспетчером, знание процедур.</div>
+              <div class="q-body">
+                <textarea name="experience" placeholder="Например: 2 года в VA, A320/B738, работал Tower на ILAR..." required maxlength="2000" data-i18n-placeholder="st-q5-ph"></textarea>
+              </div>
+            </div>
+
+            <div class="question">
+              <div class="q-header">
+                <div class="q-number">06</div>
+                <div class="q-title" data-i18n="st-q6-title">Почему именно Swiss Airlines? <span class="req">*</span></div>
+              </div>
+              <div class="q-body">
+                <textarea name="why_swiss" placeholder="Твой ответ..." required maxlength="2000" data-i18n-placeholder="st-q6-ph"></textarea>
+              </div>
+            </div>
+
+            <div class="question">
+              <div class="q-header">
+                <div class="q-number">07</div>
+                <div class="q-title" data-i18n="st-q7-title">Когда ты обычно онлайн? <span class="req">*</span></div>
+              </div>
+              <div class="q-body">
+                <input type="text" name="online_time" placeholder="Ежедневно 19:00-23:00 (МСК)" required maxlength="200" data-i18n-placeholder="st-q7-ph">
+              </div>
+            </div>
+
+            <div class="question">
+              <div class="q-header">
+                <div class="q-number">08</div>
+                <div class="q-title" data-i18n="st-q8-title">Знаешь ФРО и готов работать по нему в голосе? <span class="req">*</span></div>
+              </div>
+              <div class="q-body">
+                <div class="options">
+                  <label class="option"><input type="radio" name="fro" value="Знаю и готов" required> <span data-i18n="st-q8-opt-1">Знаю и готов</span></label>
+                  <label class="option"><input type="radio" name="fro" value="Знаю частично"> <span data-i18n="st-q8-opt-2">Знаю частично, подучу</span></label>
+                  <label class="option"><input type="radio" name="fro" value="Не знаю"> <span data-i18n="st-q8-opt-3">Не знаю</span></label>
+                </div>
+              </div>
+            </div>
+
+            <div class="question">
+              <div class="q-header">
+                <div class="q-number">09</div>
+                <div class="q-title" data-i18n="st-q9-title">Согласен с правилами и SOP авиакомпании? <span class="req">*</span></div>
+              </div>
+              <div class="q-body">
+                <div class="options">
+                  <label class="option"><input type="radio" name="rules" value="Да" required> <span data-i18n="st-q9-opt-1">Да, я согласен</span></label>
+                  <label class="option"><input type="radio" name="rules" value="Нет"> <span data-i18n="st-q9-opt-2">Нет, не согласен</span></label>
+                </div>
+              </div>
+            </div>
+
+            <div class="question">
+              <div class="q-header">
+                <div class="q-number">10</div>
+                <div class="q-title" data-i18n="st-q10-title">Telegram <span class="req">*</span></div>
+              </div>
+              <div class="q-body">
+                <input type="text" name="telegram" placeholder="@username" required maxlength="50">
+              </div>
+            </div>
+
+            <div class="question">
+              <div class="q-header">
+                <div class="q-number">11</div>
+                <div class="q-title" data-i18n="st-q11-title">Портфолио и пара слов о себе <span class="opt-mark">(необязательно)</span></div>
+              </div>
+              <div class="q-body">
+                <textarea name="about" placeholder="Скриншоты налёта, ссылки, рекомендации..." maxlength="2000" data-i18n-placeholder="st-q11-ph"></textarea>
+              </div>
+            </div>
+
+            <div class="submit-area">
+              <button type="submit" class="btn-submit" id="stSubmitBtn">
+                <span data-i18n="st-btn-submit">Отправить заявку в штат</span>
+              </button>
+              <div class="security-note" data-i18n="st-submit-note">Ответ приходит в Telegram, обычно в течение 72 часов</div>
+            </div>
+          </form>
         </div>
 
-        <div class="exam-result" id="examResult">
-          <div class="exam-score" id="examScoreText">0 / 8</div>
-          <div class="exam-msg" id="examMsgText"></div>
-        </div>
       </div>
 
-      <form id="anketaForm">
-        <div class="question animate-on-scroll">
-          <div class="q-header">
-            <div class="q-number">01</div>
-            <div class="q-title" data-i18n="q1-title">Ник в Roblox (PTFS) <span class="req">*</span></div>
-          </div>
-          <div class="q-desc" data-i18n="q1-desc">Введите ваш ник в Roblox. Он же используется в PTFS.</div>
-          <div class="q-body">
-            <input type="text" name="roblox_name" placeholder="Например: PilotAlex" required maxlength="50" data-i18n-placeholder="q1-ph">
-          </div>
+      <div class="apply-footer">
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+          <a href="https://discord.gg/6YA8t7GJr" target="_blank" class="btn-discord"><span data-i18n="btn-discord">🎮 Наш Discord</span></a>
+          <button class="btn-mail" onclick="openMail()"><span data-i18n="btn-mail">📬 Почта</span></button>
+          <a href="login.html" class="btn-join"><span data-i18n="btn-admin">🔒 Вход для админа</span></a>
         </div>
-
-        <div class="question animate-on-scroll delay-1">
-          <div class="q-header">
-            <div class="q-number">02</div>
-            <div class="q-title" data-i18n="q2-title">Возраст персонажа и реальный возраст <span class="req">*</span></div>
-          </div>
-          <div class="q-desc" data-i18n="q2-desc">Возраст персонажа нужен для лора, реальный — для соблюдения правил сообщества.</div>
-          <div class="q-body">
-            <div class="two-cols">
-              <div>
-                <label class="field-label" data-i18n="q2-label-char">Возраст персонажа</label>
-                <input type="text" name="char_age" placeholder="25" required maxlength="10" data-i18n-placeholder="q2-ph-char">
-              </div>
-              <div>
-                <label class="field-label" data-i18n="q2-label-real">Реальный возраст</label>
-                <input type="text" name="real_age" placeholder="16" required maxlength="10" data-i18n-placeholder="q2-ph-real">
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="question animate-on-scroll delay-2">
-          <div class="q-header">
-            <div class="q-number">03</div>
-            <div class="q-title" data-i18n="q3-title">Твой опыт в авиации <span class="req">*</span></div>
-          </div>
-          <div class="q-desc" data-i18n="q3-desc">Расскажи о своём опыте в PTFS, других авиационных играх или симуляторах.</div>
-          <div class="q-body">
-            <textarea name="experience" placeholder="Опиши свой опыт..." required maxlength="2000" data-i18n-placeholder="q3-ph"></textarea>
-          </div>
-        </div>
-
-        <div class="question animate-on-scroll delay-3">
-          <div class="q-header">
-            <div class="q-number">04</div>
-            <div class="q-title" data-i18n="q4-title">Кем ты хочешь быть? <span class="req">*</span></div>
-          </div>
-          <div class="q-desc" data-i18n="q4-desc">Можно выбрать несколько вариантов.</div>
-          <div class="q-body">
-            <div class="options">
-              <label class="option"><input type="checkbox" name="role" value="Капитан"> <span data-i18n="q4-opt-1">Капитан</span></label>
-              <label class="option"><input type="checkbox" name="role" value="Второй пилот"> <span data-i18n="q4-opt-2">Второй пилот</span></label>
-              <label class="option"><input type="checkbox" name="role" value="Диспетчер УВД"> <span data-i18n="q4-opt-3">Диспетчер УВД</span></label>
-              <label class="option"><input type="checkbox" name="role" value="Бортпроводник"> <span data-i18n="q4-opt-4">Бортпроводник</span></label>
-              <label class="option"><input type="checkbox" name="role" value="Наземная служба"> <span data-i18n="q4-opt-5">Наземная служба</span></label>
-              <label class="option"><input type="checkbox" name="role" value="Агент регистрации"> <span data-i18n="q4-opt-6">Агент регистрации</span></label>
-            </div>
-          </div>
-        </div>
-
-        <div class="question animate-on-scroll delay-4">
-          <div class="q-header">
-            <div class="q-number">05</div>
-            <div class="q-title" data-i18n="q5-title">Когда ты обычно онлайн? <span class="req">*</span></div>
-          </div>
-          <div class="q-desc" data-i18n="q5-desc">Укажи дни недели и примерное время по МСК.</div>
-          <div class="q-body">
-            <input type="text" name="online_time" placeholder="Пн, Ср, Пт с 18:00 до 22:00 (МСК)" required maxlength="200" data-i18n-placeholder="q5-ph">
-          </div>
-        </div>
-
-        <div class="question animate-on-scroll">
-          <div class="q-header">
-            <div class="q-number">06</div>
-            <div class="q-title" data-i18n="q6-title">Почему именно Swiss Airlines? <span class="req">*</span></div>
-          </div>
-          <div class="q-desc" data-i18n="q6-desc">Расскажи, что тебе нравится: флот, маршруты, атмосфера, реализм, правила.</div>
-          <div class="q-body">
-            <textarea name="why_swiss" placeholder="Твой ответ..." required maxlength="2000" data-i18n-placeholder="q6-ph"></textarea>
-          </div>
-        </div>
-
-        <div class="question animate-on-scroll delay-1">
-          <div class="q-header">
-            <div class="q-number">07</div>
-            <div class="q-title" data-i18n="q7-title">Готов соблюдать правила? <span class="req">*</span></div>
-          </div>
-          <div class="q-body">
-            <div class="options">
-              <label class="option"><input type="radio" name="rules" value="Да" required> <span data-i18n="q7-opt-1">Да, я согласен</span></label>
-              <label class="option"><input type="radio" name="rules" value="Нет"> <span data-i18n="q7-opt-2">Нет, не согласен</span></label>
-            </div>
-          </div>
-        </div>
-
-        <div class="question animate-on-scroll delay-2">
-          <div class="q-header">
-            <div class="q-number">08</div>
-            <div class="q-title" data-i18n="q8-title">Готовы ли вы учить наше упрощённое ФРО? <span class="req">*</span></div>
-          </div>
-          <div class="q-body">
-            <div class="options">
-              <label class="option"><input type="radio" name="fro" value="Да, готов" required> <span data-i18n="q8-opt-1">Да, готов</span></label>
-              <label class="option"><input type="radio" name="fro" value="Нет, не готов"> <span data-i18n="q8-opt-2">Нет, не готов</span></label>
-            </div>
-          </div>
-        </div>
-
-        <div class="question animate-on-scroll delay-3">
-          <div class="q-header">
-            <div class="q-number">09</div>
-            <div class="q-title" data-i18n="q9-title">Сколько минут налетал в PTFS? <span class="req">*</span></div>
-          </div>
-          <div class="q-desc" data-i18n="q9-desc">Укажи общее количество минут полётов. Менее 1000 минут — обучение в Академии.</div>
-          <div class="q-body">
-            <input type="text" name="flight_minutes" placeholder="1520" required maxlength="20" data-i18n-placeholder="q9-ph">
-            <div class="note-box">
-              <span style="color:var(--swiss-red); font-size:16px;">✦</span>
-              <span data-i18n="q9-note">Менее 1000 минут = Академия пилотов</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="question animate-on-scroll">
-          <div class="q-header">
-            <div class="q-number">10</div>
-            <div class="q-title" data-i18n="q10-title">Telegram <span class="req">*</span></div>
-          </div>
-          <div class="q-desc" data-i18n="q10-desc">Ваш Telegram (@username) для связи.</div>
-          <div class="q-body">
-            <input type="text" name="telegram" placeholder="@username" required maxlength="50" data-i18n-placeholder="q10-ph">
-          </div>
-        </div>
-
-        <div class="question animate-on-scroll delay-1">
-          <div class="q-header">
-            <div class="q-number">11</div>
-            <div class="q-title" data-i18n="q11-title">Что-нибудь о себе <span style="color:var(--gray-500);font-weight:400">(необязательно)</span></div>
-          </div>
-          <div class="q-body">
-            <textarea name="about" placeholder="Расскажи о себе..." maxlength="2000" data-i18n-placeholder="q11-ph"></textarea>
-          </div>
-        </div>
-
-        <div class="submit-area animate-on-scroll delay-2">
-          <button type="submit" class="btn-submit" id="submitBtn">
-            <span data-i18n="btn-submit">Отправить анкету</span>
-          </button>
-          <div style="margin-top:16px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-            <a href="https://discord.gg/6YA8t7GJr" target="_blank" class="btn-discord"><span data-i18n="btn-discord">🎮 Наш Discord</span></a>
-            <button class="btn-mail" onclick="openMail()"><span data-i18n="btn-mail">📬 Почта</span></button>
-            <a href="login.html" class="btn-join"><span data-i18n="btn-admin">🔒 Вход для админа</span></a>
-          </div>
-          <div class="security-note"><span data-i18n="security-note">Ваши данные передаются по защищённому соединению</span></div>
-        </div>
-      </form>
+        <div class="security-note"><span data-i18n="security-note">Ваши данные передаются по защищённому соединению</span></div>
+      </div>
     </div>
   </section>
 
@@ -1188,36 +1472,89 @@
       }, 4500);
     }
 
-    function closeModal() { document.getElementById('successModal').classList.remove('active'); document.getElementById('anketaForm').reset(); }
+    let lastSubmittedForm = null;
+    function closeModal() {
+      document.getElementById('successModal').classList.remove('active');
+      if (lastSubmittedForm) { lastSubmittedForm.reset(); lastSubmittedForm = null; }
+    }
 
-    document.getElementById('anketaForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const btn = document.getElementById('submitBtn');
-      btn.disabled = true;
-      btn.querySelector('span').textContent = 'Отправка...';
-      const formData = new FormData(this);
+    function collectForm(form) {
+      const formData = new FormData(form);
       const data = {};
       for (const [key, value] of formData.entries()) {
-        if (data[key]) { data[key] = Array.isArray(data[key]) ? [...data[key], value] : [data[key], value]; }
+        if (data[key] !== undefined) { data[key] = Array.isArray(data[key]) ? [...data[key], value] : [data[key], value]; }
         else { data[key] = value; }
       }
       if (Array.isArray(data.role)) data.role = data.role.join(', ');
-      // BETA: attach entrance exam result
-      data.exam_score = examState.checked ? examState.score : null;
-      data.exam_total = examState.checked ? EXAM_QUESTIONS.length : null;
-      data.exam_passed = examState.checked ? examState.passed : false;
+      return data;
+    }
+
+    async function sendApplication(form, btn, data, labelKey) {
+      const lang = document.documentElement.getAttribute('lang') || 'ru';
+      const span = btn.querySelector('span');
+      const originalText = span.textContent;
+      btn.disabled = true;
+      span.textContent = lang === 'ru' ? '\u041e\u0442\u043f\u0440\u0430\u0432\u043a\u0430...' : 'Sending...';
       try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 15000);
-        const response = await fetch('/api/submit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data), signal: controller.signal });
+        const response = await fetch(API_BASE + '/api/submit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data), signal: controller.signal });
         clearTimeout(timeoutId);
         const result = await response.json();
-        if (response.ok && result.success) { document.getElementById('successModal').classList.add('active'); showToast('Анкета успешно отправлена', 'success'); }
-        else { showToast(result.error || 'Ошибка при отправке', 'error'); }
+        if (response.ok && result.success) {
+          lastSubmittedForm = form;
+          document.getElementById('successModal').classList.add('active');
+          showToast(lang === 'ru' ? '\u0410\u043d\u043a\u0435\u0442\u0430 \u0443\u0441\u043f\u0435\u0448\u043d\u043e \u043e\u0442\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0430' : 'Application sent successfully', 'success');
+        } else {
+          showToast(result.error || (lang === 'ru' ? '\u041e\u0448\u0438\u0431\u043a\u0430 \u043f\u0440\u0438 \u043e\u0442\u043f\u0440\u0430\u0432\u043a\u0435' : 'Submit error'), 'error');
+        }
       } catch (err) {
-        if (err.name === 'AbortError') showToast('Сервер не отвечает (таймаут). Попробуй позже.', 'error');
-        else showToast('Сервер недоступен. Попробуй позже.', 'error');
-      } finally { btn.disabled = false; btn.querySelector('span').textContent = 'Отправить анкету'; }
+        if (err.name === 'AbortError') showToast(lang === 'ru' ? '\u0421\u0435\u0440\u0432\u0435\u0440 \u043d\u0435 \u043e\u0442\u0432\u0435\u0447\u0430\u0435\u0442 (\u0442\u0430\u0439\u043c\u0430\u0443\u0442). \u041f\u043e\u043f\u0440\u043e\u0431\u0443\u0439\u0442\u0435 \u043f\u043e\u0437\u0436\u0435.' : 'Server timeout. Try again later.', 'error');
+        else showToast(lang === 'ru' ? '\u0421\u0435\u0440\u0432\u0435\u0440 \u043d\u0435\u0434\u043e\u0441\u0442\u0443\u043f\u0435\u043d. \u041f\u043e\u043f\u0440\u043e\u0431\u0443\u0439\u0442\u0435 \u043f\u043e\u0437\u0436\u0435.' : 'Server unavailable. Try again later.', 'error');
+      } finally {
+        btn.disabled = false;
+        const t = (i18n[lang] && i18n[lang][labelKey]) || originalText;
+        span.textContent = t;
+      }
+    }
+
+    /* ---- ACADEMY FORM: exam required (8/10) ---- */
+    document.getElementById('academyForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const lang = document.documentElement.getAttribute('lang') || 'ru';
+      if (!examState.checked) {
+        showToast(lang === 'ru' ? '\u0421\u043d\u0430\u0447\u0430\u043b\u0430 \u043f\u0440\u043e\u0439\u0434\u0438\u0442\u0435 \u0432\u0441\u0442\u0443\u043f\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0439 \u044d\u043a\u0437\u0430\u043c\u0435\u043d \u0432\u044b\u0448\u0435' : 'Please take the entrance exam above first', 'error');
+        document.getElementById('examBox').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+      if (!examState.passed) {
+        showToast(lang === 'ru' ? '\u041d\u0443\u0436\u043d\u043e 8 \u043f\u0440\u0430\u0432\u0438\u043b\u044c\u043d\u044b\u0445 \u043e\u0442\u0432\u0435\u0442\u043e\u0432 \u0438\u0437 10. \u041d\u0430\u0436\u043c\u0438\u0442\u0435 \u00ab\u041f\u0440\u043e\u0439\u0442\u0438 \u0437\u0430\u043d\u043e\u0432\u043e\u00bb.' : 'You need 8 correct answers out of 10. Press "Retake".', 'error');
+        document.getElementById('examBox').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+      const data = collectForm(this);
+      data.application_type = 'academy';
+      data.exam_score = examState.score;
+      data.exam_total = EXAM_QUESTIONS.length;
+      data.exam_passed = examState.passed;
+      await sendApplication(this, document.getElementById('acSubmitBtn'), data, 'ac-btn-submit');
+    });
+
+    /* ---- STAFF FORM: no exam ---- */
+    document.getElementById('staffForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const lang = document.documentElement.getAttribute('lang') || 'ru';
+      const roles = this.querySelectorAll('input[name="role"]:checked');
+      if (!roles.length) {
+        showToast(lang === 'ru' ? '\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0445\u043e\u0442\u044f \u0431\u044b \u043e\u0434\u043d\u0443 \u0436\u0435\u043b\u0430\u0435\u043c\u0443\u044e \u0434\u043e\u043b\u0436\u043d\u043e\u0441\u0442\u044c' : 'Select at least one desired position', 'error');
+        return;
+      }
+      const data = collectForm(this);
+      data.application_type = 'staff';
+      data.exam_score = null;
+      data.exam_total = null;
+      data.exam_passed = null;
+      await sendApplication(this, document.getElementById('stSubmitBtn'), data, 'st-btn-submit');
     });
 
     function openMail() { document.getElementById('mailModal').classList.add('active'); document.body.style.overflow = 'hidden'; }
@@ -1299,64 +1636,92 @@
       }
     }
 
-    /* ===== ENTRANCE EXAM (BETA) ===== */
+    /* ===== ENTRANCE EXAM — PROFESSIONAL (10 Q / PASS 8) ===== */
     const EXAM_QUESTIONS = [
       {
-        q: { ru: 'Что означает аббревиатура ATC?', en: 'What does the abbreviation ATC mean?' },
+        q: { ru: 'Что такое ФРО в авиации?', en: 'What does FRO (radio phraseology) mean in aviation?' },
         opts: {
-          ru: ['Air Traffic Control — управление воздушным движением', 'Aircraft Type Class — класс самолёта', 'Automatic Take-off Control — автовзлёт', 'Airport Terminal Center — терминал аэропорта'],
-          en: ['Air Traffic Control', 'Aircraft Type Class', 'Automatic Take-off Control', 'Airport Terminal Center']
+          ru: ['Форма радиолокационного обзора', 'Фразеология радиообмена — стандартные фразы связи с ATC', 'Федеральный реестр операторов', 'Фиксированный режим оборотов двигателя'],
+          en: ['A radar surveillance format', 'Standard radio phraseology used to communicate with ATC', 'A federal register of operators', 'A fixed engine RPM mode']
+        },
+        a: 1
+      },
+      {
+        q: { ru: 'Что означает аббревиатура ATC?', en: 'What does the abbreviation ATC stand for?' },
+        opts: {
+          ru: ['Aircraft Technical Center — техцентр', 'Air Traffic Control — управление воздушным движением', 'Automatic Thrust Computer — автомат тяги', 'Airport Terminal Company — оператор терминала'],
+          en: ['Aircraft Technical Center', 'Air Traffic Control', 'Automatic Thrust Computer', 'Airport Terminal Company']
+        },
+        a: 1
+      },
+      {
+        q: { ru: 'В чём разница между сигналами MAYDAY и PAN-PAN?', en: 'What is the difference between MAYDAY and PAN-PAN?' },
+        opts: {
+          ru: ['Это одно и то же, разные языки', 'MAYDAY — бедствие, угроза жизни и борту; PAN-PAN — срочность без прямой угрозы', 'MAYDAY передаёт только диспетчер, PAN-PAN — только пилот', 'PAN-PAN серьёзнее, чем MAYDAY'],
+          en: ['They are identical, just different languages', 'MAYDAY is distress — grave danger; PAN-PAN is urgency without immediate danger', 'MAYDAY is used only by ATC, PAN-PAN only by pilots', 'PAN-PAN is more serious than MAYDAY']
+        },
+        a: 1
+      },
+      {
+        q: { ru: 'Сколько раз произносится сигнал бедствия в начале передачи?', en: 'How many times is the distress signal spoken at the start of a transmission?' },
+        opts: {
+          ru: ['Три раза: «MAYDAY, MAYDAY, MAYDAY»', 'Один раз', 'Два раза', 'Пять раз'],
+          en: ['Three times: "MAYDAY, MAYDAY, MAYDAY"', 'Once', 'Twice', 'Five times']
         },
         a: 0
       },
       {
-        q: { ru: 'Какой код ICAO у аэропорта Цюриха — домашней базы Swiss?', en: 'What is the ICAO code of Zurich Airport, the Swiss home base?' },
-        opts: { ru: ['LSZH', 'LFPG', 'EDDF', 'LSGG'], en: ['LSZH', 'LFPG', 'EDDF', 'LSGG'] },
-        a: 0
+        q: { ru: 'Что означают скорости V1 и VR на разбеге?', en: 'What do the speeds V1 and VR mean during takeoff roll?' },
+        opts: {
+          ru: ['V1 — скорость касания при посадке, VR — скорость руления', 'V1 — скорость принятия решения (после неё взлёт не прерывают), VR — скорость подъёма носового колеса', 'V1 — крейсерская скорость, VR — скорость выпуска шасси', 'V1 и VR — одно и то же значение'],
+          en: ['V1 is touchdown speed, VR is taxi speed', 'V1 is the decision speed (after it the takeoff is not aborted), VR is rotation speed', 'V1 is cruise speed, VR is gear extension speed', 'V1 and VR are the same value']
+        },
+        a: 1
       },
       {
-        q: { ru: 'С кем нужно связаться первым, если в PTFS на аэродроме активен диспетчер?', en: 'Who should you contact first if a controller is active at the airport in PTFS?' },
+        q: { ru: 'Какой код ответчика (squawk) устанавливают при полном отказе радиосвязи (NORDO)?', en: 'Which transponder code is set for a total radio failure (NORDO)?' },
         opts: {
-          ru: ['Ground / Clearance Delivery — за разрешением на запуск и рулёние', 'Tower — сразу запрос взлёта', 'Approach — сразу заход на посадку', 'Ни с кем, летим без связи'],
-          en: ['Ground / Clearance Delivery for startup and taxi', 'Tower, request takeoff right away', 'Approach, request landing right away', 'Nobody, just fly without radio']
+          ru: ['7500', '7600', '7700', '2000'],
+          en: ['7500', '7600', '7700', '2000']
+        },
+        a: 1
+      },
+      {
+        q: { ru: 'Какой squawk соответствует аварийной ситуации на борту, а какой — незаконному вмешательству?', en: 'Which squawk means general emergency and which means unlawful interference?' },
+        opts: {
+          ru: ['7700 — аварийная ситуация, 7500 — незаконное вмешательство (захват)', '7600 — аварийная ситуация, 7700 — захват', '7500 — аварийная ситуация, 7600 — захват', '1200 — аварийная ситуация, 7000 — захват'],
+          en: ['7700 emergency, 7500 unlawful interference (hijack)', '7600 emergency, 7700 hijack', '7500 emergency, 7600 hijack', '1200 emergency, 7000 hijack']
         },
         a: 0
       },
       {
-        q: { ru: 'Какая стандартная скорость руления по перрону считается правильной?', en: 'What taxi speed on the apron is considered correct?' },
-        opts: { ru: ['До 20 узлов, на поворотах ещё медленнее', '60-80 узлов', 'Любая, лишь бы быстрее', '100+ узлов'], en: ['Up to 20 knots, slower in turns', '60-80 knots', 'Any speed, faster is better', '100+ knots'] },
-        a: 0
-      },
-      {
-        q: { ru: 'На какой частоте передают сигнал бедствия (squawk) при отказе связи?', en: 'Which squawk code indicates radio failure?' },
-        opts: { ru: ['7600', '7500', '7700', '1200'], en: ['7600', '7500', '7700', '1200'] },
-        a: 0
-      },
-      {
-        q: { ru: 'Ваш коллега-пилот нарушает правила авиакомпании. Как поступить?', en: 'A fellow pilot breaks airline rules. What do you do?' },
+        q: { ru: 'К кому обращаются первым перед запуском и рулением, если на аэродроме работают все службы?', en: 'Who do you call first before startup and taxi when all ATC positions are staffed?' },
         opts: {
-          ru: ['Спокойно сообщить старшему составу с доказательствами', 'Устроить скандал в общем чате', 'Нарушить в ответ тоже', 'Игнорировать всегда'],
-          en: ['Calmly report it to senior staff with evidence', 'Start a public argument in general chat', 'Break the rules back', 'Always ignore it']
+          ru: ['Ground / Clearance Delivery', 'Сразу Tower с запросом на взлёт', 'Approach с запросом на снижение', 'Ни к кому, рулим молча'],
+          en: ['Ground / Clearance Delivery', 'Tower straight away, requesting takeoff', 'Approach, requesting descent', 'Nobody, just taxi silently']
         },
         a: 0
       },
       {
-        q: { ru: 'Сколько минут налёта в PTFS нужно, чтобы не попасть в Академию пилотов?', en: 'How many PTFS flight minutes do you need to skip the Pilot Academy?' },
-        opts: { ru: ['1000 минут и больше', '100 минут', '50 минут', 'Налёт не важен'], en: ['1000 minutes or more', '100 minutes', '50 minutes', 'Flight time does not matter'] },
-        a: 0
+        q: { ru: 'Что означает указание диспетчера «line up and wait»?', en: 'What does the ATC instruction "line up and wait" mean?' },
+        opts: {
+          ru: ['Взлёт разрешён, начинайте разбег', 'Занять исполнительный старт и ожидать разрешения на взлёт', 'Освободить ВПП немедленно', 'Продолжать руление к перрону'],
+          en: ['Takeoff is cleared, start the roll', 'Enter the runway, line up and hold for takeoff clearance', 'Vacate the runway immediately', 'Continue taxiing to the apron']
+        },
+        a: 1
       },
       {
-        q: { ru: 'Что такое ФРО (фразеология радиообмена)?', en: 'What is standard radio phraseology (FRO)?' },
+        q: { ru: 'Что нужно сделать, если указание диспетчера непонятно или принято частично?', en: 'What should you do if an ATC instruction is unclear or only partly received?' },
         opts: {
-          ru: ['Стандартные фразы для связи с диспетчером', 'Название самолёта', 'Тип топлива', 'Система автопилота'],
-          en: ['Standard phrases used to talk to ATC', 'The aircraft name', 'A fuel type', 'The autopilot system']
+          ru: ['Выполнять по своему усмотрению', 'Запросить повтор: «say again» и повторить приём (readback) после уточнения', 'Молчать и ждать, пока диспетчер повторит сам', 'Отключить радио, чтобы не мешать'],
+          en: ['Act at your own discretion', 'Ask "say again" and read back the instruction once clarified', 'Stay silent and wait for ATC to repeat it', 'Turn off the radio to avoid clutter']
         },
-        a: 0
+        a: 1
       }
     ];
 
     const examState = { answers: {}, checked: false, score: 0, passed: false, order: [] };
-    const EXAM_PASS = 6;
+    const EXAM_PASS = 8;
 
     function shuffled(n) {
       const arr = Array.from({ length: n }, (_, i) => i);
@@ -1430,14 +1795,14 @@
       if (examState.passed) {
         res.classList.add('pass');
         msgText.textContent = lang === 'ru'
-          ? 'Зачёт! Можете заполнять анкету — результат увидит администрация.'
-          : 'Passed! You can fill in the application, staff will see your result.';
+          ? 'Зачёт (8/10 и выше)! Анкета в Академию разблокирована — результат увидит администрация.'
+          : 'Passed (8/10 or better)! The Academy application is unlocked, staff will see your result.';
         showToast(lang === 'ru' ? 'Экзамен сдан: ' + score + '/' + total : 'Exam passed: ' + score + '/' + total, 'success');
       } else {
         res.classList.remove('pass');
         msgText.textContent = lang === 'ru'
-          ? 'Не страшно: анкету отправить всё равно можно, но вас скорее всего направят в Академию пилотов.'
-          : 'No worries: you can still submit the application, but you will likely be sent to the Pilot Academy.';
+          ? 'Нужно не менее 8 правильных ответов из 10. Посмотрите верные варианты и нажмите «Пройти заново» — попыток сколько угодно.'
+          : 'You need at least 8 correct answers out of 10. Review the correct options and press "Retake" — attempts are unlimited.';
         showToast(lang === 'ru' ? 'Результат: ' + score + '/' + total : 'Result: ' + score + '/' + total, 'info');
       }
       res.classList.add('show');
@@ -1546,8 +1911,86 @@
         'live-label': 'Статистика авиакомпании', 'live-title': 'Живая статистика', 'live-sub': 'Цифры обновляются в реальном времени прямо из базы авиакомпании.', 'live-online-pill': 'Онлайн',
         'live-flights': 'Выполнено рейсов', 'live-hours': 'Часов в воздухе', 'live-pilots': 'Пилотов в штате', 'live-destinations': 'Направлений', 'live-applications': 'Заявок подано', 'live-fleet': 'Самолётов во флоте', 'live-events': 'Событий в календаре', 'live-visits': 'Всего визитов',
         'live-note': 'Функция в режиме BETA: часть счётчиков ведётся администрацией вручную, поэтому возможны неточности. Обновление каждые 30 секунд.',
-        'exam-title': 'Вступительный экзамен', 'exam-desc': 'Перед анкетой ответьте на 8 вопросов о авиации и правилах PTFS. Проходной балл — 6 из 8. Результат отправляется вместе с анкетой.', 'exam-check': 'Проверить ответы', 'exam-reset': 'Пройти заново',
-        'form-label': 'Анкета кандидата', 'q1-title': 'Ник в Roblox (PTFS) *', 'q1-desc': 'Введите ваш ник в Roblox. Он же используется в PTFS.', 'q1-ph': 'Например: PilotAlex',
+        'exam-title': 'Вступительный экзамен',
+        'exam-desc': 'Профессиональный тест по ФРО, аварийным сигналам и процедурам PTFS. Проходной балл — 8 из 10. Без зачёта анкета в Академию не отправляется, но попыток сколько угодно.',
+        'exam-check': 'Проверить ответы',
+        'exam-reset': 'Пройти заново',
+        'form-label': 'Две анкеты · выбери свой путь',
+        'ac-kicker': 'Академия пилотов',
+        'ac-title': 'Обучение с нуля',
+        'ac-sub': 'Для новичков и пилотов с налётом менее 1000 минут. Инструкторы, теория, тренировочные рейсы. Сначала — вступительный экзамен.',
+        'ac-tag-1': 'Новичкам',
+        'ac-tag-2': 'Экзамен 8/10',
+        'ac-tag-3': 'Инструктор',
+        'ac-q1-title': 'Ник в Roblox (PTFS) <span class="req">*</span>',
+        'ac-q1-ph': 'Например: PilotAlex',
+        'ac-q2-title': 'Возраст персонажа и реальный возраст <span class="req">*</span>',
+        'ac-q2-label-char': 'Возраст персонажа',
+        'ac-q2-label-real': 'Реальный возраст',
+        'ac-q3-title': 'Налёт в PTFS (минут) <span class="req">*</span>',
+        'ac-q3-note': 'Менее 1000 минут — это ваш путь: Академия пилотов',
+        'ac-q4-title': 'Твой опыт в авиации <span class="req">*</span>',
+        'ac-q4-desc': 'Даже если опыта нет — напиши честно. Это не влияет на приём в Академию.',
+        'ac-q4-ph': 'PTFS, авиасимуляторы, другие VA...',
+        'ac-q5-title': 'Почему хочешь учиться у нас? <span class="req">*</span>',
+        'ac-q5-ph': 'Твой ответ...',
+        'ac-q6-title': 'Когда ты обычно онлайн? <span class="req">*</span>',
+        'ac-q6-desc': 'Занятия с инструктором проходят по расписанию, время по МСК.',
+        'ac-q6-ph': 'Пн, Ср, Пт с 18:00 до 22:00 (МСК)',
+        'ac-q7-title': 'Готов учить наше упрощённое ФРО? <span class="req">*</span>',
+        'ac-q7-opt-1': 'Да, готов',
+        'ac-q7-opt-2': 'Нет, не готов',
+        'ac-q8-title': 'Согласен соблюдать правила авиакомпании? <span class="req">*</span>',
+        'ac-q8-opt-1': 'Да, я согласен',
+        'ac-q8-opt-2': 'Нет, не согласен',
+        'ac-q9-title': 'Telegram <span class="req">*</span>',
+        'ac-q10-title': 'Что-нибудь о себе <span class="opt-mark">(необязательно)</span>',
+        'ac-q10-ph': 'Расскажи о себе...',
+        'ac-btn-submit': 'Подать заявку в Академию',
+        'ac-submit-note': 'Сначала сдайте экзамен выше — 8 правильных ответов из 10',
+        'st-kicker': 'Приём на работу',
+        'st-title': 'Вакансии в штат',
+        'st-sub': 'Для опытных пилотов, диспетчеров и наземных служб с налётом от 1000 минут. Без экзамена — вас ждёт собеседование и чек-флайт.',
+        'st-tag-1': 'Опытным',
+        'st-tag-2': '1000+ минут',
+        'st-tag-3': 'Чек-флайт',
+        'st-note': 'Экзамен не требуется: квалификацию проверит старший состав на собеседовании и в контрольном полёте.',
+        'st-q1-title': 'Ник в Roblox (PTFS) <span class="req">*</span>',
+        'st-q1-ph': 'Например: CaptainSwiss',
+        'st-q2-title': 'Возраст персонажа и реальный возраст <span class="req">*</span>',
+        'st-q2-label-char': 'Возраст персонажа',
+        'st-q2-label-real': 'Реальный возраст',
+        'st-q3-title': 'Налёт в PTFS (минут) <span class="req">*</span>',
+        'st-q3-note': 'Менее 1000 минут — подайте заявку в Академию слева',
+        'st-q4-title': 'Желаемая должность <span class="req">*</span>',
+        'st-q4-desc': 'Можно выбрать несколько вариантов.',
+        'st-q4-opt-1': 'Капитан',
+        'st-q4-opt-2': 'Второй пилот',
+        'st-q4-opt-3': 'Диспетчер УВД',
+        'st-q4-opt-4': 'Инструктор Академии',
+        'st-q4-opt-5': 'Бортпроводник',
+        'st-q4-opt-6': 'Наземная служба',
+        'st-q4-opt-7': 'Агент регистрации',
+        'st-q5-title': 'Профессиональный опыт <span class="req">*</span>',
+        'st-q5-desc': 'Другие виртуальные авиакомпании, должности, типы ВС, работа диспетчером, знание процедур.',
+        'st-q5-ph': 'Например: 2 года в VA, A320/B738, работал Tower на ILAR...',
+        'st-q6-title': 'Почему именно Swiss Airlines? <span class="req">*</span>',
+        'st-q6-ph': 'Твой ответ...',
+        'st-q7-title': 'Когда ты обычно онлайн? <span class="req">*</span>',
+        'st-q7-ph': 'Ежедневно 19:00-23:00 (МСК)',
+        'st-q8-title': 'Знаешь ФРО и готов работать по нему в голосе? <span class="req">*</span>',
+        'st-q8-opt-1': 'Знаю и готов',
+        'st-q8-opt-2': 'Знаю частично, подучу',
+        'st-q8-opt-3': 'Не знаю',
+        'st-q9-title': 'Согласен с правилами и SOP авиакомпании? <span class="req">*</span>',
+        'st-q9-opt-1': 'Да, я согласен',
+        'st-q9-opt-2': 'Нет, не согласен',
+        'st-q10-title': 'Telegram <span class="req">*</span>',
+        'st-q11-title': 'Портфолио и пара слов о себе <span class="opt-mark">(необязательно)</span>',
+        'st-q11-ph': 'Скриншоты налёта, ссылки, рекомендации...',
+        'st-btn-submit': 'Отправить заявку в штат',
+        'st-submit-note': 'Ответ приходит в Telegram, обычно в течение 72 часов',
+        'q1-title': 'Ник в Roblox (PTFS) *', 'q1-desc': 'Введите ваш ник в Roblox. Он же используется в PTFS.', 'q1-ph': 'Например: PilotAlex',
         'q2-title': 'Возраст персонажа и реальный возраст *', 'q2-desc': 'Возраст персонажа нужен для лора, реальный — для соблюдения правил сообщества.', 'q2-label-char': 'Возраст персонажа', 'q2-label-real': 'Реальный возраст', 'q2-ph-char': '25', 'q2-ph-real': '16',
         'q3-title': 'Твой опыт в авиации *', 'q3-desc': 'Расскажи о своём опыте в PTFS, других авиационных играх или симуляторах.', 'q3-ph': 'Опиши свой опыт...',
         'q4-title': 'Кем ты хочешь быть? *', 'q4-desc': 'Можно выбрать несколько вариантов.', 'q4-opt-1': 'Капитан', 'q4-opt-2': 'Второй пилот', 'q4-opt-3': 'Диспетчер УВД', 'q4-opt-4': 'Бортпроводник', 'q4-opt-5': 'Наземная служба', 'q4-opt-6': 'Агент регистрации',
@@ -1575,8 +2018,86 @@
         'live-label': 'Airline statistics', 'live-title': 'Living Statistics', 'live-sub': 'Numbers are updated in real time straight from the airline database.', 'live-online-pill': 'Online',
         'live-flights': 'Flights completed', 'live-hours': 'Hours in the air', 'live-pilots': 'Pilots on staff', 'live-destinations': 'Destinations', 'live-applications': 'Applications sent', 'live-fleet': 'Aircraft in fleet', 'live-events': 'Events in calendar', 'live-visits': 'Total visits',
         'live-note': 'BETA feature: some counters are maintained manually by staff, so small inaccuracies are possible. Refreshed every 30 seconds.',
-        'exam-title': 'Entrance Exam', 'exam-desc': 'Before the application, answer 8 questions about aviation and PTFS rules. Passing score is 6 out of 8. The result is submitted together with your application.', 'exam-check': 'Check answers', 'exam-reset': 'Retake',
-        'form-label': 'Candidate Application', 'q1-title': 'Roblox Nick (PTFS) *', 'q1-desc': 'Enter your Roblox nickname. It is also used in PTFS.', 'q1-ph': 'e.g. PilotAlex',
+        'exam-title': 'Entrance Exam',
+        'exam-desc': 'A professional test on radio phraseology, emergency signals and PTFS procedures. Passing score is 8 out of 10. Without a pass the Academy application will not be submitted, but you may retake it as often as you like.',
+        'exam-check': 'Check answers',
+        'exam-reset': 'Retake',
+        'form-label': 'Two applications · choose your path',
+        'ac-kicker': 'Pilot Academy',
+        'ac-title': 'Training from scratch',
+        'ac-sub': 'For beginners and pilots with fewer than 1000 flight minutes. Instructors, theory and training flights. The entrance exam comes first.',
+        'ac-tag-1': 'Beginners',
+        'ac-tag-2': 'Exam 8/10',
+        'ac-tag-3': 'Instructor',
+        'ac-q1-title': 'Roblox nickname (PTFS) <span class="req">*</span>',
+        'ac-q1-ph': 'e.g. PilotAlex',
+        'ac-q2-title': 'Character age and real age <span class="req">*</span>',
+        'ac-q2-label-char': 'Character age',
+        'ac-q2-label-real': 'Real age',
+        'ac-q3-title': 'Flight time in PTFS (minutes) <span class="req">*</span>',
+        'ac-q3-note': 'Under 1000 minutes — this is your path: Pilot Academy',
+        'ac-q4-title': 'Your aviation experience <span class="req">*</span>',
+        'ac-q4-desc': 'Even if you have none — be honest. It does not affect Academy admission.',
+        'ac-q4-ph': 'PTFS, flight simulators, other VAs...',
+        'ac-q5-title': 'Why do you want to train with us? <span class="req">*</span>',
+        'ac-q5-ph': 'Your answer...',
+        'ac-q6-title': 'When are you usually online? <span class="req">*</span>',
+        'ac-q6-desc': 'Instructor lessons follow a schedule, times are MSK.',
+        'ac-q6-ph': 'Mon, Wed, Fri from 18:00 to 22:00 (MSK)',
+        'ac-q7-title': 'Ready to learn our simplified radio phraseology? <span class="req">*</span>',
+        'ac-q7-opt-1': 'Yes, ready',
+        'ac-q7-opt-2': 'No, not ready',
+        'ac-q8-title': 'Do you agree to follow airline rules? <span class="req">*</span>',
+        'ac-q8-opt-1': 'Yes, I agree',
+        'ac-q8-opt-2': 'No, I disagree',
+        'ac-q9-title': 'Telegram <span class="req">*</span>',
+        'ac-q10-title': 'Anything about yourself <span class="opt-mark">(optional)</span>',
+        'ac-q10-ph': 'Tell us about yourself...',
+        'ac-btn-submit': 'Apply to the Academy',
+        'ac-submit-note': 'Pass the exam above first — 8 correct answers out of 10',
+        'st-kicker': 'Staff hiring',
+        'st-title': 'Staff vacancies',
+        'st-sub': 'For experienced pilots, controllers and ground crew with 1000+ flight minutes. No exam — an interview and a check flight instead.',
+        'st-tag-1': 'Experienced',
+        'st-tag-2': '1000+ minutes',
+        'st-tag-3': 'Check flight',
+        'st-note': 'No exam required: senior staff will assess your skills in an interview and a check flight.',
+        'st-q1-title': 'Roblox nickname (PTFS) <span class="req">*</span>',
+        'st-q1-ph': 'e.g. CaptainSwiss',
+        'st-q2-title': 'Character age and real age <span class="req">*</span>',
+        'st-q2-label-char': 'Character age',
+        'st-q2-label-real': 'Real age',
+        'st-q3-title': 'Flight time in PTFS (minutes) <span class="req">*</span>',
+        'st-q3-note': 'Under 1000 minutes — apply to the Academy on the left',
+        'st-q4-title': 'Desired position <span class="req">*</span>',
+        'st-q4-desc': 'You can select several options.',
+        'st-q4-opt-1': 'Captain',
+        'st-q4-opt-2': 'First Officer',
+        'st-q4-opt-3': 'ATC Controller',
+        'st-q4-opt-4': 'Academy Instructor',
+        'st-q4-opt-5': 'Flight Attendant',
+        'st-q4-opt-6': 'Ground Service',
+        'st-q4-opt-7': 'Check-in Agent',
+        'st-q5-title': 'Professional experience <span class="req">*</span>',
+        'st-q5-desc': 'Other virtual airlines, positions, aircraft types, ATC work, knowledge of procedures.',
+        'st-q5-ph': 'e.g. 2 years in a VA, A320/B738, Tower at ILAR...',
+        'st-q6-title': 'Why Swiss Airlines? <span class="req">*</span>',
+        'st-q6-ph': 'Your answer...',
+        'st-q7-title': 'When are you usually online? <span class="req">*</span>',
+        'st-q7-ph': 'Daily 19:00-23:00 (MSK)',
+        'st-q8-title': 'Do you know radio phraseology and can you use it on voice? <span class="req">*</span>',
+        'st-q8-opt-1': 'Yes, confident',
+        'st-q8-opt-2': 'Partly, will study',
+        'st-q8-opt-3': 'No',
+        'st-q9-title': 'Do you agree with the airline rules and SOP? <span class="req">*</span>',
+        'st-q9-opt-1': 'Yes, I agree',
+        'st-q9-opt-2': 'No, I disagree',
+        'st-q10-title': 'Telegram <span class="req">*</span>',
+        'st-q11-title': 'Portfolio and a few words about you <span class="opt-mark">(optional)</span>',
+        'st-q11-ph': 'Flight-time screenshots, links, references...',
+        'st-btn-submit': 'Submit staff application',
+        'st-submit-note': 'You will get a reply on Telegram, usually within 72 hours',
+        'q1-title': 'Roblox Nick (PTFS) *', 'q1-desc': 'Enter your Roblox nickname. It is also used in PTFS.', 'q1-ph': 'e.g. PilotAlex',
         'q2-title': 'Character age and real age *', 'q2-desc': 'Character age is needed for lore, real age is for community rules compliance.', 'q2-label-char': 'Character age', 'q2-label-real': 'Real age', 'q2-ph-char': '25', 'q2-ph-real': '16',
         'q3-title': 'Your aviation experience *', 'q3-desc': 'Tell us about your experience in PTFS, other aviation games or simulators.', 'q3-ph': 'Describe your experience...',
         'q4-title': 'What role do you want? *', 'q4-desc': 'Multiple options can be selected.', 'q4-opt-1': 'Captain', 'q4-opt-2': 'First Officer', 'q4-opt-3': 'ATC Dispatcher', 'q4-opt-4': 'Flight Attendant', 'q4-opt-5': 'Ground Service', 'q4-opt-6': 'Check-in Agent',
