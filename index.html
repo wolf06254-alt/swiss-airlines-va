@@ -390,6 +390,110 @@
 
     .dash-link:hover { gap: 12px; }
 
+    /* ===== LIVE STATS (BETA) ===== */
+    .beta-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: var(--swiss-red); color: #fff;
+      font-size: 9px; font-weight: 700; letter-spacing: 1.5px;
+      padding: 3px 8px; text-transform: uppercase; vertical-align: middle;
+      border-radius: 2px; margin-left: 10px;
+      animation: betaPulse 2.4s ease-in-out infinite;
+    }
+    @keyframes betaPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(227,6,19,0.45); }
+      50% { box-shadow: 0 0 0 6px rgba(227,6,19,0); }
+    }
+    .live-section {
+      background: var(--bg);
+      padding: 80px 48px 72px;
+      position: relative;
+      overflow: hidden;
+      border-top: 1px solid var(--gray-300);
+    }
+    .live-wrapper { max-width: 1100px; margin: 0 auto; position: relative; z-index: 1; }
+    .live-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; margin-bottom: 40px; }
+    .live-title { font-size: 30px; font-weight: 700; letter-spacing: -1px; line-height: 1.2; }
+    .live-sub { font-size: 14px; color: var(--gray-500); margin-top: 8px; line-height: 1.6; max-width: 520px; }
+    .live-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--gray-500); border: 1px solid var(--gray-300);
+      padding: 8px 14px; background: rgba(255,255,255,0.35); backdrop-filter: blur(8px);
+    }
+    .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; animation: liveBlink 1.6s ease-in-out infinite; }
+    @keyframes liveBlink { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.35; transform: scale(0.8); } }
+    .live-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .live-card {
+      background: rgba(255,255,255,0.55);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--gray-300);
+      padding: 28px 24px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s var(--transition);
+    }
+    [data-theme="dark"] .live-card { background: rgba(255,255,255,0.04); }
+    [data-theme="dark"] .live-pill { background: rgba(255,255,255,0.04); }
+    .live-card::before {
+      content: ''; position: absolute; top: 0; left: 0;
+      width: 0; height: 2px; background: var(--swiss-red);
+      transition: width 0.5s var(--transition);
+    }
+    .live-card:hover { transform: translateY(-4px); border-color: var(--swiss-red); box-shadow: 0 14px 40px rgba(0,0,0,0.08); }
+    .live-card:hover::before { width: 100%; }
+    .live-icon { font-size: 20px; opacity: 0.55; margin-bottom: 14px; display: block; }
+    .live-value { font-size: 40px; font-weight: 700; letter-spacing: -2px; line-height: 1; font-variant-numeric: tabular-nums; }
+    .live-label { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gray-500); margin-top: 10px; }
+    .live-note { font-size: 12px; color: var(--gray-500); margin-top: 24px; line-height: 1.7; }
+    .live-plane { position: absolute; left: -3%; bottom: -30px; font-size: 150px; opacity: 0.03; pointer-events: none; animation: float 7s ease-in-out infinite; }
+
+    /* ===== ENTRANCE EXAM (BETA) ===== */
+    .exam-box {
+      background: var(--bg);
+      border: 1px solid var(--gray-300);
+      border-top: 3px solid var(--swiss-red);
+      padding: 40px;
+      margin-bottom: 24px;
+      position: relative;
+    }
+    .exam-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .exam-title { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+    .exam-desc { font-size: 14px; color: var(--gray-500); line-height: 1.7; margin-top: 10px; }
+    .exam-progress { height: 3px; background: var(--gray-300); margin: 24px 0 8px; position: relative; }
+    .exam-progress span { position: absolute; left: 0; top: 0; height: 100%; width: 0; background: var(--swiss-red); transition: width 0.5s var(--transition); }
+    .exam-progress-text { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gray-500); font-weight: 600; }
+    .exam-q { padding: 22px 0; border-bottom: 1px dashed var(--gray-300); }
+    .exam-q:last-of-type { border-bottom: none; }
+    .exam-q-title { font-size: 15px; font-weight: 600; margin-bottom: 14px; line-height: 1.5; }
+    .exam-q-num { color: var(--swiss-red); font-weight: 700; margin-right: 8px; }
+    .exam-opts { display: flex; flex-direction: column; gap: 8px; }
+    .exam-opt {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px; border: 1px solid var(--gray-300);
+      font-size: 14px; cursor: pointer;
+      transition: all 0.25s var(--transition);
+    }
+    .exam-opt:hover { border-color: var(--swiss-red); transform: translateX(3px); }
+    .exam-opt input { accent-color: var(--swiss-red); }
+    .exam-opt.ok { border-color: #22c55e; background: rgba(34,197,94,0.07); }
+    .exam-opt.bad { border-color: var(--swiss-red); background: rgba(227,6,19,0.06); }
+    .exam-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 26px; }
+    .exam-btn {
+      background: var(--swiss-red); color: #fff; border: none;
+      padding: 14px 32px; font-size: 12px; font-weight: 600;
+      letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer;
+      transition: all 0.3s;
+    }
+    .exam-btn:hover { background: var(--swiss-red-dark); transform: translateY(-2px); }
+    .exam-btn.ghost { background: transparent; color: var(--gray-500); border: 1px solid var(--gray-300); }
+    .exam-btn.ghost:hover { color: var(--swiss-red); border-color: var(--swiss-red); background: transparent; }
+    .exam-result { margin-top: 22px; padding: 20px 24px; border-left: 3px solid var(--swiss-red); background: var(--gray-100); display: none; animation: fadeUp 0.5s ease both; }
+    .exam-result.show { display: block; }
+    .exam-result.pass { border-left-color: #22c55e; }
+    .exam-score { font-size: 26px; font-weight: 700; letter-spacing: -1px; }
+    .exam-msg { font-size: 14px; color: var(--gray-500); margin-top: 6px; line-height: 1.6; }
+    .exam-locked { opacity: 0.55; pointer-events: none; filter: grayscale(0.2); transition: all 0.4s ease; }
+
     /* ===== INFO SECTION ===== */
     .info-section {
       background: var(--bg);
@@ -684,6 +788,11 @@
       .btn-join { padding: 6px 14px; font-size: 11px; }
       .hero { padding: 100px 20px 60px; }
       .features-strip { gap: 20px; }
+      .live-section { padding: 60px 20px; }
+      .live-grid { grid-template-columns: repeat(2, 1fr); }
+      .live-title { font-size: 24px; }
+      .live-value { font-size: 32px; }
+      .exam-box { padding: 28px 24px; }
       .dash-grid { grid-template-columns: repeat(2, 1fr); }
       .dash-cards { grid-template-columns: 1fr; }
 
@@ -715,7 +824,6 @@
       <a href="events.html">События</a>
       <a href="history.html">История</a>
       <a href="https://discord.gg/6YA8t7GJr" target="_blank">Discord</a>
-      <a href="pilot.html" class="nav-login-btn" data-i18n="nav-pilot">Кабинет</a>
     </nav>
     <div class="controls" style="display:flex;gap:12px;align-items:center;">
       <button class="lang-toggle" id="langToggle" onclick="toggleLang()">EN</button>
@@ -734,6 +842,66 @@
       <div class="feature-item" data-i18n="feature-2"><div class="dot"></div>Современный флот</div>
       <div class="feature-item" data-i18n="feature-3"><div class="dot"></div>24/7 поддержка</div>
       <div class="feature-item" data-i18n="feature-4"><div class="dot"></div>Обучение пилотов</div>
+    </div>
+  </section>
+
+  <!-- LIVE STATS (BETA) -->
+  <section class="live-section" id="liveStats">
+    <div class="live-plane">✈</div>
+    <div class="live-wrapper">
+      <div class="live-head animate-on-scroll">
+        <div>
+          <div class="section-label" style="margin-bottom:16px;"><span data-i18n="live-label">Living statistics</span></div>
+          <div class="live-title"><span data-i18n="live-title">Живая статистика</span><span class="beta-badge">BETA</span></div>
+          <div class="live-sub" data-i18n="live-sub">Цифры обновляются в реальном времени прямо из базы авиакомпании.</div>
+        </div>
+        <div class="live-pill"><span class="live-dot"></span><span data-i18n="live-online-pill">Онлайн</span>: <strong id="live-online">—</strong></div>
+      </div>
+
+      <div class="live-grid">
+        <div class="live-card animate-on-scroll">
+          <span class="live-icon">✈</span>
+          <div class="live-value" id="live-flights">—</div>
+          <div class="live-label" data-i18n="live-flights">Выполнено рейсов</div>
+        </div>
+        <div class="live-card animate-on-scroll delay-1">
+          <span class="live-icon">⏱</span>
+          <div class="live-value" id="live-hours">—</div>
+          <div class="live-label" data-i18n="live-hours">Часов в воздухе</div>
+        </div>
+        <div class="live-card animate-on-scroll delay-2">
+          <span class="live-icon">★</span>
+          <div class="live-value" id="live-pilots">—</div>
+          <div class="live-label" data-i18n="live-pilots">Пилотов в штате</div>
+        </div>
+        <div class="live-card animate-on-scroll delay-3">
+          <span class="live-icon">◉</span>
+          <div class="live-value" id="live-destinations">—</div>
+          <div class="live-label" data-i18n="live-destinations">Направлений</div>
+        </div>
+        <div class="live-card animate-on-scroll">
+          <span class="live-icon">✉</span>
+          <div class="live-value" id="live-applications">—</div>
+          <div class="live-label" data-i18n="live-applications">Заявок подано</div>
+        </div>
+        <div class="live-card animate-on-scroll delay-1">
+          <span class="live-icon">■</span>
+          <div class="live-value" id="live-fleet">—</div>
+          <div class="live-label" data-i18n="live-fleet">Самолётов во флоте</div>
+        </div>
+        <div class="live-card animate-on-scroll delay-2">
+          <span class="live-icon">○</span>
+          <div class="live-value" id="live-events">—</div>
+          <div class="live-label" data-i18n="live-events">Событий в календаре</div>
+        </div>
+        <div class="live-card animate-on-scroll delay-3">
+          <span class="live-icon">▲</span>
+          <div class="live-value" id="live-visits">—</div>
+          <div class="live-label" data-i18n="live-visits">Всего визитов</div>
+        </div>
+      </div>
+
+      <div class="live-note animate-on-scroll" data-i18n="live-note">Функция в режиме BETA: часть счётчиков ведётся администрацией вручную, поэтому возможны неточности. Обновление каждые 30 секунд.</div>
     </div>
   </section>
 
@@ -771,6 +939,31 @@
   <section class="form-section">
     <div class="form-wrapper">
       <div class="section-label" data-i18n="form-label">Анкета кандидата</div>
+
+      <!-- ENTRANCE EXAM (BETA) -->
+      <div class="exam-box animate-on-scroll" id="examBox">
+        <div class="exam-top">
+          <div>
+            <div class="exam-title"><span data-i18n="exam-title">Вступительный экзамен</span><span class="beta-badge">BETA</span></div>
+            <div class="exam-desc" data-i18n="exam-desc">Перед анкетой ответьте на 8 вопросов о авиации и правилах PTFS. Проходной балл — 6 из 8. Результат отправляется вместе с анкетой.</div>
+          </div>
+          <div class="exam-progress-text"><span id="examCounter">0</span> / <span id="examTotalLabel">8</span></div>
+        </div>
+
+        <div class="exam-progress"><span id="examBar"></span></div>
+
+        <div id="examQuestions"></div>
+
+        <div class="exam-actions">
+          <button type="button" class="exam-btn" id="examCheckBtn" onclick="checkExam()" data-i18n="exam-check">Проверить ответы</button>
+          <button type="button" class="exam-btn ghost" onclick="resetExam()" data-i18n="exam-reset">Пройти заново</button>
+        </div>
+
+        <div class="exam-result" id="examResult">
+          <div class="exam-score" id="examScoreText">0 / 8</div>
+          <div class="exam-msg" id="examMsgText"></div>
+        </div>
+      </div>
 
       <form id="anketaForm">
         <div class="question animate-on-scroll">
@@ -964,7 +1157,6 @@
       <a href="fleet.html" data-i18n="nav-fleet">Флот</a>
       <a href="routes.html" data-i18n="nav-routes">Маршруты</a>
       <a href="https://discord.gg/6YA8t7GJr" target="_blank">Discord</a>
-      <a href="pilot.html" data-i18n="nav-pilot">Кабинет</a>
       <a href="login.html" data-i18n="nav-admin">Админ</a>
       <a href="patent.html" data-i18n="nav-patent">Патент</a>
     </div>
@@ -1010,6 +1202,10 @@
         else { data[key] = value; }
       }
       if (Array.isArray(data.role)) data.role = data.role.join(', ');
+      // BETA: attach entrance exam result
+      data.exam_score = examState.checked ? examState.score : null;
+      data.exam_total = examState.checked ? EXAM_QUESTIONS.length : null;
+      data.exam_passed = examState.checked ? examState.passed : false;
       try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 15000);
@@ -1064,26 +1260,203 @@
       } catch (e) { box.innerHTML = '<div class="mail-empty">Ошибка загрузки. Попробуйте позже.</div>'; }
     }
 
-    /* ===== DYNAMIC LOADERS ===== */
-    async function loadStats() {
-      try {
-        const [routesRes, fleetRes, eventsRes, timelineRes] = await Promise.all([
-          fetch(API_BASE + '/api/routes').catch(() => null),
-          fetch(API_BASE + '/api/fleet').catch(() => null),
-          fetch(API_BASE + '/api/events').catch(() => null),
-          fetch(API_BASE + '/api/timeline').catch(() => null)
-        ]);
-        const routes = routesRes && routesRes.ok ? await routesRes.json() : [];
-        const fleet = fleetRes && fleetRes.ok ? await fleetRes.json() : [];
-        const events = eventsRes && eventsRes.ok ? await eventsRes.json() : [];
-        const timeline = timelineRes && timelineRes.ok ? await timelineRes.json() : [];
-        document.getElementById('stat-routes').textContent = Array.isArray(routes) ? routes.length : '—';
-        document.getElementById('stat-fleet').textContent = Array.isArray(fleet) ? fleet.length : '—';
-        document.getElementById('stat-events').textContent = Array.isArray(events) ? events.length : '—';
-        document.getElementById('stat-timeline').textContent = Array.isArray(timeline) ? timeline.length : '—';
-      } catch (e) { console.error('Stats load error', e); }
+    /* ===== LIVE STATS (BETA) ===== */
+    function animateNumber(el, target) {
+      if (!el) return;
+      const from = parseInt(String(el.textContent).replace(/[^0-9]/g, '')) || 0;
+      const to = parseInt(target) || 0;
+      if (from === to) { el.textContent = to.toLocaleString('ru-RU'); return; }
+      const start = performance.now(), dur = 900;
+      function step(now) {
+        const p = Math.min(1, (now - start) / dur);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(from + (to - from) * eased).toLocaleString('ru-RU');
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
     }
 
+    let liveStatsFirstLoad = true;
+    async function loadLiveStats() {
+      try {
+        const url = API_BASE + '/api/stats-public' + (liveStatsFirstLoad ? '?count=1' : '');
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const d = await res.json();
+        liveStatsFirstLoad = false;
+        animateNumber(document.getElementById('live-flights'), d.flights);
+        animateNumber(document.getElementById('live-hours'), d.flight_hours);
+        animateNumber(document.getElementById('live-pilots'), d.pilots);
+        animateNumber(document.getElementById('live-destinations'), d.destinations);
+        animateNumber(document.getElementById('live-applications'), d.applications);
+        animateNumber(document.getElementById('live-fleet'), d.fleet);
+        animateNumber(document.getElementById('live-events'), d.events);
+        animateNumber(document.getElementById('live-visits'), d.visits);
+        const onlineEl = document.getElementById('live-online');
+        if (onlineEl) onlineEl.textContent = d.online != null ? d.online : '—';
+      } catch (e) {
+        console.error('Live stats error', e);
+      }
+    }
+
+    /* ===== ENTRANCE EXAM (BETA) ===== */
+    const EXAM_QUESTIONS = [
+      {
+        q: { ru: 'Что означает аббревиатура ATC?', en: 'What does the abbreviation ATC mean?' },
+        opts: {
+          ru: ['Air Traffic Control — управление воздушным движением', 'Aircraft Type Class — класс самолёта', 'Automatic Take-off Control — автовзлёт', 'Airport Terminal Center — терминал аэропорта'],
+          en: ['Air Traffic Control', 'Aircraft Type Class', 'Automatic Take-off Control', 'Airport Terminal Center']
+        },
+        a: 0
+      },
+      {
+        q: { ru: 'Какой код ICAO у аэропорта Цюриха — домашней базы Swiss?', en: 'What is the ICAO code of Zurich Airport, the Swiss home base?' },
+        opts: { ru: ['LSZH', 'LFPG', 'EDDF', 'LSGG'], en: ['LSZH', 'LFPG', 'EDDF', 'LSGG'] },
+        a: 0
+      },
+      {
+        q: { ru: 'С кем нужно связаться первым, если в PTFS на аэродроме активен диспетчер?', en: 'Who should you contact first if a controller is active at the airport in PTFS?' },
+        opts: {
+          ru: ['Ground / Clearance Delivery — за разрешением на запуск и рулёние', 'Tower — сразу запрос взлёта', 'Approach — сразу заход на посадку', 'Ни с кем, летим без связи'],
+          en: ['Ground / Clearance Delivery for startup and taxi', 'Tower, request takeoff right away', 'Approach, request landing right away', 'Nobody, just fly without radio']
+        },
+        a: 0
+      },
+      {
+        q: { ru: 'Какая стандартная скорость руления по перрону считается правильной?', en: 'What taxi speed on the apron is considered correct?' },
+        opts: { ru: ['До 20 узлов, на поворотах ещё медленнее', '60-80 узлов', 'Любая, лишь бы быстрее', '100+ узлов'], en: ['Up to 20 knots, slower in turns', '60-80 knots', 'Any speed, faster is better', '100+ knots'] },
+        a: 0
+      },
+      {
+        q: { ru: 'На какой частоте передают сигнал бедствия (squawk) при отказе связи?', en: 'Which squawk code indicates radio failure?' },
+        opts: { ru: ['7600', '7500', '7700', '1200'], en: ['7600', '7500', '7700', '1200'] },
+        a: 0
+      },
+      {
+        q: { ru: 'Ваш коллега-пилот нарушает правила авиакомпании. Как поступить?', en: 'A fellow pilot breaks airline rules. What do you do?' },
+        opts: {
+          ru: ['Спокойно сообщить старшему составу с доказательствами', 'Устроить скандал в общем чате', 'Нарушить в ответ тоже', 'Игнорировать всегда'],
+          en: ['Calmly report it to senior staff with evidence', 'Start a public argument in general chat', 'Break the rules back', 'Always ignore it']
+        },
+        a: 0
+      },
+      {
+        q: { ru: 'Сколько минут налёта в PTFS нужно, чтобы не попасть в Академию пилотов?', en: 'How many PTFS flight minutes do you need to skip the Pilot Academy?' },
+        opts: { ru: ['1000 минут и больше', '100 минут', '50 минут', 'Налёт не важен'], en: ['1000 minutes or more', '100 minutes', '50 minutes', 'Flight time does not matter'] },
+        a: 0
+      },
+      {
+        q: { ru: 'Что такое ФРО (фразеология радиообмена)?', en: 'What is standard radio phraseology (FRO)?' },
+        opts: {
+          ru: ['Стандартные фразы для связи с диспетчером', 'Название самолёта', 'Тип топлива', 'Система автопилота'],
+          en: ['Standard phrases used to talk to ATC', 'The aircraft name', 'A fuel type', 'The autopilot system']
+        },
+        a: 0
+      }
+    ];
+
+    const examState = { answers: {}, checked: false, score: 0, passed: false, order: [] };
+    const EXAM_PASS = 6;
+
+    function shuffled(n) {
+      const arr = Array.from({ length: n }, (_, i) => i);
+      for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; }
+      return arr;
+    }
+
+    function renderExam() {
+      const box = document.getElementById('examQuestions');
+      if (!box) return;
+      const lang = document.documentElement.getAttribute('lang') || 'ru';
+      if (!examState.order.length) examState.order = EXAM_QUESTIONS.map(q => shuffled(q.opts.ru.length));
+      box.innerHTML = EXAM_QUESTIONS.map((q, qi) => {
+        const opts = examState.order[qi].map(oi => {
+          const text = (q.opts[lang] || q.opts.ru)[oi];
+          const checked = examState.answers[qi] === oi ? ' checked' : '';
+          return '<label class="exam-opt" data-q="' + qi + '" data-o="' + oi + '">' +
+            '<input type="radio" name="exam_q' + qi + '" value="' + oi + '"' + checked + ' onchange="pickExam(' + qi + ',' + oi + ')">' +
+            '<span>' + escapeHtml(text) + '</span></label>';
+        }).join('');
+        const title = (q.q[lang] || q.q.ru);
+        return '<div class="exam-q"><div class="exam-q-title"><span class="exam-q-num">' +
+          String(qi + 1).padStart(2, '0') + '</span>' + escapeHtml(title) + '</div>' +
+          '<div class="exam-opts">' + opts + '</div></div>';
+      }).join('');
+      document.getElementById('examTotalLabel').textContent = EXAM_QUESTIONS.length;
+      updateExamProgress();
+    }
+
+    function pickExam(qi, oi) {
+      if (examState.checked) return;
+      examState.answers[qi] = oi;
+      updateExamProgress();
+    }
+
+    function updateExamProgress() {
+      const done = Object.keys(examState.answers).length;
+      const total = EXAM_QUESTIONS.length;
+      const counter = document.getElementById('examCounter');
+      const bar = document.getElementById('examBar');
+      if (counter) counter.textContent = done;
+      if (bar) bar.style.width = Math.round((done / total) * 100) + '%';
+    }
+
+    function checkExam() {
+      const lang = document.documentElement.getAttribute('lang') || 'ru';
+      const total = EXAM_QUESTIONS.length;
+      const done = Object.keys(examState.answers).length;
+      if (done < total) {
+        showToast(lang === 'ru' ? ('Ответьте на все вопросы (' + done + ' из ' + total + ')') : ('Answer all questions (' + done + ' of ' + total + ')'), 'error');
+        return;
+      }
+      let score = 0;
+      EXAM_QUESTIONS.forEach((q, qi) => { if (examState.answers[qi] === q.a) score++; });
+      examState.checked = true;
+      examState.score = score;
+      examState.passed = score >= EXAM_PASS;
+
+      document.querySelectorAll('.exam-opt').forEach(el => {
+        const qi = parseInt(el.dataset.q), oi = parseInt(el.dataset.o);
+        const input = el.querySelector('input');
+        if (input) input.disabled = true;
+        if (oi === EXAM_QUESTIONS[qi].a) el.classList.add('ok');
+        else if (examState.answers[qi] === oi) el.classList.add('bad');
+      });
+
+      const res = document.getElementById('examResult');
+      const scoreText = document.getElementById('examScoreText');
+      const msgText = document.getElementById('examMsgText');
+      scoreText.textContent = score + ' / ' + total;
+      if (examState.passed) {
+        res.classList.add('pass');
+        msgText.textContent = lang === 'ru'
+          ? 'Зачёт! Можете заполнять анкету — результат увидит администрация.'
+          : 'Passed! You can fill in the application, staff will see your result.';
+        showToast(lang === 'ru' ? 'Экзамен сдан: ' + score + '/' + total : 'Exam passed: ' + score + '/' + total, 'success');
+      } else {
+        res.classList.remove('pass');
+        msgText.textContent = lang === 'ru'
+          ? 'Не страшно: анкету отправить всё равно можно, но вас скорее всего направят в Академию пилотов.'
+          : 'No worries: you can still submit the application, but you will likely be sent to the Pilot Academy.';
+        showToast(lang === 'ru' ? 'Результат: ' + score + '/' + total : 'Result: ' + score + '/' + total, 'info');
+      }
+      res.classList.add('show');
+      document.getElementById('examCheckBtn').disabled = true;
+    }
+
+    function resetExam() {
+      examState.answers = {};
+      examState.checked = false;
+      examState.score = 0;
+      examState.passed = false;
+      examState.order = [];
+      const res = document.getElementById('examResult');
+      res.classList.remove('show', 'pass');
+      document.getElementById('examCheckBtn').disabled = false;
+      renderExam();
+    }
+
+    /* ===== DYNAMIC LOADERS ===== */
     async function loadEventsPreview() {
       const container = document.getElementById('events-preview');
       try {
@@ -1170,6 +1543,10 @@
         'info-1-title': 'Международные рейсы', 'info-1-desc': 'Летай по маршрутам по всему миру в PTFS. Реалистичные маршруты, точные процедуры захода на посадку.',
         'info-2-title': 'Современный флот', 'info-2-desc': 'Работаем на современных лайнерах. Постоянное обновление парка и добавление новых моделей.',
         'info-3-title': 'Академия пилотов', 'info-3-desc': 'Обучение новичков с нуля. Опытные инструкторы помогут освоить все тонкости виртуальной авиации.',
+        'live-label': 'Статистика авиакомпании', 'live-title': 'Живая статистика', 'live-sub': 'Цифры обновляются в реальном времени прямо из базы авиакомпании.', 'live-online-pill': 'Онлайн',
+        'live-flights': 'Выполнено рейсов', 'live-hours': 'Часов в воздухе', 'live-pilots': 'Пилотов в штате', 'live-destinations': 'Направлений', 'live-applications': 'Заявок подано', 'live-fleet': 'Самолётов во флоте', 'live-events': 'Событий в календаре', 'live-visits': 'Всего визитов',
+        'live-note': 'Функция в режиме BETA: часть счётчиков ведётся администрацией вручную, поэтому возможны неточности. Обновление каждые 30 секунд.',
+        'exam-title': 'Вступительный экзамен', 'exam-desc': 'Перед анкетой ответьте на 8 вопросов о авиации и правилах PTFS. Проходной балл — 6 из 8. Результат отправляется вместе с анкетой.', 'exam-check': 'Проверить ответы', 'exam-reset': 'Пройти заново',
         'form-label': 'Анкета кандидата', 'q1-title': 'Ник в Roblox (PTFS) *', 'q1-desc': 'Введите ваш ник в Roblox. Он же используется в PTFS.', 'q1-ph': 'Например: PilotAlex',
         'q2-title': 'Возраст персонажа и реальный возраст *', 'q2-desc': 'Возраст персонажа нужен для лора, реальный — для соблюдения правил сообщества.', 'q2-label-char': 'Возраст персонажа', 'q2-label-real': 'Реальный возраст', 'q2-ph-char': '25', 'q2-ph-real': '16',
         'q3-title': 'Твой опыт в авиации *', 'q3-desc': 'Расскажи о своём опыте в PTFS, других авиационных играх или симуляторах.', 'q3-ph': 'Опиши свой опыт...',
@@ -1185,7 +1562,7 @@
         'security-note': 'Ваши данные передаются по защищённому соединению',
         'mail-title': '📬 Почта', 'mail-desc': 'Введите ваш ник в PTFS, чтобы узнать статус анкеты.', 'mail-ph': 'Ник в PTFS', 'mail-btn': 'Проверить', 'mail-close': 'Закрыть',
         'success-title': 'Анкета отправлена', 'success-desc': 'Мы получили твою заявку. Команда рассмотрит её в ближайшее время и свяжется через Telegram.', 'success-btn': 'Понятно',
-        'nav-home': 'Главная', 'nav-pilot': 'Кабинет', 'nav-fleet': 'Флот', 'nav-routes': 'Маршруты', 'nav-events': 'События', 'nav-history': 'История', 'nav-admin': 'Админ', 'nav-patent': 'Патент',
+        'nav-home': 'Главная', 'nav-fleet': 'Флот', 'nav-routes': 'Маршруты', 'nav-events': 'События', 'nav-history': 'История', 'nav-admin': 'Админ', 'nav-patent': 'Патент',
         'footer-home': 'Главная', 'footer-fleet': 'Флот', 'footer-routes': 'Маршруты', 'footer-admin': 'Админ', 'footer-patent': 'Патент', 'footer-patent-text': 'Неофициальный виртуальный патент № SW-VA-001 от 10.08.26 01:33', 'footer-more': 'Подробнее →', 'footer-slogan': 'Fly Together. Fly Swiss.'
       },
       en: {
@@ -1195,6 +1572,10 @@
         'info-1-title': 'International Flights', 'info-1-desc': 'Fly routes around the world in PTFS. Realistic routes, precise landing procedures.',
         'info-2-title': 'Modern Fleet', 'info-2-desc': 'We operate modern liners. Constant fleet updates and addition of new models.',
         'info-3-title': 'Pilot Academy', 'info-3-desc': 'Training beginners from scratch. Experienced instructors will help you master all the nuances of virtual aviation.',
+        'live-label': 'Airline statistics', 'live-title': 'Living Statistics', 'live-sub': 'Numbers are updated in real time straight from the airline database.', 'live-online-pill': 'Online',
+        'live-flights': 'Flights completed', 'live-hours': 'Hours in the air', 'live-pilots': 'Pilots on staff', 'live-destinations': 'Destinations', 'live-applications': 'Applications sent', 'live-fleet': 'Aircraft in fleet', 'live-events': 'Events in calendar', 'live-visits': 'Total visits',
+        'live-note': 'BETA feature: some counters are maintained manually by staff, so small inaccuracies are possible. Refreshed every 30 seconds.',
+        'exam-title': 'Entrance Exam', 'exam-desc': 'Before the application, answer 8 questions about aviation and PTFS rules. Passing score is 6 out of 8. The result is submitted together with your application.', 'exam-check': 'Check answers', 'exam-reset': 'Retake',
         'form-label': 'Candidate Application', 'q1-title': 'Roblox Nick (PTFS) *', 'q1-desc': 'Enter your Roblox nickname. It is also used in PTFS.', 'q1-ph': 'e.g. PilotAlex',
         'q2-title': 'Character age and real age *', 'q2-desc': 'Character age is needed for lore, real age is for community rules compliance.', 'q2-label-char': 'Character age', 'q2-label-real': 'Real age', 'q2-ph-char': '25', 'q2-ph-real': '16',
         'q3-title': 'Your aviation experience *', 'q3-desc': 'Tell us about your experience in PTFS, other aviation games or simulators.', 'q3-ph': 'Describe your experience...',
@@ -1210,7 +1591,7 @@
         'security-note': 'Your data is transmitted over a secure connection',
         'mail-title': '📬 Mail', 'mail-desc': 'Enter your PTFS nickname to check application status.', 'mail-ph': 'PTFS nickname', 'mail-btn': 'Check', 'mail-close': 'Close',
         'success-title': 'Application Sent', 'success-desc': 'We have received your application. The team will review it soon and contact you via Telegram.', 'success-btn': 'Got it',
-        'nav-home': 'Home', 'nav-pilot': 'Pilot Hub', 'nav-fleet': 'Fleet', 'nav-routes': 'Routes', 'nav-events': 'Events', 'nav-history': 'History', 'nav-admin': 'Admin', 'nav-patent': 'Patent',
+        'nav-home': 'Home', 'nav-fleet': 'Fleet', 'nav-routes': 'Routes', 'nav-events': 'Events', 'nav-history': 'History', 'nav-admin': 'Admin', 'nav-patent': 'Patent',
         'footer-home': 'Home', 'footer-fleet': 'Fleet', 'footer-routes': 'Routes', 'footer-admin': 'Admin', 'footer-patent': 'Patent', 'footer-patent-text': 'Unofficial virtual patent No. SW-VA-001 dated 10.08.26 01:33', 'footer-more': 'More →', 'footer-slogan': 'Fly Together. Fly Swiss.'
       }
     };
@@ -1234,6 +1615,7 @@
       const btn = document.getElementById('langToggle');
       if (btn) btn.textContent = next === 'ru' ? 'RU' : 'EN';
       applyLang();
+      renderExam();
     }
     (function() {
       const savedTheme = localStorage.getItem('swiss-theme');
@@ -1244,6 +1626,12 @@
       if (btn) btn.textContent = savedLang === 'ru' ? 'RU' : 'EN';
       applyLang();
     })();
+
+    // BETA modules boot: entrance exam + live statistics
+    renderExam();
+    loadLiveStats();
+    setInterval(loadLiveStats, 30000);
+    document.querySelectorAll('#liveStats .animate-on-scroll, #examBox').forEach(el => observer.observe(el));
 
 
   </script>

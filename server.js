@@ -88,28 +88,6 @@ if (pgConn && pgConn.startsWith('postgres')) {
 }
 
 /* ============================================================
-   DB HELPERS — unified access for PostgreSQL + SQLite
-   sqlPg uses $1,$2...   sqlLite uses ?,?...
-   ============================================================ */
-async function dbAll(sqlPg, sqlLite, params = []) {
-  if (dbType === 'postgres') return (await db.query(sqlPg, params)).rows;
-  return await new Promise((resolve, reject) => db.all(sqlLite, params, (err, rows) => err ? reject(err) : resolve(rows || [])));
-}
-async function dbGet(sqlPg, sqlLite, params = []) {
-  const rows = await dbAll(sqlPg, sqlLite, params);
-  return rows.length ? rows[0] : null;
-}
-async function dbRun(sqlPg, sqlLite, params = []) {
-  if (dbType === 'postgres') {
-    const r = await db.query(sqlPg, params);
-    return { rowCount: r.rowCount, rows: r.rows, lastID: r.rows && r.rows[0] ? r.rows[0].id : null };
-  }
-  return await new Promise((resolve, reject) => db.run(sqlLite, params, function (err) {
-    if (err) reject(err); else resolve({ rowCount: this.changes, lastID: this.lastID, rows: [] });
-  }));
-}
-
-/* ============================================================
    SESSION STORE — persistent with PostgreSQL
    ============================================================ */
 let sessionStore;
@@ -190,7 +168,62 @@ function rateLimit(windowMs = 60000, max = 5) {
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 app.get('/login.html', (req, res) => res.sendFile(path.join(__dirname, 'login.html')));
 app.get('/admin.html', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
-app.get('/pilot.html', (req, res) => res.sendFile(path.join(__dirname, 'pilot.html')));
+
+/* ============================================================
+   LIVE STATS (BETA) — counter helpers
+   ============================================================ */
+const STAT_KEYS = ['visits', 'pilots', 'flights', 'flight_hours', 'destinations'];
+
+async function statsGetAll() {
+  const out = {};
+  for (const k of STAT_KEYS) out[k] = 0;
+  try {
+    if (dbType === 'postgres') {
+      const r = await db.query('SELECT skey, svalue FROM site_stats');
+      for (const row of r.rows) out[row.skey] = parseInt(row.svalue) || 0;
+    } else {
+      const rows = await new Promise((resolve, reject) => db.all('SELECT skey, svalue FROM site_stats', [], (err, r) => err ? reject(err) : resolve(r || [])));
+      for (const row of rows) out[row.skey] = parseInt(row.svalue) || 0;
+    }
+  } catch (e) {
+    console.error('[STATS] read error:', e.message);
+  }
+  return out;
+}
+
+async function statsSet(key, value) {
+  if (!STAT_KEYS.includes(key)) return false;
+  const v = Math.max(0, parseInt(value) || 0);
+  if (dbType === 'postgres') {
+    await db.query('INSERT INTO site_stats (skey, svalue, updated_at) VALUES ($1,$2,CURRENT_TIMESTAMP) ON CONFLICT (skey) DO UPDATE SET svalue = $2, updated_at = CURRENT_TIMESTAMP', [key, v]);
+  } else {
+    await new Promise((resolve, reject) => db.run('INSERT INTO site_stats (skey, svalue, updated_at) VALUES (?,?,CURRENT_TIMESTAMP) ON CONFLICT(skey) DO UPDATE SET svalue = excluded.svalue, updated_at = CURRENT_TIMESTAMP', [key, v], (err) => err ? reject(err) : resolve()));
+  }
+  return true;
+}
+
+async function statsBump(key, delta) {
+  if (!STAT_KEYS.includes(key)) return;
+  const d = parseInt(delta) || 1;
+  try {
+    if (dbType === 'postgres') {
+      await db.query('INSERT INTO site_stats (skey, svalue, updated_at) VALUES ($1,$2,CURRENT_TIMESTAMP) ON CONFLICT (skey) DO UPDATE SET svalue = site_stats.svalue + $2, updated_at = CURRENT_TIMESTAMP', [key, d]);
+    } else {
+      await new Promise((resolve) => db.run('INSERT INTO site_stats (skey, svalue, updated_at) VALUES (?,?,CURRENT_TIMESTAMP) ON CONFLICT(skey) DO UPDATE SET svalue = svalue + ?, updated_at = CURRENT_TIMESTAMP', [key, d, d], () => resolve()));
+    }
+  } catch (e) {
+    console.error('[STATS] bump error:', e.message);
+  }
+}
+
+// Rough "online now" gauge: unique IPs seen in the last 5 minutes
+const onlineVisitors = new Map();
+function touchVisitor(ip) {
+  const now = Date.now();
+  onlineVisitors.set(ip, now);
+  for (const [k, t] of onlineVisitors) { if (now - t > 5 * 60 * 1000) onlineVisitors.delete(k); }
+  return onlineVisitors.size;
+}
 
 /* ============================================================
    DATABASE INITIALIZATION
@@ -223,10 +256,26 @@ async function initDb() {
           char_age TEXT, real_age TEXT, experience TEXT, role TEXT,
           online_time TEXT, why_swiss TEXT, rules TEXT, fro TEXT,
           flight_minutes TEXT, telegram TEXT, about TEXT,
+          exam_score INTEGER, exam_total INTEGER, exam_passed BOOLEAN DEFAULT false,
           status TEXT DEFAULT 'new',
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
       `);
+      // BETA: exam columns migration for already existing databases
+      await db.query('ALTER TABLE applications ADD COLUMN IF NOT EXISTS exam_score INTEGER');
+      await db.query('ALTER TABLE applications ADD COLUMN IF NOT EXISTS exam_total INTEGER');
+      await db.query('ALTER TABLE applications ADD COLUMN IF NOT EXISTS exam_passed BOOLEAN DEFAULT false');
+      // BETA: live site statistics counters
+      await db.query(`
+        CREATE TABLE IF NOT EXISTS site_stats (
+          skey TEXT PRIMARY KEY,
+          svalue BIGINT DEFAULT 0,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+      for (const k of STAT_KEYS) {
+        await db.query('INSERT INTO site_stats (skey, svalue) VALUES ($1, 0) ON CONFLICT (skey) DO NOTHING', [k]);
+      }
       await db.query(`
         CREATE TABLE IF NOT EXISTS events (
           id SERIAL PRIMARY KEY,
@@ -280,44 +329,6 @@ async function initDb() {
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
       `);
-      // ===== PILOTS (личные кабинеты) =====
-      await db.query(`
-        CREATE TABLE IF NOT EXISTS pilots (
-          id SERIAL PRIMARY KEY,
-          callsign TEXT UNIQUE NOT NULL,
-          roblox_name TEXT NOT NULL,
-          username TEXT UNIQUE NOT NULL,
-          password_hash TEXT NOT NULL,
-          application_id INTEGER,
-          rank TEXT DEFAULT 'Кадет',
-          total_minutes INTEGER DEFAULT 0,
-          total_flights INTEGER DEFAULT 0,
-          status TEXT DEFAULT 'active',
-          telegram TEXT,
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          last_login TIMESTAMP
-        )
-      `);
-      await db.query(`
-        CREATE TABLE IF NOT EXISTS flight_reports (
-          id SERIAL PRIMARY KEY,
-          pilot_id INTEGER NOT NULL,
-          flight_number TEXT,
-          departure TEXT NOT NULL,
-          arrival TEXT NOT NULL,
-          aircraft TEXT,
-          duration_min INTEGER NOT NULL,
-          pax INTEGER,
-          landing_rate INTEGER,
-          comment TEXT,
-          status TEXT DEFAULT 'pending',
-          admin_comment TEXT,
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          reviewed_at TIMESTAMP
-        )
-      `);
-      await db.query('CREATE INDEX IF NOT EXISTS idx_reports_pilot ON flight_reports(pilot_id)');
-      await db.query('CREATE INDEX IF NOT EXISTS idx_reports_status ON flight_reports(status)');
     } else {
       await new Promise((resolve, reject) => {
         db.run(`CREATE TABLE IF NOT EXISTS applications (
@@ -325,9 +336,29 @@ async function initDb() {
           roblox_name TEXT NOT NULL, char_age TEXT, real_age TEXT, experience TEXT, role TEXT,
           online_time TEXT, why_swiss TEXT, rules TEXT, fro TEXT,
           flight_minutes TEXT, telegram TEXT, about TEXT,
+          exam_score INTEGER, exam_total INTEGER, exam_passed INTEGER DEFAULT 0,
           status TEXT DEFAULT 'new', created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )`, (err) => err ? reject(err) : resolve());
       });
+      // BETA: exam columns migration for already existing SQLite files
+      const appCols = await new Promise((resolve) => db.all("PRAGMA table_info(applications)", [], (err, r) => resolve(err ? [] : (r || []))));
+      const haveCols = appCols.map(c => c.name);
+      for (const [col, ddl] of [['exam_score', 'INTEGER'], ['exam_total', 'INTEGER'], ['exam_passed', 'INTEGER DEFAULT 0']]) {
+        if (!haveCols.includes(col)) {
+          await new Promise((resolve) => db.run('ALTER TABLE applications ADD COLUMN ' + col + ' ' + ddl, [], () => resolve()));
+          console.log('[DB] Added applications.' + col);
+        }
+      }
+      // BETA: live site statistics counters
+      await new Promise((resolve, reject) => {
+        db.run(`CREATE TABLE IF NOT EXISTS site_stats (
+          skey TEXT PRIMARY KEY, svalue INTEGER DEFAULT 0,
+          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`, (err) => err ? reject(err) : resolve());
+      });
+      for (const k of STAT_KEYS) {
+        await new Promise((resolve) => db.run('INSERT OR IGNORE INTO site_stats (skey, svalue) VALUES (?, 0)', [k], () => resolve()));
+      }
       await new Promise((resolve, reject) => {
         db.run(`CREATE TABLE IF NOT EXISTS events (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -363,87 +394,12 @@ async function initDb() {
           created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )`, (err) => err ? reject(err) : resolve());
       });
-      await new Promise((resolve, reject) => {
-        db.run(`CREATE TABLE IF NOT EXISTS pilots (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          callsign TEXT UNIQUE NOT NULL,
-          roblox_name TEXT NOT NULL,
-          username TEXT UNIQUE NOT NULL,
-          password_hash TEXT NOT NULL,
-          application_id INTEGER,
-          rank TEXT DEFAULT 'Кадет',
-          total_minutes INTEGER DEFAULT 0,
-          total_flights INTEGER DEFAULT 0,
-          status TEXT DEFAULT 'active',
-          telegram TEXT,
-          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-          last_login DATETIME
-        )`, (err) => err ? reject(err) : resolve());
-      });
-      await new Promise((resolve, reject) => {
-        db.run(`CREATE TABLE IF NOT EXISTS flight_reports (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          pilot_id INTEGER NOT NULL,
-          flight_number TEXT,
-          departure TEXT NOT NULL,
-          arrival TEXT NOT NULL,
-          aircraft TEXT,
-          duration_min INTEGER NOT NULL,
-          pax INTEGER,
-          landing_rate INTEGER,
-          comment TEXT,
-          status TEXT DEFAULT 'pending',
-          admin_comment TEXT,
-          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-          reviewed_at DATETIME
-        )`, (err) => err ? reject(err) : resolve());
-      });
-      await new Promise((resolve) => db.run('CREATE INDEX IF NOT EXISTS idx_reports_pilot ON flight_reports(pilot_id)', () => resolve()));
-      await new Promise((resolve) => db.run('CREATE INDEX IF NOT EXISTS idx_reports_status ON flight_reports(status)', () => resolve()));
     }
 
     // ============ SEED DATA ============
     const seedEvents = [];
     const seedApplications = [];
-    const seedRoutes = [
-      // Внутренние — Швейцария
-      {origin:'Цюрих',origin_code:'IPPH',destination:'Женева',destination_code:'IZOL',distance_km:230,duration_min:45,aircraft_type:'Airbus A220-100',frequency:'ежедневно'},
-      {origin:'Цюрих',origin_code:'IPPH',destination:'Лугано',destination_code:'ILKL',distance_km:210,duration_min:40,aircraft_type:'Airbus A220-100',frequency:'ежедневно'},
-      {origin:'Женева',origin_code:'IZOL',destination:'Берн',destination_code:'IJAF',distance_km:160,duration_min:35,aircraft_type:'Airbus A220-100',frequency:'ежедневно'},
-      // Европа из Цюриха
-      {origin:'Цюрих',origin_code:'IPPH',destination:'Лондон',destination_code:'IKFL',distance_km:947,duration_min:105,aircraft_type:'Airbus A320neo',frequency:'ежедневно'},
-      {origin:'Цюрих',origin_code:'IPPH',destination:'Москва',destination_code:'IRFD',distance_km:2200,duration_min:195,aircraft_type:'Airbus A320-200',frequency:'ежедневно'},
-      {origin:'Цюрих',origin_code:'IPPH',destination:'Манчестер',destination_code:'ITEY',distance_km:1050,duration_min:120,aircraft_type:'Airbus A220-300',frequency:'5x в неделю'},
-      {origin:'Цюрих',origin_code:'IPPH',destination:'Санкт-Петербург',destination_code:'IMLR',distance_km:2400,duration_min:205,aircraft_type:'Airbus A320neo',frequency:'3x в неделю'},
-      // Америка
-      {origin:'Цюрих',origin_code:'IPPH',destination:'Нью-Йорк',destination_code:'ITKO',distance_km:6980,duration_min:510,aircraft_type:'Boeing 777-300ER',frequency:'ежедневно'},
-      {origin:'Цюрих',origin_code:'IPPH',destination:'Чикаго',destination_code:'IDCS',distance_km:7420,duration_min:540,aircraft_type:'Airbus A340-300',frequency:'еженедельно'},
-      {origin:'Цюрих',origin_code:'IPPH',destination:'Лос-Анджелес',destination_code:'IBRD',distance_km:9540,duration_min:690,aircraft_type:'Airbus A350-900',frequency:'ежедневно'},
-      {origin:'Цюрих',origin_code:'IPPH',destination:'Сан-Паулу',destination_code:'ISAU',distance_km:9855,duration_min:720,aircraft_type:'Boeing 777-300ER',frequency:'еженедельно'},
-      // Африка и Ближний Восток
-      {origin:'Цюрих',origin_code:'IPPH',destination:'Каир',destination_code:'ILAR',distance_km:2840,duration_min:240,aircraft_type:'Airbus A220-300',frequency:'ежедневно'},
-      {origin:'Цюрих',origin_code:'IPPH',destination:'Найроби',destination_code:'IPAP',distance_km:6460,duration_min:480,aircraft_type:'Airbus A330-300',frequency:'еженедельно'},
-      {origin:'Цюрих',origin_code:'IPPH',destination:'Дубай',destination_code:'ISKP',distance_km:4860,duration_min:370,aircraft_type:'Airbus A330-300',frequency:'ежедневно'},
-      // Азия
-      {origin:'Цюрих',origin_code:'IPPH',destination:'Сингапур',destination_code:'IBTH',distance_km:10300,duration_min:750,aircraft_type:'Boeing 777-300ER',frequency:'ежедневно'},
-      // Из Женевы
-      {origin:'Женева',origin_code:'IZOL',destination:'Лондон',destination_code:'IKFL',distance_km:815,duration_min:95,aircraft_type:'Airbus A220-300',frequency:'ежедневно'},
-      {origin:'Женева',origin_code:'IZOL',destination:'Москва',destination_code:'IRFD',distance_km:2500,duration_min:210,aircraft_type:'Airbus A321neo',frequency:'еженедельно'},
-      {origin:'Женева',origin_code:'IZOL',destination:'Нью-Йорк',destination_code:'ITKO',distance_km:6900,duration_min:505,aircraft_type:'Airbus A330-300',frequency:'ежедневно'},
-      {origin:'Женева',origin_code:'IZOL',destination:'Дубай',destination_code:'ISKP',distance_km:4800,duration_min:365,aircraft_type:'Airbus A330-300',frequency:'4x в неделю'},
-      // Региональные / фидерные
-      {origin:'Москва',origin_code:'IRFD',destination:'Санкт-Петербург',destination_code:'IMLR',distance_km:700,duration_min:90,aircraft_type:'Airbus A220-300',frequency:'ежедневно'},
-      {origin:'Москва',origin_code:'IRFD',destination:'Сочи',destination_code:'IBLT',distance_km:1500,duration_min:145,aircraft_type:'Airbus A320-200',frequency:'ежедневно'},
-      {origin:'Москва',origin_code:'IRFD',destination:'Дубай',destination_code:'ISKP',distance_km:3600,duration_min:280,aircraft_type:'Airbus A321neo',frequency:'ежедневно'},
-      {origin:'Нью-Йорк',origin_code:'ITKO',destination:'Чикаго',destination_code:'IDCS',distance_km:1190,duration_min:150,aircraft_type:'Airbus A320neo',frequency:'ежедневно'},
-      {origin:'Нью-Йорк',origin_code:'ITKO',destination:'Лос-Анджелес',destination_code:'IBRD',distance_km:3940,duration_min:330,aircraft_type:'Airbus A321neo',frequency:'ежедневно'},
-      {origin:'Лондон',origin_code:'IKFL',destination:'Манчестер',destination_code:'ITEY',distance_km:300,duration_min:55,aircraft_type:'Airbus A220-100',frequency:'ежедневно'},
-      {origin:'Лондон',origin_code:'IKFL',destination:'Нью-Йорк',destination_code:'ITKO',distance_km:5570,duration_min:420,aircraft_type:'Boeing 777-300ER',frequency:'ежедневно'},
-      {origin:'Каир',origin_code:'ILAR',destination:'Шарм-эль-Шейх',destination_code:'IBAR',distance_km:500,duration_min:60,aircraft_type:'Airbus A220-300',frequency:'ежедневно'},
-      {origin:'Найроби',origin_code:'IPAP',destination:'Дар-эс-Салам',destination_code:'IHEN',distance_km:1100,duration_min:90,aircraft_type:'Airbus A220-300',frequency:'ежедневно'},
-      {origin:'Дубай',origin_code:'ISKP',destination:'Сингапур',destination_code:'IBTH',distance_km:5900,duration_min:430,aircraft_type:'Airbus A330-300',frequency:'ежедневно'},
-      {origin:'Сан-Паулу',origin_code:'ISAU',destination:'Нью-Йорк',destination_code:'ITKO',distance_km:7700,duration_min:570,aircraft_type:'Boeing 777-300ER',frequency:'ежедневно'}
-    ];
+    const seedRoutes = [];
     const seedFleet = [
       {model:'Airbus A220-100',manufacturer:'Airbus',category:'Regional',capacity:125,range_km:5400,speed_kmh:829,description:'Smallest A220 variant, perfect for thin regional routes and Swiss domestic flights'},
       {model:'Airbus A220-300',manufacturer:'Airbus',category:'Regional',capacity:145,range_km:6300,speed_kmh:829,description:'Swiss flagship regional jet, the backbone of European short-haul operations'},
@@ -690,7 +646,11 @@ app.get('/api/db-status', requireAuth, async (req, res) => {
    PUBLIC API
    ============================================================ */
 app.post('/api/submit', rateLimit(60000, 10), requireDb, async (req, res) => {
-  const { roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about } = req.body;
+  const { roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about, exam_score, exam_total, exam_passed } = req.body;
+  // BETA: entrance exam result (optional, validated but never trusted for anything critical)
+  const examScore = (exam_score === undefined || exam_score === null || exam_score === '') ? null : Math.max(0, parseInt(exam_score) || 0);
+  const examTotal = (exam_total === undefined || exam_total === null || exam_total === '') ? null : Math.max(0, parseInt(exam_total) || 0);
+  const examPassed = (exam_passed === true || exam_passed === 'true' || exam_passed === 1 || exam_passed === '1');
   console.log('📥 [SUBMIT] Received application from:', roblox_name);
   if (!roblox_name || !experience || !rules || !telegram) {
     return res.status(400).json({ success: false, error: 'Required fields missing' });
@@ -707,17 +667,17 @@ app.post('/api/submit', rateLimit(60000, 10), requireDb, async (req, res) => {
     try {
       if (dbType === 'postgres') {
         const result = await db.query(
-          `INSERT INTO applications (roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about)
-          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING id`,
-          [roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about]
+          `INSERT INTO applications (roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about, exam_score, exam_total, exam_passed)
+          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) RETURNING id`,
+          [roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about, examScore, examTotal, examPassed]
         );
         console.log('✅ [SUBMIT] Application saved, ID:', result.rows[0].id, '(attempt', attempt, ')');
         if (attempt > 0) { dbReady = true; pgReconnectAttempts = 0; }
         return res.json({ success: true, id: result.rows[0].id });
       } else {
-        const stmt = db.prepare(`INSERT INTO applications (roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+        const stmt = db.prepare(`INSERT INTO applications (roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about, exam_score, exam_total, exam_passed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
         const id = await new Promise((resolve, reject) => {
-          stmt.run(roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about, function(err) {
+          stmt.run(roblox_name, char_age, real_age, experience, role, online_time, why_swiss, rules, fro, flight_minutes, telegram, about, examScore, examTotal, examPassed ? 1 : 0, function(err) {
             if (err) { stmt.finalize(); reject(err); return; }
             resolve(this.lastID);
             stmt.finalize();
@@ -781,6 +741,51 @@ app.get('/api/timeline', requireDb, async (req, res) => {
     else { rows = await new Promise((resolve, reject) => db.all('SELECT * FROM timeline ORDER BY year', [], (err, r) => err ? reject(err) : resolve(r))); }
     res.json({ timeline: rows });
   } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+/* ============================================================
+   LIVE STATS API (BETA) — public, read-only
+   ============================================================ */
+app.get('/api/stats-public', rateLimit(60000, 60), requireDb, async (req, res) => {
+  try {
+    const ip = req.ip || req.connection.remoteAddress || 'unknown';
+    const online = touchVisitor(ip);
+    if (req.query.count === '1') await statsBump('visits', 1);
+
+    const manual = await statsGetAll();
+    let applications = 0, acceptedPilots = 0, events = 0, routes = 0, fleet = 0;
+    if (dbType === 'postgres') {
+      applications = parseInt((await db.query('SELECT COUNT(*) as c FROM applications')).rows[0].c) || 0;
+      acceptedPilots = parseInt((await db.query("SELECT COUNT(*) as c FROM applications WHERE status = 'accepted'")).rows[0].c) || 0;
+      events = parseInt((await db.query('SELECT COUNT(*) as c FROM events')).rows[0].c) || 0;
+      routes = parseInt((await db.query('SELECT COUNT(*) as c FROM routes')).rows[0].c) || 0;
+      fleet = parseInt((await db.query('SELECT COUNT(*) as c FROM fleet')).rows[0].c) || 0;
+    } else {
+      const one = (sql) => new Promise((resolve) => db.get(sql, [], (err, r) => resolve(err || !r ? 0 : (r.c || 0))));
+      applications = await one('SELECT COUNT(*) as c FROM applications');
+      acceptedPilots = await one("SELECT COUNT(*) as c FROM applications WHERE status = 'accepted'");
+      events = await one('SELECT COUNT(*) as c FROM events');
+      routes = await one('SELECT COUNT(*) as c FROM routes');
+      fleet = await one('SELECT COUNT(*) as c FROM fleet');
+    }
+
+    res.json({
+      beta: true,
+      online,
+      visits: manual.visits,
+      applications,
+      pilots: manual.pilots > 0 ? manual.pilots : acceptedPilots,
+      flights: manual.flights,
+      flight_hours: manual.flight_hours,
+      destinations: manual.destinations > 0 ? manual.destinations : routes,
+      events,
+      routes,
+      fleet,
+      server_time: new Date().toISOString()
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 /* ============================================================
@@ -896,6 +901,47 @@ app.get('/api/stats', requireAuth, requireDb, async (req, res) => {
       const fr = await new Promise((resolve, reject) => db.get('SELECT COUNT(*) as c FROM fleet', [], (err, r) => err ? reject(err) : resolve(r))); stats.fleet = fr ? fr.c : 0;
     }
     res.json(stats);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+/* ============================================================
+   ADMIN LIVE STATS API (BETA)
+   ============================================================ */
+app.get('/api/admin/site-stats', requireAuth, requireDb, async (req, res) => {
+  try {
+    const manual = await statsGetAll();
+    let examStats = { with_exam: 0, passed: 0, avg_score: null };
+    if (dbType === 'postgres') {
+      const r = await db.query('SELECT COUNT(exam_score) as with_exam, COUNT(CASE WHEN exam_passed THEN 1 END) as passed, AVG(exam_score) as avg_score FROM applications');
+      examStats = {
+        with_exam: parseInt(r.rows[0].with_exam) || 0,
+        passed: parseInt(r.rows[0].passed) || 0,
+        avg_score: r.rows[0].avg_score === null ? null : Math.round(parseFloat(r.rows[0].avg_score) * 10) / 10
+      };
+    } else {
+      const r = await new Promise((resolve) => db.get('SELECT COUNT(exam_score) as with_exam, SUM(CASE WHEN exam_passed = 1 THEN 1 ELSE 0 END) as passed, AVG(exam_score) as avg_score FROM applications', [], (err, row) => resolve(err ? null : row)));
+      if (r) examStats = {
+        with_exam: r.with_exam || 0,
+        passed: r.passed || 0,
+        avg_score: r.avg_score === null ? null : Math.round(parseFloat(r.avg_score) * 10) / 10
+      };
+    }
+    res.json({ stats: manual, online: onlineVisitors.size, exam: examStats });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.put('/api/admin/site-stats', requireAuth, requireDb, async (req, res) => {
+  try {
+    const updated = [];
+    for (const k of STAT_KEYS) {
+      if (req.body && req.body[k] !== undefined && req.body[k] !== null && req.body[k] !== '') {
+        await statsSet(k, req.body[k]);
+        updated.push(k);
+      }
+    }
+    console.log('[STATS] Admin updated counters:', updated.join(', ') || 'nothing');
+    const stats = await statsGetAll();
+    res.json({ success: true, updated, stats });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
@@ -1164,281 +1210,6 @@ app.get('/api/notifications', requireDb, async (req, res) => {
     if (rows.length === 0) return res.json({ notifications: [] });
     const app = rows[0];
     res.json({ notifications: [{ title: 'Анкета', message: 'Ваша анкета найдена', status: app.status, created_at: app.created_at, data: app }] });
-  } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-/* ============================================================
-   PILOT CABINET — ranks, auth, reports, leaderboard
-   ============================================================ */
-const RANKS = [
-  { key: 'cadet',   ru: 'Кадет',           en: 'Cadet',         minHours: 0 },
-  { key: 'fo',      ru: 'Второй пилот',    en: 'First Officer', minHours: 10 },
-  { key: 'cpt',     ru: 'Капитан',         en: 'Captain',       minHours: 30 },
-  { key: 'senior',  ru: 'Старший капитан', en: 'Senior Captain',minHours: 75 }
-];
-function rankForMinutes(min) {
-  const h = (min || 0) / 60;
-  let r = RANKS[0];
-  for (const x of RANKS) if (h >= x.minHours) r = x;
-  return r.ru;
-}
-function requirePilot(req, res, next) {
-  if (req.session && req.session.pilotId) return next();
-  res.status(401).json({ error: 'Требуется вход в кабинет пилота', needLogin: true });
-}
-function publicPilot(p) {
-  if (!p) return null;
-  return {
-    id: p.id, callsign: p.callsign, roblox_name: p.roblox_name, username: p.username,
-    rank: p.rank, total_minutes: p.total_minutes || 0,
-    total_hours: Math.round(((p.total_minutes || 0) / 60) * 10) / 10,
-    total_flights: p.total_flights || 0, status: p.status,
-    created_at: p.created_at, last_login: p.last_login
-  };
-}
-async function nextCallsign() {
-  const row = await dbGet(
-    "SELECT callsign FROM pilots WHERE callsign LIKE 'SWR-%' ORDER BY id DESC LIMIT 1",
-    "SELECT callsign FROM pilots WHERE callsign LIKE 'SWR-%' ORDER BY id DESC LIMIT 1"
-  );
-  let n = 100;
-  const all = await dbAll('SELECT callsign FROM pilots', 'SELECT callsign FROM pilots');
-  for (const r of all) {
-    const m = /^SWR-(\d+)$/.exec(r.callsign || '');
-    if (m) n = Math.max(n, parseInt(m[1], 10));
-  }
-  if (row) { /* keep linter calm */ }
-  return 'SWR-' + String(n + 1).padStart(3, '0');
-}
-
-// Проверка: есть ли принятая анкета на этот ник (шаг 1 регистрации)
-app.get('/api/pilot/check', requireDb, rateLimit(60000, 30), async (req, res) => {
-  const nick = (req.query.roblox_name || '').trim();
-  if (!nick) return res.status(400).json({ error: 'Укажите ник Roblox' });
-  try {
-    const appRow = await dbGet(
-      "SELECT * FROM applications WHERE LOWER(roblox_name)=LOWER($1) AND status='accepted' ORDER BY created_at DESC LIMIT 1",
-      "SELECT * FROM applications WHERE LOWER(roblox_name)=LOWER(?) AND status='accepted' ORDER BY created_at DESC LIMIT 1",
-      [nick]
-    );
-    if (!appRow) return res.json({ eligible: false, reason: 'Принятая анкета с таким ником не найдена' });
-    const exists = await dbGet(
-      'SELECT id, callsign FROM pilots WHERE LOWER(roblox_name)=LOWER($1)',
-      'SELECT id, callsign FROM pilots WHERE LOWER(roblox_name)=LOWER(?)', [nick]
-    );
-    if (exists) return res.json({ eligible: false, reason: 'Аккаунт пилота уже создан (' + exists.callsign + ')' });
-    res.json({ eligible: true, roblox_name: appRow.roblox_name });
-  } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-// Регистрация пилота — только по принятой анкете
-app.post('/api/pilot/register', requireDb, rateLimit(60000, 5), async (req, res) => {
-  const { roblox_name, username, password } = req.body || {};
-  if (!roblox_name || !username || !password) return res.status(400).json({ error: 'Заполните все поля' });
-  if (String(username).length < 3) return res.status(400).json({ error: 'Логин слишком короткий (мин. 3 символа)' });
-  if (String(password).length < 6) return res.status(400).json({ error: 'Пароль слишком короткий (мин. 6 символов)' });
-  try {
-    const appRow = await dbGet(
-      "SELECT * FROM applications WHERE LOWER(roblox_name)=LOWER($1) AND status='accepted' ORDER BY created_at DESC LIMIT 1",
-      "SELECT * FROM applications WHERE LOWER(roblox_name)=LOWER(?) AND status='accepted' ORDER BY created_at DESC LIMIT 1",
-      [roblox_name]
-    );
-    if (!appRow) return res.status(403).json({ error: 'Регистрация доступна только пилотам с принятой анкетой' });
-    const dupNick = await dbGet('SELECT id FROM pilots WHERE LOWER(roblox_name)=LOWER($1)', 'SELECT id FROM pilots WHERE LOWER(roblox_name)=LOWER(?)', [roblox_name]);
-    if (dupNick) return res.status(409).json({ error: 'Аккаунт для этого ника уже существует' });
-    const dupUser = await dbGet('SELECT id FROM pilots WHERE LOWER(username)=LOWER($1)', 'SELECT id FROM pilots WHERE LOWER(username)=LOWER(?)', [username]);
-    if (dupUser) return res.status(409).json({ error: 'Такой логин уже занят' });
-
-    const callsign = await nextCallsign();
-    const hash = bcrypt.hashSync(String(password), 10);
-    const r = await dbRun(
-      'INSERT INTO pilots (callsign, roblox_name, username, password_hash, application_id, rank, telegram) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id',
-      'INSERT INTO pilots (callsign, roblox_name, username, password_hash, application_id, rank, telegram) VALUES (?,?,?,?,?,?,?)',
-      [callsign, appRow.roblox_name, username, hash, appRow.id, RANKS[0].ru, appRow.telegram || null]
-    );
-    req.session.pilotId = r.lastID;
-    req.session.pilotCallsign = callsign;
-    req.session.save(() => res.json({ success: true, callsign, rank: RANKS[0].ru }));
-  } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-app.post('/api/pilot/login', requireDb, rateLimit(60000, 10), async (req, res) => {
-  const { username, password } = req.body || {};
-  if (!username || !password) return res.status(400).json({ error: 'Введите логин и пароль' });
-  try {
-    const p = await dbGet('SELECT * FROM pilots WHERE LOWER(username)=LOWER($1)', 'SELECT * FROM pilots WHERE LOWER(username)=LOWER(?)', [username]);
-    if (!p || !bcrypt.compareSync(String(password), p.password_hash)) return res.status(401).json({ error: 'Неверный логин или пароль' });
-    if (p.status === 'suspended') return res.status(403).json({ error: 'Аккаунт приостановлен. Свяжитесь с администрацией.' });
-    await dbRun('UPDATE pilots SET last_login=CURRENT_TIMESTAMP WHERE id=$1', 'UPDATE pilots SET last_login=CURRENT_TIMESTAMP WHERE id=?', [p.id]);
-    req.session.pilotId = p.id;
-    req.session.pilotCallsign = p.callsign;
-    req.session.save(() => res.json({ success: true, pilot: publicPilot(p) }));
-  } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-app.post('/api/pilot/logout', (req, res) => {
-  if (req.session) { delete req.session.pilotId; delete req.session.pilotCallsign; }
-  res.json({ success: true });
-});
-
-app.get('/api/pilot/me', requireDb, async (req, res) => {
-  if (!req.session || !req.session.pilotId) return res.json({ loggedIn: false });
-  try {
-    const p = await dbGet('SELECT * FROM pilots WHERE id=$1', 'SELECT * FROM pilots WHERE id=?', [req.session.pilotId]);
-    if (!p) { delete req.session.pilotId; return res.json({ loggedIn: false }); }
-    const nextRank = RANKS.find(r => (p.total_minutes || 0) / 60 < r.minHours) || null;
-    res.json({
-      loggedIn: true, pilot: publicPilot(p), ranks: RANKS,
-      next_rank: nextRank ? { name: nextRank.ru, hours_needed: Math.round((nextRank.minHours - (p.total_minutes || 0) / 60) * 10) / 10 } : null
-    });
-  } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-app.post('/api/pilot/password', requireDb, requirePilot, async (req, res) => {
-  const { old_password, new_password } = req.body || {};
-  if (!old_password || !new_password) return res.status(400).json({ error: 'Заполните оба поля' });
-  if (String(new_password).length < 6) return res.status(400).json({ error: 'Новый пароль слишком короткий (мин. 6 символов)' });
-  try {
-    const p = await dbGet('SELECT * FROM pilots WHERE id=$1', 'SELECT * FROM pilots WHERE id=?', [req.session.pilotId]);
-    if (!p || !bcrypt.compareSync(String(old_password), p.password_hash)) return res.status(401).json({ error: 'Текущий пароль неверен' });
-    await dbRun('UPDATE pilots SET password_hash=$1 WHERE id=$2', 'UPDATE pilots SET password_hash=? WHERE id=?', [bcrypt.hashSync(String(new_password), 10), p.id]);
-    res.json({ success: true });
-  } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-// Отчёты пилота
-app.get('/api/pilot/reports', requireDb, requirePilot, async (req, res) => {
-  try {
-    const rows = await dbAll(
-      'SELECT * FROM flight_reports WHERE pilot_id=$1 ORDER BY created_at DESC',
-      'SELECT * FROM flight_reports WHERE pilot_id=? ORDER BY created_at DESC', [req.session.pilotId]
-    );
-    res.json(rows);
-  } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-app.post('/api/pilot/reports', requireDb, requirePilot, rateLimit(60000, 10), async (req, res) => {
-  const b = req.body || {};
-  const dur = parseInt(b.duration_min, 10);
-  if (!b.departure || !b.arrival) return res.status(400).json({ error: 'Укажите аэропорт вылета и прилёта' });
-  if (!dur || dur < 5 || dur > 900) return res.status(400).json({ error: 'Длительность рейса должна быть от 5 до 900 минут' });
-  try {
-    await dbRun(
-      'INSERT INTO flight_reports (pilot_id, flight_number, departure, arrival, aircraft, duration_min, pax, landing_rate, comment) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)',
-      'INSERT INTO flight_reports (pilot_id, flight_number, departure, arrival, aircraft, duration_min, pax, landing_rate, comment) VALUES (?,?,?,?,?,?,?,?,?)',
-      [req.session.pilotId, b.flight_number || null, b.departure, b.arrival, b.aircraft || null, dur,
-       b.pax ? parseInt(b.pax, 10) : null, b.landing_rate ? parseInt(b.landing_rate, 10) : null, b.comment || null]
-    );
-    res.json({ success: true, message: 'Отчёт отправлен на проверку администратору' });
-  } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-app.delete('/api/pilot/reports/:id', requireDb, requirePilot, async (req, res) => {
-  try {
-    const r = await dbRun(
-      "DELETE FROM flight_reports WHERE id=$1 AND pilot_id=$2 AND status='pending'",
-      "DELETE FROM flight_reports WHERE id=? AND pilot_id=? AND status='pending'",
-      [req.params.id, req.session.pilotId]
-    );
-    if (!r.rowCount) return res.status(404).json({ error: 'Отчёт не найден или уже проверен' });
-    res.json({ success: true });
-  } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-// Публичный лидерборд
-app.get('/api/leaderboard', requireDb, async (req, res) => {
-  try {
-    const rows = await dbAll(
-      "SELECT callsign, roblox_name, rank, total_minutes, total_flights FROM pilots WHERE status='active' ORDER BY total_minutes DESC, total_flights DESC LIMIT 50",
-      "SELECT callsign, roblox_name, rank, total_minutes, total_flights FROM pilots WHERE status='active' ORDER BY total_minutes DESC, total_flights DESC LIMIT 50"
-    );
-    res.json(rows.map((p, i) => ({
-      position: i + 1, callsign: p.callsign, roblox_name: p.roblox_name, rank: p.rank,
-      total_hours: Math.round(((p.total_minutes || 0) / 60) * 10) / 10, total_flights: p.total_flights || 0
-    })));
-  } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-/* ---------- АДМИН: пилоты и отчёты ---------- */
-app.get('/api/admin/pilots', requireAuth, requireDb, async (req, res) => {
-  try {
-    const rows = await dbAll('SELECT * FROM pilots ORDER BY total_minutes DESC, id ASC', 'SELECT * FROM pilots ORDER BY total_minutes DESC, id ASC');
-    res.json(rows.map(publicPilot));
-  } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-app.put('/api/admin/pilots/:id', requireAuth, requireDb, async (req, res) => {
-  const b = req.body || {};
-  try {
-    const p = await dbGet('SELECT * FROM pilots WHERE id=$1', 'SELECT * FROM pilots WHERE id=?', [req.params.id]);
-    if (!p) return res.status(404).json({ error: 'Пилот не найден' });
-    const minutes = b.total_minutes !== undefined ? Math.max(0, parseInt(b.total_minutes, 10) || 0) : p.total_minutes;
-    const status = b.status || p.status;
-    const rank = b.rank || rankForMinutes(minutes);
-    await dbRun(
-      'UPDATE pilots SET total_minutes=$1, status=$2, rank=$3 WHERE id=$4',
-      'UPDATE pilots SET total_minutes=?, status=?, rank=? WHERE id=?', [minutes, status, rank, p.id]
-    );
-    res.json({ success: true, rank });
-  } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-app.post('/api/admin/pilots/:id/reset-password', requireAuth, requireDb, async (req, res) => {
-  const { new_password } = req.body || {};
-  if (!new_password || String(new_password).length < 6) return res.status(400).json({ error: 'Пароль должен быть минимум 6 символов' });
-  try {
-    const r = await dbRun('UPDATE pilots SET password_hash=$1 WHERE id=$2', 'UPDATE pilots SET password_hash=? WHERE id=?', [bcrypt.hashSync(String(new_password), 10), req.params.id]);
-    if (!r.rowCount) return res.status(404).json({ error: 'Пилот не найден' });
-    res.json({ success: true });
-  } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-app.delete('/api/admin/pilots/:id', requireAuth, requireDb, async (req, res) => {
-  try {
-    await dbRun('DELETE FROM flight_reports WHERE pilot_id=$1', 'DELETE FROM flight_reports WHERE pilot_id=?', [req.params.id]);
-    const r = await dbRun('DELETE FROM pilots WHERE id=$1', 'DELETE FROM pilots WHERE id=?', [req.params.id]);
-    if (!r.rowCount) return res.status(404).json({ error: 'Пилот не найден' });
-    res.json({ success: true });
-  } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-app.get('/api/admin/reports', requireAuth, requireDb, async (req, res) => {
-  try {
-    const rows = await dbAll(
-      'SELECT r.*, p.callsign, p.roblox_name, p.rank FROM flight_reports r JOIN pilots p ON p.id=r.pilot_id ORDER BY CASE WHEN r.status=\'pending\' THEN 0 ELSE 1 END, r.created_at DESC',
-      'SELECT r.*, p.callsign, p.roblox_name, p.rank FROM flight_reports r JOIN pilots p ON p.id=r.pilot_id ORDER BY CASE WHEN r.status=\'pending\' THEN 0 ELSE 1 END, r.created_at DESC'
-    );
-    res.json(rows);
-  } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-// Проверка отчёта: approved → часы начисляются, звание пересчитывается
-app.put('/api/admin/reports/:id', requireAuth, requireDb, async (req, res) => {
-  const { status, admin_comment } = req.body || {};
-  if (!['approved', 'rejected', 'pending'].includes(status)) return res.status(400).json({ error: 'Недопустимый статус' });
-  try {
-    const rep = await dbGet('SELECT * FROM flight_reports WHERE id=$1', 'SELECT * FROM flight_reports WHERE id=?', [req.params.id]);
-    if (!rep) return res.status(404).json({ error: 'Отчёт не найден' });
-    const pilot = await dbGet('SELECT * FROM pilots WHERE id=$1', 'SELECT * FROM pilots WHERE id=?', [rep.pilot_id]);
-    if (!pilot) return res.status(404).json({ error: 'Пилот не найден' });
-
-    let minutes = pilot.total_minutes || 0;
-    let flights = pilot.total_flights || 0;
-    if (rep.status === 'approved' && status !== 'approved') { minutes -= rep.duration_min; flights -= 1; }
-    if (rep.status !== 'approved' && status === 'approved') { minutes += rep.duration_min; flights += 1; }
-    minutes = Math.max(0, minutes); flights = Math.max(0, flights);
-    const newRank = rankForMinutes(minutes);
-
-    await dbRun(
-      'UPDATE flight_reports SET status=$1, admin_comment=$2, reviewed_at=CURRENT_TIMESTAMP WHERE id=$3',
-      'UPDATE flight_reports SET status=?, admin_comment=?, reviewed_at=CURRENT_TIMESTAMP WHERE id=?',
-      [status, admin_comment || null, rep.id]
-    );
-    await dbRun(
-      'UPDATE pilots SET total_minutes=$1, total_flights=$2, rank=$3 WHERE id=$4',
-      'UPDATE pilots SET total_minutes=?, total_flights=?, rank=? WHERE id=?', [minutes, flights, newRank, pilot.id]
-    );
-    res.json({ success: true, promoted: newRank !== pilot.rank, rank: newRank, total_hours: Math.round((minutes / 60) * 10) / 10 });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 

@@ -103,13 +103,6 @@
     .status-past { background: #e5e7eb; color: #4b5563; }
     .status-active { background: #d1fae5; color: #065f46; }
     .status-inactive { background: #fee2e2; color: #991b1b; }
-    .status-pending { background: #fef3c7; color: #92400e; }
-    .status-approved { background: #d1fae5; color: #065f46; }
-    .status-suspended { background: #e5e7eb; color: #4b5563; }
-    .pending-badge { display:inline-block; min-width:18px; padding:1px 6px; margin-left:4px; background:var(--swiss-red); color:#fff; border-radius:10px; font-size:10px; font-weight:800; vertical-align:middle; animation: pulseBadge 2s infinite; }
-    @keyframes pulseBadge { 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.12); } }
-    .rank-badge { display:inline-block; padding:3px 9px; font-size:11px; font-weight:700; letter-spacing:0.4px; border:1px solid var(--swiss-red); color:var(--swiss-red); background:rgba(227,6,19,0.05); }
-    .callsign-badge { display:inline-block; font-family:'SF Mono',Menlo,monospace; font-weight:700; font-size:12px; letter-spacing:1px; background:var(--black); color:#fff; padding:3px 8px; }
     .status-badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
 
     /* ===== MODAL ===== */
@@ -232,8 +225,7 @@
     <button class="tab-btn" onclick="switchTab('routes')" data-tab="routes" data-i18n="tab-routes">🗺️ Маршруты</button>
     <button class="tab-btn" onclick="switchTab('fleet')" data-tab="fleet" data-i18n="tab-fleet">✈️ Флот</button>
     <button class="tab-btn" onclick="switchTab('timeline')" data-tab="timeline" data-i18n="tab-timeline">📜 История</button>
-    <button class="tab-btn" onclick="switchTab('pilots')" data-tab="pilots" data-i18n="tab-pilots">👨‍✈️ Пилоты</button>
-    <button class="tab-btn" onclick="switchTab('reports')" data-tab="reports"><span data-i18n="tab-reports">📝 Отчёты</span><span id="reportsBadge" class="pending-badge" style="display:none;"></span></button>
+    <button class="tab-btn" onclick="switchTab('sitestats')" data-tab="sitestats" data-i18n="tab-sitestats">📊 Статистика</button>
   </div>
 
   <!-- ANKETY -->
@@ -315,41 +307,33 @@
     </div>
   </div>
 
-  <!-- PILOTS -->
-  <div class="tab-content" id="tab-pilots">
-    <div class="toolbar"><h3 style="font-size:16px;font-weight:700;" data-i18n="tab-pilots">👨‍✈️ Пилоты</h3><button class="btn-add" onclick="loadPilots()" data-i18n="btn-refresh">↻ Обновить</button></div>
-    <div class="stats-grid" style="margin-bottom:20px;">
-      <div class="stat-card"><span class="stat-icon">👥</span><div class="stat-value" id="pStatTotal">0</div><div class="stat-label" data-i18n="pstat-total">Всего пилотов</div></div>
-      <div class="stat-card"><span class="stat-icon">⏱️</span><div class="stat-value" id="pStatHours">0</div><div class="stat-label" data-i18n="pstat-hours">Суммарные часы</div></div>
-      <div class="stat-card"><span class="stat-icon">✈️</span><div class="stat-value" id="pStatFlights">0</div><div class="stat-label" data-i18n="pstat-flights">Всего рейсов</div></div>
-      <div class="stat-card"><span class="stat-icon">🎖️</span><div class="stat-value" id="pStatCaptains">0</div><div class="stat-label" data-i18n="pstat-captains">Капитаны</div></div>
+  <!-- SITE STATS (BETA) -->
+  <div class="tab-content" id="tab-sitestats">
+    <div class="toolbar">
+      <h3 style="font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px;">
+        <span data-i18n="stats-title">Живая статистика</span>
+        <span style="background:#E30613;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.5px;">BETA</span>
+      </h3>
+      <button class="btn-add" onclick="loadSiteStats()" data-i18n="btn-stats-refresh">↻ Обновить</button>
     </div>
-    <div class="table-wrapper">
-      <div class="loading" id="pilotsLoading" data-i18n="loading-pilots">Загрузка пилотов...</div>
-      <table id="pilotsTable" style="display:none;">
-        <thead><tr><th data-i18n="th-callsign">Номер</th><th data-i18n="th-pilot">Пилот</th><th data-i18n="th-login">Логин</th><th data-i18n="th-rank">Звание</th><th data-i18n="th-hours">Часы</th><th data-i18n="th-flights">Рейсы</th><th data-i18n="th-status">Статус</th><th data-i18n="th-actions">Действия</th></tr></thead>
-        <tbody id="pilotsBody"></tbody>
-      </table>
-      <div class="empty-state" id="pilotsEmpty" style="display:none;"><h3 data-i18n="empty-pilots-title">Нет пилотов</h3><p data-i18n="empty-pilots-desc">Пилоты появятся после регистрации по принятой анкете</p></div>
-    </div>
-  </div>
-
-  <!-- FLIGHT REPORTS -->
-  <div class="tab-content" id="tab-reports">
-    <div class="toolbar"><h3 style="font-size:16px;font-weight:700;" data-i18n="tab-reports">📝 Отчёты о рейсах</h3><button class="btn-add" onclick="loadReports()" data-i18n="btn-refresh">↻ Обновить</button></div>
-    <div class="filters-bar" id="reportFilters">
-      <span class="filter-btn active" data-rfilter="all" onclick="setReportFilter('all')" data-i18n="filter-all">Все</span>
-      <span class="filter-btn" data-rfilter="pending" onclick="setReportFilter('pending')" data-i18n="filter-pending">⏳ На проверке</span>
-      <span class="filter-btn" data-rfilter="approved" onclick="setReportFilter('approved')" data-i18n="filter-approved">✅ Одобрено</span>
-      <span class="filter-btn" data-rfilter="rejected" onclick="setReportFilter('rejected')" data-i18n="filter-rejected">❌ Отклонено</span>
-    </div>
-    <div class="table-wrapper">
-      <div class="loading" id="reportsLoading" data-i18n="loading-reports">Загрузка отчётов...</div>
-      <table id="reportsTable" style="display:none;">
-        <thead><tr><th data-i18n="th-pilot">Пилот</th><th data-i18n="th-flight">Рейс</th><th data-i18n="th-leg">Маршрут</th><th data-i18n="th-aircraft">Самолёт</th><th data-i18n="th-duration">Время</th><th data-i18n="th-status">Статус</th><th data-i18n="th-date">Дата</th><th data-i18n="th-actions">Действия</th></tr></thead>
-        <tbody id="reportsBody"></tbody>
-      </table>
-      <div class="empty-state" id="reportsEmpty" style="display:none;"><h3 data-i18n="empty-reports-title">Нет отчётов</h3><p data-i18n="empty-reports-desc">Пилоты ещё не прислали отчёты о рейсах</p></div>
+    <div class="loading" id="siteStatsLoading" data-i18n="loading-stats">Загрузка статистики...</div>
+    <div id="siteStatsWrap" style="display:none;">
+      <div class="stats-grid" id="siteStatsLive"></div>
+      <div class="table-wrapper" style="padding:20px;margin-top:20px;">
+        <h4 style="font-size:14px;font-weight:700;margin:0 0 6px;" data-i18n="stats-editor-title">Ручные счётчики</h4>
+        <p style="font-size:12px;color:var(--gray-500);margin:0 0 16px;" data-i18n="stats-editor-hint">Эти значения показываются на главной странице. Пустое поле — значение не меняется.</p>
+        <div id="siteStatsForm" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;"></div>
+        <div style="margin-top:18px;">
+          <button class="btn-save" onclick="saveSiteStats()" data-i18n="btn-stats-save">Сохранить счётчики</button>
+        </div>
+      </div>
+      <div class="table-wrapper" style="padding:20px;margin-top:20px;">
+        <h4 style="font-size:14px;font-weight:700;margin:0 0 6px;display:flex;align-items:center;gap:8px;">
+          <span data-i18n="exam-stats-title">🎓 Вступительный экзамен</span>
+          <span style="background:#E30613;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.5px;">BETA</span>
+        </h4>
+        <div class="stats-grid" id="examStatsGrid" style="margin-top:14px;"></div>
+      </div>
     </div>
   </div>
 
@@ -361,9 +345,6 @@
     let routesData = [];
     let fleetData = [];
     let timelineData = [];
-    let pilotsData = [];
-    let reportsData = [];
-    let reportFilter = 'all';
 
     /* ===== i18n ===== */
     const i18n = {
@@ -403,22 +384,13 @@
         'btn-status-review': '🔍 На рассмотрении', 'btn-status-accepted': '✅ Принять', 'btn-status-rejected': '❌ Отклонить',
         'toast-status-review': 'Статус изменён: На рассмотрении', 'toast-status-accepted': 'Статус изменён: Принято', 'toast-status-rejected': 'Статус изменён: Отклонено',
         'toast-status-error': 'Ошибка смены статуса', 'stat-review': 'На рассмотрении',
-        'tab-pilots': '👨‍✈️ Пилоты', 'tab-reports': '📝 Отчёты',
-        'btn-refresh': '↻ Обновить',
-        'pstat-total': 'Всего пилотов', 'pstat-hours': 'Суммарные часы', 'pstat-flights': 'Всего рейсов', 'pstat-captains': 'Капитаны',
-        'loading-pilots': 'Загрузка пилотов...', 'loading-reports': 'Загрузка отчётов...',
-        'th-callsign': 'Номер', 'th-pilot': 'Пилот', 'th-login': 'Логин', 'th-rank': 'Звание', 'th-hours': 'Часы', 'th-flights': 'Рейсы', 'th-flight': 'Рейс', 'th-leg': 'Маршрут',
-        'empty-pilots-title': 'Нет пилотов', 'empty-pilots-desc': 'Пилоты появятся после регистрации по принятой анкете',
-        'empty-reports-title': 'Нет отчётов', 'empty-reports-desc': 'Пилоты ещё не прислали отчёты о рейсах',
-        'filter-pending': '⏳ На проверке', 'filter-approved': '✅ Одобрено',
-        'status-pending': 'На проверке', 'status-approved': 'Одобрено', 'status-suspended': 'Заблокирован',
-        'btn-approve': '✅ Одобрить', 'btn-reject': '❌ Отклонить', 'btn-details': '👁 Подробнее', 'btn-edit-pilot': '⚙ Изменить', 'btn-reset-pw': '🔑 Пароль',
-        'modal-pilot-title': 'Редактирование пилота', 'modal-reset-title': 'Сброс пароля пилота', 'modal-review-title': 'Проверка отчёта',
-        'label-minutes': 'Налёт (минут)', 'label-rank': 'Звание (пусто = авто)', 'label-new-password': 'Новый пароль (мин. 6)', 'label-admin-comment': 'Комментарий админа',
-        'confirm-delete-pilot': 'Удалить пилота и все его отчёты? Действие необратимо.',
-        'toast-pilot-saved': 'Данные пилота обновлены', 'toast-pilot-deleted': 'Пилот удалён', 'toast-pw-reset': 'Пароль сброшен',
-        'toast-report-approved': 'Отчёт одобрен, часы начислены', 'toast-report-rejected': 'Отчёт отклонён', 'toast-promoted': 'Повышение в звании: ',
-        'rep-pax': 'Пассажиры', 'rep-landing': 'Вертикальная при посадке', 'rep-comment': 'Комментарий пилота', 'rep-reviewed': 'Проверен'
+        'tab-sitestats': '📊 Статистика',
+        'stats-title': 'Живая статистика', 'loading-stats': 'Загрузка статистики...', 'btn-stats-refresh': '↻ Обновить',
+        'stats-editor-title': 'Ручные счётчики', 'stats-editor-hint': 'Эти значения показываются на главной странице в блоке «Живая статистика».', 'btn-stats-save': 'Сохранить счётчики',
+        'stat-online': 'Сейчас на сайте', 'stat-visits': 'Посещений', 'stat-pilots': 'Пилотов', 'stat-flights': 'Рейсов', 'stat-flight-hours': 'Часов в воздухе', 'stat-destinations': 'Направлений',
+        'toast-stats-saved': 'Счётчики обновлены', 'toast-stats-error': 'Не удалось сохранить счётчики',
+        'exam-stats-title': '🎓 Вступительный экзамен', 'exam-stat-taken': 'Прошли тест', 'exam-stat-passed': 'Сдали', 'exam-stat-rate': 'Доля сдавших', 'exam-stat-avg': 'Средний балл',
+        'app-detail-exam': 'Результат экзамена', 'exam-passed': 'сдан', 'exam-failed': 'не сдан', 'exam-none': 'без экзамена'
       },
       en: {
         'admin-badge': 'Admin Panel', 'admin-title': 'Admin Panel', 'admin-subtitle': 'Swiss Airlines website content management',
@@ -456,22 +428,13 @@
         'btn-status-review': '🔍 Under review', 'btn-status-accepted': '✅ Accept', 'btn-status-rejected': '❌ Reject',
         'toast-status-review': 'Status changed: Under review', 'toast-status-accepted': 'Status changed: Accepted', 'toast-status-rejected': 'Status changed: Rejected',
         'toast-status-error': 'Error changing status', 'stat-review': 'Under review',
-        'tab-pilots': '👨‍✈️ Pilots', 'tab-reports': '📝 Reports',
-        'btn-refresh': '↻ Refresh',
-        'pstat-total': 'Total pilots', 'pstat-hours': 'Total hours', 'pstat-flights': 'Total flights', 'pstat-captains': 'Captains',
-        'loading-pilots': 'Loading pilots...', 'loading-reports': 'Loading reports...',
-        'th-callsign': 'ID', 'th-pilot': 'Pilot', 'th-login': 'Login', 'th-rank': 'Rank', 'th-hours': 'Hours', 'th-flights': 'Flights', 'th-flight': 'Flight', 'th-leg': 'Route',
-        'empty-pilots-title': 'No pilots', 'empty-pilots-desc': 'Pilots appear after registering with an accepted application',
-        'empty-reports-title': 'No reports', 'empty-reports-desc': 'Pilots have not submitted flight reports yet',
-        'filter-pending': '⏳ Pending', 'filter-approved': '✅ Approved',
-        'status-pending': 'Pending', 'status-approved': 'Approved', 'status-suspended': 'Suspended',
-        'btn-approve': '✅ Approve', 'btn-reject': '❌ Reject', 'btn-details': '👁 Details', 'btn-edit-pilot': '⚙ Edit', 'btn-reset-pw': '🔑 Password',
-        'modal-pilot-title': 'Edit pilot', 'modal-reset-title': 'Reset pilot password', 'modal-review-title': 'Review report',
-        'label-minutes': 'Flight time (minutes)', 'label-rank': 'Rank (empty = auto)', 'label-new-password': 'New password (min 6)', 'label-admin-comment': 'Admin comment',
-        'confirm-delete-pilot': 'Delete this pilot and all their reports? This cannot be undone.',
-        'toast-pilot-saved': 'Pilot updated', 'toast-pilot-deleted': 'Pilot deleted', 'toast-pw-reset': 'Password reset',
-        'toast-report-approved': 'Report approved, hours credited', 'toast-report-rejected': 'Report rejected', 'toast-promoted': 'Promoted to: ',
-        'rep-pax': 'Passengers', 'rep-landing': 'Landing rate', 'rep-comment': 'Pilot comment', 'rep-reviewed': 'Reviewed'
+        'tab-sitestats': '📊 Statistics',
+        'stats-title': 'Live Statistics', 'loading-stats': 'Loading statistics...', 'btn-stats-refresh': '↻ Refresh',
+        'stats-editor-title': 'Manual counters', 'stats-editor-hint': 'These values are shown on the homepage in the Live Statistics block.', 'btn-stats-save': 'Save counters',
+        'stat-online': 'Online now', 'stat-visits': 'Visits', 'stat-pilots': 'Pilots', 'stat-flights': 'Flights', 'stat-flight-hours': 'Flight hours', 'stat-destinations': 'Destinations',
+        'toast-stats-saved': 'Counters updated', 'toast-stats-error': 'Failed to save counters',
+        'exam-stats-title': '🎓 Entrance Exam', 'exam-stat-taken': 'Exams taken', 'exam-stat-passed': 'Passed', 'exam-stat-rate': 'Pass rate', 'exam-stat-avg': 'Average score',
+        'app-detail-exam': 'Exam result', 'exam-passed': 'passed', 'exam-failed': 'failed', 'exam-none': 'no exam'
       }
     };
 
@@ -493,9 +456,7 @@
       if (currentTab === 'routes' && routesData.length >= 0) renderRoutes();
       if (currentTab === 'fleet') renderFleet();
       if (currentTab === 'timeline' && timelineData.length >= 0) renderTimeline();
-      if (currentTab === 'pilots') renderPilots();
-      if (currentTab === 'reports') renderReports();
-      updateReportsBadge();
+      if (currentTab === 'sitestats' && siteStatsData) renderSiteStats();
       renderAppStats();
     }
 
@@ -509,7 +470,7 @@
     }
     function escapeHtml(str){ if(!str) return str; return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
     function formatDate(d){ if(!d) return '—'; return new Date(d).toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
-    function getStatusText(s){ const m={new:t('status-new'),review:t('status-review'),accepted:t('status-accepted'),rejected:t('status-rejected'),upcoming:t('status-upcoming'),past:t('status-past'),active:t('status-active'),inactive:t('status-inactive'),pending:t('status-pending'),approved:t('status-approved'),suspended:t('status-suspended')}; return m[s]||s; }
+    function getStatusText(s){ const m={new:t('status-new'),review:t('status-review'),accepted:t('status-accepted'),rejected:t('status-rejected'),upcoming:t('status-upcoming'),past:t('status-past'),active:t('status-active'),inactive:t('status-inactive')}; return m[s]||s; }
     function getCategoryText(c){ const m={'wide-body':t('cat-wide-body'),'narrow-body':t('cat-narrow-body'),'cargo':t('cat-cargo'),'regional':t('cat-regional')}; return m[c]||c; }
 
     function switchTab(tab) {
@@ -520,8 +481,7 @@
       if (tab === 'routes' && routesData.length === 0) loadRoutes();
       if (tab === 'fleet' && fleetData.length === 0) loadFleet();
       if (tab === 'timeline' && timelineData.length === 0) loadTimeline();
-      if (tab === 'pilots') loadPilots();
-      if (tab === 'reports') loadReports();
+      if (tab === 'sitestats' && !siteStatsData) loadSiteStats();
     }
 
     // ============ MODAL ============
@@ -657,6 +617,7 @@
               <div><strong style="color:var(--gray-500)">${t('app-detail-role')}:</strong> ${escapeHtml(a.role)||'—'}</div>
               <div><strong style="color:var(--gray-500)">${t('app-detail-online')}:</strong> ${escapeHtml(a.online_time)||'—'}</div>
               <div><strong style="color:var(--gray-500)">${t('app-detail-flights')}:</strong> ${escapeHtml(a.flight_minutes)||'—'}</div>
+              <div><strong style="color:var(--gray-500)">${t('app-detail-exam')}:</strong> ${examBadge(a)}</div>
               <div style="grid-column:span 3"><strong style="color:var(--gray-500)">${t('app-detail-experience')}:</strong><br>${escapeHtml(a.experience)||'—'}</div>
               <div style="grid-column:span 3"><strong style="color:var(--gray-500)">${t('app-detail-why')}:</strong><br>${escapeHtml(a.why_swiss)||'—'}</div>
               <div style="grid-column:span 3"><strong style="color:var(--gray-500)">${t('app-detail-about')}:</strong><br>${escapeHtml(a.about)||'—'}</div>
@@ -691,6 +652,94 @@
       } catch(e) {
         showToast(t('toast-status-error'), 'error');
       }
+    }
+
+    // ============ SITE STATS (BETA) ============
+    let siteStatsData = null;
+    const STAT_FIELDS = ['visits','pilots','flights','flight_hours','destinations'];
+
+    async function loadSiteStats() {
+      const loading = document.getElementById('siteStatsLoading');
+      const wrap = document.getElementById('siteStatsWrap');
+      loading.style.display = 'block';
+      loading.textContent = t('loading-stats');
+      try {
+        const r = await fetch('/api/admin/site-stats');
+        if (r.status === 401) { window.location.href = 'login.html'; return; }
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        siteStatsData = await r.json();
+        loading.style.display = 'none';
+        wrap.style.display = 'block';
+        renderSiteStats();
+      } catch (e) {
+        loading.style.display = 'block';
+        loading.textContent = t('error-load') + ' (' + e.message + ')';
+      }
+    }
+
+    function renderSiteStats() {
+      if (!siteStatsData) return;
+      const s = siteStatsData.stats || {};
+      const icons = { visits:'\ud83d\udc41\ufe0f', pilots:'\ud83d\udc68\u200d\u2708\ufe0f', flights:'\u2708\ufe0f', flight_hours:'\u23f1\ufe0f', destinations:'\ud83d\uddfa\ufe0f' };
+      const live = document.getElementById('siteStatsLive');
+      live.innerHTML =
+        '<div class="stat-card"><span class="stat-icon">\ud83d\udfe2</span><div class="stat-value">' + (siteStatsData.online || 0) + '</div><div class="stat-label">' + t('stat-online') + '</div></div>' +
+        STAT_FIELDS.map(function(k){
+          return '<div class="stat-card"><span class="stat-icon">' + icons[k] + '</span><div class="stat-value">' + (s[k] || 0) + '</div><div class="stat-label">' + t('stat-' + k.replace('_','-')) + '</div></div>';
+        }).join('');
+
+      document.getElementById('siteStatsForm').innerHTML = STAT_FIELDS.map(function(k){
+        return '<div class="form-row"><label>' + icons[k] + ' ' + t('stat-' + k.replace('_','-')) + '</label>' +
+               '<input type="number" min="0" id="stat-field-' + k + '" value="' + (s[k] !== undefined && s[k] !== null ? s[k] : 0) + '"></div>';
+      }).join('');
+
+      const ex = siteStatsData.exam || {};
+      const withExam = ex.with_exam || 0;
+      const passed = ex.passed || 0;
+      const rate = withExam > 0 ? Math.round((passed / withExam) * 100) : 0;
+      document.getElementById('examStatsGrid').innerHTML =
+        '<div class="stat-card"><span class="stat-icon">\ud83d\udcdd</span><div class="stat-value">' + withExam + '</div><div class="stat-label">' + t('exam-stat-taken') + '</div></div>' +
+        '<div class="stat-card"><span class="stat-icon">\u2705</span><div class="stat-value">' + passed + '</div><div class="stat-label">' + t('exam-stat-passed') + '</div></div>' +
+        '<div class="stat-card"><span class="stat-icon">\ud83d\udcc8</span><div class="stat-value">' + rate + '%</div><div class="stat-label">' + t('exam-stat-rate') + '</div></div>' +
+        '<div class="stat-card"><span class="stat-icon">\u2b50</span><div class="stat-value">' + (ex.avg_score === null || ex.avg_score === undefined ? '\u2014' : ex.avg_score) + '</div><div class="stat-label">' + t('exam-stat-avg') + '</div></div>';
+    }
+
+    async function saveSiteStats() {
+      const payload = {};
+      STAT_FIELDS.forEach(function(k){
+        const el = document.getElementById('stat-field-' + k);
+        if (el && el.value !== '') payload[k] = parseInt(el.value, 10) || 0;
+      });
+      try {
+        const r = await fetch('/api/admin/site-stats', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (r.status === 401) { window.location.href = 'login.html'; return; }
+        const d = await r.json();
+        if (r.ok && d.success) {
+          if (siteStatsData) siteStatsData.stats = d.stats || siteStatsData.stats;
+          renderSiteStats();
+          showToast(t('toast-stats-saved'), 'success');
+        } else {
+          showToast(t('toast-stats-error'), 'error');
+        }
+      } catch (e) {
+        showToast(t('toast-stats-error'), 'error');
+      }
+    }
+
+    function examBadge(a) {
+      if (a.exam_score === null || a.exam_score === undefined || a.exam_score === '') {
+        return '<span class="cell-muted">' + t('exam-none') + '</span>';
+      }
+      const total = (a.exam_total === null || a.exam_total === undefined || a.exam_total === '') ? 8 : a.exam_total;
+      const passed = a.exam_passed === true || a.exam_passed === 1 || a.exam_passed === '1';
+      const color = passed ? '#0a9d4a' : '#E30613';
+      const label = passed ? t('exam-passed') : t('exam-failed');
+      return '<span style="display:inline-block;background:' + color + ';color:#fff;font-size:11px;font-weight:700;padding:2px 10px;border-radius:20px;">' +
+             a.exam_score + '/' + total + ' \u00b7 ' + label + '</span>';
     }
 
     // ============ EVENTS ============
@@ -820,8 +869,8 @@
 
     // ============ EXPORT / UTILS ============
     function exportCSV() {
-      const headers = ['ID','Roblox Name','Char Age','Real Age','Experience','Role','Online Time','Why Swiss','Rules','FRO','Flight Minutes','Telegram','About','Status','Date'];
-      const rows = allData.map(a => [a.id, a.roblox_name, a.char_age, a.real_age, a.experience, a.role, a.online_time, a.why_swiss, a.rules, a.fro, a.flight_minutes, a.telegram, a.about, getStatusText(a.status), a.created_at]);
+      const headers = ['ID','Roblox Name','Char Age','Real Age','Experience','Role','Online Time','Why Swiss','Rules','FRO','Flight Minutes','Telegram','About','Status','Exam Score','Exam Total','Exam Passed','Date'];
+      const rows = allData.map(a => [a.id, a.roblox_name, a.char_age, a.real_age, a.experience, a.role, a.online_time, a.why_swiss, a.rules, a.fro, a.flight_minutes, a.telegram, a.about, getStatusText(a.status), (a.exam_score === null || a.exam_score === undefined ? '' : a.exam_score), (a.exam_total === null || a.exam_total === undefined ? '' : a.exam_total), (a.exam_score === null || a.exam_score === undefined ? '' : ((a.exam_passed === true || a.exam_passed === 1) ? 'yes' : 'no')), a.created_at]);
       let csv = '\uFEFF' + headers.join(',') + '\n';
       rows.forEach(r => { csv += r.map(v => '"'+String(v||'').replace(/"/g,'""')+'"').join(',') + '\n'; });
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -832,199 +881,6 @@
     async function logout() { try { await fetch('/api/logout',{method:'POST'}); } catch(e){} window.location='login.html'; }
     function toggleTheme() { const c=document.documentElement.getAttribute('data-theme'); const n=c==='dark'?'light':'dark'; document.documentElement.setAttribute('data-theme',n); localStorage.setItem('swiss-theme',n); document.getElementById('themeToggle').textContent=n==='dark'?'☀️':'🌙'; }
     function toggleLang() { const c=document.documentElement.getAttribute('lang') || 'ru'; const n=c==='ru'?'en':'ru'; document.documentElement.setAttribute('lang',n); localStorage.setItem('swiss-lang',n); document.getElementById('langToggle').textContent=n==='ru'?'EN':'RU'; applyLang(); }
-
-    // ============ PILOTS ============
-    function fmtHours(min){ const h=Math.floor((min||0)/60), m=(min||0)%60; return h + 'ч ' + String(m).padStart(2,'0') + 'м'; }
-
-    async function loadPilots(){
-      const loading=document.getElementById('pilotsLoading');
-      loading.style.display='block'; loading.textContent=t('loading-pilots');
-      try {
-        const r=await fetch('/api/admin/pilots');
-        if(r.status===401){ window.location.href='login.html?reason=session_expired'; return; }
-        if(!r.ok) throw new Error('HTTP '+r.status);
-        pilotsData=await r.json();
-        loading.style.display='none';
-        renderPilotStats(); renderPilots();
-      } catch(e){ loading.innerHTML=t('error-load')+' ('+escapeHtml(e.message)+') <button class="action-btn" onclick="loadPilots()">'+t('btn-refresh')+'</button>'; }
-    }
-
-    function renderPilotStats(){
-      const total=pilotsData.length;
-      const minutes=pilotsData.reduce((a,p)=>a+(p.total_minutes||0),0);
-      const flights=pilotsData.reduce((a,p)=>a+(p.total_flights||0),0);
-      const caps=pilotsData.filter(p=>(p.total_minutes||0)>=30*60).length;
-      document.getElementById('pStatTotal').textContent=total;
-      document.getElementById('pStatHours').textContent=Math.round(minutes/60);
-      document.getElementById('pStatFlights').textContent=flights;
-      document.getElementById('pStatCaptains').textContent=caps;
-    }
-
-    function renderPilots(){
-      const tbody=document.getElementById('pilotsBody');
-      if(!tbody) return;
-      if(!pilotsData.length){ document.getElementById('pilotsTable').style.display='none'; document.getElementById('pilotsEmpty').style.display='block'; return; }
-      document.getElementById('pilotsTable').style.display='table'; document.getElementById('pilotsEmpty').style.display='none';
-      tbody.innerHTML = pilotsData.map(p => `
-        <tr>
-          <td><span class="callsign-badge">${escapeHtml(p.callsign)}</span></td>
-          <td><div class="cell-name">${escapeHtml(p.roblox_name)}</div><div class="cell-muted">${escapeHtml(formatDate(p.created_at))}</div></td>
-          <td class="cell-small">${escapeHtml(p.username)}</td>
-          <td><span class="rank-badge">${escapeHtml(p.rank||'')}</span></td>
-          <td class="cell-small"><strong>${p.total_hours||0}</strong> ч<div class="cell-muted">${fmtHours(p.total_minutes)}</div></td>
-          <td class="cell-small">${p.total_flights||0}</td>
-          <td><span class="status-badge status-${escapeHtml(p.status||'active')}">${getStatusText(p.status)}</span></td>
-          <td><div class="cell-actions">
-            <button class="action-btn" onclick="openPilotModal(${p.id})">${t('btn-edit-pilot')}</button>
-            <button class="action-btn" onclick="openResetPwModal(${p.id})">${t('btn-reset-pw')}</button>
-            <button class="action-btn delete" onclick="deletePilot(${p.id})">${t('btn-delete')}</button>
-          </div></td>
-        </tr>
-      `).join('');
-    }
-
-    function openPilotModal(id){
-      const p=pilotsData.find(x=>x.id===id); if(!p) return;
-      openModal(t('modal-pilot-title')+' — '+p.callsign, [
-        {name:'total_minutes',label:t('label-minutes'),type:'number'},
-        {name:'status',label:t('label-status'),type:'select',options:[{value:'active',label:t('status-active')},{value:'suspended',label:t('status-suspended')},{value:'inactive',label:t('status-inactive')}]},
-        {name:'rank',label:t('label-rank'),type:'select',options:[{value:'',label:'— auto —'},{value:'Кадет',label:'Кадет / Cadet'},{value:'Второй пилот',label:'Второй пилот / First Officer'},{value:'Капитан',label:'Капитан / Captain'},{value:'Старший капитан',label:'Старший капитан / Senior Captain'}]}
-      ], async ()=>{
-        const payload={ total_minutes: parseInt(getField('total_minutes'),10)||0, status: getField('status') };
-        const rank=getField('rank'); if(rank) payload.rank=rank;
-        try {
-          const r=await fetch('/api/admin/pilots/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-          const d=await r.json();
-          if(r.ok&&d.success){ showToast(t('toast-pilot-saved'),'success'); closeModal(); loadPilots(); }
-          else showToast(d.error||'Error','error');
-        } catch(e){ showToast(t('error-connection'),'error'); }
-      }, { total_minutes: String(p.total_minutes||0), status: p.status||'active', rank: '' });
-    }
-
-    function openResetPwModal(id){
-      const p=pilotsData.find(x=>x.id===id); if(!p) return;
-      openModal(t('modal-reset-title')+' — '+p.callsign, [
-        {name:'new_password',label:t('label-new-password'),type:'text'}
-      ], async ()=>{
-        const pw=getField('new_password');
-        if(!pw||pw.length<6){ showToast(t('label-new-password'),'error'); return; }
-        try {
-          const r=await fetch('/api/admin/pilots/'+id+'/reset-password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({new_password:pw})});
-          const d=await r.json();
-          if(r.ok&&d.success){ showToast(t('toast-pw-reset')+': '+pw,'success'); closeModal(); }
-          else showToast(d.error||'Error','error');
-        } catch(e){ showToast(t('error-connection'),'error'); }
-      }, {});
-    }
-
-    async function deletePilot(id){
-      if(!confirm(t('confirm-delete-pilot'))) return;
-      try {
-        const r=await fetch('/api/admin/pilots/'+id,{method:'DELETE'});
-        const d=await r.json();
-        if(r.ok&&d.success){ showToast(t('toast-pilot-deleted'),'success'); loadPilots(); if(currentTab==='reports') loadReports(); }
-        else showToast(d.error||'Error','error');
-      } catch(e){ showToast(t('error-connection'),'error'); }
-    }
-
-    // ============ FLIGHT REPORTS ============
-    async function loadReports(){
-      const loading=document.getElementById('reportsLoading');
-      loading.style.display='block'; loading.textContent=t('loading-reports');
-      try {
-        const r=await fetch('/api/admin/reports');
-        if(r.status===401){ window.location.href='login.html?reason=session_expired'; return; }
-        if(!r.ok) throw new Error('HTTP '+r.status);
-        reportsData=await r.json();
-        loading.style.display='none';
-        renderReports(); updateReportsBadge();
-      } catch(e){ loading.innerHTML=t('error-load')+' ('+escapeHtml(e.message)+') <button class="action-btn" onclick="loadReports()">'+t('btn-refresh')+'</button>'; }
-    }
-
-    function updateReportsBadge(){
-      const b=document.getElementById('reportsBadge'); if(!b) return;
-      const n=reportsData.filter(x=>x.status==='pending').length;
-      if(n>0){ b.textContent=n; b.style.display='inline-block'; } else b.style.display='none';
-    }
-
-    function setReportFilter(f){
-      reportFilter=f;
-      document.querySelectorAll('#reportFilters .filter-btn').forEach(b=>b.classList.toggle('active',b.dataset.rfilter===f));
-      renderReports();
-    }
-
-    function renderReports(){
-      const tbody=document.getElementById('reportsBody'); if(!tbody) return;
-      const list = reportFilter==='all' ? reportsData : reportsData.filter(x=>x.status===reportFilter);
-      if(!list.length){ document.getElementById('reportsTable').style.display='none'; document.getElementById('reportsEmpty').style.display='block'; return; }
-      document.getElementById('reportsTable').style.display='table'; document.getElementById('reportsEmpty').style.display='none';
-      tbody.innerHTML = list.map(x => `
-        <tr>
-          <td><span class="callsign-badge">${escapeHtml(x.callsign||'')}</span><div class="cell-muted">${escapeHtml(x.roblox_name||'')}</div></td>
-          <td class="cell-small">${escapeHtml(x.flight_number||'—')}</td>
-          <td><div class="cell-name">${escapeHtml(x.departure)} → ${escapeHtml(x.arrival)}</div>${x.pax?'<div class="cell-muted">'+escapeHtml(String(x.pax))+' pax</div>':''}</td>
-          <td class="cell-small">${escapeHtml(x.aircraft||'—')}</td>
-          <td class="cell-small"><strong>${fmtHours(x.duration_min)}</strong></td>
-          <td><span class="status-badge status-${escapeHtml(x.status||'pending')}">${getStatusText(x.status)}</span></td>
-          <td class="cell-small">${escapeHtml(formatDate(x.created_at))}</td>
-          <td><div class="cell-actions">
-            <button class="action-btn" onclick="showReportDetails(${x.id})">${t('btn-details')}</button>
-            ${x.status!=='approved' ? `<button class="action-btn" onclick="reviewReport(${x.id},'approved')">${t('btn-approve')}</button>` : ''}
-            ${x.status!=='rejected' ? `<button class="action-btn delete" onclick="openRejectModal(${x.id})">${t('btn-reject')}</button>` : ''}
-          </div></td>
-        </tr>
-      `).join('');
-    }
-
-    function showReportDetails(id){
-      const x=reportsData.find(r=>r.id===id); if(!x) return;
-      const rows=[
-        [t('th-pilot'), (x.callsign||'')+' — '+(x.roblox_name||'')],
-        [t('th-rank'), x.rank||'—'],
-        [t('th-flight'), x.flight_number||'—'],
-        [t('th-leg'), x.departure+' → '+x.arrival],
-        [t('th-aircraft'), x.aircraft||'—'],
-        [t('th-duration'), fmtHours(x.duration_min)],
-        [t('rep-pax'), x.pax||'—'],
-        [t('rep-landing'), x.landing_rate!==null&&x.landing_rate!==undefined ? x.landing_rate+' fpm' : '—'],
-        [t('rep-comment'), x.comment||'—'],
-        [t('th-status'), getStatusText(x.status)],
-        [t('label-admin-comment'), x.admin_comment||'—'],
-        [t('th-date'), formatDate(x.created_at)],
-        [t('rep-reviewed'), x.reviewed_at?formatDate(x.reviewed_at):'—']
-      ];
-      const modal=document.getElementById('modal');
-      modal.innerHTML='<div class="modal-header"><h3>'+escapeHtml(t('modal-review-title'))+' #'+x.id+'</h3><button class="modal-close" onclick="closeModal()">×</button></div>'
-        + '<div class="modal-body">'
-        + rows.map(r=>'<div class="form-row" style="display:flex;gap:12px;align-items:flex-start;"><label style="min-width:150px;margin:0;">'+escapeHtml(r[0])+'</label><div style="flex:1;font-size:14px;word-break:break-word;">'+escapeHtml(String(r[1]))+'</div></div>').join('')
-        + '</div>'
-        + '<div class="modal-footer"><button class="btn-cancel" onclick="closeModal()">'+t('btn-cancel')+'</button>'
-        + (x.status!=='approved' ? '<button class="btn-save" onclick="closeModal();reviewReport('+x.id+',\'approved\')">'+t('btn-approve')+'</button>' : '')
-        + '</div>';
-      document.getElementById('modalOverlay').classList.add('open');
-      window._modalSave=null;
-    }
-
-    function openRejectModal(id){
-      openModal(t('btn-reject')+' #'+id, [
-        {name:'admin_comment',label:t('label-admin-comment'),type:'textarea'}
-      ], async ()=>{
-        await reviewReport(id,'rejected',getField('admin_comment'));
-        closeModal();
-      }, {});
-    }
-
-    async function reviewReport(id,status,comment){
-      try {
-        const r=await fetch('/api/admin/reports/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({status,admin_comment:comment||null})});
-        const d=await r.json();
-        if(r.ok&&d.success){
-          showToast(status==='approved'?t('toast-report-approved'):t('toast-report-rejected'),'success');
-          if(d.promoted) showToast(t('toast-promoted')+d.rank,'info');
-          loadReports(); pilotsData=[]; if(currentTab==='pilots') loadPilots();
-        } else showToast(d.error||'Error','error');
-      } catch(e){ showToast(t('error-connection'),'error'); }
-    }
 
     // ============ INIT ============
     const savedTheme=localStorage.getItem('swiss-theme'); if(savedTheme){ document.documentElement.setAttribute('data-theme',savedTheme); document.getElementById('themeToggle').textContent=savedTheme==='dark'?'☀️':'🌙'; }
@@ -1046,7 +902,7 @@
         return false;
       }
     }
-    checkAuth().then(ok => { if (ok) { loadApplications(); fetch('/api/admin/reports').then(r=>r.ok?r.json():[]).then(d=>{ reportsData=Array.isArray(d)?d:[]; updateReportsBadge(); }).catch(()=>{}); } });
+    checkAuth().then(ok => { if (ok) loadApplications(); });
   </script>
 </body>
 </html>
