@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n-title="page-title">404 — Рейс отклонён | Swiss Airlines VA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --swiss-red: #e30613;
+      --swiss-red-dark: #b8050f;
+      --black: #0a0a0a;
+      --gray-900: #1a1a1a;
+      --gray-700: #4a4a4a;
+      --gray-500: #737373;
+      --gray-300: #d4d4d4;
+      --gray-200: #e5e5e5;
+      --gray-100: #f5f5f5;
+      --white: #ffffff;
+      --bg: var(--white);
+      --text: var(--gray-900);
+      --card: var(--white);
+      --border: var(--gray-300);
+      --transition: cubic-bezier(0.4, 0, 0.2, 1);
+      --header-bg: rgba(255,255,255,0.92);
+      --header-text: var(--gray-900);
+      --nav-link: var(--gray-700);
+      --nav-link-hover: var(--gray-900);
+    }
+    [data-theme="dark"] {
+      --bg: #0f0f0f;
+      --text: #f0f0f0;
+      --card: #1a1a1a;
+      --border: #333333;
+      --gray-100: #1a1a1a;
+      --gray-200: #2a2a2a;
+      --gray-500: #888888;
+      --header-bg: rgba(10,10,10,0.92);
+      --header-text: var(--white);
+      --nav-link: var(--gray-300);
+      --nav-link-hover: var(--white);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background 0.4s var(--transition), color 0.4s var(--transition);
+    }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes stripeMove { from { background-position: 0 0; } to { background-position: 40px 0; } }
+    @keyframes divertPath { 0% { stroke-dashoffset: 620; } 100% { stroke-dashoffset: 0; } }
+    @keyframes blinkAlert { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+    @keyframes radarSweep { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    .top-header {
+      background: var(--header-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px; height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100; overflow: hidden;
+    }
+    .top-header::before {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+      background: repeating-linear-gradient(90deg, var(--swiss-red) 0, var(--swiss-red) 25px, transparent 25px, transparent 35px);
+      opacity: 0.5; animation: stripeMove 2s linear infinite;
+    }
+    .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--header-text); font-weight: 700; font-size: 16px; letter-spacing: 1px; z-index: 1; }
+    .logo-cross { width: 28px; height: 28px; background: var(--swiss-red); color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 300; line-height: 1; }
+    .nav { display: flex; gap: 28px; align-items: center; z-index: 1; }
+    .nav a { color: var(--nav-link); text-decoration: none; font-size: 13px; font-weight: 500; letter-spacing: 0.5px; transition: color 0.3s; position: relative; }
+    .nav a:hover { color: var(--nav-link-hover); }
+    .nav a::after { content: ''; position: absolute; bottom: -6px; left: 0; width: 0; height: 2px; background: var(--swiss-red); transition: width 0.3s; }
+    .nav a:hover::after { width: 100%; }
+    .nav-login-btn { background: var(--swiss-red); color: var(--white) !important; padding: 6px 16px; border-radius: 4px; font-size: 12px; font-weight: 600; letter-spacing: 0.5px; transition: all 0.3s; }
+    .nav-login-btn:hover { background: var(--swiss-red-dark); }
+    .nav-login-btn::after { display: none !important; }
+    .controls { display: flex; gap: 10px; z-index: 1; }
+    .controls button { background: transparent; border: 1px solid var(--nav-link); color: var(--nav-link); padding: 6px 14px; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s; letter-spacing: 0.5px; border-radius: 4px; }
+    .controls button:hover { border-color: var(--nav-link-hover); color: var(--nav-link-hover); }
+
+    .nf-wrap {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 60px;
+      align-items: center;
+      max-width: 1180px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 80px 40px 90px;
+    }
+    .nf-alert {
+      display: inline-flex; align-items: center; gap: 9px;
+      font-size: 10.5px; font-weight: 700; letter-spacing: 2.4px; text-transform: uppercase;
+      color: var(--swiss-red); margin-bottom: 22px;
+      animation: fadeIn 0.8s ease;
+    }
+    .nf-alert .dot { width: 7px; height: 7px; background: var(--swiss-red); border-radius: 50%; animation: blinkAlert 1.2s ease-in-out infinite; }
+    .nf-code {
+      font-size: clamp(76px, 13vw, 148px);
+      font-weight: 800; line-height: 0.88; letter-spacing: -6px;
+      color: var(--text); margin-bottom: 10px;
+      animation: fadeUp 0.8s ease-out;
+    }
+    .nf-code span { color: var(--swiss-red); }
+    .nf-title {
+      font-size: clamp(24px, 3.4vw, 36px); font-weight: 800; letter-spacing: -0.8px;
+      margin-bottom: 16px; animation: fadeUp 0.8s ease-out 0.1s both;
+    }
+    .nf-desc { font-size: 16px; color: var(--gray-500); max-width: 480px; margin-bottom: 30px; animation: fadeUp 0.8s ease-out 0.2s both; }
+
+    .nf-strip {
+      border: 1px solid var(--border);
+      background: var(--gray-100);
+      padding: 0; margin-bottom: 32px; max-width: 520px;
+      animation: fadeUp 0.8s ease-out 0.28s both;
+    }
+    .nf-strip-head {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--black); color: var(--white);
+      padding: 9px 16px; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    }
+    .nf-strip-head .sq { color: var(--swiss-red); }
+    .nf-rows { display: grid; grid-template-columns: repeat(3, 1fr); }
+    .nf-cell { padding: 14px 16px; border-right: 1px solid var(--border); }
+    .nf-cell:last-child { border-right: none; }
+    .nf-cell .k { font-size: 9.5px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--gray-500); margin-bottom: 5px; }
+    .nf-cell .v { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 15px; font-weight: 700; letter-spacing: 0.5px; }
+    .nf-cell .v.red { color: var(--swiss-red); }
+    .nf-strip-foot {
+      border-top: 1px solid var(--border); padding: 11px 16px;
+      font-size: 11px; color: var(--gray-500);
+      display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    }
+    .nf-strip-foot code { font-family: ui-monospace, Menlo, Consolas, monospace; color: var(--text); font-size: 11px; word-break: break-all; }
+
+    .nf-actions { display: flex; gap: 12px; flex-wrap: wrap; animation: fadeUp 0.8s ease-out 0.36s both; }
+    .btn {
+      padding: 14px 30px; font-family: inherit; font-size: 13px; font-weight: 600;
+      letter-spacing: 0.6px; text-decoration: none; cursor: pointer;
+      border: 1px solid var(--swiss-red); transition: all 0.35s var(--transition);
+      display: inline-flex; align-items: center; gap: 9px;
+    }
+    .btn-primary { background: var(--swiss-red); color: var(--white); }
+    .btn-primary:hover { background: var(--swiss-red-dark); border-color: var(--swiss-red-dark); transform: translateY(-2px); box-shadow: 0 12px 26px rgba(227,6,19,0.28); }
+    .btn-ghost { background: transparent; color: var(--text); border-color: var(--border); }
+    .btn-ghost:hover { border-color: var(--swiss-red); color: var(--swiss-red); transform: translateY(-2px); }
+
+    .nf-links { margin-top: 30px; animation: fadeIn 1s ease-out 0.5s both; }
+    .nf-links-title { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gray-500); margin-bottom: 12px; }
+    .nf-links-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .nf-links-row a {
+      font-size: 12px; font-weight: 500; text-decoration: none; color: var(--nav-link);
+      border: 1px solid var(--border); padding: 7px 14px; transition: all 0.3s;
+    }
+    .nf-links-row a:hover { border-color: var(--swiss-red); color: var(--swiss-red); }
+
+    .nf-visual {
+      position: relative;
+      background: var(--black);
+      border: 1px solid var(--border);
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      animation: fadeIn 1s ease-out 0.3s both;
+    }
+    .nf-visual::before {
+      content: ''; position: absolute; inset: 0;
+      background:
+        linear-gradient(var(--nf-grid, rgba(255,255,255,0.05)) 1px, transparent 1px) 0 0 / 100% 40px,
+        linear-gradient(90deg, var(--nf-grid, rgba(255,255,255,0.05)) 1px, transparent 1px) 0 0 / 40px 100%;
+    }
+    .nf-radar {
+      position: absolute; left: 50%; top: 50%; width: 130%; height: 130%;
+      transform-origin: 0 0;
+      background: conic-gradient(from 0deg, rgba(227,6,19,0.16), transparent 22%);
+      animation: radarSweep 7s linear infinite;
+      transform: translate(-50%, -50%);
+    }
+    .nf-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .nf-route { fill: none; stroke: rgba(255,255,255,0.22); stroke-width: 1.5; stroke-dasharray: 6 6; }
+    .nf-divert { fill: none; stroke: var(--swiss-red); stroke-width: 2.2; stroke-dasharray: 620; animation: divertPath 3s var(--transition) 0.4s forwards; }
+    .nf-node { fill: var(--white); }
+    .nf-node-red { fill: var(--swiss-red); }
+    .nf-ring { fill: none; stroke: var(--swiss-red); stroke-width: 1; opacity: 0.5; }
+    .nf-txt { fill: rgba(255,255,255,0.7); font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11px; letter-spacing: 1px; }
+    .nf-txt-red { fill: var(--swiss-red); font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11px; font-weight: 700; letter-spacing: 1px; }
+    .nf-plane { font-size: 22px; }
+    .nf-badge {
+      position: absolute; left: 18px; top: 16px;
+      font-size: 9.5px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+    }
+    .nf-badge b { color: var(--swiss-red); }
+
+    .footer { background: var(--black); padding: 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; position: relative; overflow: hidden; }
+    .footer::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: repeating-linear-gradient(90deg, var(--swiss-red) 0, var(--swiss-red) 25px, transparent 25px, transparent 35px); opacity: 0.5; animation: stripeMove 2s linear infinite; }
+    .footer-logo { display: flex; align-items: center; gap: 10px; color: var(--white); font-weight: 700; font-size: 14px; letter-spacing: 1px; }
+    .footer-cross { width: 24px; height: 24px; background: var(--swiss-red); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 300; color: var(--white); line-height: 1; }
+    .footer-links { display: flex; gap: 24px; flex-wrap: wrap; }
+    .footer-links a { color: var(--gray-500); text-decoration: none; font-size: 13px; transition: color 0.3s; }
+    .footer-links a:hover { color: var(--white); }
+    .footer-right { text-align: right; color: var(--gray-500); font-size: 12px; }
+
+    @media (max-width: 980px) {
+      .nf-wrap { grid-template-columns: 1fr; gap: 40px; padding: 56px 20px 70px; }
+      .nf-visual { order: -1; aspect-ratio: 16 / 11; }
+    }
+    @media (max-width: 768px) {
+      .top-header { padding: 0 16px; height: auto; flex-wrap: wrap; gap: 10px; padding-top: 12px; padding-bottom: 12px; }
+      .nav { gap: 14px; flex-wrap: wrap; font-size: 12px; }
+      .nf-rows { grid-template-columns: 1fr; }
+      .nf-cell { border-right: none; border-bottom: 1px solid var(--border); }
+      .nf-cell:last-child { border-bottom: none; }
+      .footer { padding: 32px 20px; flex-direction: column; text-align: center; }
+      .footer-right { text-align: center; }
+      .btn { flex: 1 1 100%; justify-content: center; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; }
+      .nf-divert { stroke-dasharray: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top-header">
+    <a href="index.html" class="logo">
+      <div class="logo-cross">+</div>
+      <div>SWISS AIRLINES</div>
+    </a>
+    <nav class="nav">
+      <a href="index.html" data-i18n="nav-home">Главная</a>
+      <a href="fleet.html" data-i18n="nav-fleet">Флот</a>
+      <a href="routes.html" data-i18n="nav-routes">Маршруты</a>
+      <a href="map.html" data-i18n="nav-map">Карта</a>
+      <a href="events.html" data-i18n="nav-events">События</a>
+      <a href="history.html" data-i18n="nav-history">История</a>
+      <a href="https://discord.gg/6YA8t7GJr" target="_blank" rel="noopener">Discord</a>
+      <a href="login.html" class="nav-login-btn" data-i18n="nav-login">Вход</a>
+    </nav>
+    <div class="controls">
+      <button class="lang-toggle" id="langToggle" onclick="toggleLang()">EN</button>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙</button>
+    </div>
+  </header>
+
+  <main class="nf-wrap">
+    <div class="nf-text">
+      <div class="nf-alert"><span class="dot"></span><span data-i18n="alert">Отклонение от маршрута</span></div>
+      <div class="nf-code">4<span>0</span>4</div>
+      <h1 class="nf-title" data-i18n="title">Рейс отклонён — страница не найдена</h1>
+      <p class="nf-desc" data-i18n="desc">Диспетчер не нашёл этот адрес в плане полёта. Возможно, страница переехала или в ссылке опечатка. Мы уводим вас на запасной аэродром — Цюрих.</p>
+
+      <div class="nf-strip">
+        <div class="nf-strip-head">
+          <span data-i18n="strip-head">Полётный план · перенаправление</span>
+          <span class="sq">SQ 7700</span>
+        </div>
+        <div class="nf-rows">
+          <div class="nf-cell">
+            <div class="k" data-i18n="strip-from">Запрошено</div>
+            <div class="v">???</div>
+          </div>
+          <div class="nf-cell">
+            <div class="k" data-i18n="strip-status">Статус</div>
+            <div class="v red" data-i18n="strip-status-v">DIVERTED</div>
+          </div>
+          <div class="nf-cell">
+            <div class="k" data-i18n="strip-to">Запасной</div>
+            <div class="v">ZRH</div>
+          </div>
+        </div>
+        <div class="nf-strip-foot">
+          <span><span data-i18n="strip-path">Адрес</span>: <code id="nfPath">/</code></span>
+          <span><span data-i18n="strip-utc">UTC</span>: <code id="nfUtc">--:--:--</code>Z</span>
+        </div>
+      </div>
+
+      <div class="nf-actions">
+        <a href="index.html" class="btn btn-primary"><span>✈</span><span data-i18n="btn-home">Вернуться на базу</span></a>
+        <a href="https://discord.gg/6YA8t7GJr" target="_blank" rel="noopener" class="btn btn-ghost"><span>💬</span><span data-i18n="btn-discord">Связаться с диспетчером</span></a>
+      </div>
+
+      <div class="nf-links">
+        <div class="nf-links-title" data-i18n="links-title">Популярные направления</div>
+        <div class="nf-links-row">
+          <a href="fleet.html" data-i18n="nav-fleet">Флот</a>
+          <a href="routes.html" data-i18n="nav-routes">Маршруты</a>
+          <a href="map.html" data-i18n="nav-map">Карта</a>
+          <a href="events.html" data-i18n="nav-events">События</a>
+          <a href="history.html" data-i18n="nav-history">История</a>
+          <a href="patent.html" data-i18n="nav-patent">Патент</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="nf-visual" aria-hidden="true">
+      <div class="nf-radar"></div>
+      <div class="nf-badge">RADAR · <b>DIVERSION</b></div>
+      <svg class="nf-svg" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet">
+        <path class="nf-route" d="M 62 300 L 330 92"></path>
+        <path class="nf-divert" d="M 62 300 C 150 250, 200 210, 232 150 C 250 116, 232 78, 186 74"></path>
+        <circle class="nf-node" cx="62" cy="300" r="5"></circle>
+        <circle class="nf-ring" cx="62" cy="300" r="13"></circle>
+        <text class="nf-txt" x="76" y="316">DEP</text>
+        <circle class="nf-node" cx="330" cy="92" r="4" opacity="0.4"></circle>
+        <text class="nf-txt" x="296" y="78" opacity="0.45">404</text>
+        <circle class="nf-node-red" cx="186" cy="74" r="6"></circle>
+        <circle class="nf-ring" cx="186" cy="74" r="15"></circle>
+        <text class="nf-txt-red" x="206" y="66">ZRH</text>
+        <text class="nf-plane" x="228" y="156">✈</text>
+      </svg>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-logo">
+      <div class="footer-cross">+</div>
+      <div>SWISS AIRLINES</div>
+    </div>
+    <div class="footer-links">
+      <a href="index.html" data-i18n="nav-home">Главная</a>
+      <a href="fleet.html" data-i18n="nav-fleet">Флот</a>
+      <a href="routes.html" data-i18n="nav-routes">Маршруты</a>
+      <a href="map.html" data-i18n="nav-map">Карта</a>
+      <a href="events.html" data-i18n="nav-events">События</a>
+      <a href="history.html" data-i18n="nav-history">История</a>
+      <a href="https://discord.gg/6YA8t7GJr" target="_blank" rel="noopener">Discord</a>
+      <a href="login.html" data-i18n="nav-admin">Админ</a>
+      <a href="patent.html" data-i18n="nav-patent">Патент</a>
+    </div>
+    <div class="footer-right">
+      <div style="font-size:11px;margin-bottom:4px;" data-i18n="footer-patent-text">Неофициальный виртуальный патент № SW-VA-001 от 10.08.26</div>
+      <div data-i18n="footer-slogan">Fly Together. Fly Swiss.</div>
+    </div>
+  </footer>
+
+  <script>
+    const i18n = {
+      ru: {
+        'nav-home': 'Главная', 'nav-fleet': 'Флот', 'nav-routes': 'Маршруты', 'nav-map': 'Карта',
+        'nav-events': 'События', 'nav-history': 'История', 'nav-login': 'Вход',
+        'nav-admin': 'Админ', 'nav-patent': 'Патент',
+        'alert': 'Отклонение от маршрута',
+        'title': 'Рейс отклонён — страница не найдена',
+        'desc': 'Диспетчер не нашёл этот адрес в плане полёта. Возможно, страница переехала или в ссылке опечатка. Мы уводим вас на запасной аэродром — Цюрих.',
+        'strip-head': 'Полётный план · перенаправление',
+        'strip-from': 'Запрошено', 'strip-status': 'Статус', 'strip-status-v': 'DIVERTED',
+        'strip-to': 'Запасной', 'strip-path': 'Адрес', 'strip-utc': 'UTC',
+        'btn-home': 'Вернуться на базу', 'btn-discord': 'Связаться с диспетчером',
+        'links-title': 'Популярные направления',
+        'footer-patent-text': 'Неофициальный виртуальный патент № SW-VA-001 от 10.08.26',
+        'footer-slogan': 'Fly Together. Fly Swiss.',
+        'page-title': '404 — Рейс отклонён | Swiss Airlines VA'
+      },
+      en: {
+        'nav-home': 'Home', 'nav-fleet': 'Fleet', 'nav-routes': 'Routes', 'nav-map': 'Map',
+        'nav-events': 'Events', 'nav-history': 'History', 'nav-login': 'Login',
+        'nav-admin': 'Admin', 'nav-patent': 'Patent',
+        'alert': 'Route deviation',
+        'title': 'Flight diverted — page not found',
+        'desc': 'ATC could not find this address in the flight plan. The page may have moved, or the link contains a typo. We are diverting you to the alternate airport — Zurich.',
+        'strip-head': 'Flight plan · diversion',
+        'strip-from': 'Requested', 'strip-status': 'Status', 'strip-status-v': 'DIVERTED',
+        'strip-to': 'Alternate', 'strip-path': 'Path', 'strip-utc': 'UTC',
+        'btn-home': 'Return to base', 'btn-discord': 'Contact dispatch',
+        'links-title': 'Popular destinations',
+        'footer-patent-text': 'Unofficial virtual patent No. SW-VA-001 of 10.08.26',
+        'footer-slogan': 'Fly Together. Fly Swiss.',
+        'page-title': '404 — Flight Diverted | Swiss Airlines VA'
+      }
+    };
+
+    function applyLang() {
+      const lang = document.documentElement.getAttribute('lang') || 'ru';
+      const dict = i18n[lang] || i18n.ru;
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        if (dict[key]) el.textContent = dict[key];
+      });
+      document.querySelectorAll('[data-i18n-title]').forEach(el => {
+        const key = el.dataset.i18nTitle;
+        if (dict[key]) el.textContent = dict[key];
+      });
+    }
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('swiss-theme', next);
+      document.getElementById('themeToggle').textContent = next === 'dark' ? '☀️' : '🌙';
+    }
+    function toggleLang() {
+      const current = document.documentElement.getAttribute('lang') || 'ru';
+      const next = current === 'ru' ? 'en' : 'ru';
+      document.documentElement.setAttribute('lang', next);
+      localStorage.setItem('swiss-lang', next);
+      document.getElementById('langToggle').textContent = next === 'ru' ? 'RU' : 'EN';
+      applyLang();
+    }
+    (function () {
+      const savedTheme = localStorage.getItem('swiss-theme');
+      if (savedTheme) {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.getElementById('themeToggle').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+      }
+      const savedLang = localStorage.getItem('swiss-lang') || 'ru';
+      document.documentElement.setAttribute('lang', savedLang);
+      document.getElementById('langToggle').textContent = savedLang === 'ru' ? 'RU' : 'EN';
+      applyLang();
+
+      const p = document.getElementById('nfPath');
+      if (p) {
+        const raw = (window.location.pathname + window.location.search) || '/';
+        p.textContent = raw.length > 46 ? raw.slice(0, 46) + '…' : raw;
+      }
+      const pad = n => String(n).padStart(2, '0');
+      function tick() {
+        const d = new Date();
+        const u = document.getElementById('nfUtc');
+        if (u) u.textContent = pad(d.getUTCHours()) + ':' + pad(d.getUTCMinutes()) + ':' + pad(d.getUTCSeconds());
+      }
+      tick();
+      setInterval(tick, 1000);
+    })();
+  </script>
+</body>
+</html>

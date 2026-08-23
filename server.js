@@ -168,6 +168,7 @@ function rateLimit(windowMs = 60000, max = 5) {
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 app.get('/login.html', (req, res) => res.sendFile(path.join(__dirname, 'login.html')));
 app.get('/admin.html', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
+app.get('/404.html', (req, res) => res.sendFile(path.join(__dirname, '404.html')));
 
 /* ============================================================
    LIVE STATS (BETA) — counter helpers
@@ -1216,6 +1217,35 @@ app.get('/api/notifications', requireDb, async (req, res) => {
     const app = rows[0];
     res.json({ notifications: [{ title: 'Анкета', message: 'Ваша анкета найдена', status: app.status, created_at: app.created_at, data: app }] });
   } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+/* ============================================================
+   CATCH-ALL 404 — рейс отклонён (must stay last, before listen)
+   ============================================================ */
+app.use((req, res) => {
+  // API и AJAX-запросы — всегда JSON
+  if (req.path.startsWith('/api/') || req.xhr || (req.headers.accept || '').indexOf('application/json') !== -1) {
+    return res.status(404).json({ success: false, error: 'Not found', path: req.path });
+  }
+  // Браузерные переходы — красивая страница Diverted
+  if ((req.headers.accept || '').indexOf('html') !== -1) {
+    return res.status(404).sendFile(path.join(__dirname, '404.html'), (err) => {
+      if (err) res.status(404).type('txt').send('404 — Not found');
+    });
+  }
+  return res.status(404).type('txt').send('404 — Not found');
+});
+
+/* ============================================================
+   ERROR HANDLER — один формат ошибок
+   ============================================================ */
+app.use((err, req, res, next) => {
+  console.error('[ERROR]', req.method, req.originalUrl, '—', err && err.message);
+  if (res.headersSent) return;
+  if (req.path.startsWith('/api/')) {
+    return res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+  res.status(500).type('txt').send('500 — Internal server error');
 });
 
 /* ============================================================
