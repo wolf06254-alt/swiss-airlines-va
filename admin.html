@@ -237,6 +237,7 @@
       <div class="stat-card"><span class="stat-icon">❌</span><div class="stat-value" id="rejectedCount">0</div><div class="stat-label" data-i18n="stat-rejected">Отклонено</div></div>
       <div class="stat-card"><span class="stat-icon">🔍</span><div class="stat-value" id="reviewCount">0</div><div class="stat-label" data-i18n="stat-review">На рассмотрении</div></div>
     </div>
+    <div id="dbWarnBanner" style="display:none;max-width:1400px;margin:0 auto 16px;padding:14px 18px;border-radius:12px;border:1px solid #E30613;background:rgba(227,6,19,0.08);color:#fff;font-size:13px;line-height:1.6;"></div>
     <div class="filters-bar">
       <span class="filter-btn active" data-filter="all" onclick="setAppFilter('all')" data-i18n="filter-all">Все</span>
       <span class="filter-btn" data-filter="new" onclick="setAppFilter('new')" data-i18n="filter-new">🆕 Новые</span>
@@ -538,9 +539,35 @@
         if (data.user) { document.getElementById('userName').textContent = data.user.username || t('admin-badge'); document.getElementById('userAvatar').textContent = (data.user.username || 'A').charAt(0).toUpperCase(); }
         allData = data.applications || [];
         document.getElementById('appsLoading').style.display='none';
-        renderAppStats(); renderApps();
+        renderAppStats(); renderApps(); checkStoragePersistence();
       } catch(e) { document.getElementById('appsLoading').innerHTML=t('error-load') + ' (' + e.message + ') <button onclick="loadApplications()" style="background:#E30613;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">Повторить</button>'; }
     }
+    // ============ STORAGE PERSISTENCE CHECK ============
+    let storageChecked = false;
+    async function checkStoragePersistence() {
+      if (storageChecked) return;
+      storageChecked = true;
+      try {
+        const r = await fetch('/api/db-status');
+        if (!r.ok) return;
+        const d = await r.json();
+        const el = document.getElementById('dbWarnBanner');
+        if (!el) return;
+        if (d.persistent) { el.style.display = 'none'; return; }
+        const ru = (document.documentElement.getAttribute('lang') || 'ru') !== 'en';
+        el.innerHTML = ru
+          ? '<strong>⚠️ Анкеты сохраняются во временное хранилище (SQLite)</strong><br>'
+            + 'Переменная <code>DATABASE_URL</code> не задана, поэтому база живёт в файле на диске сервера и обнуляется при каждом рестарте или деплое. '
+            + 'Отправленные заявки могут пропадать, а сессии сбрасываться.<br>'
+            + 'Решение: подключите PostgreSQL и укажите <code>DATABASE_URL</code> — пошаговая инструкция в <code>RENDER_SETUP.md</code>.'
+          : '<strong>⚠️ Applications are stored in ephemeral storage (SQLite)</strong><br>'
+            + '<code>DATABASE_URL</code> is not set, so the database is a local file that is wiped on every restart or deploy. '
+            + 'Submitted applications may vanish and sessions will reset.<br>'
+            + 'Fix: attach a PostgreSQL instance and set <code>DATABASE_URL</code> — step-by-step guide in <code>RENDER_SETUP.md</code>.';
+        el.style.display = 'block';
+      } catch (e) { /* non-critical */ }
+    }
+
     // ============ DB STATUS DIAGNOSTICS ============
     async function checkDbStatus() {
       const modal = document.createElement('div');
@@ -555,6 +582,9 @@
         }
         const data = await r.json();
         let html = '<div style="margin-bottom:12px;"><strong>Тип БД:</strong> ' + data.dbType + '</div>';
+        html += '<div style="margin-bottom:12px;"><strong>Хранилище:</strong> <span style="color:' + (data.persistent?'#0f0':'#f00') + '">' + (data.persistent ? 'постоянное (PostgreSQL)' : 'ВРЕМЕННОЕ — данные теряются при рестарте') + '</span></div>';
+        html += '<div style="margin-bottom:12px;"><strong>DATABASE_URL:</strong> <span style="color:' + (data.databaseUrlSet?'#0f0':'#f00') + '">' + (data.databaseUrlSet ? 'задана' : 'не задана') + '</span></div>';
+        html += '<div style="margin-bottom:12px;"><strong>Сессии:</strong> ' + (data.sessionStore === 'postgres' ? 'в БД (сохраняются)' : 'в памяти (сбрасываются)') + '</div>';
         html += '<div style="margin-bottom:12px;"><strong>DB Ready:</strong> <span style="color:' + (data.dbReady?'#0f0':'#f00') + '">' + data.dbReady + '</span></div>';
         html += '<div style="margin-bottom:12px;"><strong>Reconnect attempts:</strong> ' + data.pgReconnectAttempts + '</div>';
         html += '<div style="margin-bottom:16px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;"><strong>📊 Количество записей:</strong><br>';
@@ -576,14 +606,14 @@
     }
     function renderAppStats() {
       document.getElementById('totalCount').textContent = allData.length;
-      document.getElementById('newCount').textContent = allData.filter(a=>a.status==='new').length;
+      document.getElementById('newCount').textContent = allData.filter(a=>(a.status||'new')==='new').length;
       document.getElementById('acceptedCount').textContent = allData.filter(a=>a.status==='accepted').length;
       document.getElementById('rejectedCount').textContent = allData.filter(a=>a.status==='rejected').length;
       const revEl = document.getElementById('reviewCount'); if(revEl) revEl.textContent = allData.filter(a=>a.status==='review').length;
     }
     function setAppFilter(f){ appFilter=f; document.querySelectorAll('.filters-bar .filter-btn[data-filter]').forEach(b=>b.classList.toggle('active',b.dataset.filter===f)); renderApps(); }
     function renderApps() {
-      const filtered = allData.filter(a => (appFilter==='all' || a.status===appFilter));
+      const filtered = allData.filter(a => (appFilter==='all' || (a.status||'new')===appFilter));
       const tbody = document.getElementById('appsBody');
       if (!filtered.length) { document.getElementById('appsTable').style.display='none'; document.getElementById('appsEmpty').style.display='block'; return; }
       document.getElementById('appsTable').style.display='table'; document.getElementById('appsEmpty').style.display='none';

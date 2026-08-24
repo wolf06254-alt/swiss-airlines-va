@@ -85,6 +85,12 @@ if (pgConn && pgConn.startsWith('postgres')) {
   db = new sqlite3.Database('./swiss_airlines.db');
   dbType = 'sqlite';
   console.log('🗄️  Using SQLite');
+  if (process.env.NODE_ENV === 'production') {
+    console.warn('⚠️  WARNING: DATABASE_URL is not set — running on local SQLite file.');
+    console.warn('⚠️  On Render this file lives on an EPHEMERAL disk: every deploy/restart');
+    console.warn('⚠️  wipes it, so submitted applications will disappear from the admin panel.');
+    console.warn('⚠️  Attach a PostgreSQL database and set DATABASE_URL (see RENDER_SETUP.md).');
+  }
 }
 
 /* ============================================================
@@ -114,22 +120,25 @@ app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true, limit: '2mb' }));
 app.use(express.static(path.join(__dirname, '.')));
 
+// Trust proxy — MUST be set BEFORE the session middleware so that
+// express-session correctly sees X-Forwarded-Proto on Render's reverse proxy.
+app.set('trust proxy', 1);
+
 app.use(session({
   secret: SESSION_SECRET,
   store: sessionStore,
   resave: false,
   saveUninitialized: false,
+  rolling: true,                      // refresh cookie lifetime on every request
   cookie: {
-    secure: false,                    // Render uses proxy, no HTTPS on app level
+    secure: false,                    // Render terminates TLS; non-secure cookie still travels over HTTPS
     httpOnly: true,
     maxAge: 7 * 24 * 60 * 60 * 1000,  // 7 days
-    sameSite: 'lax'
+    sameSite: 'lax',
+    path: '/'
   },
   name: 'swiss_session'
 }));
-
-// Trust proxy — required for Render (reverse proxy)
-app.set('trust proxy', 1);
 
 /* ============================================================
    SECURITY HEADERS
@@ -636,6 +645,9 @@ app.get('/api/db-status', requireAuth, async (req, res) => {
     res.json({
       dbType,
       dbReady,
+      persistent: dbType === 'postgres',
+      databaseUrlSet: !!process.env.DATABASE_URL,
+      sessionStore: dbType === 'postgres' ? 'postgres' : 'memory',
       pgReconnectAttempts,
       counts,
       latestApplication: latestApp,

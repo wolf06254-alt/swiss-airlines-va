@@ -234,48 +234,7 @@
       .footer-right { text-align: center; }
     }
   
-    /* ===== ZULU BAR + ALTIMETER PRELOADER ===== */
-    .zulu-bar {
-      width: 100%;
-      height: 30px;
-      background: var(--header-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      font-size: 10.5px;
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
-      color: var(--nav-link);
-      animation: fadeIn 0.8s ease;
-    }
-    .zulu-inner { display: flex; align-items: center; gap: 18px; max-width: 1200px; width: 100%; padding: 0 40px; justify-content: flex-start; }
-    .zulu-item { display: flex; align-items: center; gap: 7px; white-space: nowrap; }
-    .zulu-key { opacity: 0.55; font-weight: 500; }
-    .zulu-val, .zulu-time {
-      font-family: 'SFMono-Regular', ui-monospace, Menlo, Consolas, monospace;
-      font-weight: 600;
-      letter-spacing: 0.6px;
-      color: var(--nav-link-hover);
-      font-variant-numeric: tabular-nums;
-    }
-    .zulu-time { color: var(--swiss-red); }
-    .zulu-z { color: var(--swiss-red); opacity: 0.6; font-weight: 700; }
-    .zulu-sep { width: 1px; height: 11px; background: var(--border); flex-shrink: 0; }
-    .zulu-status { color: var(--nav-link-hover); font-weight: 600; }
-    .zulu-pulse { width: 5px; height: 5px; border-radius: 50%; background: #16a34a; animation: pulseDotZ 1.8s ease-in-out infinite; flex-shrink: 0; }
-    @keyframes pulseDotZ { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.6); opacity: 0.45; } }
-    .zulu-next { margin-left: auto; }
-    .zulu-next .zulu-val { max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    @media (max-width: 900px) {
-      .zulu-inner { padding: 0 16px; gap: 12px; }
-      .zulu-bar { font-size: 9.5px; letter-spacing: 0.8px; }
-      .zulu-next, .zulu-next + .zulu-sep, .zulu-local-item, .zulu-local-item + .zulu-sep { display: none; }
-    }
-
+    /* ===== ALTIMETER PRELOADER ===== */
     .preloader {
       position: fixed;
       inset: 0;
@@ -326,7 +285,6 @@
     }
     .pre-label span { color: var(--swiss-red); letter-spacing: 2px; }
     @media (prefers-reduced-motion: reduce) { .preloader { display: none; } }
-    .zulu-bar { position: sticky; top: 64px; z-index: 99; }
   </style>
 </head>
 <body>
@@ -366,28 +324,6 @@
     </div>
   </header>
 
-  <div class="zulu-bar" id="zuluBar">
-    <div class="zulu-inner">
-      <div class="zulu-item">
-        <span class="zulu-key" data-i18n="zulu-utc">UTC</span>
-        <span class="zulu-time" id="zuluTime">--:--:--</span><span class="zulu-z">Z</span>
-      </div>
-      <div class="zulu-sep"></div>
-      <div class="zulu-item zulu-local-item">
-        <span class="zulu-key" data-i18n="zulu-local">Местное</span>
-        <span class="zulu-val" id="zuluLocal">--:--</span>
-      </div>
-      <div class="zulu-sep"></div>
-      <div class="zulu-item zulu-status">
-        <span class="zulu-pulse"></span><span data-i18n="zulu-hiring">Набор открыт</span>
-      </div>
-      <div class="zulu-sep"></div>
-      <div class="zulu-item zulu-next">
-        <span class="zulu-key" data-i18n="zulu-next">Ближайшее событие</span>
-        <span class="zulu-val" id="zuluNext">—</span>
-      </div>
-    </div>
-  </div>
 
 
   <section class="hero">
@@ -460,7 +396,6 @@
     // ============ i18n ============
     const i18n = {
       ru: {
-        'zulu-utc': 'UTC', 'zulu-local': 'Местное', 'zulu-hiring': 'Набор открыт', 'zulu-next': 'Ближайшее событие',
         'nav-home': 'Главная', 'nav-fleet': 'Флот', 'nav-routes': 'Маршруты',
         'nav-map': 'Карта', 'nav-events': 'События', 'nav-history': 'История',
         'nav-login': 'Вход', 'nav-admin': 'Админ', 'nav-patent': 'Патент',
@@ -478,7 +413,6 @@
         'footer-patent': 'Неофициальный виртуальный патент № SW-VA-001 от 10.08.26'
       },
       en: {
-        'zulu-utc': 'UTC', 'zulu-local': 'Local', 'zulu-hiring': 'Hiring open', 'zulu-next': 'Next event',
         'nav-home': 'Home', 'nav-fleet': 'Fleet', 'nav-routes': 'Routes',
         'nav-map': 'Map', 'nav-events': 'Events', 'nav-history': 'History',
         'nav-login': 'Login', 'nav-admin': 'Admin', 'nav-patent': 'Patent',
@@ -680,37 +614,6 @@
   </script>
 
   <script>
-    /* ===== ZULU BAR ===== */
-    (function () {
-      var pad = function (n) { return String(n).padStart(2, '0'); };
-      function tick() {
-        var d = new Date();
-        var z = document.getElementById('zuluTime');
-        if (z) z.textContent = pad(d.getUTCHours()) + ':' + pad(d.getUTCMinutes()) + ':' + pad(d.getUTCSeconds());
-        var l = document.getElementById('zuluLocal');
-        if (l) l.textContent = pad(d.getHours()) + ':' + pad(d.getMinutes());
-      }
-      tick();
-      setInterval(tick, 1000);
-
-      var slot = document.getElementById('zuluNext');
-      if (slot && window.fetch) {
-        fetch('/api/events').then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
-          if (!d || !Array.isArray(d.events)) return;
-          var now = Date.now() - 86400000;
-          var up = d.events.filter(function (e) {
-            var ts = e && e.date ? new Date(e.date).getTime() : NaN;
-            return !isNaN(ts) && ts >= now;
-          }).sort(function (a, b) { return new Date(a.date) - new Date(b.date); });
-          if (!up.length) return;
-          var e = up[0], dt = new Date(e.date);
-          var when = pad(dt.getDate()) + '.' + pad(dt.getMonth() + 1);
-          var title = String(e.title || '').trim().slice(0, 34);
-          slot.textContent = when + (e.time ? ' ' + e.time : '') + ' · ' + title;
-        }).catch(function () {});
-      }
-    })();
-
     /* ===== ALTIMETER PRELOADER ===== */
     (function () {
       var pre = document.getElementById('preloader');
