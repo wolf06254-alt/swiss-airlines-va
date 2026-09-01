@@ -7,21 +7,21 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --swiss-red: #C1440E;
+      --swiss-red: #A65A1E;
       --autumn-orange: #E07A28;
       --autumn-gold: #D9A02B;
       --autumn-amber: #F0B840;
       --autumn-brown: #7C4A21;
-      --autumn-wine: #8C2F1B;
+      --autumn-wine: #6E4B22;
       --autumn-olive: #6E6B2E;
-      --swiss-red-dark: #8F300A;
+      --swiss-red-dark: #7A3F12;
       --black: #2B1810;
       --gray-900: #3A2317;
       --gray-700: #5C4433;
       --gray-500: #6E5442;
       --gray-300: #DCC3A4;
-      --gray-100: #FAF0E2;
-      --white: #FFF8F0;
+      --gray-100: #F6EBD9;
+      --white: #FDF6EC;
       --bg: var(--white);
       --text: var(--gray-900);
       --card: var(--white);
@@ -55,7 +55,7 @@
     .header-left { display: flex; align-items: center; gap: 16px; }
     .header-logo { display: flex; align-items: center; gap: 10px; color: var(--header-text); font-weight: 700; font-size: 14px; letter-spacing: -0.3px; text-decoration: none; }
     .header-cross { width: 24px; height: 24px; background: var(--swiss-red); display: flex; align-items: center; justify-content: center; font-size: 12px; color: white; font-weight: 700; }
-    .header-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(193, 68, 14,0.15); color: var(--swiss-red); padding: 4px 10px; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+    .header-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(166,90,30,0.15); color: var(--swiss-red); padding: 4px 10px; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
     .header-right { display: flex; align-items: center; gap: 12px; }
     .user-greeting { display: flex; align-items: center; gap: 8px; color: var(--gray-500); font-size: 13px; font-weight: 500; }
     .user-avatar { width: 28px; height: 28px; background: var(--swiss-red); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 700; }
@@ -92,7 +92,7 @@
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
     th { background: var(--gray-100); padding: 12px 14px; text-align: left; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gray-500); border-bottom: 1px solid var(--gray-300); white-space: nowrap; }
     td { padding: 12px 14px; border-bottom: 1px solid var(--gray-100); vertical-align: top; }
-    tr:hover td { background: rgba(193, 68, 14,0.02); }
+    tr:hover td { background: rgba(166,90,30,0.02); }
     .cell-name { font-weight: 600; color: var(--black); }
     .cell-muted { color: var(--gray-500); font-size: 12px; }
     .cell-small { font-size: 12px; }
@@ -157,7 +157,7 @@
 
     .filters-bar { padding: 0 40px 20px; max-width: 1400px; margin: 0 auto; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
     .filter-btn { padding: 7px 14px; font-size: 12px; font-weight: 500; border: 1px solid var(--gray-300); background: var(--bg); color: var(--gray-700); cursor: pointer; transition: all 0.3s var(--transition); display: inline-flex; align-items: center; gap: 6px; }
-    .filter-btn:hover, .filter-btn.active { border-color: var(--swiss-red); color: var(--swiss-red); background: rgba(193, 68, 14,0.04); }
+    .filter-btn:hover, .filter-btn.active { border-color: var(--swiss-red); color: var(--swiss-red); background: rgba(166,90,30,0.04); }
 
     /* ===== EXPAND ===== */
     .expand-btn { background: none; border: 1px solid var(--gray-300); width: 22px; height: 22px; cursor: pointer; font-size: 10px; color: var(--gray-500); transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
@@ -188,23 +188,6 @@
     }
 
     /* ===== AUTUMN DECOR ===== */
-    html {
-      background-color: var(--bg);
-      background-image:
-        radial-gradient(900px 520px at 12% -10%, rgba(240, 184, 64, 0.20), transparent 70%),
-        radial-gradient(760px 480px at 100% 8%, rgba(193, 68, 14, 0.15), transparent 72%),
-        radial-gradient(680px 420px at 50% 108%, rgba(124, 74, 33, 0.12), transparent 70%);
-      background-attachment: fixed;
-      background-repeat: no-repeat;
-    }
-    body { background: transparent; }
-    [data-theme="dark"] {
-      background-color: #17100C;
-      background-image:
-        radial-gradient(900px 520px at 12% -10%, rgba(240, 184, 64, 0.12), transparent 70%),
-        radial-gradient(760px 480px at 100% 8%, rgba(193, 68, 14, 0.16), transparent 72%),
-        radial-gradient(680px 420px at 50% 108%, rgba(110, 107, 46, 0.12), transparent 70%);
-    }
     .autumn-strip {
       position: fixed;
       left: 0; right: 0; bottom: 0;
@@ -220,56 +203,27 @@
       from { background-position: 0 0; }
       to   { background-position: 200% 0; }
     }
-    .leaf-layer {
-      position: fixed;
-      inset: 0;
-      overflow: hidden;
-      pointer-events: none;
-      z-index: 5;
+    /* ===== AUTUMN BACKDROP ===== */
+    html {
+      background-color: #F3E7D2;
+      background-image:
+        radial-gradient(900px 560px at 10% -8%, rgba(214,166,88,0.30), transparent 70%),
+        radial-gradient(780px 500px at 100% 6%, rgba(176,132,70,0.24), transparent 72%),
+        radial-gradient(700px 460px at 46% 106%, rgba(140,116,62,0.20), transparent 70%),
+        linear-gradient(176deg, #FAF2E4 0%, #F4E9D6 48%, #EDDFC7 100%);
+      background-attachment: fixed;
+      background-repeat: no-repeat;
     }
-    .leaf {
-      position: absolute;
-      top: -8vh;
-      font-size: 18px;
-      line-height: 1;
-      opacity: 0;
-      will-change: transform, opacity;
-      animation: leafFall linear infinite, leafSway ease-in-out infinite alternate;
+    body { background: transparent; }
+    html[data-theme="dark"] {
+      background-color: #17100C;
+      background-image:
+        radial-gradient(900px 560px at 10% -8%, rgba(176,124,54,0.20), transparent 70%),
+        radial-gradient(780px 500px at 100% 6%, rgba(128,94,46,0.18), transparent 72%),
+        linear-gradient(176deg, #1D140E 0%, #17100C 52%, #120C08 100%);
     }
-    @keyframes leafFall {
-      0%   { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
-      8%   { opacity: 0.6; }
-      88%  { opacity: 0.5; }
-      100% { transform: translateY(112vh) rotate(520deg); opacity: 0; }
-    }
-    @keyframes leafSway {
-      from { margin-left: -26px; }
-      to   { margin-left: 26px; }
-    }
-    .autumn-branch {
-      position: fixed;
-      top: 0;
-      font-size: 120px;
-      line-height: 1;
-      opacity: 0.09;
-      pointer-events: none;
-      z-index: 4;
-      transform-origin: top center;
-      animation: branchSway 7s ease-in-out infinite alternate;
-    }
-    .autumn-branch.left  { left: -10px;  transform: rotate(18deg); }
-    .autumn-branch.right { right: -10px; transform: rotate(-18deg) scaleX(-1); }
-    @keyframes branchSway {
-      from { transform: rotate(14deg); }
-      to   { transform: rotate(22deg); }
-    }
-    @media (max-width: 768px) {
-      .leaf { font-size: 14px; }
-      .autumn-branch { display: none; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .leaf, .autumn-branch { animation: none; opacity: 0; }
-    }
+    /* ===== READABILITY FIXES ===== */
+    [data-theme="dark"] { --nav-link: #DCC3A4; }
   </style>
 </head>
 <body>
@@ -327,14 +281,14 @@
       <div class="stat-card"><span class="stat-icon">❌</span><div class="stat-value" id="rejectedCount">0</div><div class="stat-label" data-i18n="stat-rejected">Отклонено</div></div>
       <div class="stat-card"><span class="stat-icon">🔍</span><div class="stat-value" id="reviewCount">0</div><div class="stat-label" data-i18n="stat-review">На рассмотрении</div></div>
     </div>
-    <div id="dbWarnBanner" style="display:none;max-width:1400px;margin:0 auto 16px;padding:14px 18px;border-radius:12px;border:1px solid #C1440E;background:rgba(193, 68, 14,0.08);color:#fff;font-size:13px;line-height:1.6;"></div>
+    <div id="dbWarnBanner" style="display:none;max-width:1400px;margin:0 auto 16px;padding:14px 18px;border-radius:12px;border:1px solid #A65A1E;background:rgba(166,90,30,0.08);color:#fff;font-size:13px;line-height:1.6;"></div>
     <div class="filters-bar">
       <span class="filter-btn active" data-filter="all" onclick="setAppFilter('all')" data-i18n="filter-all">Все</span>
       <span class="filter-btn" data-filter="new" onclick="setAppFilter('new')" data-i18n="filter-new">🆕 Новые</span>
       <span class="filter-btn" data-filter="review" onclick="setAppFilter('review')" data-i18n="filter-review">🔍 На рассмотрении</span>
       <span class="filter-btn" data-filter="accepted" onclick="setAppFilter('accepted')" data-i18n="filter-accepted">✅ Принято</span>
       <span class="filter-btn" data-filter="rejected" onclick="setAppFilter('rejected')" data-i18n="filter-rejected">❌ Отклонено</span>
-      <button class="filter-btn" style="margin-left:auto;background:#C1440E;color:#fff;border:none;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:12px;" onclick="checkDbStatus()" title="Проверить состояние базы данных">🔍 DB Status</button>
+      <button class="filter-btn" style="margin-left:auto;background:#A65A1E;color:#fff;border:none;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:12px;" onclick="checkDbStatus()" title="Проверить состояние базы данных">🔍 DB Status</button>
     </div>
     <div class="table-wrapper">
       <div class="loading" id="appsLoading" data-i18n="loading-apps">Загрузка анкет...</div>
@@ -403,7 +357,7 @@
     <div class="toolbar">
       <h3 style="font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px;">
         <span data-i18n="stats-title">Живая статистика</span>
-        <span style="background:#C1440E;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.5px;">BETA</span>
+        <span style="background:#A65A1E;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.5px;">BETA</span>
       </h3>
       <button class="btn-add" onclick="loadSiteStats()" data-i18n="btn-stats-refresh">↻ Обновить</button>
     </div>
@@ -601,7 +555,7 @@
           if (r.status===503) {
             loadAppsRetries++;
             if (loadAppsRetries > 10) {
-              document.getElementById('appsLoading').innerHTML='❌ База данных недоступна. <button onclick="loadAppsRetries=0;loadApplications()" style="background:#C1440E;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">Повторить</button> <button onclick="checkDbStatus()" style="background:#333;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">🔍 Диагностика</button>';
+              document.getElementById('appsLoading').innerHTML='❌ База данных недоступна. <button onclick="loadAppsRetries=0;loadApplications()" style="background:#A65A1E;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">Повторить</button> <button onclick="checkDbStatus()" style="background:#333;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">🔍 Диагностика</button>';
               return;
             }
             document.getElementById('appsLoading').textContent='⏳ База данных подключается... Попытка ' + loadAppsRetries + '/10';
@@ -613,7 +567,7 @@
             if (errData.retry) {
               loadAppsRetries++;
               if (loadAppsRetries > 5) {
-                document.getElementById('appsLoading').innerHTML='❌ Ошибка БД: ' + (errData.error||'Unknown') + '. <button onclick="loadAppsRetries=0;loadApplications()" style="background:#C1440E;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">Повторить</button> <button onclick="checkDbStatus()" style="background:#333;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">🔍 Диагностика</button>';
+                document.getElementById('appsLoading').innerHTML='❌ Ошибка БД: ' + (errData.error||'Unknown') + '. <button onclick="loadAppsRetries=0;loadApplications()" style="background:#A65A1E;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">Повторить</button> <button onclick="checkDbStatus()" style="background:#333;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">🔍 Диагностика</button>';
                 return;
               }
               document.getElementById('appsLoading').textContent='⚠️ Ошибка БД, переподключение... Попытка ' + loadAppsRetries + '/5';
@@ -630,7 +584,7 @@
         allData = data.applications || [];
         document.getElementById('appsLoading').style.display='none';
         renderAppStats(); renderApps(); checkStoragePersistence();
-      } catch(e) { document.getElementById('appsLoading').innerHTML=t('error-load') + ' (' + e.message + ') <button onclick="loadApplications()" style="background:#C1440E;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">Повторить</button>'; }
+      } catch(e) { document.getElementById('appsLoading').innerHTML=t('error-load') + ' (' + e.message + ') <button onclick="loadApplications()" style="background:#A65A1E;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">Повторить</button>'; }
     }
     // ============ STORAGE PERSISTENCE CHECK ============
     let storageChecked = false;
@@ -662,7 +616,7 @@
     async function checkDbStatus() {
       const modal = document.createElement('div');
       modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:10000;display:flex;align-items:center;justify-content:center;';
-      modal.innerHTML = '<div style="background:#1a1a2e;border:1px solid #C1440E;border-radius:16px;padding:24px;max-width:500px;width:90%;color:#fff;font-family:system-ui;"><h3 style="color:#C1440E;margin:0 0 16px;">🔍 Диагностика базы данных</h3><div id="dbStatusContent" style="font-size:14px;">⏳ Загрузка...</div><button onclick="this.closest(\'div[style]\').parentElement.remove()" style="margin-top:16px;background:#C1440E;color:#fff;border:none;padding:8px 24px;border-radius:8px;cursor:pointer;">Закрыть</button></div>';
+      modal.innerHTML = '<div style="background:#1a1a2e;border:1px solid #A65A1E;border-radius:16px;padding:24px;max-width:500px;width:90%;color:#fff;font-family:system-ui;"><h3 style="color:#A65A1E;margin:0 0 16px;">🔍 Диагностика базы данных</h3><div id="dbStatusContent" style="font-size:14px;">⏳ Загрузка...</div><button onclick="this.closest(\'div[style]\').parentElement.remove()" style="margin-top:16px;background:#A65A1E;color:#fff;border:none;padding:8px 24px;border-radius:8px;cursor:pointer;">Закрыть</button></div>';
       document.body.appendChild(modal);
       try {
         const r = await fetch('/api/db-status');
@@ -684,7 +638,7 @@
         }
         html += '</div>';
         if (data.latestApplication) {
-          html += '<div style="margin-bottom:8px;padding:8px;background:rgba(193, 68, 14,0.1);border-radius:8px;"><strong>📋 Последняя анкета:</strong><br>ID: ' + data.latestApplication.id + ' | ' + data.latestApplication.roblox_name + ' | ' + data.latestApplication.status + ' | ' + data.latestApplication.created_at + '</div>';
+          html += '<div style="margin-bottom:8px;padding:8px;background:rgba(166,90,30,0.1);border-radius:8px;"><strong>📋 Последняя анкета:</strong><br>ID: ' + data.latestApplication.id + ' | ' + data.latestApplication.roblox_name + ' | ' + data.latestApplication.status + ' | ' + data.latestApplication.created_at + '</div>';
         } else {
           html += '<div style="color:#ff0;">⚠️ Нет анкет в базе данных</div>';
         }
@@ -993,28 +947,5 @@
     checkAuth().then(ok => { if (ok) loadApplications(); });
   </script>
 
-  <script>
-  (function buildAutumnLeaves() {
-    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    var layer = document.createElement('div');
-    layer.className = 'leaf-layer';
-    layer.setAttribute('aria-hidden', 'true');
-    var glyphs = ['\u{1F342}', '\u{1F341}', '\u{1F343}', '\u{1F33E}'];
-    var count = window.innerWidth < 768 ? 12 : 22;
-    for (var i = 0; i < count; i++) {
-      var leaf = document.createElement('span');
-      leaf.className = 'leaf';
-      leaf.textContent = glyphs[i % glyphs.length];
-      leaf.style.left = (Math.random() * 100).toFixed(2) + 'vw';
-      leaf.style.fontSize = (12 + Math.random() * 14).toFixed(1) + 'px';
-      leaf.style.animationDuration = (9 + Math.random() * 11).toFixed(2) + 's, ' +
-                                     (2.4 + Math.random() * 2.6).toFixed(2) + 's';
-      leaf.style.animationDelay = '-' + (Math.random() * 18).toFixed(2) + 's, -' +
-                                  (Math.random() * 4).toFixed(2) + 's';
-      layer.appendChild(leaf);
-    }
-    document.body.appendChild(layer);
-  })();
-  </script>
 </body>
 </html>

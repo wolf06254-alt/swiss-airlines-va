@@ -7,17 +7,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --swiss-red: #C1440E;
+      --swiss-red: #A65A1E;
       --autumn-orange: #E07A28;
       --autumn-gold: #D9A02B;
       --autumn-amber: #F0B840;
       --autumn-brown: #7C4A21;
-      --autumn-wine: #8C2F1B;
+      --autumn-wine: #6E4B22;
       --autumn-olive: #6E6B2E;
-      --swiss-red-dark: #8F300A;
-      --white: #FFF8F0;
+      --swiss-red-dark: #7A3F12;
+      --white: #FDF6EC;
       --black: #2B1810;
-      --gray-100: #FAF0E2;
+      --gray-100: #F6EBD9;
       --gray-200: #F0E0CC;
       --gray-300: #DCC3A4;
       --gray-500: #6E5442;
@@ -207,23 +207,6 @@
     }
 
     /* ===== AUTUMN DECOR ===== */
-    html {
-      background-color: var(--bg);
-      background-image:
-        radial-gradient(900px 520px at 12% -10%, rgba(240, 184, 64, 0.20), transparent 70%),
-        radial-gradient(760px 480px at 100% 8%, rgba(193, 68, 14, 0.15), transparent 72%),
-        radial-gradient(680px 420px at 50% 108%, rgba(124, 74, 33, 0.12), transparent 70%);
-      background-attachment: fixed;
-      background-repeat: no-repeat;
-    }
-    body { background: transparent; }
-    [data-theme="dark"] {
-      background-color: #17100C;
-      background-image:
-        radial-gradient(900px 520px at 12% -10%, rgba(240, 184, 64, 0.12), transparent 70%),
-        radial-gradient(760px 480px at 100% 8%, rgba(193, 68, 14, 0.16), transparent 72%),
-        radial-gradient(680px 420px at 50% 108%, rgba(110, 107, 46, 0.12), transparent 70%);
-    }
     .autumn-strip {
       position: fixed;
       left: 0; right: 0; bottom: 0;
@@ -239,56 +222,27 @@
       from { background-position: 0 0; }
       to   { background-position: 200% 0; }
     }
-    .leaf-layer {
-      position: fixed;
-      inset: 0;
-      overflow: hidden;
-      pointer-events: none;
-      z-index: 5;
+    /* ===== AUTUMN BACKDROP ===== */
+    html {
+      background-color: #F3E7D2;
+      background-image:
+        radial-gradient(900px 560px at 10% -8%, rgba(214,166,88,0.30), transparent 70%),
+        radial-gradient(780px 500px at 100% 6%, rgba(176,132,70,0.24), transparent 72%),
+        radial-gradient(700px 460px at 46% 106%, rgba(140,116,62,0.20), transparent 70%),
+        linear-gradient(176deg, #FAF2E4 0%, #F4E9D6 48%, #EDDFC7 100%);
+      background-attachment: fixed;
+      background-repeat: no-repeat;
     }
-    .leaf {
-      position: absolute;
-      top: -8vh;
-      font-size: 18px;
-      line-height: 1;
-      opacity: 0;
-      will-change: transform, opacity;
-      animation: leafFall linear infinite, leafSway ease-in-out infinite alternate;
+    body { background: transparent; }
+    html[data-theme="dark"] {
+      background-color: #17100C;
+      background-image:
+        radial-gradient(900px 560px at 10% -8%, rgba(176,124,54,0.20), transparent 70%),
+        radial-gradient(780px 500px at 100% 6%, rgba(128,94,46,0.18), transparent 72%),
+        linear-gradient(176deg, #1D140E 0%, #17100C 52%, #120C08 100%);
     }
-    @keyframes leafFall {
-      0%   { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
-      8%   { opacity: 0.6; }
-      88%  { opacity: 0.5; }
-      100% { transform: translateY(112vh) rotate(520deg); opacity: 0; }
-    }
-    @keyframes leafSway {
-      from { margin-left: -26px; }
-      to   { margin-left: 26px; }
-    }
-    .autumn-branch {
-      position: fixed;
-      top: 0;
-      font-size: 120px;
-      line-height: 1;
-      opacity: 0.09;
-      pointer-events: none;
-      z-index: 4;
-      transform-origin: top center;
-      animation: branchSway 7s ease-in-out infinite alternate;
-    }
-    .autumn-branch.left  { left: -10px;  transform: rotate(18deg); }
-    .autumn-branch.right { right: -10px; transform: rotate(-18deg) scaleX(-1); }
-    @keyframes branchSway {
-      from { transform: rotate(14deg); }
-      to   { transform: rotate(22deg); }
-    }
-    @media (max-width: 768px) {
-      .leaf { font-size: 14px; }
-      .autumn-branch { display: none; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .leaf, .autumn-branch { animation: none; opacity: 0; }
-    }
+    /* ===== READABILITY FIXES ===== */
+    [data-theme="dark"] { --nav-link: #DCC3A4; }
   </style>
 </head>
 <body>
@@ -473,32 +427,7 @@
       }
     }
   </script>
-  <div class="autumn-branch left" aria-hidden="true">🍂</div>
-  <div class="autumn-branch right" aria-hidden="true">🍁</div>
   <div class="autumn-strip" aria-hidden="true"></div>
 
-  <script>
-  (function buildAutumnLeaves() {
-    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    var layer = document.createElement('div');
-    layer.className = 'leaf-layer';
-    layer.setAttribute('aria-hidden', 'true');
-    var glyphs = ['\u{1F342}', '\u{1F341}', '\u{1F343}', '\u{1F33E}'];
-    var count = window.innerWidth < 768 ? 12 : 22;
-    for (var i = 0; i < count; i++) {
-      var leaf = document.createElement('span');
-      leaf.className = 'leaf';
-      leaf.textContent = glyphs[i % glyphs.length];
-      leaf.style.left = (Math.random() * 100).toFixed(2) + 'vw';
-      leaf.style.fontSize = (12 + Math.random() * 14).toFixed(1) + 'px';
-      leaf.style.animationDuration = (9 + Math.random() * 11).toFixed(2) + 's, ' +
-                                     (2.4 + Math.random() * 2.6).toFixed(2) + 's';
-      leaf.style.animationDelay = '-' + (Math.random() * 18).toFixed(2) + 's, -' +
-                                  (Math.random() * 4).toFixed(2) + 's';
-      layer.appendChild(leaf);
-    }
-    document.body.appendChild(layer);
-  })();
-  </script>
 </body>
 </html>

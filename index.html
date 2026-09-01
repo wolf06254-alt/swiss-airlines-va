@@ -10,21 +10,21 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --swiss-red: #C1440E;
+      --swiss-red: #A65A1E;
       --autumn-orange: #E07A28;
       --autumn-gold: #D9A02B;
       --autumn-amber: #F0B840;
       --autumn-brown: #7C4A21;
-      --autumn-wine: #8C2F1B;
+      --autumn-wine: #6E4B22;
       --autumn-olive: #6E6B2E;
-      --swiss-red-dark: #8F300A;
+      --swiss-red-dark: #7A3F12;
       --black: #2B1810;
       --gray-900: #3A2317;
       --gray-700: #5C4433;
       --gray-500: #6E5442;
       --gray-300: #DCC3A4;
-      --gray-100: #FAF0E2;
-      --white: #FFF8F0;
+      --gray-100: #F6EBD9;
+      --white: #FDF6EC;
       --bg: var(--white);
       --text: var(--gray-900);
       --card: var(--white);
@@ -179,7 +179,7 @@
       z-index: 0;
     }
     .btn-join:hover::before { left: 0; }
-    .btn-join:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(193, 68, 14,0.25); }
+    .btn-join:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(166,90,30,0.25); }
     .btn-join span { position: relative; z-index: 1; }
 
     .btn-discord {
@@ -240,7 +240,7 @@
       z-index: 0;
     }
     .btn-mail:hover::before { left: 0; }
-    .btn-mail:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(193, 68, 14,0.25); }
+    .btn-mail:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(166,90,30,0.25); }
     .btn-mail span { position: relative; z-index: 1; }
 
     .lang-toggle, .theme-toggle {
@@ -275,7 +275,7 @@
       transition: all 0.3s var(--transition);
       outline: none;
     }
-    .mail-form input:focus { border-color: var(--swiss-red); box-shadow: 0 0 0 4px rgba(193, 68, 14,0.08); }
+    .mail-form input:focus { border-color: var(--swiss-red); box-shadow: 0 0 0 4px rgba(166,90,30,0.08); }
     .mail-form button {
       background: var(--swiss-red);
       color: white;
@@ -303,7 +303,7 @@
     .mail-item .status-label { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 6px; }
     .mail-item .status-pending { background: rgba(245,158,11,0.15); color: #b45309; }
     .mail-item .status-approved { background: rgba(34,197,94,0.15); color: #15803d; }
-    .mail-item .status-rejected { background: rgba(239,68,68,0.15); color: #b91c1c; }
+    .mail-item .status-rejected { background: rgba(166,90,30,0.15); color: #8A4B14; }
     .mail-empty { text-align: center; color: var(--gray-500); padding: 32px 0; font-size: 14px; }
 
     /* ===== HERO ===== */
@@ -415,8 +415,8 @@
       animation: betaPulse 2.4s ease-in-out infinite;
     }
     @keyframes betaPulse {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(193, 68, 14,0.45); }
-      50% { box-shadow: 0 0 0 6px rgba(193, 68, 14,0); }
+      0%, 100% { box-shadow: 0 0 0 0 rgba(166,90,30,0.45); }
+      50% { box-shadow: 0 0 0 6px rgba(166,90,30,0); }
     }
     .live-section {
       background: var(--bg);
@@ -619,7 +619,7 @@
       width: 7px; height: 7px;
       border-radius: 50%;
       background: var(--swiss-red);
-      box-shadow: 0 0 0 4px rgba(193, 68, 14,0.14);
+      box-shadow: 0 0 0 4px rgba(166,90,30,0.14);
       animation: pulseDot 2.4s infinite;
     }
     @keyframes pulseDot { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.35); opacity: 0.6; } }
@@ -715,7 +715,7 @@
       transition: all 0.3s var(--transition);
       outline: none;
     }
-    input:focus, textarea:focus { border-color: var(--swiss-red); box-shadow: 0 0 0 4px rgba(193, 68, 14,0.08); }
+    input:focus, textarea:focus { border-color: var(--swiss-red); box-shadow: 0 0 0 4px rgba(166,90,30,0.08); }
     textarea { min-height: 100px; resize: vertical; line-height: 1.6; }
     .two-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .field-label { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--gray-500); margin-bottom: 8px; display: block; }
@@ -751,7 +751,7 @@
     }
     .btn-submit::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: var(--black); transition: left 0.5s var(--transition); z-index: 0; }
     .btn-submit:hover::before { left: 0; }
-    .btn-submit:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(193, 68, 14,0.3); }
+    .btn-submit:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(166,90,30,0.3); }
     .btn-submit span { position: relative; z-index: 1; }
     .btn-submit:disabled { background: var(--gray-300); cursor: not-allowed; transform: none; box-shadow: none; }
     .btn-submit:disabled::before { display: none; }
@@ -936,23 +936,6 @@
     @media (prefers-reduced-motion: reduce) { .preloader { display: none; } }
 
     /* ===== AUTUMN DECOR ===== */
-    html {
-      background-color: var(--bg);
-      background-image:
-        radial-gradient(900px 520px at 12% -10%, rgba(240, 184, 64, 0.20), transparent 70%),
-        radial-gradient(760px 480px at 100% 8%, rgba(193, 68, 14, 0.15), transparent 72%),
-        radial-gradient(680px 420px at 50% 108%, rgba(124, 74, 33, 0.12), transparent 70%);
-      background-attachment: fixed;
-      background-repeat: no-repeat;
-    }
-    body { background: transparent; }
-    [data-theme="dark"] {
-      background-color: #17100C;
-      background-image:
-        radial-gradient(900px 520px at 12% -10%, rgba(240, 184, 64, 0.12), transparent 70%),
-        radial-gradient(760px 480px at 100% 8%, rgba(193, 68, 14, 0.16), transparent 72%),
-        radial-gradient(680px 420px at 50% 108%, rgba(110, 107, 46, 0.12), transparent 70%);
-    }
     .autumn-strip {
       position: fixed;
       left: 0; right: 0; bottom: 0;
@@ -968,56 +951,34 @@
       from { background-position: 0 0; }
       to   { background-position: 200% 0; }
     }
-    .leaf-layer {
-      position: fixed;
-      inset: 0;
-      overflow: hidden;
-      pointer-events: none;
-      z-index: 5;
+    /* ===== AUTUMN BACKDROP ===== */
+    html {
+      background-color: #F3E7D2;
+      background-image:
+        radial-gradient(900px 560px at 10% -8%, rgba(214,166,88,0.30), transparent 70%),
+        radial-gradient(780px 500px at 100% 6%, rgba(176,132,70,0.24), transparent 72%),
+        radial-gradient(700px 460px at 46% 106%, rgba(140,116,62,0.20), transparent 70%),
+        linear-gradient(176deg, #FAF2E4 0%, #F4E9D6 48%, #EDDFC7 100%);
+      background-attachment: fixed;
+      background-repeat: no-repeat;
     }
-    .leaf {
-      position: absolute;
-      top: -8vh;
-      font-size: 18px;
-      line-height: 1;
-      opacity: 0;
-      will-change: transform, opacity;
-      animation: leafFall linear infinite, leafSway ease-in-out infinite alternate;
+    body { background: transparent; }
+    html[data-theme="dark"] {
+      background-color: #17100C;
+      background-image:
+        radial-gradient(900px 560px at 10% -8%, rgba(176,124,54,0.20), transparent 70%),
+        radial-gradient(780px 500px at 100% 6%, rgba(128,94,46,0.18), transparent 72%),
+        linear-gradient(176deg, #1D140E 0%, #17100C 52%, #120C08 100%);
     }
-    @keyframes leafFall {
-      0%   { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
-      8%   { opacity: 0.6; }
-      88%  { opacity: 0.5; }
-      100% { transform: translateY(112vh) rotate(520deg); opacity: 0; }
-    }
-    @keyframes leafSway {
-      from { margin-left: -26px; }
-      to   { margin-left: 26px; }
-    }
-    .autumn-branch {
-      position: fixed;
-      top: 0;
-      font-size: 120px;
-      line-height: 1;
-      opacity: 0.09;
-      pointer-events: none;
-      z-index: 4;
-      transform-origin: top center;
-      animation: branchSway 7s ease-in-out infinite alternate;
-    }
-    .autumn-branch.left  { left: -10px;  transform: rotate(18deg); }
-    .autumn-branch.right { right: -10px; transform: rotate(-18deg) scaleX(-1); }
-    @keyframes branchSway {
-      from { transform: rotate(14deg); }
-      to   { transform: rotate(22deg); }
-    }
-    @media (max-width: 768px) {
-      .leaf { font-size: 14px; }
-      .autumn-branch { display: none; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .leaf, .autumn-branch { animation: none; opacity: 0; }
-    }
+    /* ===== READABILITY FIXES ===== */
+    [data-theme="dark"] { --nav-link: #DCC3A4; }
+    .btn-discord { background: #3A2317; color: #FFF8F0; }
+    html[data-theme="dark"] .btn-discord { background: #2A1C13; color: #FFF8F0; }
+    html[data-theme="dark"] .btn-discord span { color: #FFF8F0; }
+    .btn-discord span { color: #FFF8F0; }
+    .nav a.active, .nav-link.active { color: #7A3F12; }
+    [data-theme="dark"] .nav a.active,
+    [data-theme="dark"] .nav-link.active { color: var(--autumn-amber); }
   </style>
 </head>
 <body>
@@ -1665,32 +1626,7 @@
       requestAnimationFrame(frame);
     })();
   </script>
-  <div class="autumn-branch left" aria-hidden="true">🍂</div>
-  <div class="autumn-branch right" aria-hidden="true">🍁</div>
   <div class="autumn-strip" aria-hidden="true"></div>
 
-  <script>
-  (function buildAutumnLeaves() {
-    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    var layer = document.createElement('div');
-    layer.className = 'leaf-layer';
-    layer.setAttribute('aria-hidden', 'true');
-    var glyphs = ['\u{1F342}', '\u{1F341}', '\u{1F343}', '\u{1F33E}'];
-    var count = window.innerWidth < 768 ? 12 : 22;
-    for (var i = 0; i < count; i++) {
-      var leaf = document.createElement('span');
-      leaf.className = 'leaf';
-      leaf.textContent = glyphs[i % glyphs.length];
-      leaf.style.left = (Math.random() * 100).toFixed(2) + 'vw';
-      leaf.style.fontSize = (12 + Math.random() * 14).toFixed(1) + 'px';
-      leaf.style.animationDuration = (9 + Math.random() * 11).toFixed(2) + 's, ' +
-                                     (2.4 + Math.random() * 2.6).toFixed(2) + 's';
-      leaf.style.animationDelay = '-' + (Math.random() * 18).toFixed(2) + 's, -' +
-                                  (Math.random() * 4).toFixed(2) + 's';
-      layer.appendChild(leaf);
-    }
-    document.body.appendChild(layer);
-  })();
-  </script>
 </body>
 </html>
