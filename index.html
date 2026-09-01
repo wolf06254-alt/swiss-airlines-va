@@ -10,39 +10,39 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --swiss-red: #A65A1E;
-      --autumn-orange: #E07A28;
-      --autumn-gold: #D9A02B;
-      --autumn-amber: #F0B840;
-      --autumn-brown: #7C4A21;
-      --autumn-wine: #6E4B22;
-      --autumn-olive: #6E6B2E;
-      --swiss-red-dark: #7A3F12;
-      --black: #2B1810;
-      --gray-900: #3A2317;
-      --gray-700: #5C4433;
-      --gray-500: #6E5442;
-      --gray-300: #DCC3A4;
-      --gray-100: #F6EBD9;
-      --white: #FDF6EC;
+      --swiss-red: #B14A0D;
+      --autumn-orange: #E86A16;
+      --autumn-gold: #F09420;
+      --autumn-amber: #FFB03A;
+      --autumn-brown: #8A3A08;
+      --autumn-wine: #A03A05;
+      --autumn-olive: #C25A10;
+      --swiss-red-dark: #8A3608;
+      --black: #2A1508;
+      --gray-900: #3A2010;
+      --gray-700: #653A20;
+      --gray-500: #7A4A2A;
+      --gray-300: #F0C79B;
+      --gray-100: #FFEEDC;
+      --white: #FFF7EF;
       --bg: var(--white);
       --text: var(--gray-900);
       --card: var(--white);
       --border: var(--gray-300);
       --transition: cubic-bezier(0.4, 0, 0.2, 1);
-      --header-bg: rgba(255,248,240,0.92);
+      --header-bg: rgba(255,244,232,0.94);
       --header-text: var(--black);
       --nav-link: var(--gray-700);
       --nav-link-hover: var(--black);
     }
 
     [data-theme="dark"] {
-      --gray-700: #C4A98E;
-      --gray-900: #EEDFCE;
-      --gray-300: #5A4231;
+      --gray-700: #E3C0A0;
+      --gray-900: #F5E3D0;
+      --gray-300: #6B4526;
     }
-    [data-theme="dark"] .footer { background: #120C09; color: #E8D5BE; }
-    [data-theme="dark"] .footer-logo { color: #FFF8F0; }
+    [data-theme="dark"] .footer { background: #170E06; color: #F2DCC4; }
+    [data-theme="dark"] .footer-logo { color: #FFF4E8; }
     [data-theme="dark"] .nav-link.active,
     [data-theme="dark"] .q-number { color: var(--autumn-amber); }
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -69,14 +69,14 @@
     @keyframes pulseDot { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.5; } }
 
     [data-theme="dark"] {
-      --bg: #17100C;
-      --text: #F5E8DA;
-      --card: #221812;
-      --border: #4A3527;
-      --black: #F5E8DA;
-      --gray-100: #221812;
-      --gray-500: #B99B80;
-      --header-bg: rgba(18,12,9,0.92);
+      --bg: #1E1207;
+      --text: #F7E7D5;
+      --card: #2A1A0E;
+      --border: #5A3720;
+      --black: #F7E7D5;
+      --gray-100: #2A1A0E;
+      --gray-500: #D9AE8A;
+      --header-bg: rgba(24,14,7,0.94);
       --header-text: var(--white);
       --nav-link: var(--gray-300);
       --nav-link-hover: var(--white);
@@ -179,7 +179,7 @@
       z-index: 0;
     }
     .btn-join:hover::before { left: 0; }
-    .btn-join:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(166,90,30,0.25); }
+    .btn-join:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(177,74,13,0.25); }
     .btn-join span { position: relative; z-index: 1; }
 
     .btn-discord {
@@ -240,7 +240,7 @@
       z-index: 0;
     }
     .btn-mail:hover::before { left: 0; }
-    .btn-mail:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(166,90,30,0.25); }
+    .btn-mail:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(177,74,13,0.25); }
     .btn-mail span { position: relative; z-index: 1; }
 
     .lang-toggle, .theme-toggle {
@@ -275,7 +275,7 @@
       transition: all 0.3s var(--transition);
       outline: none;
     }
-    .mail-form input:focus { border-color: var(--swiss-red); box-shadow: 0 0 0 4px rgba(166,90,30,0.08); }
+    .mail-form input:focus { border-color: var(--swiss-red); box-shadow: 0 0 0 4px rgba(177,74,13,0.08); }
     .mail-form button {
       background: var(--swiss-red);
       color: white;
@@ -303,7 +303,7 @@
     .mail-item .status-label { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 6px; }
     .mail-item .status-pending { background: rgba(245,158,11,0.15); color: #b45309; }
     .mail-item .status-approved { background: rgba(34,197,94,0.15); color: #15803d; }
-    .mail-item .status-rejected { background: rgba(166,90,30,0.15); color: #8A4B14; }
+    .mail-item .status-rejected { background: rgba(177,74,13,0.15); color: #993D06; }
     .mail-empty { text-align: center; color: var(--gray-500); padding: 32px 0; font-size: 14px; }
 
     /* ===== HERO ===== */
@@ -415,8 +415,8 @@
       animation: betaPulse 2.4s ease-in-out infinite;
     }
     @keyframes betaPulse {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(166,90,30,0.45); }
-      50% { box-shadow: 0 0 0 6px rgba(166,90,30,0); }
+      0%, 100% { box-shadow: 0 0 0 0 rgba(177,74,13,0.45); }
+      50% { box-shadow: 0 0 0 6px rgba(177,74,13,0); }
     }
     .live-section {
       background: var(--bg);
@@ -573,6 +573,124 @@
     }
     .section-label::before { content: ''; width: 40px; height: 1px; background: var(--swiss-red); }
 
+    /* ===== HERO BANNER PHOTO ===== */
+    .hero-photo {
+      position: relative;
+      margin-top: 48px;
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: 0 18px 44px rgba(138,58,8,0.16);
+    }
+    .hero-photo img {
+      display: block;
+      width: 100%;
+      height: 340px;
+      object-fit: cover;
+      transform: scale(1.02);
+      transition: transform 1.2s var(--transition);
+    }
+    .hero-photo:hover img { transform: scale(1.06); }
+    .hero-photo::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(42,21,8,0.72) 0%, rgba(42,21,8,0.28) 45%, rgba(42,21,8,0) 70%);
+      pointer-events: none;
+    }
+    .hero-photo-cap {
+      position: absolute;
+      left: 28px;
+      bottom: 24px;
+      z-index: 2;
+      color: #FFF4E8;
+      max-width: 460px;
+    }
+    .hero-photo-cap strong {
+      display: block;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      margin-bottom: 6px;
+    }
+    .hero-photo-cap span {
+      font-size: 14px;
+      color: #FFE4C8;
+    }
+
+    /* ===== PHOTO GALLERY ===== */
+    .gallery-section {
+      padding: 20px 48px 90px;
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .gallery-head { margin-bottom: 36px; }
+    .gallery-title {
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      color: var(--black);
+      margin-bottom: 10px;
+    }
+    .gallery-sub {
+      font-size: 15px;
+      color: var(--gray-700);
+      max-width: 640px;
+    }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+    .gallery-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      box-shadow: 0 10px 26px rgba(138,58,8,0.10);
+      transition: transform 0.5s var(--transition), box-shadow 0.5s var(--transition);
+    }
+    .gallery-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 40px rgba(138,58,8,0.22);
+    }
+    .gallery-card img {
+      display: block;
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      transition: transform 0.9s var(--transition);
+    }
+    .gallery-card:hover img { transform: scale(1.07); }
+    .gallery-cap {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 34px 16px 14px;
+      background: linear-gradient(180deg, rgba(42,21,8,0) 0%, rgba(42,21,8,0.82) 62%, rgba(42,21,8,0.94) 100%);
+      color: #FFF4E8;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+    .gallery-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      z-index: 2;
+      background: var(--swiss-red);
+      color: #FFF4E8;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
+      padding: 5px 9px;
+      border-radius: 2px;
+    }
+
     /* ===== TWO APPLICATIONS GRID ===== */
     .apply-grid {
       display: grid;
@@ -619,7 +737,7 @@
       width: 7px; height: 7px;
       border-radius: 50%;
       background: var(--swiss-red);
-      box-shadow: 0 0 0 4px rgba(166,90,30,0.14);
+      box-shadow: 0 0 0 4px rgba(177,74,13,0.14);
       animation: pulseDot 2.4s infinite;
     }
     @keyframes pulseDot { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.35); opacity: 0.6; } }
@@ -715,7 +833,7 @@
       transition: all 0.3s var(--transition);
       outline: none;
     }
-    input:focus, textarea:focus { border-color: var(--swiss-red); box-shadow: 0 0 0 4px rgba(166,90,30,0.08); }
+    input:focus, textarea:focus { border-color: var(--swiss-red); box-shadow: 0 0 0 4px rgba(177,74,13,0.08); }
     textarea { min-height: 100px; resize: vertical; line-height: 1.6; }
     .two-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .field-label { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--gray-500); margin-bottom: 8px; display: block; }
@@ -751,7 +869,7 @@
     }
     .btn-submit::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: var(--black); transition: left 0.5s var(--transition); z-index: 0; }
     .btn-submit:hover::before { left: 0; }
-    .btn-submit:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(166,90,30,0.3); }
+    .btn-submit:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(177,74,13,0.3); }
     .btn-submit span { position: relative; z-index: 1; }
     .btn-submit:disabled { background: var(--gray-300); cursor: not-allowed; transform: none; box-shadow: none; }
     .btn-submit:disabled::before { display: none; }
@@ -760,7 +878,7 @@
     /* ===== FOOTER ===== */
     .footer {
       background: var(--black);
-      color: #E8D5BE;
+      color: #F2DCC4;
       padding: 40px 48px;
       display: flex;
       justify-content: space-between;
@@ -780,9 +898,9 @@
     }
     .footer-logo { display: flex; align-items: center; gap: 12px; font-weight: 700; color: var(--white); font-size: 14px; }
     .footer-cross { width: 20px; height: 20px; background: var(--swiss-red); display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; }
-    .footer-right { color: #C4A98E; opacity: 1; letter-spacing: 2px; text-transform: uppercase; font-weight: 500; }
+    .footer-right { color: #E3C0A0; opacity: 1; letter-spacing: 2px; text-transform: uppercase; font-weight: 500; }
     .footer-links { display: flex; gap: 24px; }
-    .footer-links a { color: #DCC3A4; text-decoration: none; transition: color 0.3s; }
+    .footer-links a { color: #F0C79B; text-decoration: none; transition: color 0.3s; }
     .footer-links a:hover { color: var(--white); }
 
     /* ===== TOAST ===== */
@@ -866,6 +984,15 @@
       .dash-cards { grid-template-columns: 1fr; }
 
       .info-grid { grid-template-columns: 1fr; }
+      .gallery-section { padding: 10px 20px 60px; }
+      .gallery-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+      .gallery-card img { height: 150px; }
+      .gallery-title { font-size: 26px; }
+      .hero-photo { margin-top: 32px; }
+      .hero-photo img { height: 220px; }
+      .hero-photo-cap { left: 18px; bottom: 16px; }
+      .hero-photo-cap strong { font-size: 17px; }
+      .hero-photo-cap span { font-size: 12px; }
       .form-section { padding: 60px 20px; }
       .question { padding: 28px 24px; }
       .q-desc, .q-body { padding-left: 0; }
@@ -953,30 +1080,30 @@
     }
     /* ===== AUTUMN BACKDROP ===== */
     html {
-      background-color: #F3E7D2;
+      background-color: #FFEBD6;
       background-image:
-        radial-gradient(900px 560px at 10% -8%, rgba(214,166,88,0.30), transparent 70%),
-        radial-gradient(780px 500px at 100% 6%, rgba(176,132,70,0.24), transparent 72%),
-        radial-gradient(700px 460px at 46% 106%, rgba(140,116,62,0.20), transparent 70%),
-        linear-gradient(176deg, #FAF2E4 0%, #F4E9D6 48%, #EDDFC7 100%);
+        radial-gradient(900px 560px at 10% -8%, rgba(255,158,70,0.30), transparent 70%),
+        radial-gradient(780px 500px at 100% 6%, rgba(255,132,40,0.24), transparent 72%),
+        radial-gradient(700px 460px at 46% 106%, rgba(240,148,32,0.20), transparent 70%),
+        linear-gradient(176deg, #FFF1E0 0%, #FFE6CC 48%, #FFD9B5 100%);
       background-attachment: fixed;
       background-repeat: no-repeat;
     }
     body { background: transparent; }
     html[data-theme="dark"] {
-      background-color: #17100C;
+      background-color: #1E1207;
       background-image:
-        radial-gradient(900px 560px at 10% -8%, rgba(176,124,54,0.20), transparent 70%),
-        radial-gradient(780px 500px at 100% 6%, rgba(128,94,46,0.18), transparent 72%),
-        linear-gradient(176deg, #1D140E 0%, #17100C 52%, #120C08 100%);
+        radial-gradient(900px 560px at 10% -8%, rgba(200,92,16,0.20), transparent 70%),
+        radial-gradient(780px 500px at 100% 6%, rgba(160,64,10,0.18), transparent 72%),
+        linear-gradient(176deg, #241408 0%, #1E1207 52%, #160D05 100%);
     }
     /* ===== READABILITY FIXES ===== */
-    [data-theme="dark"] { --nav-link: #DCC3A4; }
-    .btn-discord { background: #3A2317; color: #FFF8F0; }
-    html[data-theme="dark"] .btn-discord { background: #2A1C13; color: #FFF8F0; }
-    html[data-theme="dark"] .btn-discord span { color: #FFF8F0; }
-    .btn-discord span { color: #FFF8F0; }
-    .nav a.active, .nav-link.active { color: #7A3F12; }
+    [data-theme="dark"] { --nav-link: #F0C79B; }
+    .btn-discord { background: #3A2010; color: #FFF4E8; }
+    html[data-theme="dark"] .btn-discord { background: #2E1B0C; color: #FFF4E8; }
+    html[data-theme="dark"] .btn-discord span { color: #FFF4E8; }
+    .btn-discord span { color: #FFF4E8; }
+    .nav a.active, .nav-link.active { color: #8A3608; }
     [data-theme="dark"] .nav a.active,
     [data-theme="dark"] .nav-link.active { color: var(--autumn-amber); }
   </style>
@@ -1026,6 +1153,14 @@
       <div class="feature-item" data-i18n="feature-2"><div class="dot"></div>Современный флот</div>
       <div class="feature-item" data-i18n="feature-3"><div class="dot"></div>24/7 поддержка</div>
       <div class="feature-item" data-i18n="feature-4"><div class="dot"></div>Обучение пилотов</div>
+    </div>
+
+    <div class="hero-photo animate-on-scroll">
+      <img src="assets/photos/livery.jpg" data-i18n-alt="alt-hero" alt="Самолёт Swiss Airlines VA с бортовой раскраской на стоянке" loading="lazy" width="926" height="402">
+      <div class="hero-photo-cap">
+        <strong data-i18n="hero-photo-title">Наш борт в PTFS</strong>
+        <span data-i18n="hero-photo-sub">Официальная раскраска Swiss Airlines VA — узнаваемая в любом аэропорту.</span>
+      </div>
     </div>
   </section>
 
@@ -1117,6 +1252,37 @@
         <span>Париж (CDG)</span>
         <span>Нью-Йорк (JFK)</span>
       </div>
+    </div>
+  </section>
+
+  <!-- PHOTO GALLERY -->
+  <section class="gallery-section">
+    <div class="gallery-head animate-on-scroll">
+      <div class="section-label" style="margin-bottom:16px;"><span data-i18n="gallery-label">Галерея</span></div>
+      <div class="gallery-title" data-i18n="gallery-title">Кадры из наших рейсов</div>
+      <div class="gallery-sub" data-i18n="gallery-sub">Ночные вылеты, работа в кабине и закатные заходы на посадку — реальные скриншоты полётов Swiss Airlines VA.</div>
+    </div>
+    <div class="gallery-grid">
+      <figure class="gallery-card animate-on-scroll">
+        <span class="gallery-badge" data-i18n="photo-1-badge">Перрон</span>
+        <img src="assets/photos/apron-night.jpg" data-i18n-alt="alt-1" alt="Ночной перрон аэропорта с самолётами Swiss Airlines VA" loading="lazy" width="926" height="402">
+        <figcaption class="gallery-cap" data-i18n="photo-1-cap">Подготовка к ночному вылету</figcaption>
+      </figure>
+      <figure class="gallery-card animate-on-scroll delay-1">
+        <span class="gallery-badge" data-i18n="photo-2-badge">Кабина</span>
+        <img src="assets/photos/cockpit-night.jpg" data-i18n-alt="alt-2" alt="Кабина пилотов с подсветкой приборов во время ночного полёта" loading="lazy" width="926" height="402">
+        <figcaption class="gallery-cap" data-i18n="photo-2-cap">Ночная смена в кабине</figcaption>
+      </figure>
+      <figure class="gallery-card animate-on-scroll delay-2">
+        <span class="gallery-badge" data-i18n="photo-3-badge">Борт</span>
+        <img src="assets/photos/livery.jpg" data-i18n-alt="alt-3" alt="Крупный план фюзеляжа самолёта Swiss Airlines VA" loading="lazy" width="926" height="402">
+        <figcaption class="gallery-cap" data-i18n="photo-3-cap">Раскраска Swiss Airlines VA</figcaption>
+      </figure>
+      <figure class="gallery-card animate-on-scroll delay-3">
+        <span class="gallery-badge" data-i18n="photo-4-badge">Гейт</span>
+        <img src="assets/photos/gate-sunset.jpg" data-i18n-alt="alt-4" alt="Самолёт у гейта 16 на закате" loading="lazy" width="926" height="404">
+        <figcaption class="gallery-cap" data-i18n="photo-4-cap">Закатная стоянка у гейта 16</figcaption>
+      </figure>
     </div>
   </section>
 
@@ -1317,7 +1483,7 @@
       <a href="login.html" data-i18n="nav-admin">Админ</a>
     </div>
     <div class="footer-right">
-      <div style="font-size:11px;color:#C4A98E;margin-bottom:4px;"><span data-i18n="footer-patent-text">Неофициальный виртуальный патент № SW-VA-001 от 10.08.26 01:33</span></div>
+      <div style="font-size:11px;color:#E3C0A0;margin-bottom:4px;"><span data-i18n="footer-patent-text">Неофициальный виртуальный патент № SW-VA-001 от 10.08.26 01:33</span></div>
       <div><span data-i18n="footer-slogan">Fly Together. Fly Swiss.</span></div>
     </div>
   </footer>
@@ -1502,6 +1668,13 @@
         'info-1-title': 'Международные рейсы', 'info-1-desc': 'Летай по маршрутам по всему миру в PTFS. Реалистичные маршруты, точные процедуры захода на посадку.',
         'info-2-title': 'Современный флот', 'info-2-desc': 'Работаем на современных лайнерах. Постоянное обновление парка и добавление новых моделей.',
         'info-3-title': 'Академия пилотов', 'info-3-desc': 'Обучение новичков с нуля. Опытные инструкторы помогут освоить все тонкости виртуальной авиации.',
+        'hero-photo-title': 'Наш борт в PTFS', 'hero-photo-sub': 'Официальная раскраска Swiss Airlines VA — узнаваемая в любом аэропорту.',
+        'alt-hero': 'Самолёт Swiss Airlines VA с бортовой раскраской на стоянке', 'alt-1': 'Ночной перрон аэропорта с самолётами Swiss Airlines VA', 'alt-2': 'Кабина пилотов с подсветкой приборов во время ночного полёта', 'alt-3': 'Крупный план фюзеляжа самолёта Swiss Airlines VA', 'alt-4': 'Самолёт у гейта 16 на закате',
+        'gallery-label': 'Галерея', 'gallery-title': 'Кадры из наших рейсов', 'gallery-sub': 'Ночные вылеты, работа в кабине и закатные заходы на посадку — реальные скриншоты полётов Swiss Airlines VA.',
+        'photo-1-badge': 'Перрон', 'photo-1-cap': 'Подготовка к ночному вылету',
+        'photo-2-badge': 'Кабина', 'photo-2-cap': 'Ночная смена в кабине',
+        'photo-3-badge': 'Борт', 'photo-3-cap': 'Раскраска Swiss Airlines VA',
+        'photo-4-badge': 'Гейт', 'photo-4-cap': 'Закатная стоянка у гейта 16',
         'live-label': 'Статистика авиакомпании', 'live-title': 'Живая статистика', 'live-sub': 'Цифры обновляются в реальном времени прямо из базы авиакомпании.', 'live-online-pill': 'Онлайн',
         'live-flights': 'Выполнено рейсов', 'live-hours': 'Часов в воздухе', 'live-pilots': 'Пилотов в штате', 'live-destinations': 'Направлений', 'live-applications': 'Заявок подано', 'live-fleet': 'Самолётов во флоте', 'live-events': 'Событий в календаре', 'live-visits': 'Всего визитов',
         'live-note': 'Функция в режиме BETA: часть счётчиков ведётся администрацией вручную, поэтому возможны неточности. Обновление каждые 30 секунд.',
@@ -1530,6 +1703,13 @@
         'info-1-title': 'International Flights', 'info-1-desc': 'Fly routes around the world in PTFS. Realistic routes, precise landing procedures.',
         'info-2-title': 'Modern Fleet', 'info-2-desc': 'We operate modern liners. Constant fleet updates and addition of new models.',
         'info-3-title': 'Pilot Academy', 'info-3-desc': 'Training beginners from scratch. Experienced instructors will help you master all the nuances of virtual aviation.',
+        'hero-photo-title': 'Our aircraft in PTFS', 'hero-photo-sub': 'The official Swiss Airlines VA livery — recognisable at any airport.',
+        'alt-hero': 'Swiss Airlines VA aircraft in full livery on stand', 'alt-1': 'Night apron with Swiss Airlines VA aircraft', 'alt-2': 'Illuminated flight deck during a night flight', 'alt-3': 'Close-up of a Swiss Airlines VA fuselage', 'alt-4': 'Aircraft parked at gate 16 at sunset',
+        'gallery-label': 'Gallery', 'gallery-title': 'Shots from our flights', 'gallery-sub': 'Night departures, cockpit work and sunset approaches — real screenshots from Swiss Airlines VA flights.',
+        'photo-1-badge': 'Apron', 'photo-1-cap': 'Getting ready for a night departure',
+        'photo-2-badge': 'Cockpit', 'photo-2-cap': 'Night shift in the flight deck',
+        'photo-3-badge': 'Livery', 'photo-3-cap': 'Swiss Airlines VA livery',
+        'photo-4-badge': 'Gate', 'photo-4-cap': 'Sunset stand at gate 16',
         'live-label': 'Airline statistics', 'live-title': 'Living Statistics', 'live-sub': 'Numbers are updated in real time straight from the airline database.', 'live-online-pill': 'Online',
         'live-flights': 'Flights completed', 'live-hours': 'Hours in the air', 'live-pilots': 'Pilots on staff', 'live-destinations': 'Destinations', 'live-applications': 'Applications sent', 'live-fleet': 'Aircraft in fleet', 'live-events': 'Events in calendar', 'live-visits': 'Total visits',
         'live-note': 'BETA feature: some counters are maintained manually by staff, so small inaccuracies are possible. Refreshed every 30 seconds.',
@@ -1562,6 +1742,10 @@
       document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
         const key = el.dataset.i18nPlaceholder;
         if (t[key]) el.placeholder = t[key];
+      });
+      document.querySelectorAll('[data-i18n-alt]').forEach(el => {
+        const key = el.dataset.i18nAlt;
+        if (t[key]) el.alt = t[key];
       });
     }
     function toggleLang() {

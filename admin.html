@@ -7,35 +7,35 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --swiss-red: #A65A1E;
-      --autumn-orange: #E07A28;
-      --autumn-gold: #D9A02B;
-      --autumn-amber: #F0B840;
-      --autumn-brown: #7C4A21;
-      --autumn-wine: #6E4B22;
-      --autumn-olive: #6E6B2E;
-      --swiss-red-dark: #7A3F12;
-      --black: #2B1810;
-      --gray-900: #3A2317;
-      --gray-700: #5C4433;
-      --gray-500: #6E5442;
-      --gray-300: #DCC3A4;
-      --gray-100: #F6EBD9;
-      --white: #FDF6EC;
+      --swiss-red: #B14A0D;
+      --autumn-orange: #E86A16;
+      --autumn-gold: #F09420;
+      --autumn-amber: #FFB03A;
+      --autumn-brown: #8A3A08;
+      --autumn-wine: #A03A05;
+      --autumn-olive: #C25A10;
+      --swiss-red-dark: #8A3608;
+      --black: #2A1508;
+      --gray-900: #3A2010;
+      --gray-700: #653A20;
+      --gray-500: #7A4A2A;
+      --gray-300: #F0C79B;
+      --gray-100: #FFEEDC;
+      --white: #FFF7EF;
       --bg: var(--white);
       --text: var(--gray-900);
       --card: var(--white);
       --border: var(--gray-300);
       --transition: cubic-bezier(0.4, 0, 0.2, 1);
-      --header-bg: #FFF8F0;
-      --header-text: #2B1810;
-      --header-link: #6E5442;
-      --header-border: #DCC3A4;
+      --header-bg: #FFF4E8;
+      --header-text: #2A1508;
+      --header-link: #7A4A2A;
+      --header-border: #F0C79B;
     }
     [data-theme="dark"] {
-      --bg: #17100C; --text: #F5E8DA; --card: #221812; --border: #4A3527; --black: #F5E8DA;
-      --gray-100: #221812; --gray-300: #5A4231; --gray-500: #B99B80; --gray-700: #C4A98E; --gray-900: #EEDFCE;
-      --header-bg: #120C09; --header-text: #FFF8F0; --header-link: #B99B80; --header-border: #5A4231;
+      --bg: #1E1207; --text: #F7E7D5; --card: #2A1A0E; --border: #5A3720; --black: #F7E7D5;
+      --gray-100: #2A1A0E; --gray-300: #6B4526; --gray-500: #D9AE8A; --gray-700: #E3C0A0; --gray-900: #F5E3D0;
+      --header-bg: #170E06; --header-text: #FFF4E8; --header-link: #D9AE8A; --header-border: #6B4526;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--gray-100); color: var(--text); line-height: 1.6; }
@@ -55,7 +55,7 @@
     .header-left { display: flex; align-items: center; gap: 16px; }
     .header-logo { display: flex; align-items: center; gap: 10px; color: var(--header-text); font-weight: 700; font-size: 14px; letter-spacing: -0.3px; text-decoration: none; }
     .header-cross { width: 24px; height: 24px; background: var(--swiss-red); display: flex; align-items: center; justify-content: center; font-size: 12px; color: white; font-weight: 700; }
-    .header-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(166,90,30,0.15); color: var(--swiss-red); padding: 4px 10px; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+    .header-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(177,74,13,0.15); color: var(--swiss-red); padding: 4px 10px; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
     .header-right { display: flex; align-items: center; gap: 12px; }
     .user-greeting { display: flex; align-items: center; gap: 8px; color: var(--gray-500); font-size: 13px; font-weight: 500; }
     .user-avatar { width: 28px; height: 28px; background: var(--swiss-red); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 700; }
@@ -92,7 +92,7 @@
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
     th { background: var(--gray-100); padding: 12px 14px; text-align: left; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gray-500); border-bottom: 1px solid var(--gray-300); white-space: nowrap; }
     td { padding: 12px 14px; border-bottom: 1px solid var(--gray-100); vertical-align: top; }
-    tr:hover td { background: rgba(166,90,30,0.02); }
+    tr:hover td { background: rgba(177,74,13,0.02); }
     .cell-name { font-weight: 600; color: var(--black); }
     .cell-muted { color: var(--gray-500); font-size: 12px; }
     .cell-small { font-size: 12px; }
@@ -157,7 +157,7 @@
 
     .filters-bar { padding: 0 40px 20px; max-width: 1400px; margin: 0 auto; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
     .filter-btn { padding: 7px 14px; font-size: 12px; font-weight: 500; border: 1px solid var(--gray-300); background: var(--bg); color: var(--gray-700); cursor: pointer; transition: all 0.3s var(--transition); display: inline-flex; align-items: center; gap: 6px; }
-    .filter-btn:hover, .filter-btn.active { border-color: var(--swiss-red); color: var(--swiss-red); background: rgba(166,90,30,0.04); }
+    .filter-btn:hover, .filter-btn.active { border-color: var(--swiss-red); color: var(--swiss-red); background: rgba(177,74,13,0.04); }
 
     /* ===== EXPAND ===== */
     .expand-btn { background: none; border: 1px solid var(--gray-300); width: 22px; height: 22px; cursor: pointer; font-size: 10px; color: var(--gray-500); transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
@@ -205,25 +205,25 @@
     }
     /* ===== AUTUMN BACKDROP ===== */
     html {
-      background-color: #F3E7D2;
+      background-color: #FFEBD6;
       background-image:
-        radial-gradient(900px 560px at 10% -8%, rgba(214,166,88,0.30), transparent 70%),
-        radial-gradient(780px 500px at 100% 6%, rgba(176,132,70,0.24), transparent 72%),
-        radial-gradient(700px 460px at 46% 106%, rgba(140,116,62,0.20), transparent 70%),
-        linear-gradient(176deg, #FAF2E4 0%, #F4E9D6 48%, #EDDFC7 100%);
+        radial-gradient(900px 560px at 10% -8%, rgba(255,158,70,0.30), transparent 70%),
+        radial-gradient(780px 500px at 100% 6%, rgba(255,132,40,0.24), transparent 72%),
+        radial-gradient(700px 460px at 46% 106%, rgba(240,148,32,0.20), transparent 70%),
+        linear-gradient(176deg, #FFF1E0 0%, #FFE6CC 48%, #FFD9B5 100%);
       background-attachment: fixed;
       background-repeat: no-repeat;
     }
     body { background: transparent; }
     html[data-theme="dark"] {
-      background-color: #17100C;
+      background-color: #1E1207;
       background-image:
-        radial-gradient(900px 560px at 10% -8%, rgba(176,124,54,0.20), transparent 70%),
-        radial-gradient(780px 500px at 100% 6%, rgba(128,94,46,0.18), transparent 72%),
-        linear-gradient(176deg, #1D140E 0%, #17100C 52%, #120C08 100%);
+        radial-gradient(900px 560px at 10% -8%, rgba(200,92,16,0.20), transparent 70%),
+        radial-gradient(780px 500px at 100% 6%, rgba(160,64,10,0.18), transparent 72%),
+        linear-gradient(176deg, #241408 0%, #1E1207 52%, #160D05 100%);
     }
     /* ===== READABILITY FIXES ===== */
-    [data-theme="dark"] { --nav-link: #DCC3A4; }
+    [data-theme="dark"] { --nav-link: #F0C79B; }
   </style>
 </head>
 <body>
@@ -281,14 +281,14 @@
       <div class="stat-card"><span class="stat-icon">❌</span><div class="stat-value" id="rejectedCount">0</div><div class="stat-label" data-i18n="stat-rejected">Отклонено</div></div>
       <div class="stat-card"><span class="stat-icon">🔍</span><div class="stat-value" id="reviewCount">0</div><div class="stat-label" data-i18n="stat-review">На рассмотрении</div></div>
     </div>
-    <div id="dbWarnBanner" style="display:none;max-width:1400px;margin:0 auto 16px;padding:14px 18px;border-radius:12px;border:1px solid #A65A1E;background:rgba(166,90,30,0.08);color:#fff;font-size:13px;line-height:1.6;"></div>
+    <div id="dbWarnBanner" style="display:none;max-width:1400px;margin:0 auto 16px;padding:14px 18px;border-radius:12px;border:1px solid #B14A0D;background:rgba(177,74,13,0.08);color:#fff;font-size:13px;line-height:1.6;"></div>
     <div class="filters-bar">
       <span class="filter-btn active" data-filter="all" onclick="setAppFilter('all')" data-i18n="filter-all">Все</span>
       <span class="filter-btn" data-filter="new" onclick="setAppFilter('new')" data-i18n="filter-new">🆕 Новые</span>
       <span class="filter-btn" data-filter="review" onclick="setAppFilter('review')" data-i18n="filter-review">🔍 На рассмотрении</span>
       <span class="filter-btn" data-filter="accepted" onclick="setAppFilter('accepted')" data-i18n="filter-accepted">✅ Принято</span>
       <span class="filter-btn" data-filter="rejected" onclick="setAppFilter('rejected')" data-i18n="filter-rejected">❌ Отклонено</span>
-      <button class="filter-btn" style="margin-left:auto;background:#A65A1E;color:#fff;border:none;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:12px;" onclick="checkDbStatus()" title="Проверить состояние базы данных">🔍 DB Status</button>
+      <button class="filter-btn" style="margin-left:auto;background:#B14A0D;color:#fff;border:none;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:12px;" onclick="checkDbStatus()" title="Проверить состояние базы данных">🔍 DB Status</button>
     </div>
     <div class="table-wrapper">
       <div class="loading" id="appsLoading" data-i18n="loading-apps">Загрузка анкет...</div>
@@ -357,7 +357,7 @@
     <div class="toolbar">
       <h3 style="font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px;">
         <span data-i18n="stats-title">Живая статистика</span>
-        <span style="background:#A65A1E;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.5px;">BETA</span>
+        <span style="background:#B14A0D;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.5px;">BETA</span>
       </h3>
       <button class="btn-add" onclick="loadSiteStats()" data-i18n="btn-stats-refresh">↻ Обновить</button>
     </div>
@@ -555,7 +555,7 @@
           if (r.status===503) {
             loadAppsRetries++;
             if (loadAppsRetries > 10) {
-              document.getElementById('appsLoading').innerHTML='❌ База данных недоступна. <button onclick="loadAppsRetries=0;loadApplications()" style="background:#A65A1E;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">Повторить</button> <button onclick="checkDbStatus()" style="background:#333;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">🔍 Диагностика</button>';
+              document.getElementById('appsLoading').innerHTML='❌ База данных недоступна. <button onclick="loadAppsRetries=0;loadApplications()" style="background:#B14A0D;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">Повторить</button> <button onclick="checkDbStatus()" style="background:#333;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">🔍 Диагностика</button>';
               return;
             }
             document.getElementById('appsLoading').textContent='⏳ База данных подключается... Попытка ' + loadAppsRetries + '/10';
@@ -567,7 +567,7 @@
             if (errData.retry) {
               loadAppsRetries++;
               if (loadAppsRetries > 5) {
-                document.getElementById('appsLoading').innerHTML='❌ Ошибка БД: ' + (errData.error||'Unknown') + '. <button onclick="loadAppsRetries=0;loadApplications()" style="background:#A65A1E;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">Повторить</button> <button onclick="checkDbStatus()" style="background:#333;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">🔍 Диагностика</button>';
+                document.getElementById('appsLoading').innerHTML='❌ Ошибка БД: ' + (errData.error||'Unknown') + '. <button onclick="loadAppsRetries=0;loadApplications()" style="background:#B14A0D;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">Повторить</button> <button onclick="checkDbStatus()" style="background:#333;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">🔍 Диагностика</button>';
                 return;
               }
               document.getElementById('appsLoading').textContent='⚠️ Ошибка БД, переподключение... Попытка ' + loadAppsRetries + '/5';
@@ -584,7 +584,7 @@
         allData = data.applications || [];
         document.getElementById('appsLoading').style.display='none';
         renderAppStats(); renderApps(); checkStoragePersistence();
-      } catch(e) { document.getElementById('appsLoading').innerHTML=t('error-load') + ' (' + e.message + ') <button onclick="loadApplications()" style="background:#A65A1E;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">Повторить</button>'; }
+      } catch(e) { document.getElementById('appsLoading').innerHTML=t('error-load') + ' (' + e.message + ') <button onclick="loadApplications()" style="background:#B14A0D;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">Повторить</button>'; }
     }
     // ============ STORAGE PERSISTENCE CHECK ============
     let storageChecked = false;
@@ -616,7 +616,7 @@
     async function checkDbStatus() {
       const modal = document.createElement('div');
       modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:10000;display:flex;align-items:center;justify-content:center;';
-      modal.innerHTML = '<div style="background:#1a1a2e;border:1px solid #A65A1E;border-radius:16px;padding:24px;max-width:500px;width:90%;color:#fff;font-family:system-ui;"><h3 style="color:#A65A1E;margin:0 0 16px;">🔍 Диагностика базы данных</h3><div id="dbStatusContent" style="font-size:14px;">⏳ Загрузка...</div><button onclick="this.closest(\'div[style]\').parentElement.remove()" style="margin-top:16px;background:#A65A1E;color:#fff;border:none;padding:8px 24px;border-radius:8px;cursor:pointer;">Закрыть</button></div>';
+      modal.innerHTML = '<div style="background:#1a1a2e;border:1px solid #B14A0D;border-radius:16px;padding:24px;max-width:500px;width:90%;color:#fff;font-family:system-ui;"><h3 style="color:#B14A0D;margin:0 0 16px;">🔍 Диагностика базы данных</h3><div id="dbStatusContent" style="font-size:14px;">⏳ Загрузка...</div><button onclick="this.closest(\'div[style]\').parentElement.remove()" style="margin-top:16px;background:#B14A0D;color:#fff;border:none;padding:8px 24px;border-radius:8px;cursor:pointer;">Закрыть</button></div>';
       document.body.appendChild(modal);
       try {
         const r = await fetch('/api/db-status');
@@ -638,7 +638,7 @@
         }
         html += '</div>';
         if (data.latestApplication) {
-          html += '<div style="margin-bottom:8px;padding:8px;background:rgba(166,90,30,0.1);border-radius:8px;"><strong>📋 Последняя анкета:</strong><br>ID: ' + data.latestApplication.id + ' | ' + data.latestApplication.roblox_name + ' | ' + data.latestApplication.status + ' | ' + data.latestApplication.created_at + '</div>';
+          html += '<div style="margin-bottom:8px;padding:8px;background:rgba(177,74,13,0.1);border-radius:8px;"><strong>📋 Последняя анкета:</strong><br>ID: ' + data.latestApplication.id + ' | ' + data.latestApplication.roblox_name + ' | ' + data.latestApplication.status + ' | ' + data.latestApplication.created_at + '</div>';
         } else {
           html += '<div style="color:#ff0;">⚠️ Нет анкет в базе данных</div>';
         }
