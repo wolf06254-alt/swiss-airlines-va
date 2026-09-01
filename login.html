@@ -7,21 +7,21 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --swiss-red: #B14A0D;
-      --autumn-orange: #E86A16;
-      --autumn-gold: #F09420;
-      --autumn-amber: #FFB03A;
-      --autumn-brown: #8A3A08;
-      --autumn-wine: #A03A05;
-      --autumn-olive: #C25A10;
-      --swiss-red-dark: #8A3608;
-      --white: #FFF7EF;
-      --black: #2A1508;
-      --gray-100: #FFEEDC;
-      --gray-200: #FFE4C8;
-      --gray-300: #F0C79B;
-      --gray-500: #7A4A2A;
-      --gray-700: #653A20;
+      --swiss-red: #D2500F;
+      --autumn-pumpkin: #EA6A0E;
+      --autumn-mustard: #F59E0B;
+      --autumn-wheat: #FBBF24;
+      --autumn-walnut: #4A2A12;
+      --autumn-rust: #B4460F;
+      --autumn-copper: #C2600F;
+      --swiss-red-dark: #9A3412;
+      --white: #FFFBF6;
+      --black: #2A1608;
+      --gray-100: #FFF1E3;
+      --gray-200: #FDEBD8;
+      --gray-300: #F5D9BC;
+      --gray-500: #8A6A4E;
+      --gray-700: #6B4526;
       --gray-900: #171717;
       --bg: var(--white);
       --text: var(--gray-900);
@@ -30,19 +30,19 @@
       --transition: cubic-bezier(0.4, 0, 0.2, 1);
     }
     [data-theme="dark"] {
-      --bg: #1E1207;
-      --text: #F7E7D5;
-      --card: #2A1A0E;
-      --border: #5A3720;
-      --black: #F7E7D5;
-      --gray-100: #2A1A0E;
-      --gray-200: #33200F;
-      --gray-300: #6B4526;
-      --gray-500: #D9AE8A;
-      --gray-700: #E3C0A0;
-      --gray-900: #F7E7D5;
+      --bg: #1E1408;
+      --text: #F9E7D4;
+      --card: #2C1E10;
+      --border: #553A22;
+      --black: #F9E7D4;
+      --gray-100: #2C1E10;
+      --gray-200: #2E241C;
+      --gray-300: #63432A;
+      --gray-500: #E5B98F;
+      --gray-700: #E8C6A4;
+      --gray-900: #F9E7D4;
     }
-    [data-theme="dark"] .error-msg { color: var(--autumn-amber); }
+    [data-theme="dark"] .error-msg { color: var(--autumn-wheat); }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Inter', sans-serif;
@@ -213,7 +213,7 @@
       height: 3px;
       z-index: 6;
       pointer-events: none;
-      background: linear-gradient(90deg, var(--autumn-wine), var(--autumn-orange), var(--autumn-gold), var(--autumn-olive), var(--autumn-brown));
+      background: linear-gradient(90deg, var(--autumn-rust), var(--autumn-pumpkin), var(--autumn-mustard), var(--autumn-copper), var(--autumn-walnut));
       background-size: 200% 100%;
       animation: autumnFlow 14s linear infinite;
       opacity: 0.9;
@@ -224,25 +224,25 @@
     }
     /* ===== AUTUMN BACKDROP ===== */
     html {
-      background-color: #FFEBD6;
+      background-color: #FFF2E6;
       background-image:
-        radial-gradient(900px 560px at 10% -8%, rgba(255,158,70,0.30), transparent 70%),
-        radial-gradient(780px 500px at 100% 6%, rgba(255,132,40,0.24), transparent 72%),
-        radial-gradient(700px 460px at 46% 106%, rgba(240,148,32,0.20), transparent 70%),
-        linear-gradient(176deg, #FFF1E0 0%, #FFE6CC 48%, #FFD9B5 100%);
+        radial-gradient(900px 560px at 10% -8%, rgba(245,158,11,0.30), transparent 70%),
+        radial-gradient(780px 500px at 100% 6%, rgba(234,106,14,0.24), transparent 72%),
+        radial-gradient(700px 460px at 46% 106%, rgba(194,96,15,0.20), transparent 70%),
+        linear-gradient(176deg, #FFF6EC 0%, #FFF0DF 48%, #FBDCBE 100%);
       background-attachment: fixed;
       background-repeat: no-repeat;
     }
     body { background: transparent; }
     html[data-theme="dark"] {
-      background-color: #1E1207;
+      background-color: #1E1408;
       background-image:
-        radial-gradient(900px 560px at 10% -8%, rgba(200,92,16,0.20), transparent 70%),
-        radial-gradient(780px 500px at 100% 6%, rgba(160,64,10,0.18), transparent 72%),
-        linear-gradient(176deg, #241408 0%, #1E1207 52%, #160D05 100%);
+        radial-gradient(900px 560px at 10% -8%, rgba(210,80,15,0.20), transparent 70%),
+        radial-gradient(780px 500px at 100% 6%, rgba(180,70,15,0.18), transparent 72%),
+        linear-gradient(176deg, #2A1608 0%, #1E1408 52%, #180F06 100%);
     }
     /* ===== READABILITY FIXES ===== */
-    [data-theme="dark"] { --nav-link: #F0C79B; }
+    [data-theme="dark"] { --nav-link: #F5D9BC; }
   </style>
 </head>
 <body>

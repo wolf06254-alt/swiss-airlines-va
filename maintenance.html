@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title data-i18n-title="page-title">Технические работы | Swiss Airlines VA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --swiss-red:#D2500F; --pumpkin:#EA6A0E; --mustard:#F59E0B; --wheat:#FBBF24;
+  --walnut:#4A2A12; --rust:#B4460F; --copper:#C2600F; --red-dark:#9A3412;
+  --bg:#FFFBF6; --text:#33200F; --muted:#8A6A4E; --card:rgba(255,255,255,.72);
+  --border:#F5D9BC; --glow:rgba(234,106,14,.35);
+  --tr:cubic-bezier(.4,0,.2,1);
+}
+[data-theme="dark"]{
+  --bg:#1E1408; --text:#F9E7D4; --muted:#E5B98F; --card:rgba(44,30,16,.7);
+  --border:#553A22; --glow:rgba(251,191,36,.22);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{min-height:100%}
+body{
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg); color:var(--text); line-height:1.6;
+  min-height:100vh; display:flex; flex-direction:column;
+  overflow-x:hidden; position:relative;
+  transition:background .4s var(--tr), color .4s var(--tr);
+}
+/* ---------- decorative background ---------- */
+.bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.bg-glow{position:absolute;border-radius:50%;filter:blur(90px);opacity:.55;animation:float 16s ease-in-out infinite}
+.bg-glow.g1{width:560px;height:560px;background:radial-gradient(circle,var(--pumpkin),transparent 68%);top:-190px;left:-140px}
+.bg-glow.g2{width:520px;height:520px;background:radial-gradient(circle,var(--wheat),transparent 68%);bottom:-200px;right:-130px;animation-delay:-6s}
+.bg-glow.g3{width:380px;height:380px;background:radial-gradient(circle,var(--rust),transparent 70%);top:44%;left:52%;animation-delay:-11s;opacity:.34}
+@keyframes float{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(34px,-28px) scale(1.09)}}
+.bg-grid{position:absolute;inset:0;opacity:.16;
+  background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);
+  background-size:64px 64px;mask-image:radial-gradient(circle at 50% 42%,#000 12%,transparent 74%);
+  -webkit-mask-image:radial-gradient(circle at 50% 42%,#000 12%,transparent 74%)}
+.leaf{position:absolute;font-size:20px;opacity:.5;animation:fall linear infinite;will-change:transform}
+@keyframes fall{0%{transform:translateY(-8vh) rotate(0deg);opacity:0}
+  12%{opacity:.6}88%{opacity:.5}100%{transform:translateY(108vh) rotate(420deg);opacity:0}}
+.plane-track{position:absolute;top:16%;left:-14%;font-size:26px;color:var(--swiss-red);opacity:.42;
+  animation:cross 22s linear infinite}
+@keyframes cross{0%{transform:translate(0,0) rotate(8deg)}100%{transform:translate(132vw,-16vh) rotate(8deg)}}
+
+/* ---------- top bar ---------- */
+.topbar{position:relative;z-index:3;height:62px;padding:0 32px;display:flex;align-items:center;
+  justify-content:space-between;border-bottom:1px solid var(--border);
+  background:var(--card);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.topbar::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:2px;
+  background:repeating-linear-gradient(90deg,var(--swiss-red) 0,var(--swiss-red) 25px,transparent 25px,transparent 35px);
+  opacity:.55;animation:stripe 2s linear infinite}
+@keyframes stripe{from{background-position:0 0}to{background-position:40px 0}}
+.logo{display:flex;align-items:center;gap:11px;font-weight:700;font-size:15px;letter-spacing:1.1px;
+  text-decoration:none;color:var(--text)}
+.logo-cross{width:27px;height:27px;background:var(--swiss-red);color:#fff;display:flex;align-items:center;
+  justify-content:center;font-size:18px;font-weight:300;line-height:1;border-radius:3px}
+.controls{display:flex;gap:9px}
+.controls button{background:transparent;border:1px solid var(--border);color:var(--muted);
+  padding:6px 13px;font-family:inherit;font-size:12px;font-weight:600;letter-spacing:.5px;
+  cursor:pointer;border-radius:6px;transition:all .3s var(--tr)}
+.controls button:hover{border-color:var(--swiss-red);color:var(--swiss-red);transform:translateY(-1px)}
+
+/* ---------- main card ---------- */
+.wrap{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;padding:64px 24px 34px}
+.card{max-width:660px;width:100%;padding:52px 46px 44px;border-radius:26px;
+  border:1px solid var(--border);background:var(--card);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  box-shadow:0 28px 70px -30px var(--glow),0 2px 0 rgba(255,255,255,.35) inset;
+  animation:rise .8s var(--tr) both;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg,var(--swiss-red),var(--pumpkin),var(--mustard),var(--wheat));
+  background-size:220% 100%;animation:slide 5s linear infinite}
+@keyframes slide{from{background-position:0 0}to{background-position:220% 0}}
+@keyframes rise{from{opacity:0;transform:translateY(34px) scale(.98)}to{opacity:1;transform:none}}
+
+.badge{display:inline-flex;align-items:center;gap:9px;font-size:10.5px;font-weight:700;
+  letter-spacing:2.3px;text-transform:uppercase;color:var(--rust);
+  border:1px solid var(--border);background:rgba(234,106,14,.09);
+  padding:7px 15px;border-radius:100px;margin-bottom:26px}
+.badge .dot{width:7px;height:7px;border-radius:50%;background:var(--swiss-red);
+  animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.25;transform:scale(.75)}}
+
+.gear{font-size:60px;line-height:1;margin-bottom:20px;display:inline-block;
+  animation:spin 9s linear infinite;transform-origin:50% 54%;filter:drop-shadow(0 8px 18px var(--glow))}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+h1{font-size:clamp(27px,4.6vw,42px);font-weight:800;letter-spacing:-.6px;line-height:1.15;margin-bottom:16px}
+h1 .accent{background:linear-gradient(100deg,var(--swiss-red),var(--mustard));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.lead{font-size:15.5px;color:var(--muted);max-width:500px;margin:0 auto 26px}
+
+/* progress */
+.bar{height:7px;border-radius:100px;background:rgba(138,106,78,.18);overflow:hidden;margin:0 auto 12px;max-width:420px}
+.bar i{display:block;height:100%;width:38%;border-radius:100px;
+  background:linear-gradient(90deg,var(--swiss-red),var(--mustard),var(--wheat));
+  animation:march 2.1s var(--tr) infinite}
+@keyframes march{0%{transform:translateX(-100%)}100%{transform:translateX(300%)}}
+.bar-label{font-size:11.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--muted);font-weight:600}
+
+.eta{margin-top:24px;display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;
+  color:var(--rust);background:rgba(245,158,11,.12);border:1px solid var(--border);
+  padding:9px 17px;border-radius:100px}
+
+.chips{margin-top:30px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.chip{font-size:12px;font-weight:600;color:var(--muted);border:1px solid var(--border);
+  border-radius:100px;padding:7px 15px;background:rgba(255,255,255,.35);
+  display:inline-flex;align-items:center;gap:7px;transition:all .3s var(--tr)}
+[data-theme="dark"] .chip{background:rgba(255,255,255,.05)}
+.chip:hover{transform:translateY(-2px);border-color:var(--pumpkin);color:var(--rust)}
+
+.discord{display:inline-flex;align-items:center;gap:9px;margin-top:30px;text-decoration:none;
+  background:var(--swiss-red);color:#fff;font-size:13.5px;font-weight:700;letter-spacing:.4px;
+  padding:13px 27px;border-radius:10px;transition:all .3s var(--tr);
+  box-shadow:0 12px 26px -12px rgba(210,80,15,.7)}
+.discord:hover{background:var(--red-dark);transform:translateY(-2px);box-shadow:0 18px 32px -12px rgba(210,80,15,.8)}
+
+/* ---------- small admin button ---------- */
+.admin-zone{position:relative;z-index:2;padding:0 24px 40px;text-align:center;
+  animation:rise 1.1s var(--tr) both}
+.admin-link{display:inline-flex;align-items:center;gap:6px;text-decoration:none;
+  font-size:11px;font-weight:600;letter-spacing:1.4px;text-transform:uppercase;
+  color:var(--muted);border:1px solid var(--border);border-radius:100px;
+  padding:6px 14px;background:transparent;opacity:.62;transition:all .3s var(--tr)}
+.admin-link:hover{opacity:1;color:var(--swiss-red);border-color:var(--swiss-red);
+  transform:translateY(-1px);box-shadow:0 8px 18px -10px var(--glow)}
+
+footer{position:relative;z-index:2;border-top:1px solid var(--border);padding:16px 24px;
+  text-align:center;font-size:11.5px;color:var(--muted);letter-spacing:.4px}
+footer b{color:var(--swiss-red);font-weight:700}
+
+@media(max-width:640px){
+  .topbar{padding:0 16px;height:56px}
+  .logo span{display:none}
+  .card{padding:38px 22px 34px;border-radius:20px}
+  .wrap{padding:36px 14px 24px}
+  .lead{font-size:14.5px}
+  .bg-grid{background-size:44px 44px}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="bg" aria-hidden="true">
+  <div class="bg-grid"></div>
+  <div class="bg-glow g1"></div>
+  <div class="bg-glow g2"></div>
+  <div class="bg-glow g3"></div>
+  <div class="plane-track">✈</div>
+  <div id="leaves"></div>
+</div>
+
+<header class="topbar">
+  <a class="logo" href="#" onclick="return false;">
+    <span class="logo-cross">+</span>
+    <span>SWISS AIRLINES</span>
+  </a>
+  <div class="controls">
+    <button id="themeToggle" type="button" onclick="toggleTheme()" aria-label="Theme">🌙</button>
+    <button id="langToggle" type="button" onclick="toggleLang()" aria-label="Language">RU</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="card">
+    <div class="badge"><span class="dot"></span><span id="badgeText" data-i18n="badge-maint">Технические работы</span></div>
+    <div class="gear" id="gearIcon" aria-hidden="true">⚙️</div>
+    <h1 id="mTitle"><span class="accent" data-i18n="title-maint">Сайт на техническом обслуживании</span></h1>
+    <p class="lead" id="mMessage" data-i18n="desc-maint">Наш технический экипаж готовит борт к вылету. Сайт временно недоступен — скоро вернёмся в небо.</p>
+
+    <div class="bar" aria-hidden="true"><i></i></div>
+    <div class="bar-label" data-i18n="progress">Работы идут</div>
+
+    <div class="eta" id="etaBox" style="display:none;">🕓 <span id="etaText"></span></div>
+
+    <div class="chips">
+      <div class="chip">🛩️ <span data-i18n="chip-1">Данные в безопасности</span></div>
+      <div class="chip">📝 <span data-i18n="chip-2">Анкеты сохранены</span></div>
+      <div class="chip">⚡ <span data-i18n="chip-3">Станет быстрее</span></div>
+    </div>
+
+    <a class="discord" href="https://discord.gg/6YA8t7GJr" target="_blank" rel="noopener">
+      🎮 <span data-i18n="btn-discord">Мы в Discord</span>
+    </a>
+  </section>
+</main>
+
+<div class="admin-zone">
+  <a class="admin-link" href="login.html">🔐 <span data-i18n="btn-admin">Администратор</span></a>
+</div>
+
+<footer>
+  <b>+</b> SWISS AIRLINES VIRTUAL · <span data-i18n="footer-slogan">Fly Together. Fly Swiss.</span>
+</footer>
+
+<script>
+const I18N = {
+  ru:{
+    'page-title':'Технические работы | Swiss Airlines VA',
+    'badge-maint':'Технические работы',
+    'badge-update':'Обновление',
+    'title-maint':'Сайт на техническом обслуживании',
+    'title-update':'Мы обновляем сайт',
+    'desc-maint':'Наш технический экипаж готовит борт к вылету. Сайт временно недоступен — скоро вернёмся в небо.',
+    'desc-update':'Устанавливаем обновление и добавляем новые возможности. Вернёмся совсем скоро!',
+    'progress':'Работы идут',
+    'chip-1':'Данные в безопасности',
+    'chip-2':'Анкеты сохранены',
+    'chip-3':'Станет быстрее',
+    'btn-discord':'Мы в Discord',
+    'btn-admin':'Администратор',
+    'footer-slogan':'Fly Together. Fly Swiss.',
+    'eta-prefix':'Ожидаемое время: '
+  },
+  en:{
+    'page-title':'Maintenance | Swiss Airlines VA',
+    'badge-maint':'Scheduled maintenance',
+    'badge-update':'Update in progress',
+    'title-maint':'The site is under maintenance',
+    'title-update':'We are updating the site',
+    'desc-maint':'Our technical crew is preparing the aircraft for departure. The site is temporarily unavailable — we will be back in the sky shortly.',
+    'desc-update':'We are rolling out an update and adding new features. Back very soon!',
+    'progress':'Work in progress',
+    'chip-1':'Your data is safe',
+    'chip-2':'Applications preserved',
+    'chip-3':'Faster than before',
+    'btn-discord':'Join our Discord',
+    'btn-admin':'Administrator',
+    'footer-slogan':'Fly Together. Fly Swiss.',
+    'eta-prefix':'Estimated time: '
+  }
+};
+
+const PREVIEW = /[?&]preview=1/.test(location.search);
+let currentLang = localStorage.getItem('swiss-lang') || 'ru';
+let serverData = null;
+
+function applyLang(){
+  const d = I18N[currentLang] || I18N.ru;
+  document.documentElement.lang = currentLang;
+  document.title = d['page-title'];
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k = el.getAttribute('data-i18n');
+    if(d[k]) el.textContent = d[k];
+  });
+  const btn = document.getElementById('langToggle');
+  if(btn) btn.textContent = currentLang === 'ru' ? 'RU' : 'EN';
+  applyServerData();
+  localStorage.setItem('swiss-lang', currentLang);
+}
+function toggleLang(){ currentLang = currentLang === 'ru' ? 'en' : 'ru'; applyLang(); }
+
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  const b = document.getElementById('themeToggle');
+  if(b) b.textContent = t === 'dark' ? '☀️' : '🌙';
+  localStorage.setItem('swiss-theme', t);
+}
+function toggleTheme(){
+  const cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+  applyTheme(cur === 'dark' ? 'light' : 'dark');
+}
+applyTheme(localStorage.getItem('swiss-theme') || 'light');
+
+/* falling leaves decor */
+(function(){
+  const box = document.getElementById('leaves');
+  if(!box) return;
+  const icons = ['🍂','🍁','✈️','🌾'];
+  for(let i=0;i<11;i++){
+    const s = document.createElement('span');
+    s.className = 'leaf';
+    s.textContent = icons[i % icons.length];
+    s.style.left = (Math.random()*100) + 'vw';
+    s.style.animationDuration = (13 + Math.random()*13) + 's';
+    s.style.animationDelay = (-Math.random()*20) + 's';
+    s.style.fontSize = (13 + Math.random()*13) + 'px';
+    box.appendChild(s);
+  }
+})();
+
+/* live text from admin settings */
+function applyServerData(){
+  const d = I18N[currentLang] || I18N.ru;
+  const isUpdate = serverData && serverData.mode === 'update';
+  const badge = document.getElementById('badgeText');
+  const titleEl = document.querySelector('#mTitle .accent');
+  const msgEl = document.getElementById('mMessage');
+  const gear = document.getElementById('gearIcon');
+
+  if(badge) badge.textContent = isUpdate ? d['badge-update'] : d['badge-maint'];
+  if(gear) gear.textContent = isUpdate ? '🚀' : '⚙️';
+  if(titleEl) titleEl.textContent = (serverData && serverData.title) ? serverData.title
+      : (isUpdate ? d['title-update'] : d['title-maint']);
+  if(msgEl) msgEl.textContent = (serverData && serverData.message) ? serverData.message
+      : (isUpdate ? d['desc-update'] : d['desc-maint']);
+
+  const etaBox = document.getElementById('etaBox');
+  const etaText = document.getElementById('etaText');
+  if(serverData && serverData.eta){
+    etaText.textContent = d['eta-prefix'] + serverData.eta;
+    etaBox.style.display = 'inline-flex';
+  } else if(etaBox){
+    etaBox.style.display = 'none';
+  }
+}
+
+async function loadMode(){
+  try{
+    const r = await fetch('/api/site-mode', {cache:'no-store'});
+    if(!r.ok) return;
+    const j = await r.json();
+    serverData = {
+      mode: j.mode || 'maintenance',
+      title: (j.title || '').trim(),
+      message: (j.message || '').trim(),
+      eta: (j.eta || '').trim()
+    };
+    applyServerData();
+    if(!PREVIEW && serverData.mode === 'live'){ location.replace('/'); }
+  }catch(e){}
+}
+
+applyLang();
+loadMode();
+setInterval(loadMode, 30000);
+</script>
+
+</body>
+</html>

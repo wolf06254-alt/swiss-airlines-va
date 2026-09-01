@@ -118,7 +118,6 @@ if (dbType === 'postgres') {
    ============================================================ */
 app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true, limit: '2mb' }));
-app.use(express.static(path.join(__dirname, '.')));
 
 // Trust proxy — MUST be set BEFORE the session middleware so that
 // express-session correctly sees X-Forwarded-Proto on Render's reverse proxy.
@@ -139,6 +138,39 @@ app.use(session({
   },
   name: 'swiss_session'
 }));
+
+/* ============================================================
+   SITE MODE GATE (maintenance / update screen)
+   Non-admin visitors get maintenance.html while the site is
+   switched off from the admin panel. Admins pass through.
+   ============================================================ */
+const MODE_ALLOW_EXACT = new Set([
+  '/login.html', '/maintenance.html', '/admin.html',
+  '/api/login', '/api/logout', '/api/me', '/api/site-mode', '/api/health',
+  '/favicon.ico', '/robots.txt'
+]);
+const MODE_ASSET_RE = /\.(css|js|mjs|png|jpe?g|svg|webp|gif|ico|woff2?|ttf|otf|eot|map|json|mp4|webm)$/i;
+
+app.use((req, res, next) => {
+  // keep the cached settings reasonably fresh (multi-instance safe)
+  if (dbReady && Date.now() - siteSettingsAt > 15000) { siteSettingsAt = Date.now(); settingsLoad().catch(() => {}); }
+
+  if (siteSettings.site_mode === 'live') return next();
+  if (req.session && req.session.isAdmin) return next();
+
+  const p = req.path;
+  if (MODE_ALLOW_EXACT.has(p)) return next();
+  if (MODE_ASSET_RE.test(p)) return next();
+
+  res.setHeader('Retry-After', '3600');
+  res.setHeader('Cache-Control', 'no-store');
+  if (p.startsWith('/api/')) {
+    return res.status(503).json({ success: false, maintenance: true, mode: siteSettings.site_mode, error: 'Site is temporarily unavailable' });
+  }
+  return res.status(503).sendFile(path.join(__dirname, 'maintenance.html'));
+});
+
+app.use(express.static(path.join(__dirname, '.')));
 
 /* ============================================================
    SECURITY HEADERS
@@ -178,11 +210,52 @@ app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 app.get('/login.html', (req, res) => res.sendFile(path.join(__dirname, 'login.html')));
 app.get('/admin.html', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
 app.get('/404.html', (req, res) => res.sendFile(path.join(__dirname, '404.html')));
+app.get('/maintenance.html', (req, res) => res.sendFile(path.join(__dirname, 'maintenance.html')));
 
 /* ============================================================
    LIVE STATS (BETA) — counter helpers
    ============================================================ */
 const STAT_KEYS = ['visits', 'pilots', 'flights', 'flight_hours', 'destinations'];
+
+/* ============================================================
+   SITE SETTINGS (site mode: live / maintenance / update)
+   ============================================================ */
+const SETTING_KEYS = ['site_mode', 'maint_title', 'maint_message', 'maint_eta'];
+const SETTING_DEFAULTS = { site_mode: 'live', maint_title: '', maint_message: '', maint_eta: '' };
+const SITE_MODES = ['live', 'maintenance', 'update'];
+let siteSettings = Object.assign({}, SETTING_DEFAULTS);
+let siteSettingsAt = 0;
+
+async function settingsLoad() {
+  const out = Object.assign({}, SETTING_DEFAULTS);
+  try {
+    if (dbType === 'postgres') {
+      const r = await db.query('SELECT skey, svalue FROM site_settings');
+      for (const row of r.rows) if (SETTING_KEYS.includes(row.skey)) out[row.skey] = row.svalue == null ? '' : String(row.svalue);
+    } else {
+      const rows = await new Promise((resolve, reject) => db.all('SELECT skey, svalue FROM site_settings', [], (err, r) => err ? reject(err) : resolve(r || [])));
+      for (const row of rows) if (SETTING_KEYS.includes(row.skey)) out[row.skey] = row.svalue == null ? '' : String(row.svalue);
+    }
+    if (!SITE_MODES.includes(out.site_mode)) out.site_mode = 'live';
+    siteSettings = out;
+    siteSettingsAt = Date.now();
+  } catch (e) {
+    console.error('[SETTINGS] read error:', e.message);
+  }
+  return siteSettings;
+}
+
+async function settingsSet(key, value) {
+  if (!SETTING_KEYS.includes(key)) return false;
+  const v = value == null ? '' : String(value).slice(0, 500);
+  if (dbType === 'postgres') {
+    await db.query('INSERT INTO site_settings (skey, svalue, updated_at) VALUES ($1,$2,CURRENT_TIMESTAMP) ON CONFLICT (skey) DO UPDATE SET svalue = $2, updated_at = CURRENT_TIMESTAMP', [key, v]);
+  } else {
+    await new Promise((resolve, reject) => db.run('INSERT INTO site_settings (skey, svalue, updated_at) VALUES (?,?,CURRENT_TIMESTAMP) ON CONFLICT(skey) DO UPDATE SET svalue = excluded.svalue, updated_at = CURRENT_TIMESTAMP', [key, v], (err) => err ? reject(err) : resolve()));
+  }
+  siteSettings[key] = v;
+  return true;
+}
 
 async function statsGetAll() {
   const out = {};
@@ -288,6 +361,17 @@ async function initDb() {
       for (const k of STAT_KEYS) {
         await db.query('INSERT INTO site_stats (skey, svalue) VALUES ($1, 0) ON CONFLICT (skey) DO NOTHING', [k]);
       }
+      // Site mode settings (maintenance / update screen)
+      await db.query(`
+        CREATE TABLE IF NOT EXISTS site_settings (
+          skey TEXT PRIMARY KEY,
+          svalue TEXT,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+      for (const k of SETTING_KEYS) {
+        await db.query('INSERT INTO site_settings (skey, svalue) VALUES ($1, $2) ON CONFLICT (skey) DO NOTHING', [k, SETTING_DEFAULTS[k]]);
+      }
       await db.query(`
         CREATE TABLE IF NOT EXISTS events (
           id SERIAL PRIMARY KEY,
@@ -371,6 +455,16 @@ async function initDb() {
       });
       for (const k of STAT_KEYS) {
         await new Promise((resolve) => db.run('INSERT OR IGNORE INTO site_stats (skey, svalue) VALUES (?, 0)', [k], () => resolve()));
+      }
+      // Site mode settings (maintenance / update screen)
+      await new Promise((resolve, reject) => {
+        db.run(`CREATE TABLE IF NOT EXISTS site_settings (
+          skey TEXT PRIMARY KEY, svalue TEXT,
+          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`, (err) => err ? reject(err) : resolve());
+      });
+      for (const k of SETTING_KEYS) {
+        await new Promise((resolve) => db.run('INSERT OR IGNORE INTO site_settings (skey, svalue) VALUES (?, ?)', [k, SETTING_DEFAULTS[k]], () => resolve()));
       }
       await new Promise((resolve, reject) => {
         db.run(`CREATE TABLE IF NOT EXISTS events (
@@ -521,6 +615,7 @@ async function initDb() {
 
     dbReady = true;
     pgReconnectAttempts = 0;
+    try { await settingsLoad(); console.log('⚙️  [SETTINGS] site_mode =', siteSettings.site_mode); } catch (e) { console.error('[SETTINGS] init error:', e.message); }
     console.log('✅ Database initialized and ready');
   } catch (err) {
     console.error('❌ Database initialization error:', err);
@@ -826,6 +921,46 @@ app.post('/api/login', rateLimit(60000, 5), (req, res) => {
   } else {
     console.log('⚠️ [LOGIN] Failed login attempt for:', username);
     res.status(401).json({ success: false, error: 'Неверный логин или пароль' });
+  }
+});
+
+/* ===== SITE MODE (maintenance / update) ===== */
+app.get('/api/site-mode', async (req, res) => {
+  if (dbReady && Date.now() - siteSettingsAt > 15000) { try { await settingsLoad(); } catch (e) {} }
+  res.setHeader('Cache-Control', 'no-store');
+  res.json({
+    success: true,
+    mode: siteSettings.site_mode || 'live',
+    title: siteSettings.maint_title || '',
+    message: siteSettings.maint_message || '',
+    eta: siteSettings.maint_eta || '',
+    isAdmin: !!(req.session && req.session.isAdmin)
+  });
+});
+
+app.put('/api/admin/site-mode', requireAuth, requireDb, async (req, res) => {
+  try {
+    const body = req.body || {};
+    if (body.mode !== undefined) {
+      const mode = String(body.mode);
+      if (!SITE_MODES.includes(mode)) return res.status(400).json({ success: false, error: 'Invalid mode' });
+      await settingsSet('site_mode', mode);
+    }
+    if (body.title !== undefined) await settingsSet('maint_title', body.title);
+    if (body.message !== undefined) await settingsSet('maint_message', body.message);
+    if (body.eta !== undefined) await settingsSet('maint_eta', body.eta);
+    await settingsLoad();
+    console.log('⚙️  [SETTINGS] site_mode set to', siteSettings.site_mode);
+    res.json({
+      success: true,
+      mode: siteSettings.site_mode,
+      title: siteSettings.maint_title,
+      message: siteSettings.maint_message,
+      eta: siteSettings.maint_eta
+    });
+  } catch (e) {
+    console.error('[SETTINGS] save error:', e.message);
+    res.status(500).json({ success: false, error: 'Database error' });
   }
 });
 

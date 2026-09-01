@@ -7,35 +7,35 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --swiss-red: #B14A0D;
-      --autumn-orange: #E86A16;
-      --autumn-gold: #F09420;
-      --autumn-amber: #FFB03A;
-      --autumn-brown: #8A3A08;
-      --autumn-wine: #A03A05;
-      --autumn-olive: #C25A10;
-      --swiss-red-dark: #8A3608;
-      --black: #2A1508;
-      --gray-900: #3A2010;
-      --gray-700: #653A20;
-      --gray-500: #7A4A2A;
-      --gray-300: #F0C79B;
-      --gray-100: #FFEEDC;
-      --white: #FFF7EF;
+      --swiss-red: #D2500F;
+      --autumn-pumpkin: #EA6A0E;
+      --autumn-mustard: #F59E0B;
+      --autumn-wheat: #FBBF24;
+      --autumn-walnut: #4A2A12;
+      --autumn-rust: #B4460F;
+      --autumn-copper: #C2600F;
+      --swiss-red-dark: #9A3412;
+      --black: #2A1608;
+      --gray-900: #33200F;
+      --gray-700: #6B4526;
+      --gray-500: #8A6A4E;
+      --gray-300: #F5D9BC;
+      --gray-100: #FFF1E3;
+      --white: #FFFBF6;
       --bg: var(--white);
       --text: var(--gray-900);
       --card: var(--white);
       --border: var(--gray-300);
       --transition: cubic-bezier(0.4, 0, 0.2, 1);
-      --header-bg: #FFF4E8;
-      --header-text: #2A1508;
-      --header-link: #7A4A2A;
-      --header-border: #F0C79B;
+      --header-bg: #FFF5EA;
+      --header-text: #2A1608;
+      --header-link: #8A6A4E;
+      --header-border: #F5D9BC;
     }
     [data-theme="dark"] {
-      --bg: #1E1207; --text: #F7E7D5; --card: #2A1A0E; --border: #5A3720; --black: #F7E7D5;
-      --gray-100: #2A1A0E; --gray-300: #6B4526; --gray-500: #D9AE8A; --gray-700: #E3C0A0; --gray-900: #F5E3D0;
-      --header-bg: #170E06; --header-text: #FFF4E8; --header-link: #D9AE8A; --header-border: #6B4526;
+      --bg: #1E1408; --text: #F9E7D4; --card: #2C1E10; --border: #553A22; --black: #F9E7D4;
+      --gray-100: #2C1E10; --gray-300: #63432A; --gray-500: #E5B98F; --gray-700: #E8C6A4; --gray-900: #FAE7D3;
+      --header-bg: #180F06; --header-text: #FFF5EA; --header-link: #E5B98F; --header-border: #63432A;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--gray-100); color: var(--text); line-height: 1.6; }
@@ -55,7 +55,7 @@
     .header-left { display: flex; align-items: center; gap: 16px; }
     .header-logo { display: flex; align-items: center; gap: 10px; color: var(--header-text); font-weight: 700; font-size: 14px; letter-spacing: -0.3px; text-decoration: none; }
     .header-cross { width: 24px; height: 24px; background: var(--swiss-red); display: flex; align-items: center; justify-content: center; font-size: 12px; color: white; font-weight: 700; }
-    .header-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(177,74,13,0.15); color: var(--swiss-red); padding: 4px 10px; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+    .header-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(210,80,15,0.15); color: var(--swiss-red); padding: 4px 10px; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
     .header-right { display: flex; align-items: center; gap: 12px; }
     .user-greeting { display: flex; align-items: center; gap: 8px; color: var(--gray-500); font-size: 13px; font-weight: 500; }
     .user-avatar { width: 28px; height: 28px; background: var(--swiss-red); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 700; }
@@ -92,7 +92,7 @@
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
     th { background: var(--gray-100); padding: 12px 14px; text-align: left; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gray-500); border-bottom: 1px solid var(--gray-300); white-space: nowrap; }
     td { padding: 12px 14px; border-bottom: 1px solid var(--gray-100); vertical-align: top; }
-    tr:hover td { background: rgba(177,74,13,0.02); }
+    tr:hover td { background: rgba(210,80,15,0.02); }
     .cell-name { font-weight: 600; color: var(--black); }
     .cell-muted { color: var(--gray-500); font-size: 12px; }
     .cell-small { font-size: 12px; }
@@ -133,6 +133,25 @@
     .btn-cancel { background: transparent; color: var(--gray-700); border: 1px solid var(--gray-300); padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
     .btn-cancel:hover { border-color: var(--gray-700); }
 
+    /* ===== SITE MODE ===== */
+    .mode-banner { max-width: 1400px; margin: 0 auto 18px; padding: 14px 18px; border-radius: 12px; border: 1px solid var(--swiss-red); background: rgba(210,80,15,0.10); font-size: 13px; line-height: 1.6; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; animation: fadeUp 0.4s var(--transition); }
+    .mode-banner .mb-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--swiss-red); animation: mbPulse 1.4s ease-in-out infinite; flex-shrink: 0; }
+    @keyframes mbPulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .3; transform: scale(.7); } }
+    .mode-banner b { color: var(--swiss-red); }
+    .mode-banner .mb-btn { margin-left: auto; background: var(--swiss-red); color: #fff; border: none; padding: 7px 15px; font-size: 12px; font-weight: 700; border-radius: 8px; cursor: pointer; transition: all .3s; }
+    .mode-banner .mb-btn:hover { background: var(--swiss-red-dark); transform: translateY(-1px); }
+
+    .mode-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
+    .mode-card { position: relative; border: 2px solid var(--gray-300); border-radius: 14px; padding: 18px 16px; cursor: pointer; background: var(--bg); transition: all .28s var(--transition); text-align: left; }
+    .mode-card:hover { border-color: var(--swiss-red); transform: translateY(-3px); box-shadow: 0 14px 30px -18px rgba(210,80,15,.6); }
+    .mode-card.selected { border-color: var(--swiss-red); background: rgba(210,80,15,0.07); box-shadow: 0 14px 30px -20px rgba(210,80,15,.7); }
+    .mode-card .mc-icon { font-size: 26px; line-height: 1; display: block; margin-bottom: 10px; }
+    .mode-card .mc-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .mode-card .mc-desc { font-size: 12px; color: var(--gray-500); line-height: 1.5; }
+    .mode-card .mc-check { position: absolute; top: 12px; right: 12px; width: 20px; height: 20px; border-radius: 50%; background: var(--swiss-red); color: #fff; font-size: 12px; display: none; align-items: center; justify-content: center; }
+    .mode-card.selected .mc-check { display: flex; }
+    .mode-live-pill { display: inline-flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 5px 12px; border-radius: 100px; border: 1px solid var(--gray-300); color: var(--gray-500); }
+
     /* ===== LOADING / EMPTY ===== */
     .loading { text-align: center; padding: 60px; color: var(--gray-500); font-size: 14px; }
     .loading::after { content: ''; display: inline-block; width: 16px; height: 16px; border: 2px solid var(--gray-300); border-top-color: var(--swiss-red); border-radius: 50%; margin-left: 10px; animation: spin 0.8s linear infinite; }
@@ -157,7 +176,7 @@
 
     .filters-bar { padding: 0 40px 20px; max-width: 1400px; margin: 0 auto; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
     .filter-btn { padding: 7px 14px; font-size: 12px; font-weight: 500; border: 1px solid var(--gray-300); background: var(--bg); color: var(--gray-700); cursor: pointer; transition: all 0.3s var(--transition); display: inline-flex; align-items: center; gap: 6px; }
-    .filter-btn:hover, .filter-btn.active { border-color: var(--swiss-red); color: var(--swiss-red); background: rgba(177,74,13,0.04); }
+    .filter-btn:hover, .filter-btn.active { border-color: var(--swiss-red); color: var(--swiss-red); background: rgba(210,80,15,0.04); }
 
     /* ===== EXPAND ===== */
     .expand-btn { background: none; border: 1px solid var(--gray-300); width: 22px; height: 22px; cursor: pointer; font-size: 10px; color: var(--gray-500); transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
@@ -194,7 +213,7 @@
       height: 3px;
       z-index: 6;
       pointer-events: none;
-      background: linear-gradient(90deg, var(--autumn-wine), var(--autumn-orange), var(--autumn-gold), var(--autumn-olive), var(--autumn-brown));
+      background: linear-gradient(90deg, var(--autumn-rust), var(--autumn-pumpkin), var(--autumn-mustard), var(--autumn-copper), var(--autumn-walnut));
       background-size: 200% 100%;
       animation: autumnFlow 14s linear infinite;
       opacity: 0.9;
@@ -205,25 +224,25 @@
     }
     /* ===== AUTUMN BACKDROP ===== */
     html {
-      background-color: #FFEBD6;
+      background-color: #FFF2E6;
       background-image:
-        radial-gradient(900px 560px at 10% -8%, rgba(255,158,70,0.30), transparent 70%),
-        radial-gradient(780px 500px at 100% 6%, rgba(255,132,40,0.24), transparent 72%),
-        radial-gradient(700px 460px at 46% 106%, rgba(240,148,32,0.20), transparent 70%),
-        linear-gradient(176deg, #FFF1E0 0%, #FFE6CC 48%, #FFD9B5 100%);
+        radial-gradient(900px 560px at 10% -8%, rgba(245,158,11,0.30), transparent 70%),
+        radial-gradient(780px 500px at 100% 6%, rgba(234,106,14,0.24), transparent 72%),
+        radial-gradient(700px 460px at 46% 106%, rgba(194,96,15,0.20), transparent 70%),
+        linear-gradient(176deg, #FFF6EC 0%, #FFF0DF 48%, #FBDCBE 100%);
       background-attachment: fixed;
       background-repeat: no-repeat;
     }
     body { background: transparent; }
     html[data-theme="dark"] {
-      background-color: #1E1207;
+      background-color: #1E1408;
       background-image:
-        radial-gradient(900px 560px at 10% -8%, rgba(200,92,16,0.20), transparent 70%),
-        radial-gradient(780px 500px at 100% 6%, rgba(160,64,10,0.18), transparent 72%),
-        linear-gradient(176deg, #241408 0%, #1E1207 52%, #160D05 100%);
+        radial-gradient(900px 560px at 10% -8%, rgba(210,80,15,0.20), transparent 70%),
+        radial-gradient(780px 500px at 100% 6%, rgba(180,70,15,0.18), transparent 72%),
+        linear-gradient(176deg, #2A1608 0%, #1E1408 52%, #180F06 100%);
     }
     /* ===== READABILITY FIXES ===== */
-    [data-theme="dark"] { --nav-link: #F0C79B; }
+    [data-theme="dark"] { --nav-link: #F5D9BC; }
   </style>
 </head>
 <body>
@@ -263,6 +282,8 @@
     </div>
   </div>
 
+  <div id="modeBanner" class="mode-banner" style="display:none;"></div>
+
   <div class="tabs-bar">
     <button class="tab-btn active" onclick="switchTab('applications')" data-tab="applications" data-i18n="tab-applications">📋 Анкеты</button>
     <button class="tab-btn" onclick="switchTab('events')" data-tab="events" data-i18n="tab-events">📅 События</button>
@@ -270,6 +291,7 @@
     <button class="tab-btn" onclick="switchTab('fleet')" data-tab="fleet" data-i18n="tab-fleet">✈️ Флот</button>
     <button class="tab-btn" onclick="switchTab('timeline')" data-tab="timeline" data-i18n="tab-timeline">📜 История</button>
     <button class="tab-btn" onclick="switchTab('sitestats')" data-tab="sitestats" data-i18n="tab-sitestats">📊 Статистика</button>
+    <button class="tab-btn" onclick="switchTab('sitemode')" data-tab="sitemode" data-i18n="tab-sitemode">🚧 Режим сайта</button>
   </div>
 
   <!-- ANKETY -->
@@ -281,14 +303,14 @@
       <div class="stat-card"><span class="stat-icon">❌</span><div class="stat-value" id="rejectedCount">0</div><div class="stat-label" data-i18n="stat-rejected">Отклонено</div></div>
       <div class="stat-card"><span class="stat-icon">🔍</span><div class="stat-value" id="reviewCount">0</div><div class="stat-label" data-i18n="stat-review">На рассмотрении</div></div>
     </div>
-    <div id="dbWarnBanner" style="display:none;max-width:1400px;margin:0 auto 16px;padding:14px 18px;border-radius:12px;border:1px solid #B14A0D;background:rgba(177,74,13,0.08);color:#fff;font-size:13px;line-height:1.6;"></div>
+    <div id="dbWarnBanner" style="display:none;max-width:1400px;margin:0 auto 16px;padding:14px 18px;border-radius:12px;border:1px solid #D2500F;background:rgba(210,80,15,0.08);color:#fff;font-size:13px;line-height:1.6;"></div>
     <div class="filters-bar">
       <span class="filter-btn active" data-filter="all" onclick="setAppFilter('all')" data-i18n="filter-all">Все</span>
       <span class="filter-btn" data-filter="new" onclick="setAppFilter('new')" data-i18n="filter-new">🆕 Новые</span>
       <span class="filter-btn" data-filter="review" onclick="setAppFilter('review')" data-i18n="filter-review">🔍 На рассмотрении</span>
       <span class="filter-btn" data-filter="accepted" onclick="setAppFilter('accepted')" data-i18n="filter-accepted">✅ Принято</span>
       <span class="filter-btn" data-filter="rejected" onclick="setAppFilter('rejected')" data-i18n="filter-rejected">❌ Отклонено</span>
-      <button class="filter-btn" style="margin-left:auto;background:#B14A0D;color:#fff;border:none;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:12px;" onclick="checkDbStatus()" title="Проверить состояние базы данных">🔍 DB Status</button>
+      <button class="filter-btn" style="margin-left:auto;background:#D2500F;color:#fff;border:none;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:12px;" onclick="checkDbStatus()" title="Проверить состояние базы данных">🔍 DB Status</button>
     </div>
     <div class="table-wrapper">
       <div class="loading" id="appsLoading" data-i18n="loading-apps">Загрузка анкет...</div>
@@ -357,7 +379,7 @@
     <div class="toolbar">
       <h3 style="font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px;">
         <span data-i18n="stats-title">Живая статистика</span>
-        <span style="background:#B14A0D;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.5px;">BETA</span>
+        <span style="background:#D2500F;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.5px;">BETA</span>
       </h3>
       <button class="btn-add" onclick="loadSiteStats()" data-i18n="btn-stats-refresh">↻ Обновить</button>
     </div>
@@ -375,6 +397,65 @@
     </div>
   </div>
 
+  <!-- SITE MODE -->
+  <div class="tab-content" id="tab-sitemode">
+    <div class="toolbar">
+      <h3 style="font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px;">
+        <span data-i18n="mode-title">Режим работы сайта</span>
+        <span class="mode-live-pill" id="modeNowPill">—</span>
+      </h3>
+      <button class="btn-add" onclick="loadSiteMode()" data-i18n="btn-mode-refresh">↻ Обновить</button>
+    </div>
+
+    <div class="table-wrapper" style="padding:20px;">
+      <p style="font-size:12px;color:var(--gray-500);margin:0 0 16px;line-height:1.7;" data-i18n="mode-hint">Выберите режим. В режимах «Технические работы» и «Обновление» посетители увидят красивую страницу-заглушку, а вы как администратор продолжите пользоваться сайтом как обычно.</p>
+
+      <div class="mode-grid">
+        <div class="mode-card" id="modeCard-live" onclick="selectMode('live')">
+          <span class="mc-check">✓</span>
+          <span class="mc-icon">🟢</span>
+          <div class="mc-name" data-i18n="mode-live-name">Сайт работает</div>
+          <div class="mc-desc" data-i18n="mode-live-desc">Всё доступно всем посетителям</div>
+        </div>
+        <div class="mode-card" id="modeCard-maintenance" onclick="selectMode('maintenance')">
+          <span class="mc-check">✓</span>
+          <span class="mc-icon">⚙️</span>
+          <div class="mc-name" data-i18n="mode-maint-name">Технические работы</div>
+          <div class="mc-desc" data-i18n="mode-maint-desc">Посетители видят заглушку, админ — сайт</div>
+        </div>
+        <div class="mode-card" id="modeCard-update" onclick="selectMode('update')">
+          <span class="mc-check">✓</span>
+          <span class="mc-icon">🚀</span>
+          <div class="mc-name" data-i18n="mode-update-name">Обновление</div>
+          <div class="mc-desc" data-i18n="mode-update-desc">То же, но с текстом про новые возможности</div>
+        </div>
+      </div>
+
+      <h4 style="font-size:14px;font-weight:700;margin:26px 0 6px;" data-i18n="mode-text-title">Текст на странице-заглушке</h4>
+      <p style="font-size:12px;color:var(--gray-500);margin:0 0 16px;" data-i18n="mode-text-hint">Все поля необязательны — если оставить пустыми, покажется текст по умолчанию.</p>
+
+      <div style="display:flex;flex-direction:column;gap:14px;max-width:640px;">
+        <div class="form-row">
+          <label data-i18n="mode-field-title">Заголовок</label>
+          <input type="text" id="modeTitle" maxlength="500" placeholder="Сайт на техническом обслуживании">
+        </div>
+        <div class="form-row">
+          <label data-i18n="mode-field-message">Сообщение</label>
+          <textarea id="modeMessage" maxlength="500" placeholder="Скоро вернёмся в небо!"></textarea>
+        </div>
+        <div class="form-row">
+          <label data-i18n="mode-field-eta">Ожидаемое время возвращения</label>
+          <input type="text" id="modeEta" maxlength="500" placeholder="например: сегодня в 20:00 МСК">
+        </div>
+      </div>
+
+      <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <button class="btn-save" onclick="saveSiteMode()" data-i18n="btn-mode-save">Сохранить режим</button>
+        <button class="btn-cancel" onclick="window.open('maintenance.html','_blank')" data-i18n="btn-mode-preview">👁 Предпросмотр</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     let currentTab = 'applications';
     let allData = [];
@@ -383,6 +464,8 @@
     let routesData = [];
     let fleetData = [];
     let timelineData = [];
+    let siteModeData = null;
+    let selectedMode = 'live';
 
     /* ===== i18n ===== */
     const i18n = {
@@ -427,6 +510,20 @@
         'stats-editor-title': 'Ручные счётчики', 'stats-editor-hint': 'Эти значения показываются на главной странице в блоке «Живая статистика».', 'btn-stats-save': 'Сохранить счётчики',
         'stat-online': 'Сейчас на сайте', 'stat-visits': 'Посещений', 'stat-pilots': 'Пилотов', 'stat-flights': 'Рейсов', 'stat-flight-hours': 'Часов в воздухе', 'stat-destinations': 'Направлений',
         'toast-stats-saved': 'Счётчики обновлены', 'toast-stats-error': 'Не удалось сохранить счётчики',
+        'tab-sitemode': '🚧 Режим сайта',
+        'mode-title': 'Режим работы сайта', 'btn-mode-refresh': '↻ Обновить',
+        'mode-hint': 'Выберите режим. В режимах «Технические работы» и «Обновление» посетители увидят красивую страницу-заглушку, а вы как администратор продолжите пользоваться сайтом как обычно.',
+        'mode-live-name': 'Сайт работает', 'mode-live-desc': 'Всё доступно всем посетителям',
+        'mode-maint-name': 'Технические работы', 'mode-maint-desc': 'Посетители видят заглушку, админ — сайт',
+        'mode-update-name': 'Обновление', 'mode-update-desc': 'То же, но с текстом про новые возможности',
+        'mode-text-title': 'Текст на странице-заглушке', 'mode-text-hint': 'Все поля необязательны — если оставить пустыми, покажется текст по умолчанию.',
+        'mode-field-title': 'Заголовок', 'mode-field-message': 'Сообщение', 'mode-field-eta': 'Ожидаемое время возвращения',
+        'btn-mode-save': 'Сохранить режим', 'btn-mode-preview': '👁 Предпросмотр',
+        'mode-now-live': 'Сайт работает', 'mode-now-maintenance': 'Технические работы', 'mode-now-update': 'Обновление',
+        'banner-maint': 'Сайт закрыт на технические работы. Обычные посетители видят страницу-заглушку.',
+        'banner-update': 'Сайт в режиме обновления. Обычные посетители видят страницу-заглушку.',
+        'banner-btn': 'Включить сайт',
+        'toast-mode-saved': 'Режим сайта обновлён', 'toast-mode-error': 'Не удалось сохранить режим',
       },
       en: {
         'admin-badge': 'Admin Panel', 'admin-title': 'Admin Panel', 'admin-subtitle': 'Swiss Airlines website content management',
@@ -469,6 +566,20 @@
         'stats-editor-title': 'Manual counters', 'stats-editor-hint': 'These values are shown on the homepage in the Live Statistics block.', 'btn-stats-save': 'Save counters',
         'stat-online': 'Online now', 'stat-visits': 'Visits', 'stat-pilots': 'Pilots', 'stat-flights': 'Flights', 'stat-flight-hours': 'Flight hours', 'stat-destinations': 'Destinations',
         'toast-stats-saved': 'Counters updated', 'toast-stats-error': 'Failed to save counters',
+        'tab-sitemode': '🚧 Site mode',
+        'mode-title': 'Site operating mode', 'btn-mode-refresh': '↻ Refresh',
+        'mode-hint': 'Pick a mode. In Maintenance and Update modes visitors see a nice holding page, while you as administrator keep browsing the site as usual.',
+        'mode-live-name': 'Site is live', 'mode-live-desc': 'Everything is available to all visitors',
+        'mode-maint-name': 'Maintenance', 'mode-maint-desc': 'Visitors see the holding page, admin sees the site',
+        'mode-update-name': 'Update', 'mode-update-desc': 'Same, but worded around new features',
+        'mode-text-title': 'Text on the holding page', 'mode-text-hint': 'All fields are optional — leave them empty to use the default text.',
+        'mode-field-title': 'Heading', 'mode-field-message': 'Message', 'mode-field-eta': 'Estimated time back',
+        'btn-mode-save': 'Save mode', 'btn-mode-preview': '👁 Preview',
+        'mode-now-live': 'Live', 'mode-now-maintenance': 'Maintenance', 'mode-now-update': 'Update',
+        'banner-maint': 'The site is closed for maintenance. Regular visitors see the holding page.',
+        'banner-update': 'The site is in update mode. Regular visitors see the holding page.',
+        'banner-btn': 'Go live',
+        'toast-mode-saved': 'Site mode updated', 'toast-mode-error': 'Failed to save the mode',
       }
     };
 
@@ -491,6 +602,7 @@
       if (currentTab === 'fleet') renderFleet();
       if (currentTab === 'timeline' && timelineData.length >= 0) renderTimeline();
       if (currentTab === 'sitestats' && siteStatsData) renderSiteStats();
+      if (siteModeData) renderSiteMode();
       renderAppStats();
     }
 
@@ -516,6 +628,7 @@
       if (tab === 'fleet' && fleetData.length === 0) loadFleet();
       if (tab === 'timeline' && timelineData.length === 0) loadTimeline();
       if (tab === 'sitestats' && !siteStatsData) loadSiteStats();
+      if (tab === 'sitemode' && !siteModeData) loadSiteMode();
     }
 
     // ============ MODAL ============
@@ -555,7 +668,7 @@
           if (r.status===503) {
             loadAppsRetries++;
             if (loadAppsRetries > 10) {
-              document.getElementById('appsLoading').innerHTML='❌ База данных недоступна. <button onclick="loadAppsRetries=0;loadApplications()" style="background:#B14A0D;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">Повторить</button> <button onclick="checkDbStatus()" style="background:#333;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">🔍 Диагностика</button>';
+              document.getElementById('appsLoading').innerHTML='❌ База данных недоступна. <button onclick="loadAppsRetries=0;loadApplications()" style="background:#D2500F;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">Повторить</button> <button onclick="checkDbStatus()" style="background:#333;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">🔍 Диагностика</button>';
               return;
             }
             document.getElementById('appsLoading').textContent='⏳ База данных подключается... Попытка ' + loadAppsRetries + '/10';
@@ -567,7 +680,7 @@
             if (errData.retry) {
               loadAppsRetries++;
               if (loadAppsRetries > 5) {
-                document.getElementById('appsLoading').innerHTML='❌ Ошибка БД: ' + (errData.error||'Unknown') + '. <button onclick="loadAppsRetries=0;loadApplications()" style="background:#B14A0D;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">Повторить</button> <button onclick="checkDbStatus()" style="background:#333;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">🔍 Диагностика</button>';
+                document.getElementById('appsLoading').innerHTML='❌ Ошибка БД: ' + (errData.error||'Unknown') + '. <button onclick="loadAppsRetries=0;loadApplications()" style="background:#D2500F;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">Повторить</button> <button onclick="checkDbStatus()" style="background:#333;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">🔍 Диагностика</button>';
                 return;
               }
               document.getElementById('appsLoading').textContent='⚠️ Ошибка БД, переподключение... Попытка ' + loadAppsRetries + '/5';
@@ -584,7 +697,7 @@
         allData = data.applications || [];
         document.getElementById('appsLoading').style.display='none';
         renderAppStats(); renderApps(); checkStoragePersistence();
-      } catch(e) { document.getElementById('appsLoading').innerHTML=t('error-load') + ' (' + e.message + ') <button onclick="loadApplications()" style="background:#B14A0D;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">Повторить</button>'; }
+      } catch(e) { document.getElementById('appsLoading').innerHTML=t('error-load') + ' (' + e.message + ') <button onclick="loadApplications()" style="background:#D2500F;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">Повторить</button>'; }
     }
     // ============ STORAGE PERSISTENCE CHECK ============
     let storageChecked = false;
@@ -616,7 +729,7 @@
     async function checkDbStatus() {
       const modal = document.createElement('div');
       modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:10000;display:flex;align-items:center;justify-content:center;';
-      modal.innerHTML = '<div style="background:#1a1a2e;border:1px solid #B14A0D;border-radius:16px;padding:24px;max-width:500px;width:90%;color:#fff;font-family:system-ui;"><h3 style="color:#B14A0D;margin:0 0 16px;">🔍 Диагностика базы данных</h3><div id="dbStatusContent" style="font-size:14px;">⏳ Загрузка...</div><button onclick="this.closest(\'div[style]\').parentElement.remove()" style="margin-top:16px;background:#B14A0D;color:#fff;border:none;padding:8px 24px;border-radius:8px;cursor:pointer;">Закрыть</button></div>';
+      modal.innerHTML = '<div style="background:#1a1a2e;border:1px solid #D2500F;border-radius:16px;padding:24px;max-width:500px;width:90%;color:#fff;font-family:system-ui;"><h3 style="color:#D2500F;margin:0 0 16px;">🔍 Диагностика базы данных</h3><div id="dbStatusContent" style="font-size:14px;">⏳ Загрузка...</div><button onclick="this.closest(\'div[style]\').parentElement.remove()" style="margin-top:16px;background:#D2500F;color:#fff;border:none;padding:8px 24px;border-radius:8px;cursor:pointer;">Закрыть</button></div>';
       document.body.appendChild(modal);
       try {
         const r = await fetch('/api/db-status');
@@ -638,7 +751,7 @@
         }
         html += '</div>';
         if (data.latestApplication) {
-          html += '<div style="margin-bottom:8px;padding:8px;background:rgba(177,74,13,0.1);border-radius:8px;"><strong>📋 Последняя анкета:</strong><br>ID: ' + data.latestApplication.id + ' | ' + data.latestApplication.roblox_name + ' | ' + data.latestApplication.status + ' | ' + data.latestApplication.created_at + '</div>';
+          html += '<div style="margin-bottom:8px;padding:8px;background:rgba(210,80,15,0.1);border-radius:8px;"><strong>📋 Последняя анкета:</strong><br>ID: ' + data.latestApplication.id + ' | ' + data.latestApplication.roblox_name + ' | ' + data.latestApplication.status + ' | ' + data.latestApplication.created_at + '</div>';
         } else {
           html += '<div style="color:#ff0;">⚠️ Нет анкет в базе данных</div>';
         }
@@ -927,6 +1040,101 @@
     // ============ INIT ============
     const savedTheme=localStorage.getItem('swiss-theme'); if(savedTheme){ document.documentElement.setAttribute('data-theme',savedTheme); document.getElementById('themeToggle').textContent=savedTheme==='dark'?'☀️':'🌙'; }
     const savedLang=localStorage.getItem('swiss-lang'); if(savedLang){ document.documentElement.setAttribute('lang',savedLang); document.getElementById('langToggle').textContent=savedLang==='ru'?'EN':'RU'; }
+    // ============ SITE MODE ============
+    function selectMode(mode) {
+      selectedMode = mode;
+      ['live','maintenance','update'].forEach(function(m){
+        var c = document.getElementById('modeCard-' + m);
+        if (c) c.classList.toggle('selected', m === mode);
+      });
+    }
+
+    function renderModeBanner() {
+      var banner = document.getElementById('modeBanner');
+      if (!banner) return;
+      var mode = siteModeData ? siteModeData.mode : 'live';
+      if (mode === 'live') { banner.style.display = 'none'; banner.innerHTML = ''; return; }
+      var txt = mode === 'update' ? t('banner-update') : t('banner-maint');
+      banner.innerHTML = '<span class=\"mb-dot\"></span><span>' + (mode === 'update' ? '\uD83D\uDE80' : '\u2699\uFE0F') +
+        ' <b>' + escapeHtml(t(mode === 'update' ? 'mode-now-update' : 'mode-now-maintenance')) + '.</b> ' +
+        escapeHtml(txt) + '</span>' +
+        '<button class=\"mb-btn\" onclick=\"quickGoLive()\">' + escapeHtml(t('banner-btn')) + '</button>';
+      banner.style.display = 'flex';
+    }
+
+    function renderSiteMode() {
+      if (!siteModeData) return;
+      selectMode(siteModeData.mode || 'live');
+      var ti = document.getElementById('modeTitle');
+      var me = document.getElementById('modeMessage');
+      var et = document.getElementById('modeEta');
+      if (ti) ti.value = siteModeData.title || '';
+      if (me) me.value = siteModeData.message || '';
+      if (et) et.value = siteModeData.eta || '';
+      var pill = document.getElementById('modeNowPill');
+      if (pill) {
+        var m = siteModeData.mode || 'live';
+        pill.textContent = (m === 'live' ? '\uD83D\uDFE2 ' : m === 'update' ? '\uD83D\uDE80 ' : '\u2699\uFE0F ') + t('mode-now-' + m);
+        pill.style.color = m === 'live' ? '' : 'var(--swiss-red)';
+        pill.style.borderColor = m === 'live' ? '' : 'var(--swiss-red)';
+      }
+      renderModeBanner();
+    }
+
+    async function loadSiteMode() {
+      try {
+        var r = await fetch('/api/site-mode', { cache: 'no-store' });
+        var d = await r.json();
+        siteModeData = {
+          mode: d.mode || 'live',
+          title: d.title || '',
+          message: d.message || '',
+          eta: d.eta || ''
+        };
+        renderSiteMode();
+      } catch (e) {
+        console.error('loadSiteMode error:', e);
+        showToast(t('error-load'), 'error');
+      }
+    }
+
+    async function putSiteMode(payload) {
+      var r = await fetch('/api/admin/site-mode', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      var d = await r.json().catch(function(){ return {}; });
+      if (!r.ok || !d.success) throw new Error(d.error || 'save failed');
+      siteModeData = { mode: d.mode, title: d.title || '', message: d.message || '', eta: d.eta || '' };
+      renderSiteMode();
+      return d;
+    }
+
+    async function saveSiteMode() {
+      try {
+        await putSiteMode({
+          mode: selectedMode,
+          title: (document.getElementById('modeTitle') || {}).value || '',
+          message: (document.getElementById('modeMessage') || {}).value || '',
+          eta: (document.getElementById('modeEta') || {}).value || ''
+        });
+        showToast(t('toast-mode-saved'), 'success');
+      } catch (e) {
+        console.error('saveSiteMode error:', e);
+        showToast(t('toast-mode-error'), 'error');
+      }
+    }
+
+    async function quickGoLive() {
+      try {
+        await putSiteMode({ mode: 'live' });
+        showToast(t('toast-mode-saved'), 'success');
+      } catch (e) {
+        showToast(t('toast-mode-error'), 'error');
+      }
+    }
+
     async function checkAuth() {
       try {
         const r = await fetch('/api/me');
@@ -944,7 +1152,7 @@
         return false;
       }
     }
-    checkAuth().then(ok => { if (ok) loadApplications(); });
+    checkAuth().then(ok => { if (ok) { loadApplications(); loadSiteMode(); } });
   </script>
 
 </body>
