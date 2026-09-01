@@ -7,15 +7,21 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --swiss-red: #e30613;
-      --swiss-red-dark: #b0050f;
-      --white: #ffffff;
-      --black: #0a0a0a;
-      --gray-100: #f5f5f5;
-      --gray-200: #e5e5e5;
-      --gray-300: #d4d4d4;
-      --gray-500: #737373;
-      --gray-700: #404040;
+      --swiss-red: #C1440E;
+      --autumn-orange: #E07A28;
+      --autumn-gold: #D9A02B;
+      --autumn-amber: #F0B840;
+      --autumn-brown: #7C4A21;
+      --autumn-wine: #8C2F1B;
+      --autumn-olive: #6E6B2E;
+      --swiss-red-dark: #8F300A;
+      --white: #FFF8F0;
+      --black: #2B1810;
+      --gray-100: #FAF0E2;
+      --gray-200: #F0E0CC;
+      --gray-300: #DCC3A4;
+      --gray-500: #6E5442;
+      --gray-700: #5C4433;
       --gray-900: #171717;
       --bg: var(--white);
       --text: var(--gray-900);
@@ -24,18 +30,19 @@
       --transition: cubic-bezier(0.4, 0, 0.2, 1);
     }
     [data-theme="dark"] {
-      --bg: #0f0f0f;
-      --text: #f0f0f0;
-      --card: #1a1a1a;
-      --border: #333333;
-      --black: #f0f0f0;
-      --gray-100: #1a1a1a;
-      --gray-200: #2a2a2a;
-      --gray-300: #444444;
-      --gray-500: #888888;
-      --gray-700: #bbbbbb;
-      --gray-900: #f0f0f0;
+      --bg: #17100C;
+      --text: #F5E8DA;
+      --card: #221812;
+      --border: #4A3527;
+      --black: #F5E8DA;
+      --gray-100: #221812;
+      --gray-200: #2E2018;
+      --gray-300: #5A4231;
+      --gray-500: #B99B80;
+      --gray-700: #C4A98E;
+      --gray-900: #F5E8DA;
     }
+    [data-theme="dark"] .error-msg { color: var(--autumn-amber); }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Inter', sans-serif;
@@ -197,6 +204,90 @@
     @media (max-width: 480px) {
       .login-card { padding: 32px 24px; }
       .login-heading { font-size: 18px; }
+    }
+
+    /* ===== AUTUMN DECOR ===== */
+    html {
+      background-color: var(--bg);
+      background-image:
+        radial-gradient(900px 520px at 12% -10%, rgba(240, 184, 64, 0.20), transparent 70%),
+        radial-gradient(760px 480px at 100% 8%, rgba(193, 68, 14, 0.15), transparent 72%),
+        radial-gradient(680px 420px at 50% 108%, rgba(124, 74, 33, 0.12), transparent 70%);
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+    body { background: transparent; }
+    [data-theme="dark"] {
+      background-color: #17100C;
+      background-image:
+        radial-gradient(900px 520px at 12% -10%, rgba(240, 184, 64, 0.12), transparent 70%),
+        radial-gradient(760px 480px at 100% 8%, rgba(193, 68, 14, 0.16), transparent 72%),
+        radial-gradient(680px 420px at 50% 108%, rgba(110, 107, 46, 0.12), transparent 70%);
+    }
+    .autumn-strip {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      height: 3px;
+      z-index: 6;
+      pointer-events: none;
+      background: linear-gradient(90deg, var(--autumn-wine), var(--autumn-orange), var(--autumn-gold), var(--autumn-olive), var(--autumn-brown));
+      background-size: 200% 100%;
+      animation: autumnFlow 14s linear infinite;
+      opacity: 0.9;
+    }
+    @keyframes autumnFlow {
+      from { background-position: 0 0; }
+      to   { background-position: 200% 0; }
+    }
+    .leaf-layer {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 5;
+    }
+    .leaf {
+      position: absolute;
+      top: -8vh;
+      font-size: 18px;
+      line-height: 1;
+      opacity: 0;
+      will-change: transform, opacity;
+      animation: leafFall linear infinite, leafSway ease-in-out infinite alternate;
+    }
+    @keyframes leafFall {
+      0%   { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
+      8%   { opacity: 0.6; }
+      88%  { opacity: 0.5; }
+      100% { transform: translateY(112vh) rotate(520deg); opacity: 0; }
+    }
+    @keyframes leafSway {
+      from { margin-left: -26px; }
+      to   { margin-left: 26px; }
+    }
+    .autumn-branch {
+      position: fixed;
+      top: 0;
+      font-size: 120px;
+      line-height: 1;
+      opacity: 0.09;
+      pointer-events: none;
+      z-index: 4;
+      transform-origin: top center;
+      animation: branchSway 7s ease-in-out infinite alternate;
+    }
+    .autumn-branch.left  { left: -10px;  transform: rotate(18deg); }
+    .autumn-branch.right { right: -10px; transform: rotate(-18deg) scaleX(-1); }
+    @keyframes branchSway {
+      from { transform: rotate(14deg); }
+      to   { transform: rotate(22deg); }
+    }
+    @media (max-width: 768px) {
+      .leaf { font-size: 14px; }
+      .autumn-branch { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .leaf, .autumn-branch { animation: none; opacity: 0; }
     }
   </style>
 </head>
@@ -381,6 +472,33 @@
         btnSpan.textContent = t('login-btn');
       }
     }
+  </script>
+  <div class="autumn-branch left" aria-hidden="true">🍂</div>
+  <div class="autumn-branch right" aria-hidden="true">🍁</div>
+  <div class="autumn-strip" aria-hidden="true"></div>
+
+  <script>
+  (function buildAutumnLeaves() {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var layer = document.createElement('div');
+    layer.className = 'leaf-layer';
+    layer.setAttribute('aria-hidden', 'true');
+    var glyphs = ['\u{1F342}', '\u{1F341}', '\u{1F343}', '\u{1F33E}'];
+    var count = window.innerWidth < 768 ? 12 : 22;
+    for (var i = 0; i < count; i++) {
+      var leaf = document.createElement('span');
+      leaf.className = 'leaf';
+      leaf.textContent = glyphs[i % glyphs.length];
+      leaf.style.left = (Math.random() * 100).toFixed(2) + 'vw';
+      leaf.style.fontSize = (12 + Math.random() * 14).toFixed(1) + 'px';
+      leaf.style.animationDuration = (9 + Math.random() * 11).toFixed(2) + 's, ' +
+                                     (2.4 + Math.random() * 2.6).toFixed(2) + 's';
+      leaf.style.animationDelay = '-' + (Math.random() * 18).toFixed(2) + 's, -' +
+                                  (Math.random() * 4).toFixed(2) + 's';
+      layer.appendChild(leaf);
+    }
+    document.body.appendChild(layer);
+  })();
   </script>
 </body>
 </html>

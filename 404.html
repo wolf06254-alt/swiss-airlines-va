@@ -8,39 +8,55 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --swiss-red: #e30613;
-      --swiss-red-dark: #b8050f;
-      --black: #0a0a0a;
-      --gray-900: #1a1a1a;
-      --gray-700: #4a4a4a;
-      --gray-500: #737373;
-      --gray-300: #d4d4d4;
-      --gray-200: #e5e5e5;
-      --gray-100: #f5f5f5;
-      --white: #ffffff;
+      --swiss-red: #C1440E;
+      --autumn-orange: #E07A28;
+      --autumn-gold: #D9A02B;
+      --autumn-amber: #F0B840;
+      --autumn-brown: #7C4A21;
+      --autumn-wine: #8C2F1B;
+      --autumn-olive: #6E6B2E;
+      --swiss-red-dark: #8F300A;
+      --black: #2B1810;
+      --gray-900: #3A2317;
+      --gray-700: #5C4433;
+      --gray-500: #6E5442;
+      --gray-300: #DCC3A4;
+      --gray-200: #F0E0CC;
+      --gray-100: #FAF0E2;
+      --white: #FFF8F0;
       --bg: var(--white);
       --text: var(--gray-900);
       --card: var(--white);
       --border: var(--gray-300);
       --transition: cubic-bezier(0.4, 0, 0.2, 1);
-      --header-bg: rgba(255,255,255,0.92);
+      --header-bg: rgba(255,248,240,0.92);
       --header-text: var(--gray-900);
       --nav-link: var(--gray-700);
       --nav-link-hover: var(--gray-900);
     }
     [data-theme="dark"] {
-      --bg: #0f0f0f;
-      --text: #f0f0f0;
-      --card: #1a1a1a;
-      --border: #333333;
-      --gray-100: #1a1a1a;
-      --gray-200: #2a2a2a;
-      --gray-500: #888888;
-      --header-bg: rgba(10,10,10,0.92);
+      --bg: #17100C;
+      --text: #F5E8DA;
+      --card: #221812;
+      --border: #4A3527;
+      --gray-100: #221812;
+      --gray-200: #2E2018;
+      --gray-500: #B99B80;
+      --header-bg: rgba(18,12,9,0.92);
       --header-text: var(--white);
       --nav-link: var(--gray-300);
       --nav-link-hover: var(--white);
     }
+    [data-theme="dark"] {
+      --gray-700: #C4A98E;
+      --gray-900: #EEDFCE;
+      --gray-300: #5A4231;
+    }
+    [data-theme="dark"] .footer { background: #120C09; }
+    [data-theme="dark"] .nf-alert,
+    [data-theme="dark"] .nf-strip-head .sq,
+    [data-theme="dark"] .nf-cell .v.red,
+    [data-theme="dark"] .nf-badge b { color: var(--autumn-amber); }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -152,7 +168,7 @@
       display: inline-flex; align-items: center; gap: 9px;
     }
     .btn-primary { background: var(--swiss-red); color: var(--white); }
-    .btn-primary:hover { background: var(--swiss-red-dark); border-color: var(--swiss-red-dark); transform: translateY(-2px); box-shadow: 0 12px 26px rgba(227,6,19,0.28); }
+    .btn-primary:hover { background: var(--swiss-red-dark); border-color: var(--swiss-red-dark); transform: translateY(-2px); box-shadow: 0 12px 26px rgba(193, 68, 14,0.28); }
     .btn-ghost { background: transparent; color: var(--text); border-color: var(--border); }
     .btn-ghost:hover { border-color: var(--swiss-red); color: var(--swiss-red); transform: translateY(-2px); }
 
@@ -182,7 +198,7 @@
     .nf-radar {
       position: absolute; left: 50%; top: 50%; width: 130%; height: 130%;
       transform-origin: 0 0;
-      background: conic-gradient(from 0deg, rgba(227,6,19,0.16), transparent 22%);
+      background: conic-gradient(from 0deg, rgba(193, 68, 14,0.16), transparent 22%);
       animation: radarSweep 7s linear infinite;
       transform: translate(-50%, -50%);
     }
@@ -207,9 +223,9 @@
     .footer-logo { display: flex; align-items: center; gap: 10px; color: var(--white); font-weight: 700; font-size: 14px; letter-spacing: 1px; }
     .footer-cross { width: 24px; height: 24px; background: var(--swiss-red); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 300; color: var(--white); line-height: 1; }
     .footer-links { display: flex; gap: 24px; flex-wrap: wrap; }
-    .footer-links a { color: var(--gray-500); text-decoration: none; font-size: 13px; transition: color 0.3s; }
+    .footer-links a { color: #DCC3A4; text-decoration: none; font-size: 13px; transition: color 0.3s; }
     .footer-links a:hover { color: var(--white); }
-    .footer-right { text-align: right; color: var(--gray-500); font-size: 12px; }
+    .footer-right { text-align: right; color: #C4A98E; font-size: 12px; }
 
     @media (max-width: 980px) {
       .nf-wrap { grid-template-columns: 1fr; gap: 40px; padding: 56px 20px 70px; }
@@ -229,6 +245,90 @@
       * { animation: none !important; }
       .nf-divert { stroke-dasharray: none; }
     }
+
+    /* ===== AUTUMN DECOR ===== */
+    html {
+      background-color: var(--bg);
+      background-image:
+        radial-gradient(900px 520px at 12% -10%, rgba(240, 184, 64, 0.20), transparent 70%),
+        radial-gradient(760px 480px at 100% 8%, rgba(193, 68, 14, 0.15), transparent 72%),
+        radial-gradient(680px 420px at 50% 108%, rgba(124, 74, 33, 0.12), transparent 70%);
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+    body { background: transparent; }
+    [data-theme="dark"] {
+      background-color: #17100C;
+      background-image:
+        radial-gradient(900px 520px at 12% -10%, rgba(240, 184, 64, 0.12), transparent 70%),
+        radial-gradient(760px 480px at 100% 8%, rgba(193, 68, 14, 0.16), transparent 72%),
+        radial-gradient(680px 420px at 50% 108%, rgba(110, 107, 46, 0.12), transparent 70%);
+    }
+    .autumn-strip {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      height: 3px;
+      z-index: 6;
+      pointer-events: none;
+      background: linear-gradient(90deg, var(--autumn-wine), var(--autumn-orange), var(--autumn-gold), var(--autumn-olive), var(--autumn-brown));
+      background-size: 200% 100%;
+      animation: autumnFlow 14s linear infinite;
+      opacity: 0.9;
+    }
+    @keyframes autumnFlow {
+      from { background-position: 0 0; }
+      to   { background-position: 200% 0; }
+    }
+    .leaf-layer {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 5;
+    }
+    .leaf {
+      position: absolute;
+      top: -8vh;
+      font-size: 18px;
+      line-height: 1;
+      opacity: 0;
+      will-change: transform, opacity;
+      animation: leafFall linear infinite, leafSway ease-in-out infinite alternate;
+    }
+    @keyframes leafFall {
+      0%   { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
+      8%   { opacity: 0.6; }
+      88%  { opacity: 0.5; }
+      100% { transform: translateY(112vh) rotate(520deg); opacity: 0; }
+    }
+    @keyframes leafSway {
+      from { margin-left: -26px; }
+      to   { margin-left: 26px; }
+    }
+    .autumn-branch {
+      position: fixed;
+      top: 0;
+      font-size: 120px;
+      line-height: 1;
+      opacity: 0.09;
+      pointer-events: none;
+      z-index: 4;
+      transform-origin: top center;
+      animation: branchSway 7s ease-in-out infinite alternate;
+    }
+    .autumn-branch.left  { left: -10px;  transform: rotate(18deg); }
+    .autumn-branch.right { right: -10px; transform: rotate(-18deg) scaleX(-1); }
+    @keyframes branchSway {
+      from { transform: rotate(14deg); }
+      to   { transform: rotate(22deg); }
+    }
+    @media (max-width: 768px) {
+      .leaf { font-size: 14px; }
+      .autumn-branch { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .leaf, .autumn-branch { animation: none; opacity: 0; }
+    }
   </style>
 </head>
 <body>
@@ -239,11 +339,6 @@
     </a>
     <nav class="nav">
       <a href="index.html" data-i18n="nav-home">Главная</a>
-      <a href="fleet.html" data-i18n="nav-fleet">Флот</a>
-      <a href="routes.html" data-i18n="nav-routes">Маршруты</a>
-      <a href="map.html" data-i18n="nav-map">Карта</a>
-      <a href="events.html" data-i18n="nav-events">События</a>
-      <a href="history.html" data-i18n="nav-history">История</a>
       <a href="https://discord.gg/6YA8t7GJr" target="_blank" rel="noopener">Discord</a>
       <a href="login.html" class="nav-login-btn" data-i18n="nav-login">Вход</a>
     </nav>
@@ -293,12 +388,6 @@
       <div class="nf-links">
         <div class="nf-links-title" data-i18n="links-title">Популярные направления</div>
         <div class="nf-links-row">
-          <a href="fleet.html" data-i18n="nav-fleet">Флот</a>
-          <a href="routes.html" data-i18n="nav-routes">Маршруты</a>
-          <a href="map.html" data-i18n="nav-map">Карта</a>
-          <a href="events.html" data-i18n="nav-events">События</a>
-          <a href="history.html" data-i18n="nav-history">История</a>
-          <a href="patent.html" data-i18n="nav-patent">Патент</a>
         </div>
       </div>
     </div>
@@ -329,14 +418,8 @@
     </div>
     <div class="footer-links">
       <a href="index.html" data-i18n="nav-home">Главная</a>
-      <a href="fleet.html" data-i18n="nav-fleet">Флот</a>
-      <a href="routes.html" data-i18n="nav-routes">Маршруты</a>
-      <a href="map.html" data-i18n="nav-map">Карта</a>
-      <a href="events.html" data-i18n="nav-events">События</a>
-      <a href="history.html" data-i18n="nav-history">История</a>
       <a href="https://discord.gg/6YA8t7GJr" target="_blank" rel="noopener">Discord</a>
       <a href="login.html" data-i18n="nav-admin">Админ</a>
-      <a href="patent.html" data-i18n="nav-patent">Патент</a>
     </div>
     <div class="footer-right">
       <div style="font-size:11px;margin-bottom:4px;" data-i18n="footer-patent-text">Неофициальный виртуальный патент № SW-VA-001 от 10.08.26</div>
@@ -432,6 +515,33 @@
       tick();
       setInterval(tick, 1000);
     })();
+  </script>
+  <div class="autumn-branch left" aria-hidden="true">🍂</div>
+  <div class="autumn-branch right" aria-hidden="true">🍁</div>
+  <div class="autumn-strip" aria-hidden="true"></div>
+
+  <script>
+  (function buildAutumnLeaves() {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var layer = document.createElement('div');
+    layer.className = 'leaf-layer';
+    layer.setAttribute('aria-hidden', 'true');
+    var glyphs = ['\u{1F342}', '\u{1F341}', '\u{1F343}', '\u{1F33E}'];
+    var count = window.innerWidth < 768 ? 12 : 22;
+    for (var i = 0; i < count; i++) {
+      var leaf = document.createElement('span');
+      leaf.className = 'leaf';
+      leaf.textContent = glyphs[i % glyphs.length];
+      leaf.style.left = (Math.random() * 100).toFixed(2) + 'vw';
+      leaf.style.fontSize = (12 + Math.random() * 14).toFixed(1) + 'px';
+      leaf.style.animationDuration = (9 + Math.random() * 11).toFixed(2) + 's, ' +
+                                     (2.4 + Math.random() * 2.6).toFixed(2) + 's';
+      leaf.style.animationDelay = '-' + (Math.random() * 18).toFixed(2) + 's, -' +
+                                  (Math.random() * 4).toFixed(2) + 's';
+      layer.appendChild(leaf);
+    }
+    document.body.appendChild(layer);
+  })();
   </script>
 </body>
 </html>

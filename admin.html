@@ -7,29 +7,35 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --swiss-red: #e30613;
-      --swiss-red-dark: #b8050f;
-      --black: #0a0a0a;
-      --gray-900: #1a1a1a;
-      --gray-700: #4a4a4a;
-      --gray-500: #737373;
-      --gray-300: #d4d4d4;
-      --gray-100: #f5f5f5;
-      --white: #ffffff;
+      --swiss-red: #C1440E;
+      --autumn-orange: #E07A28;
+      --autumn-gold: #D9A02B;
+      --autumn-amber: #F0B840;
+      --autumn-brown: #7C4A21;
+      --autumn-wine: #8C2F1B;
+      --autumn-olive: #6E6B2E;
+      --swiss-red-dark: #8F300A;
+      --black: #2B1810;
+      --gray-900: #3A2317;
+      --gray-700: #5C4433;
+      --gray-500: #6E5442;
+      --gray-300: #DCC3A4;
+      --gray-100: #FAF0E2;
+      --white: #FFF8F0;
       --bg: var(--white);
       --text: var(--gray-900);
       --card: var(--white);
       --border: var(--gray-300);
       --transition: cubic-bezier(0.4, 0, 0.2, 1);
-      --header-bg: #ffffff;
-      --header-text: #0a0a0a;
-      --header-link: #737373;
-      --header-border: #d4d4d4;
+      --header-bg: #FFF8F0;
+      --header-text: #2B1810;
+      --header-link: #6E5442;
+      --header-border: #DCC3A4;
     }
     [data-theme="dark"] {
-      --bg: #0f0f0f; --text: #f0f0f0; --card: #1a1a1a; --border: #333333; --black: #f0f0f0;
-      --gray-100: #1a1a1a; --gray-300: #444444; --gray-500: #888888; --gray-700: #a0a0a0; --gray-900: #e0e0e0;
-      --header-bg: #0a0a0a; --header-text: #ffffff; --header-link: #888888; --header-border: #4a4a4a;
+      --bg: #17100C; --text: #F5E8DA; --card: #221812; --border: #4A3527; --black: #F5E8DA;
+      --gray-100: #221812; --gray-300: #5A4231; --gray-500: #B99B80; --gray-700: #C4A98E; --gray-900: #EEDFCE;
+      --header-bg: #120C09; --header-text: #FFF8F0; --header-link: #B99B80; --header-border: #5A4231;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--gray-100); color: var(--text); line-height: 1.6; }
@@ -49,7 +55,7 @@
     .header-left { display: flex; align-items: center; gap: 16px; }
     .header-logo { display: flex; align-items: center; gap: 10px; color: var(--header-text); font-weight: 700; font-size: 14px; letter-spacing: -0.3px; text-decoration: none; }
     .header-cross { width: 24px; height: 24px; background: var(--swiss-red); display: flex; align-items: center; justify-content: center; font-size: 12px; color: white; font-weight: 700; }
-    .header-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(227,6,19,0.15); color: var(--swiss-red); padding: 4px 10px; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+    .header-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(193, 68, 14,0.15); color: var(--swiss-red); padding: 4px 10px; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
     .header-right { display: flex; align-items: center; gap: 12px; }
     .user-greeting { display: flex; align-items: center; gap: 8px; color: var(--gray-500); font-size: 13px; font-weight: 500; }
     .user-avatar { width: 28px; height: 28px; background: var(--swiss-red); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 700; }
@@ -86,7 +92,7 @@
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
     th { background: var(--gray-100); padding: 12px 14px; text-align: left; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gray-500); border-bottom: 1px solid var(--gray-300); white-space: nowrap; }
     td { padding: 12px 14px; border-bottom: 1px solid var(--gray-100); vertical-align: top; }
-    tr:hover td { background: rgba(227,6,19,0.02); }
+    tr:hover td { background: rgba(193, 68, 14,0.02); }
     .cell-name { font-weight: 600; color: var(--black); }
     .cell-muted { color: var(--gray-500); font-size: 12px; }
     .cell-small { font-size: 12px; }
@@ -151,7 +157,7 @@
 
     .filters-bar { padding: 0 40px 20px; max-width: 1400px; margin: 0 auto; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
     .filter-btn { padding: 7px 14px; font-size: 12px; font-weight: 500; border: 1px solid var(--gray-300); background: var(--bg); color: var(--gray-700); cursor: pointer; transition: all 0.3s var(--transition); display: inline-flex; align-items: center; gap: 6px; }
-    .filter-btn:hover, .filter-btn.active { border-color: var(--swiss-red); color: var(--swiss-red); background: rgba(227,6,19,0.04); }
+    .filter-btn:hover, .filter-btn.active { border-color: var(--swiss-red); color: var(--swiss-red); background: rgba(193, 68, 14,0.04); }
 
     /* ===== EXPAND ===== */
     .expand-btn { background: none; border: 1px solid var(--gray-300); width: 22px; height: 22px; cursor: pointer; font-size: 10px; color: var(--gray-500); transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
@@ -179,6 +185,90 @@
       .filters-bar { padding: 0 16px 16px; }
       .toolbar { flex-direction: column; align-items: flex-start; }
       .form-row.half { grid-template-columns: 1fr; }
+    }
+
+    /* ===== AUTUMN DECOR ===== */
+    html {
+      background-color: var(--bg);
+      background-image:
+        radial-gradient(900px 520px at 12% -10%, rgba(240, 184, 64, 0.20), transparent 70%),
+        radial-gradient(760px 480px at 100% 8%, rgba(193, 68, 14, 0.15), transparent 72%),
+        radial-gradient(680px 420px at 50% 108%, rgba(124, 74, 33, 0.12), transparent 70%);
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+    body { background: transparent; }
+    [data-theme="dark"] {
+      background-color: #17100C;
+      background-image:
+        radial-gradient(900px 520px at 12% -10%, rgba(240, 184, 64, 0.12), transparent 70%),
+        radial-gradient(760px 480px at 100% 8%, rgba(193, 68, 14, 0.16), transparent 72%),
+        radial-gradient(680px 420px at 50% 108%, rgba(110, 107, 46, 0.12), transparent 70%);
+    }
+    .autumn-strip {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      height: 3px;
+      z-index: 6;
+      pointer-events: none;
+      background: linear-gradient(90deg, var(--autumn-wine), var(--autumn-orange), var(--autumn-gold), var(--autumn-olive), var(--autumn-brown));
+      background-size: 200% 100%;
+      animation: autumnFlow 14s linear infinite;
+      opacity: 0.9;
+    }
+    @keyframes autumnFlow {
+      from { background-position: 0 0; }
+      to   { background-position: 200% 0; }
+    }
+    .leaf-layer {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 5;
+    }
+    .leaf {
+      position: absolute;
+      top: -8vh;
+      font-size: 18px;
+      line-height: 1;
+      opacity: 0;
+      will-change: transform, opacity;
+      animation: leafFall linear infinite, leafSway ease-in-out infinite alternate;
+    }
+    @keyframes leafFall {
+      0%   { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
+      8%   { opacity: 0.6; }
+      88%  { opacity: 0.5; }
+      100% { transform: translateY(112vh) rotate(520deg); opacity: 0; }
+    }
+    @keyframes leafSway {
+      from { margin-left: -26px; }
+      to   { margin-left: 26px; }
+    }
+    .autumn-branch {
+      position: fixed;
+      top: 0;
+      font-size: 120px;
+      line-height: 1;
+      opacity: 0.09;
+      pointer-events: none;
+      z-index: 4;
+      transform-origin: top center;
+      animation: branchSway 7s ease-in-out infinite alternate;
+    }
+    .autumn-branch.left  { left: -10px;  transform: rotate(18deg); }
+    .autumn-branch.right { right: -10px; transform: rotate(-18deg) scaleX(-1); }
+    @keyframes branchSway {
+      from { transform: rotate(14deg); }
+      to   { transform: rotate(22deg); }
+    }
+    @media (max-width: 768px) {
+      .leaf { font-size: 14px; }
+      .autumn-branch { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .leaf, .autumn-branch { animation: none; opacity: 0; }
     }
   </style>
 </head>
@@ -237,14 +327,14 @@
       <div class="stat-card"><span class="stat-icon">❌</span><div class="stat-value" id="rejectedCount">0</div><div class="stat-label" data-i18n="stat-rejected">Отклонено</div></div>
       <div class="stat-card"><span class="stat-icon">🔍</span><div class="stat-value" id="reviewCount">0</div><div class="stat-label" data-i18n="stat-review">На рассмотрении</div></div>
     </div>
-    <div id="dbWarnBanner" style="display:none;max-width:1400px;margin:0 auto 16px;padding:14px 18px;border-radius:12px;border:1px solid #E30613;background:rgba(227,6,19,0.08);color:#fff;font-size:13px;line-height:1.6;"></div>
+    <div id="dbWarnBanner" style="display:none;max-width:1400px;margin:0 auto 16px;padding:14px 18px;border-radius:12px;border:1px solid #C1440E;background:rgba(193, 68, 14,0.08);color:#fff;font-size:13px;line-height:1.6;"></div>
     <div class="filters-bar">
       <span class="filter-btn active" data-filter="all" onclick="setAppFilter('all')" data-i18n="filter-all">Все</span>
       <span class="filter-btn" data-filter="new" onclick="setAppFilter('new')" data-i18n="filter-new">🆕 Новые</span>
       <span class="filter-btn" data-filter="review" onclick="setAppFilter('review')" data-i18n="filter-review">🔍 На рассмотрении</span>
       <span class="filter-btn" data-filter="accepted" onclick="setAppFilter('accepted')" data-i18n="filter-accepted">✅ Принято</span>
       <span class="filter-btn" data-filter="rejected" onclick="setAppFilter('rejected')" data-i18n="filter-rejected">❌ Отклонено</span>
-      <button class="filter-btn" style="margin-left:auto;background:#E30613;color:#fff;border:none;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:12px;" onclick="checkDbStatus()" title="Проверить состояние базы данных">🔍 DB Status</button>
+      <button class="filter-btn" style="margin-left:auto;background:#C1440E;color:#fff;border:none;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:12px;" onclick="checkDbStatus()" title="Проверить состояние базы данных">🔍 DB Status</button>
     </div>
     <div class="table-wrapper">
       <div class="loading" id="appsLoading" data-i18n="loading-apps">Загрузка анкет...</div>
@@ -313,7 +403,7 @@
     <div class="toolbar">
       <h3 style="font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px;">
         <span data-i18n="stats-title">Живая статистика</span>
-        <span style="background:#E30613;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.5px;">BETA</span>
+        <span style="background:#C1440E;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.5px;">BETA</span>
       </h3>
       <button class="btn-add" onclick="loadSiteStats()" data-i18n="btn-stats-refresh">↻ Обновить</button>
     </div>
@@ -511,7 +601,7 @@
           if (r.status===503) {
             loadAppsRetries++;
             if (loadAppsRetries > 10) {
-              document.getElementById('appsLoading').innerHTML='❌ База данных недоступна. <button onclick="loadAppsRetries=0;loadApplications()" style="background:#E30613;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">Повторить</button> <button onclick="checkDbStatus()" style="background:#333;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">🔍 Диагностика</button>';
+              document.getElementById('appsLoading').innerHTML='❌ База данных недоступна. <button onclick="loadAppsRetries=0;loadApplications()" style="background:#C1440E;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">Повторить</button> <button onclick="checkDbStatus()" style="background:#333;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">🔍 Диагностика</button>';
               return;
             }
             document.getElementById('appsLoading').textContent='⏳ База данных подключается... Попытка ' + loadAppsRetries + '/10';
@@ -523,7 +613,7 @@
             if (errData.retry) {
               loadAppsRetries++;
               if (loadAppsRetries > 5) {
-                document.getElementById('appsLoading').innerHTML='❌ Ошибка БД: ' + (errData.error||'Unknown') + '. <button onclick="loadAppsRetries=0;loadApplications()" style="background:#E30613;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">Повторить</button> <button onclick="checkDbStatus()" style="background:#333;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">🔍 Диагностика</button>';
+                document.getElementById('appsLoading').innerHTML='❌ Ошибка БД: ' + (errData.error||'Unknown') + '. <button onclick="loadAppsRetries=0;loadApplications()" style="background:#C1440E;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">Повторить</button> <button onclick="checkDbStatus()" style="background:#333;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">🔍 Диагностика</button>';
                 return;
               }
               document.getElementById('appsLoading').textContent='⚠️ Ошибка БД, переподключение... Попытка ' + loadAppsRetries + '/5';
@@ -540,7 +630,7 @@
         allData = data.applications || [];
         document.getElementById('appsLoading').style.display='none';
         renderAppStats(); renderApps(); checkStoragePersistence();
-      } catch(e) { document.getElementById('appsLoading').innerHTML=t('error-load') + ' (' + e.message + ') <button onclick="loadApplications()" style="background:#E30613;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">Повторить</button>'; }
+      } catch(e) { document.getElementById('appsLoading').innerHTML=t('error-load') + ' (' + e.message + ') <button onclick="loadApplications()" style="background:#C1440E;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">Повторить</button>'; }
     }
     // ============ STORAGE PERSISTENCE CHECK ============
     let storageChecked = false;
@@ -572,7 +662,7 @@
     async function checkDbStatus() {
       const modal = document.createElement('div');
       modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:10000;display:flex;align-items:center;justify-content:center;';
-      modal.innerHTML = '<div style="background:#1a1a2e;border:1px solid #E30613;border-radius:16px;padding:24px;max-width:500px;width:90%;color:#fff;font-family:system-ui;"><h3 style="color:#E30613;margin:0 0 16px;">🔍 Диагностика базы данных</h3><div id="dbStatusContent" style="font-size:14px;">⏳ Загрузка...</div><button onclick="this.closest(\'div[style]\').parentElement.remove()" style="margin-top:16px;background:#E30613;color:#fff;border:none;padding:8px 24px;border-radius:8px;cursor:pointer;">Закрыть</button></div>';
+      modal.innerHTML = '<div style="background:#1a1a2e;border:1px solid #C1440E;border-radius:16px;padding:24px;max-width:500px;width:90%;color:#fff;font-family:system-ui;"><h3 style="color:#C1440E;margin:0 0 16px;">🔍 Диагностика базы данных</h3><div id="dbStatusContent" style="font-size:14px;">⏳ Загрузка...</div><button onclick="this.closest(\'div[style]\').parentElement.remove()" style="margin-top:16px;background:#C1440E;color:#fff;border:none;padding:8px 24px;border-radius:8px;cursor:pointer;">Закрыть</button></div>';
       document.body.appendChild(modal);
       try {
         const r = await fetch('/api/db-status');
@@ -594,7 +684,7 @@
         }
         html += '</div>';
         if (data.latestApplication) {
-          html += '<div style="margin-bottom:8px;padding:8px;background:rgba(227,6,19,0.1);border-radius:8px;"><strong>📋 Последняя анкета:</strong><br>ID: ' + data.latestApplication.id + ' | ' + data.latestApplication.roblox_name + ' | ' + data.latestApplication.status + ' | ' + data.latestApplication.created_at + '</div>';
+          html += '<div style="margin-bottom:8px;padding:8px;background:rgba(193, 68, 14,0.1);border-radius:8px;"><strong>📋 Последняя анкета:</strong><br>ID: ' + data.latestApplication.id + ' | ' + data.latestApplication.roblox_name + ' | ' + data.latestApplication.status + ' | ' + data.latestApplication.created_at + '</div>';
         } else {
           html += '<div style="color:#ff0;">⚠️ Нет анкет в базе данных</div>';
         }
@@ -901,6 +991,30 @@
       }
     }
     checkAuth().then(ok => { if (ok) loadApplications(); });
+  </script>
+
+  <script>
+  (function buildAutumnLeaves() {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var layer = document.createElement('div');
+    layer.className = 'leaf-layer';
+    layer.setAttribute('aria-hidden', 'true');
+    var glyphs = ['\u{1F342}', '\u{1F341}', '\u{1F343}', '\u{1F33E}'];
+    var count = window.innerWidth < 768 ? 12 : 22;
+    for (var i = 0; i < count; i++) {
+      var leaf = document.createElement('span');
+      leaf.className = 'leaf';
+      leaf.textContent = glyphs[i % glyphs.length];
+      leaf.style.left = (Math.random() * 100).toFixed(2) + 'vw';
+      leaf.style.fontSize = (12 + Math.random() * 14).toFixed(1) + 'px';
+      leaf.style.animationDuration = (9 + Math.random() * 11).toFixed(2) + 's, ' +
+                                     (2.4 + Math.random() * 2.6).toFixed(2) + 's';
+      leaf.style.animationDelay = '-' + (Math.random() * 18).toFixed(2) + 's, -' +
+                                  (Math.random() * 4).toFixed(2) + 's';
+      layer.appendChild(leaf);
+    }
+    document.body.appendChild(layer);
+  })();
   </script>
 </body>
 </html>
