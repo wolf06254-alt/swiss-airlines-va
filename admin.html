@@ -290,8 +290,6 @@
   <div class="tabs-bar">
     <button class="tab-btn active" onclick="switchTab('applications')" data-tab="applications" data-i18n="tab-applications">📋 Анкеты</button>
     <button class="tab-btn" onclick="switchTab('events')" data-tab="events" data-i18n="tab-events">📅 События</button>
-    <button class="tab-btn" onclick="switchTab('routes')" data-tab="routes" data-i18n="tab-routes">🗺️ Маршруты</button>
-    <button class="tab-btn" onclick="switchTab('fleet')" data-tab="fleet" data-i18n="tab-fleet">✈️ Флот</button>
     <button class="tab-btn" onclick="switchTab('timeline')" data-tab="timeline" data-i18n="tab-timeline">📜 История</button>
     <button class="tab-btn" onclick="switchTab('sitestats')" data-tab="sitestats" data-i18n="tab-sitestats">📊 Статистика</button>
     <button class="tab-btn" onclick="switchTab('sitemode')" data-tab="sitemode" data-i18n="tab-sitemode">🚧 Режим сайта</button>
@@ -335,32 +333,6 @@
         <tbody id="eventsBody"></tbody>
       </table>
       <div class="empty-state" id="eventsEmpty" style="display:none;"><h3 data-i18n="empty-events-title">Нет событий</h3><p data-i18n="empty-events-desc">Добавьте первое событие</p></div>
-    </div>
-  </div>
-
-  <!-- ROUTES -->
-  <div class="tab-content" id="tab-routes">
-    <div class="toolbar"><h3 style="font-size:16px;font-weight:700;" data-i18n="tab-routes">Маршруты</h3></div>
-    <div class="table-wrapper">
-      <div class="loading" id="routesLoading" data-i18n="loading-routes">Загрузка маршрутов...</div>
-      <table id="routesTable" style="display:none;">
-        <thead><tr><th data-i18n="th-origin">Откуда</th><th data-i18n="th-destination">Куда</th><th data-i18n="th-distance">Дистанция</th><th data-i18n="th-duration">Время</th><th data-i18n="th-aircraft">Самолёт</th><th data-i18n="th-status">Статус</th></tr></thead>
-        <tbody id="routesBody"></tbody>
-      </table>
-      <div class="empty-state" id="routesEmpty" style="display:none;"><h3 data-i18n="empty-routes-title">Нет маршрутов</h3><p data-i18n="empty-routes-desc">Маршруты загружаются из базы данных</p></div>
-    </div>
-  </div>
-
-  <!-- FLEET -->
-  <div class="tab-content" id="tab-fleet">
-    <div class="toolbar"><h3 style="font-size:16px;font-weight:700;" data-i18n="tab-fleet">Флот</h3></div>
-    <div class="table-wrapper">
-      <div class="loading" id="fleetLoading" data-i18n="loading-fleet">Загрузка флота...</div>
-      <table id="fleetTable" style="display:none;">
-        <thead><tr><th data-i18n="th-model">Модель</th><th data-i18n="th-manufacturer">Производитель</th><th data-i18n="th-category">Категория</th><th data-i18n="th-capacity">Мест</th><th data-i18n="th-range">Дальность</th><th data-i18n="th-speed">Скорость</th><th data-i18n="th-status">Статус</th></tr></thead>
-        <tbody id="fleetBody"></tbody>
-      </table>
-      <div class="empty-state" id="fleetEmpty" style="display:none;"><h3 data-i18n="empty-fleet-title">Нет ВС</h3><p data-i18n="empty-fleet-desc">Флот не найден</p></div>
     </div>
   </div>
 
@@ -464,8 +436,6 @@
     let allData = [];
     let appFilter = 'all';
     let eventsData = [];
-    let routesData = [];
-    let fleetData = [];
     let timelineData = [];
     let siteModeData = null;
     let selectedMode = 'live';
@@ -475,19 +445,15 @@
       ru: {
         'admin-badge': 'Админ-панель', 'admin-title': 'Админ-панель', 'admin-subtitle': 'Управление контентом сайта Swiss Airlines',
         'btn-home': '🏠 Главная', 'btn-logout': '↪ Выйти', 'btn-csv': 'Экспорт CSV',
-        'tab-applications': '📋 Анкеты', 'tab-events': '📅 События', 'tab-routes': '🗺️ Маршруты', 'tab-fleet': '✈️ Флот', 'tab-timeline': '📜 История',
+        'tab-applications': '📋 Анкеты', 'tab-events': '📅 События', 'tab-timeline': '📜 История',
         'stat-total': 'Всего анкет', 'stat-new': 'Новые', 'stat-accepted': 'Принято', 'stat-rejected': 'Отклонено',
         'filter-all': 'Все', 'filter-new': '🆕 Новые', 'filter-review': '🔍 На рассмотрении', 'filter-accepted': '✅ Принято', 'filter-rejected': '❌ Отклонено',
-        'loading-apps': 'Загрузка анкет...', 'loading-events': 'Загрузка событий...', 'loading-routes': 'Загрузка маршрутов...', 'loading-fleet': 'Загрузка флота...', 'loading-timeline': 'Загрузка истории...',
+        'loading-apps': 'Загрузка анкет...', 'loading-events': 'Загрузка событий...', 'loading-timeline': 'Загрузка истории...',
         'th-roblox': 'Roblox', 'th-telegram': 'Telegram', 'th-age': 'Возраст', 'th-role': 'Роль', 'th-status': 'Статус', 'th-date': 'Дата',
         'th-title': 'Название', 'th-time': 'Время', 'th-location': 'Локация', 'th-image': 'Фото', 'th-actions': 'Действия',
-        'th-origin': 'Откуда', 'th-destination': 'Куда', 'th-distance': 'Дистанция', 'th-duration': 'Время', 'th-aircraft': 'Самолёт',
-        'th-model': 'Модель', 'th-manufacturer': 'Производитель', 'th-category': 'Категория', 'th-capacity': 'Мест', 'th-range': 'Дальность', 'th-speed': 'Скорость',
         'th-year': 'Год', 'th-description': 'Описание', 'th-icon': 'Иконка',
         'empty-apps-title': 'Нет анкет', 'empty-apps-desc': 'Пока никто не отправил заявку',
         'empty-events-title': 'Нет событий', 'empty-events-desc': 'Добавьте первое событие',
-        'empty-routes-title': 'Нет маршрутов', 'empty-routes-desc': 'Маршруты загружаются из базы данных',
-        'empty-fleet-title': 'Нет ВС', 'empty-fleet-desc': 'Флот не найден',
         'empty-timeline-title': 'Нет записей', 'empty-timeline-desc': 'Записи загружаются из базы данных',
         'btn-add': '+ Добавить событие',
         'label-image-url': 'URL изображения', 'btn-ai-image': '🤎 AI-генерация фото', 'ai-generating': 'Генерация изображения...', 'ai-generated': 'Изображение сгенерировано!', 'ai-error': 'Ошибка генерации изображения',
@@ -503,7 +469,6 @@
         'app-detail-role': 'Роль', 'app-detail-online': 'Время онлайн', 'app-detail-flights': 'Налёт',
         'app-detail-experience': 'Опыт', 'app-detail-why': 'Почему Swiss', 'app-detail-about': 'О себе',
         'btn-edit': 'Изменить', 'btn-delete': 'Удалить', 'confirm-delete': 'Удалить событие?',
-        'cat-wide-body': 'Широкофюзеляжный', 'cat-narrow-body': 'Узкофюзеляжный', 'cat-cargo': 'Грузовой', 'cat-regional': 'Региональный',
         'error-load': 'Ошибка загрузки',
         'btn-status-review': '🔍 На рассмотрении', 'btn-status-accepted': '✅ Принять', 'btn-status-rejected': '❌ Отклонить',
         'toast-status-review': 'Статус изменён: На рассмотрении', 'toast-status-accepted': 'Статус изменён: Принято', 'toast-status-rejected': 'Статус изменён: Отклонено',
@@ -531,19 +496,15 @@
       en: {
         'admin-badge': 'Admin Panel', 'admin-title': 'Admin Panel', 'admin-subtitle': 'Swiss Airlines website content management',
         'btn-home': '🏠 Home', 'btn-logout': '↪ Logout', 'btn-csv': 'Export CSV',
-        'tab-applications': '📋 Applications', 'tab-events': '📅 Events', 'tab-routes': '🗺️ Routes', 'tab-fleet': '✈️ Fleet', 'tab-timeline': '📜 Timeline',
+        'tab-applications': '📋 Applications', 'tab-events': '📅 Events', 'tab-timeline': '📜 Timeline',
         'stat-total': 'Total applications', 'stat-new': 'New', 'stat-accepted': 'Accepted', 'stat-rejected': 'Rejected',
         'filter-all': 'All', 'filter-new': '🆕 New', 'filter-review': '🔍 Under review', 'filter-accepted': '✅ Accepted', 'filter-rejected': '❌ Rejected',
-        'loading-apps': 'Loading applications...', 'loading-events': 'Loading events...', 'loading-routes': 'Loading routes...', 'loading-fleet': 'Loading fleet...', 'loading-timeline': 'Loading timeline...',
+        'loading-apps': 'Loading applications...', 'loading-events': 'Loading events...', 'loading-timeline': 'Loading timeline...',
         'th-roblox': 'Roblox', 'th-telegram': 'Telegram', 'th-age': 'Age', 'th-role': 'Role', 'th-status': 'Status', 'th-date': 'Date',
         'th-title': 'Title', 'th-time': 'Time', 'th-location': 'Location', 'th-image': 'Image', 'th-actions': 'Actions',
-        'th-origin': 'From', 'th-destination': 'To', 'th-distance': 'Distance', 'th-duration': 'Duration', 'th-aircraft': 'Aircraft',
-        'th-model': 'Model', 'th-manufacturer': 'Manufacturer', 'th-category': 'Category', 'th-capacity': 'Seats', 'th-range': 'Range', 'th-speed': 'Speed',
         'th-year': 'Year', 'th-description': 'Description', 'th-icon': 'Icon',
         'empty-apps-title': 'No applications', 'empty-apps-desc': 'No one has submitted an application yet',
         'empty-events-title': 'No events', 'empty-events-desc': 'Add your first event',
-        'empty-routes-title': 'No routes', 'empty-routes-desc': 'Routes are loaded from the database',
-        'empty-fleet-title': 'No aircraft', 'empty-fleet-desc': 'Fleet not found',
         'empty-timeline-title': 'No records', 'empty-timeline-desc': 'Records are loaded from the database',
         'btn-add': '+ Add Event',
         'label-image-url': 'Image URL', 'btn-ai-image': '🤎 AI Generate Photo', 'ai-generating': 'Generating image...', 'ai-generated': 'Image generated!', 'ai-error': 'Image generation error',
@@ -559,7 +520,6 @@
         'app-detail-role': 'Role', 'app-detail-online': 'Online time', 'app-detail-flights': 'Flight time',
         'app-detail-experience': 'Experience', 'app-detail-why': 'Why Swiss', 'app-detail-about': 'About',
         'btn-edit': 'Edit', 'btn-delete': 'Delete', 'confirm-delete': 'Delete event?',
-        'cat-wide-body': 'Wide-body', 'cat-narrow-body': 'Narrow-body', 'cat-cargo': 'Cargo', 'cat-regional': 'Regional',
         'error-load': 'Loading error',
         'btn-status-review': '🔍 Under review', 'btn-status-accepted': '✅ Accept', 'btn-status-rejected': '❌ Reject',
         'toast-status-review': 'Status changed: Under review', 'toast-status-accepted': 'Status changed: Accepted', 'toast-status-rejected': 'Status changed: Rejected',
@@ -601,8 +561,6 @@
       // Re-render active tab content with new language
       if (currentTab === 'applications' && allData.length >= 0) renderApps();
       if (currentTab === 'events' && eventsData.length >= 0) renderEvents();
-      if (currentTab === 'routes' && routesData.length >= 0) renderRoutes();
-      if (currentTab === 'fleet') renderFleet();
       if (currentTab === 'timeline' && timelineData.length >= 0) renderTimeline();
       if (currentTab === 'sitestats' && siteStatsData) renderSiteStats();
       if (siteModeData) renderSiteMode();
@@ -620,15 +578,12 @@
     function escapeHtml(str){ if(!str) return str; return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
     function formatDate(d){ if(!d) return '—'; return new Date(d).toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
     function getStatusText(s){ const m={new:t('status-new'),review:t('status-review'),accepted:t('status-accepted'),rejected:t('status-rejected'),upcoming:t('status-upcoming'),past:t('status-past'),active:t('status-active'),inactive:t('status-inactive')}; return m[s]||s; }
-    function getCategoryText(c){ const m={'wide-body':t('cat-wide-body'),'narrow-body':t('cat-narrow-body'),'cargo':t('cat-cargo'),'regional':t('cat-regional')}; return m[c]||c; }
 
     function switchTab(tab) {
       currentTab = tab;
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
       document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.id === 'tab-' + tab));
       if (tab === 'events' && eventsData.length === 0) loadEvents();
-      if (tab === 'routes' && routesData.length === 0) loadRoutes();
-      if (tab === 'fleet' && fleetData.length === 0) loadFleet();
       if (tab === 'timeline' && timelineData.length === 0) loadTimeline();
       if (tab === 'sitestats' && !siteStatsData) loadSiteStats();
       if (tab === 'sitemode' && !siteModeData) loadSiteMode();
@@ -951,61 +906,6 @@
     }
     function editEvent(id){ openEventModal(id); }
     async function deleteEvent(id){ if(!confirm(t('confirm-delete'))) return; try { const r=await fetch('/api/admin/events/'+id,{method:'DELETE'}); const d=await r.json(); if(r.ok&&d.success){ showToast(t('toast-deleted'),'success'); loadEvents(); } else showToast(d.error||'Error','error'); } catch(e){ showToast(t('error-connection'),'error'); } }
-
-    // ============ ROUTES (read-only) ============
-    async function loadRoutes() {
-      try { const r=await fetch('/api/admin/routes'); const d=await r.json(); routesData=d.routes||[]; document.getElementById('routesLoading').style.display='none'; renderRoutes(); } catch(e){ document.getElementById('routesLoading').textContent=t('error-load'); }
-    }
-    function renderRoutes() {
-      const tbody=document.getElementById('routesBody');
-      if(!routesData.length){ document.getElementById('routesTable').style.display='none'; document.getElementById('routesEmpty').style.display='block'; return; }
-      document.getElementById('routesTable').style.display='table'; document.getElementById('routesEmpty').style.display='none';
-      tbody.innerHTML = routesData.map(r => `
-        <tr>
-          <td><div class="cell-name">${escapeHtml(r.origin)}</div><div class="cell-muted">${escapeHtml(r.origin_code)||'—'}</div></td>
-          <td><div class="cell-name">${escapeHtml(r.destination)}</div><div class="cell-muted">${escapeHtml(r.destination_code)||'—'}</div></td>
-          <td class="cell-small">${r.distance_km||'—'} км</td>
-          <td class="cell-small">${r.duration_min||'—'} мин</td>
-          <td class="cell-small">${escapeHtml(r.aircraft_type)||'—'}</td>
-          <td><span class="status-badge status-${r.active?'active':'inactive'}">${r.active?t('status-active'):t('status-inactive')}</span></td>
-        </tr>
-      `).join('');
-    }
-
-    // ============ FLEET (static) ============
-    function loadFleet() {
-      fleetData = [
-        { id:1, model:'Airbus A220-100', manufacturer:'Airbus', category:'regional', capacity:'125', range_km:'5460', speed_kmh:'829', status:'active' },
-        { id:2, model:'Airbus A220-300', manufacturer:'Airbus', category:'regional', capacity:'145', range_km:'6297', speed_kmh:'829', status:'active' },
-        { id:3, model:'Airbus A320-200', manufacturer:'Airbus', category:'narrow-body', capacity:'174', range_km:'6100', speed_kmh:'840', status:'active' },
-        { id:4, model:'Airbus A320neo', manufacturer:'Airbus', category:'narrow-body', capacity:'180', range_km:'6500', speed_kmh:'833', status:'active' },
-        { id:5, model:'Airbus A321-100', manufacturer:'Airbus', category:'narrow-body', capacity:'219', range_km:'5950', speed_kmh:'833', status:'active' },
-        { id:6, model:'Airbus A321neo', manufacturer:'Airbus', category:'narrow-body', capacity:'220', range_km:'7400', speed_kmh:'833', status:'active' },
-        { id:7, model:'Airbus A330-300', manufacturer:'Airbus', category:'wide-body', capacity:'236', range_km:'11750', speed_kmh:'871', status:'active' },
-        { id:8, model:'Airbus A340-300', manufacturer:'Airbus', category:'wide-body', capacity:'219', range_km:'13200', speed_kmh:'875', status:'active' },
-        { id:9, model:'Airbus A350-900', manufacturer:'Airbus', category:'wide-body', capacity:'219', range_km:'15000', speed_kmh:'903', status:'active' },
-        { id:10, model:'Boeing 777-300ER', manufacturer:'Boeing', category:'wide-body', capacity:'340', range_km:'13649', speed_kmh:'905', status:'active' },
-        { id:11, model:'Boeing 747-400F', manufacturer:'Boeing', category:'cargo', capacity:'—', range_km:'8240', speed_kmh:'913', status:'active' }
-      ];
-      document.getElementById('fleetLoading').style.display='none';
-      renderFleet();
-    }
-    function renderFleet() {
-      const tbody=document.getElementById('fleetBody');
-      if(!fleetData.length){ document.getElementById('fleetTable').style.display='none'; document.getElementById('fleetEmpty').style.display='block'; return; }
-      document.getElementById('fleetTable').style.display='table'; document.getElementById('fleetEmpty').style.display='none';
-      tbody.innerHTML = fleetData.map(f => `
-        <tr>
-          <td><div class="cell-name">${escapeHtml(f.model)}</div></td>
-          <td class="cell-small">${escapeHtml(f.manufacturer)||'—'}</td>
-          <td class="cell-small">${getCategoryText(f.category)}</td>
-          <td class="cell-small">${f.capacity||'—'}</td>
-          <td class="cell-small">${f.range_km||'—'} км</td>
-          <td class="cell-small">${f.speed_kmh||'—'} км/ч</td>
-          <td><span class="status-badge status-${f.status||'active'}">${getStatusText(f.status)}</span></td>
-        </tr>
-      `).join('');
-    }
 
     // ============ TIMELINE (read-only) ============
     async function loadTimeline() {

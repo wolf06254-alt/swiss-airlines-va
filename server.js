@@ -211,6 +211,14 @@ app.get('/login.html', (req, res) => res.sendFile(path.join(__dirname, 'login.ht
 app.get('/admin.html', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
 app.get('/404.html', (req, res) => res.sendFile(path.join(__dirname, '404.html')));
 app.get('/maintenance.html', (req, res) => res.sendFile(path.join(__dirname, 'maintenance.html')));
+app.get('/history.html', (req, res) => res.sendFile(path.join(__dirname, 'history.html')));
+app.get('/events.html', (req, res) => res.sendFile(path.join(__dirname, 'events.html')));
+
+// Алиасы без .html (на случай чистых ссылок / внешних переходов)
+app.get('/history', (req, res) => res.sendFile(path.join(__dirname, 'history.html')));
+app.get('/events', (req, res) => res.sendFile(path.join(__dirname, 'events.html')));
+app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'login.html')));
+app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
 
 /* ============================================================
    LIVE STATS (BETA) — counter helpers

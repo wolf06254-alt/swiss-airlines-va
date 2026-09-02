@@ -405,63 +405,6 @@
 
     .dash-link:hover { gap: 12px; }
 
-    /* ===== LIVE STATS (BETA) ===== */
-    .beta-badge {
-      display: inline-flex; align-items: center; gap: 5px;
-      background: var(--swiss-red); color: #fff;
-      font-size: 9px; font-weight: 700; letter-spacing: 1.5px;
-      padding: 3px 8px; text-transform: uppercase; vertical-align: middle;
-      border-radius: 2px; margin-left: 10px;
-      animation: betaPulse 2.4s ease-in-out infinite;
-    }
-    @keyframes betaPulse {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(210,80,15,0.45); }
-      50% { box-shadow: 0 0 0 6px rgba(210,80,15,0); }
-    }
-    .live-section {
-      background: var(--bg);
-      padding: 80px 48px 72px;
-      position: relative;
-      overflow: hidden;
-      border-top: 1px solid var(--gray-300);
-    }
-    .live-wrapper { max-width: 1100px; margin: 0 auto; position: relative; z-index: 1; }
-    .live-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; margin-bottom: 40px; }
-    .live-title { font-size: 30px; font-weight: 700; letter-spacing: -1px; line-height: 1.2; }
-    .live-sub { font-size: 14px; color: var(--gray-500); margin-top: 8px; line-height: 1.6; max-width: 520px; }
-    .live-pill {
-      display: inline-flex; align-items: center; gap: 8px;
-      font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
-      color: var(--gray-500); border: 1px solid var(--gray-300);
-      padding: 8px 14px; background: rgba(255,255,255,0.35); backdrop-filter: blur(8px);
-    }
-    .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; animation: liveBlink 1.6s ease-in-out infinite; }
-    @keyframes liveBlink { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.35; transform: scale(0.8); } }
-    .live-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-    .live-card {
-      background: rgba(255,255,255,0.55);
-      backdrop-filter: blur(14px);
-      border: 1px solid var(--gray-300);
-      padding: 28px 24px;
-      position: relative;
-      overflow: hidden;
-      transition: all 0.4s var(--transition);
-    }
-    [data-theme="dark"] .live-card { background: rgba(255,255,255,0.04); }
-    [data-theme="dark"] .live-pill { background: rgba(255,255,255,0.04); }
-    .live-card::before {
-      content: ''; position: absolute; top: 0; left: 0;
-      width: 0; height: 2px; background: var(--swiss-red);
-      transition: width 0.5s var(--transition);
-    }
-    .live-card:hover { transform: translateY(-4px); border-color: var(--swiss-red); box-shadow: 0 14px 40px rgba(0,0,0,0.08); }
-    .live-card:hover::before { width: 100%; }
-    .live-icon { font-size: 20px; opacity: 0.55; margin-bottom: 14px; display: block; }
-    .live-value { font-size: 40px; font-weight: 700; letter-spacing: -2px; line-height: 1; font-variant-numeric: tabular-nums; }
-    .live-label { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gray-500); margin-top: 10px; }
-    .live-note { font-size: 12px; color: var(--gray-500); margin-top: 24px; line-height: 1.7; }
-    .live-plane { position: absolute; left: -3%; bottom: -30px; font-size: 150px; opacity: 0.03; pointer-events: none; animation: float 7s ease-in-out infinite; }
-
     /* ===== INFO SECTION ===== */
     .info-section {
       background: var(--bg);
@@ -984,10 +927,6 @@
       .btn-join { padding: 6px 14px; font-size: 11px; }
       .hero { padding: 132px 20px 60px; }
       .features-strip { gap: 20px; }
-      .live-section { padding: 60px 20px; }
-      .live-grid { grid-template-columns: repeat(2, 1fr); }
-      .live-title { font-size: 24px; }
-      .live-value { font-size: 32px; }
       .dash-grid { grid-template-columns: repeat(2, 1fr); }
       .dash-cards { grid-template-columns: 1fr; }
 
@@ -1116,12 +1055,11 @@
     [data-theme="dark"] .nav-link.active { color: var(--autumn-wheat); }
 
     /* ===== AUTUMN MINIMAL v2 — quieter surfaces, warmer accents ===== */
-    .hero-label, .live-label, .section-label {
+    .hero-label, .section-label {
       color: #9A3412;
       letter-spacing: 3px;
     }
     html[data-theme="dark"] .hero-label,
-    html[data-theme="dark"] .live-label,
     html[data-theme="dark"] .section-label { color: var(--autumn-wheat); }
 
     .hero-season {
@@ -1156,17 +1094,16 @@
     @keyframes seasonBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
 
     /* softer, flatter cards — minimal look with a single warm hairline */
-    .live-card, .info-card, .gallery-card {
+    .info-card, .gallery-card {
       border-radius: 14px;
       border-color: rgba(194, 96, 15, 0.16);
       box-shadow: 0 10px 30px rgba(120, 53, 15, 0.07);
       transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.45s ease, border-color 0.35s ease;
     }
-    .live-card:hover, .info-card:hover, .gallery-card:hover {
+    .info-card:hover, .gallery-card:hover {
       border-color: rgba(194, 96, 15, 0.42);
       box-shadow: 0 18px 46px rgba(120, 53, 15, 0.14);
     }
-    html[data-theme="dark"] .live-card,
     html[data-theme="dark"] .info-card,
     html[data-theme="dark"] .gallery-card {
       border-color: rgba(251, 191, 36, 0.14);
@@ -1219,7 +1156,9 @@
       <div>SWISS AIRLINES</div>
     </a>
     <nav class="nav">
-      <a href="index.html" class="active">Главная</a>
+      <a href="index.html" class="active" data-i18n="nav-home">Главная</a>
+      <a href="events.html" data-i18n="nav-events">События</a>
+      <a href="history.html" data-i18n="nav-history">История</a>
       <a href="https://discord.gg/6YA8t7GJr" target="_blank">Discord</a>
     </nav>
     <div class="controls" style="display:flex;gap:12px;align-items:center;">
@@ -1250,66 +1189,6 @@
         <strong data-i18n="hero-photo-title">Наш борт в PTFS</strong>
         <span data-i18n="hero-photo-sub">Официальная раскраска Swiss Airlines VA — узнаваемая в любом аэропорту.</span>
       </div>
-    </div>
-  </section>
-
-  <!-- LIVE STATS (BETA) -->
-  <section class="live-section" id="liveStats">
-    <div class="live-plane">✈</div>
-    <div class="live-wrapper">
-      <div class="live-head animate-on-scroll">
-        <div>
-          <div class="section-label" style="margin-bottom:16px;"><span data-i18n="live-label">Living statistics</span></div>
-          <div class="live-title"><span data-i18n="live-title">Живая статистика</span><span class="beta-badge">BETA</span></div>
-          <div class="live-sub" data-i18n="live-sub">Цифры обновляются в реальном времени прямо из базы авиакомпании.</div>
-        </div>
-        <div class="live-pill"><span class="live-dot"></span><span data-i18n="live-online-pill">Онлайн</span>: <strong id="live-online">—</strong></div>
-      </div>
-
-      <div class="live-grid">
-        <div class="live-card animate-on-scroll">
-          <span class="live-icon">✈</span>
-          <div class="live-value" id="live-flights">—</div>
-          <div class="live-label" data-i18n="live-flights">Выполнено рейсов</div>
-        </div>
-        <div class="live-card animate-on-scroll delay-1">
-          <span class="live-icon">⏱</span>
-          <div class="live-value" id="live-hours">—</div>
-          <div class="live-label" data-i18n="live-hours">Часов в воздухе</div>
-        </div>
-        <div class="live-card animate-on-scroll delay-2">
-          <span class="live-icon">★</span>
-          <div class="live-value" id="live-pilots">—</div>
-          <div class="live-label" data-i18n="live-pilots">Пилотов в штате</div>
-        </div>
-        <div class="live-card animate-on-scroll delay-3">
-          <span class="live-icon">◉</span>
-          <div class="live-value" id="live-destinations">—</div>
-          <div class="live-label" data-i18n="live-destinations">Направлений</div>
-        </div>
-        <div class="live-card animate-on-scroll">
-          <span class="live-icon">✉</span>
-          <div class="live-value" id="live-applications">—</div>
-          <div class="live-label" data-i18n="live-applications">Заявок подано</div>
-        </div>
-        <div class="live-card animate-on-scroll delay-1">
-          <span class="live-icon">■</span>
-          <div class="live-value" id="live-fleet">—</div>
-          <div class="live-label" data-i18n="live-fleet">Самолётов во флоте</div>
-        </div>
-        <div class="live-card animate-on-scroll delay-2">
-          <span class="live-icon">○</span>
-          <div class="live-value" id="live-events">—</div>
-          <div class="live-label" data-i18n="live-events">Событий в календаре</div>
-        </div>
-        <div class="live-card animate-on-scroll delay-3">
-          <span class="live-icon">▲</span>
-          <div class="live-value" id="live-visits">—</div>
-          <div class="live-label" data-i18n="live-visits">Всего визитов</div>
-        </div>
-      </div>
-
-      <div class="live-note animate-on-scroll" data-i18n="live-note">Функция в режиме BETA: часть счётчиков ведётся администрацией вручную, поэтому возможны неточности. Обновление каждые 30 секунд.</div>
     </div>
   </section>
 
@@ -1568,6 +1447,8 @@
     </div>
     <div class="footer-links">
       <a href="index.html" data-i18n="nav-home">Главная</a>
+      <a href="events.html" data-i18n="nav-events">События</a>
+      <a href="history.html" data-i18n="nav-history">История</a>
       <a href="https://discord.gg/6YA8t7GJr" target="_blank">Discord</a>
       <a href="login.html" data-i18n="nav-admin">Админ</a>
     </div>
@@ -1698,45 +1579,6 @@
       } catch (e) { box.innerHTML = '<div class="mail-empty">Ошибка загрузки. Попробуйте позже.</div>'; }
     }
 
-    /* ===== LIVE STATS (BETA) ===== */
-    function animateNumber(el, target) {
-      if (!el) return;
-      const from = parseInt(String(el.textContent).replace(/[^0-9]/g, '')) || 0;
-      const to = parseInt(target) || 0;
-      if (from === to) { el.textContent = to.toLocaleString('ru-RU'); return; }
-      const start = performance.now(), dur = 900;
-      function step(now) {
-        const p = Math.min(1, (now - start) / dur);
-        const eased = 1 - Math.pow(1 - p, 3);
-        el.textContent = Math.round(from + (to - from) * eased).toLocaleString('ru-RU');
-        if (p < 1) requestAnimationFrame(step);
-      }
-      requestAnimationFrame(step);
-    }
-
-    let liveStatsFirstLoad = true;
-    async function loadLiveStats() {
-      try {
-        const url = API_BASE + '/api/stats-public' + (liveStatsFirstLoad ? '?count=1' : '');
-        const res = await fetch(url);
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        const d = await res.json();
-        liveStatsFirstLoad = false;
-        animateNumber(document.getElementById('live-flights'), d.flights);
-        animateNumber(document.getElementById('live-hours'), d.flight_hours);
-        animateNumber(document.getElementById('live-pilots'), d.pilots);
-        animateNumber(document.getElementById('live-destinations'), d.destinations);
-        animateNumber(document.getElementById('live-applications'), d.applications);
-        animateNumber(document.getElementById('live-fleet'), d.fleet);
-        animateNumber(document.getElementById('live-events'), d.events);
-        animateNumber(document.getElementById('live-visits'), d.visits);
-        const onlineEl = document.getElementById('live-online');
-        if (onlineEl) onlineEl.textContent = d.online != null ? d.online : '—';
-      } catch (e) {
-        console.error('Live stats error', e);
-      }
-    }
-
     /* ===== DYNAMIC LOADERS ===== */
 
 
@@ -1764,9 +1606,6 @@
         'photo-2-badge': 'Кабина', 'photo-2-cap': 'Ночная смена в кабине',
         'photo-3-badge': 'Борт', 'photo-3-cap': 'Раскраска Swiss Airlines VA',
         'photo-4-badge': 'Гейт', 'photo-4-cap': 'Закатная стоянка у гейта 16',
-        'live-label': 'Статистика авиакомпании', 'live-title': 'Живая статистика', 'live-sub': 'Цифры обновляются в реальном времени прямо из базы авиакомпании.', 'live-online-pill': 'Онлайн',
-        'live-flights': 'Выполнено рейсов', 'live-hours': 'Часов в воздухе', 'live-pilots': 'Пилотов в штате', 'live-destinations': 'Направлений', 'live-applications': 'Заявок подано', 'live-fleet': 'Самолётов во флоте', 'live-events': 'Событий в календаре', 'live-visits': 'Всего визитов',
-        'live-note': 'Функция в режиме BETA: часть счётчиков ведётся администрацией вручную, поэтому возможны неточности. Обновление каждые 30 секунд.',
         'form-label': 'Анкета кандидата', 'q1-title': 'Ник в Roblox (PTFS) <span class="req">*</span>', 'q1-desc': 'Введите ваш ник в Roblox. Он же используется в PTFS.', 'q1-ph': 'Например: PilotAlex',
         'q2-title': 'Возраст персонажа и реальный возраст <span class="req">*</span>', 'q2-desc': 'Возраст персонажа нужен для лора, реальный — для соблюдения правил сообщества.', 'q2-label-char': 'Возраст персонажа', 'q2-label-real': 'Реальный возраст', 'q2-ph-char': '25', 'q2-ph-real': '16',
         'q3-title': 'Твой опыт в авиации <span class="req">*</span>', 'q3-desc': 'Расскажи о своём опыте в PTFS, других авиационных играх или симуляторах.', 'q3-ph': 'Опиши свой опыт...',
@@ -1799,9 +1638,6 @@
         'photo-2-badge': 'Cockpit', 'photo-2-cap': 'Night shift in the flight deck',
         'photo-3-badge': 'Livery', 'photo-3-cap': 'Swiss Airlines VA livery',
         'photo-4-badge': 'Gate', 'photo-4-cap': 'Sunset stand at gate 16',
-        'live-label': 'Airline statistics', 'live-title': 'Living Statistics', 'live-sub': 'Numbers are updated in real time straight from the airline database.', 'live-online-pill': 'Online',
-        'live-flights': 'Flights completed', 'live-hours': 'Hours in the air', 'live-pilots': 'Pilots on staff', 'live-destinations': 'Destinations', 'live-applications': 'Applications sent', 'live-fleet': 'Aircraft in fleet', 'live-events': 'Events in calendar', 'live-visits': 'Total visits',
-        'live-note': 'BETA feature: some counters are maintained manually by staff, so small inaccuracies are possible. Refreshed every 30 seconds.',
         'form-label': 'Candidate Application', 'q1-title': 'Roblox Nick (PTFS) <span class="req">*</span>', 'q1-desc': 'Enter your Roblox nickname. It is also used in PTFS.', 'q1-ph': 'e.g. PilotAlex',
         'q2-title': 'Character age and real age <span class="req">*</span>', 'q2-desc': 'Character age is needed for lore, real age is for community rules compliance.', 'q2-label-char': 'Character age', 'q2-label-real': 'Real age', 'q2-ph-char': '25', 'q2-ph-real': '16',
         'q3-title': 'Your aviation experience <span class="req">*</span>', 'q3-desc': 'Tell us about your experience in PTFS, other aviation games or simulators.', 'q3-ph': 'Describe your experience...',
@@ -1856,10 +1692,6 @@
       applyLang();
     })();
 
-    // Live statistics boot
-    loadLiveStats();
-    setInterval(loadLiveStats, 30000);
-    document.querySelectorAll('#liveStats .animate-on-scroll').forEach(el => observer.observe(el));
 
 
   </script>
