@@ -11,11 +11,12 @@
   <link rel="stylesheet" href="/assets/autumn.css">
   <link rel="stylesheet" href="/assets/sitemode.css">
   <style>
-    .intro-section { padding: 24px 48px 8px; max-width: 820px; margin: 0 auto; text-align: center; }
+    .hero { padding: 122px 48px 34px; max-width: 900px; }
+    .intro-section { padding: 18px 48px 6px; max-width: 780px; margin: 0 auto; text-align: center; }
     .intro-text { font-size: 18px; line-height: 1.85; color: var(--gray-700); }
     .intro-rule { height: 1px; border: 0; max-width: 520px; margin: 34px auto 0; background: linear-gradient(90deg, transparent, rgba(194,96,15,0.32), transparent); }
 
-    .timeline-section { padding: 48px 48px 40px; max-width: 900px; margin: 0 auto; }
+    .timeline-section { padding: 40px 48px 34px; max-width: 960px; margin: 0 auto; }
     .timeline { position: relative; padding-left: 62px; }
     .timeline::before { content: ''; position: absolute; left: 24px; top: 6px; bottom: 6px; width: 2px; background: linear-gradient(180deg, rgba(194,96,15,0.10), rgba(234,106,14,0.55), rgba(194,96,15,0.10)); }
 
@@ -31,7 +32,7 @@
     .timeline-title { font-size: 21px; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 8px; color: var(--black); }
     .timeline-desc { font-size: 15px; color: var(--gray-500); line-height: 1.75; }
 
-    .thanks-section { padding: 30px 48px 60px; text-align: center; }
+    .thanks-section { padding: 24px 48px 52px; text-align: center; }
     .thanks-card { max-width: 640px; margin: 0 auto; padding: 44px 40px; border: 1px solid rgba(194,96,15,0.18); border-radius: 16px; background: var(--card); position: relative; overflow: hidden; box-shadow: 0 12px 34px rgba(120,53,15,0.08); transition: border-color 0.35s ease, transform 0.45s cubic-bezier(0.16,1,0.3,1); }
     html[data-theme="dark"] .thanks-card { border-color: rgba(251,191,36,0.16); box-shadow: 0 12px 34px rgba(0,0,0,0.34); }
     .thanks-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--autumn-rust), var(--autumn-pumpkin), var(--autumn-mustard)); }
@@ -41,6 +42,7 @@
     .thanks-text { font-size: 15px; color: var(--gray-500); line-height: 1.75; }
 
     @media (max-width: 768px) {
+      .hero { padding: 108px 20px 26px; }
       .intro-section { padding: 16px 20px 4px; }
       .timeline-section { padding: 34px 20px 30px; }
       .timeline { padding-left: 46px; }

@@ -11,12 +11,28 @@
   <link rel="stylesheet" href="/assets/autumn.css">
   <link rel="stylesheet" href="/assets/sitemode.css">
   <style>
-    .events-section { padding: 30px 48px 50px; max-width: 1180px; margin: 0 auto; }
+    .hero { padding: 122px 48px 40px; max-width: 900px; }
+    .events-section { padding: 26px 48px 44px; max-width: 1240px; margin: 0 auto; }
+    .events-block { max-width: 1240px; margin: 0 auto; transition: max-width 0.3s ease; }
+    .events-block.block-narrow { max-width: 880px; }
+    .events-block.block-mid { max-width: 900px; }
     .section-label { font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #9A3412; margin-bottom: 10px; }
     html[data-theme="dark"] .section-label { color: var(--autumn-wheat); }
     .section-title { font-size: 30px; font-weight: 800; letter-spacing: -0.9px; color: var(--black); margin-bottom: 28px; }
 
-    .events-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
+    .events-grid { display: flex; flex-wrap: wrap; justify-content: center; align-items: stretch; gap: 24px; }
+    .events-grid .event-card { flex: 1 1 320px; min-width: 0; max-width: 400px; }
+
+    /* мало карточек — центрируем и растягиваем аккуратно */
+    .events-grid.grid-two .event-card { max-width: 430px; }
+    .events-grid.grid-one { justify-content: center; }
+    .events-grid.grid-one .event-card { flex: 0 1 880px; max-width: 880px; flex-direction: row; }
+    .events-grid.grid-one .event-media { width: 42%; flex: 0 0 42%; height: auto; min-height: 260px; }
+    .events-grid.grid-one .event-body { padding: 26px 30px 28px; }
+    @media (max-width: 720px) {
+      .events-grid.grid-one .event-card { flex-direction: column; }
+      .events-grid.grid-one .event-media { width: 100%; flex: none; height: 168px; min-height: 0; }
+    }
 
     .event-card { background: var(--card); border: 1px solid rgba(194,96,15,0.16); border-radius: 14px; overflow: hidden; box-shadow: 0 10px 30px rgba(120,53,15,0.07); transition: transform 0.45s cubic-bezier(0.16,1,0.3,1), box-shadow 0.45s ease, border-color 0.35s ease, opacity 0.8s var(--transition); display: flex; flex-direction: column; }
     html[data-theme="dark"] .event-card { border-color: rgba(251,191,36,0.14); box-shadow: 0 10px 30px rgba(0,0,0,0.34); }
@@ -36,17 +52,17 @@
     .event-countdown { margin-top: 14px; padding: 10px 12px; border-radius: 10px; background: rgba(245,158,11,0.10); border: 1px solid rgba(194,96,15,0.18); font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #9A3412; text-align: center; }
     html[data-theme="dark"] .event-countdown { background: rgba(251,191,36,0.10); border-color: rgba(251,191,36,0.20); color: var(--autumn-wheat); }
 
-    .past-block { margin-top: 54px; }
+    .past-block { margin-top: 46px; }
     .past-block .event-card { opacity: 0.86; }
 
-    .state-box { text-align: center; padding: 60px 24px; color: var(--gray-500); }
+    .state-box { text-align: center; padding: 48px 24px; color: var(--gray-500); }
     .state-box .ic { font-size: 46px; margin-bottom: 14px; }
     .state-box h3 { font-size: 19px; font-weight: 700; color: var(--black); margin-bottom: 8px; }
     .state-box p { font-size: 14px; }
     .spinner { width: 34px; height: 34px; border: 2px solid var(--border); border-top-color: var(--swiss-red); border-radius: 50%; margin: 0 auto 16px; animation: spin 0.9s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .cta-band { max-width: 1180px; margin: 0 auto; padding: 0 48px 60px; }
+    .cta-band { max-width: 900px; margin: 0 auto; padding: 0 48px 52px; }
     .cta-inner { border: 1px solid rgba(194,96,15,0.18); border-radius: 16px; background: var(--card); padding: 38px 34px; text-align: center; position: relative; overflow: hidden; box-shadow: 0 12px 34px rgba(120,53,15,0.08); }
     html[data-theme="dark"] .cta-inner { border-color: rgba(251,191,36,0.16); box-shadow: 0 12px 34px rgba(0,0,0,0.34); }
     .cta-inner::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--autumn-rust), var(--autumn-pumpkin), var(--autumn-mustard)); }
@@ -57,7 +73,9 @@
 
     @media (max-width: 768px) {
       .events-section { padding: 22px 20px 40px; }
-      .events-grid { grid-template-columns: 1fr; gap: 18px; }
+      .hero { padding: 108px 20px 32px; }
+      .events-grid .event-card, .events-grid.grid-two .event-card, .events-grid.grid-one .event-card { flex: 1 1 100%; max-width: 100%; }
+      .events-grid { gap: 18px; }
       .section-title { font-size: 24px; }
       .cta-band { padding: 0 20px 48px; }
       .cta-inner { padding: 28px 20px; }
@@ -124,13 +142,13 @@
       <p data-i18n="empty-desc">Новые групповые рейсы появятся скоро — следите за Discord.</p>
     </div>
 
-    <div id="upcomingBlock" style="display:none;">
+    <div id="upcomingBlock" class="events-block" style="display:none;">
       <div class="section-label" data-i18n="upcoming-label">Скоро</div>
       <h2 class="section-title" data-i18n="upcoming-title">Предстоящие события</h2>
       <div class="events-grid" id="upcomingGrid"></div>
     </div>
 
-    <div id="pastBlock" class="past-block" style="display:none;">
+    <div id="pastBlock" class="events-block past-block" style="display:none;">
       <div class="section-label" data-i18n="past-label">Архив</div>
       <h2 class="section-title" data-i18n="past-title">Прошедшие события</h2>
       <div class="events-grid" id="pastGrid"></div>
@@ -322,6 +340,13 @@
       return card;
     }
 
+    function fitGrid(grid, block, count) {
+      grid.classList.remove('grid-one', 'grid-two');
+      block.classList.remove('block-narrow', 'block-mid');
+      if (count === 1) { grid.classList.add('grid-one'); block.classList.add('block-narrow'); }
+      else if (count === 2) { grid.classList.add('grid-two'); block.classList.add('block-mid'); }
+    }
+
     function renderEvents(list) {
       const upGrid = document.getElementById('upcomingGrid');
       const pastGrid = document.getElementById('pastGrid');
@@ -345,6 +370,9 @@
 
       upcoming.forEach(function (ev) { upGrid.appendChild(buildCard(ev, false)); });
       past.forEach(function (ev) { pastGrid.appendChild(buildCard(ev, true)); });
+
+      fitGrid(upGrid, upBlock, upcoming.length);
+      fitGrid(pastGrid, pastBlock, past.length);
 
       upBlock.style.display = upcoming.length ? 'block' : 'none';
       pastBlock.style.display = past.length ? 'block' : 'none';
