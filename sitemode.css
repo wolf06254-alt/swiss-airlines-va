@@ -1,0 +1,248 @@
+/* ============================================================
+   SITE MODE LAYER — global maintenance indicator + "work done"
+   celebration overlay. Shared by index / login / 404 / admin.
+   ============================================================ */
+
+/* ---------- top banner (admins only) ---------- */
+.sm-banner {
+  position: fixed;
+  left: 0; right: 0; top: 0;
+  z-index: 9500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  color: #fff;
+  background: linear-gradient(90deg, #B45309, #D97706, #B45309);
+  background-size: 220% 100%;
+  box-shadow: 0 6px 24px rgba(120, 53, 15, 0.28);
+  transform: translateY(-110%);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: smSheen 7s linear infinite;
+}
+
+.sm-banner.show { transform: translateY(0); }
+/* "update" mode keeps the warm autumn family: muted teal-slate instead of
+   a saturated blue that clashed with the amber palette. */
+.sm-banner.mode-update { background-image: linear-gradient(90deg, #155E75, #0E7490, #155E75); box-shadow: 0 6px 24px rgba(21, 94, 117, 0.26); }
+.sm-banner.mode-update .sm-dot { background: #CFFAFE; box-shadow: 0 0 0 0 rgba(207, 250, 254, 0.8); }
+
+@keyframes smSheen { 0% { background-position: 0% 0; } 100% { background-position: 220% 0; } }
+
+.sm-banner .sm-dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: #FEF3C7;
+  box-shadow: 0 0 0 0 rgba(254, 243, 199, 0.8);
+  animation: smPulse 1.8s ease-out infinite;
+  flex: none;
+}
+
+@keyframes smPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(254, 243, 199, 0.75); }
+  70%  { box-shadow: 0 0 0 12px rgba(254, 243, 199, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(254, 243, 199, 0); }
+}
+
+.sm-banner .sm-txt { max-width: 70ch; }
+.sm-banner .sm-eta { opacity: 0.85; font-weight: 500; }
+
+.sm-banner .sm-actions { display: flex; gap: 8px; align-items: center; }
+
+.sm-banner button {
+  font: inherit;
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+
+.sm-banner button:hover { background: rgba(255, 255, 255, 0.3); transform: translateY(-1px); }
+.sm-banner button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* the banner is fixed at the very top, so fixed/sticky headers move down by
+   its REAL height (--sm-h is measured in JS) instead of a hardcoded guess */
+:root { --sm-h: 46px; }
+body.sm-banner-on .top-header,
+body.sm-banner-on .admin-header,
+body.sm-banner-on header[class] { top: var(--sm-h); }
+body.sm-banner-on { padding-top: var(--sm-h); }
+
+@media (max-width: 720px) {
+  .sm-banner { font-size: 12px; padding: 8px 12px; gap: 10px; }
+}
+
+/* ---------- guest stub (fallback if the gate is bypassed) ---------- */
+.sm-guard {
+  position: fixed;
+  inset: 0;
+  z-index: 9800;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  text-align: center;
+  padding: 32px;
+  color: #1F2937;
+  background: linear-gradient(160deg, #FFF7ED, #FDE8D0 55%, #F5D9B8);
+  backdrop-filter: blur(4px);
+}
+
+html[data-theme="dark"] .sm-guard { color: #F3F4F6; background: linear-gradient(160deg, #1B1206, #241505 55%, #120C05); }
+.sm-guard h2 { font-size: clamp(22px, 4vw, 34px); margin: 0; letter-spacing: -0.5px; }
+.sm-guard p { margin: 0; max-width: 46ch; line-height: 1.65; opacity: 0.85; }
+.sm-guard .sm-guard-mark { font-size: 44px; }
+
+/* ---------- completion overlay ---------- */
+.sm-done {
+  position: fixed;
+  inset: 0;
+  z-index: 9900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  opacity: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 40%, rgba(255, 247, 237, 0.96), rgba(253, 230, 200, 0.92) 45%, rgba(120, 53, 15, 0.55));
+  transition: opacity 0.5s ease;
+}
+
+html[data-theme="dark"] .sm-done {
+  background: radial-gradient(circle at 50% 40%, rgba(28, 18, 8, 0.96), rgba(18, 12, 5, 0.94) 45%, rgba(0, 0, 0, 0.7));
+}
+
+.sm-done.show { opacity: 1; pointer-events: auto; }
+.sm-done.hide { opacity: 0; pointer-events: none; }
+
+.sm-done-card {
+  position: relative;
+  max-width: 520px;
+  width: 100%;
+  padding: 40px 34px 30px;
+  border-radius: 22px;
+  text-align: center;
+  color: #1F2937;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(194, 96, 15, 0.22);
+  box-shadow: 0 30px 90px rgba(120, 53, 15, 0.28);
+  transform: translateY(26px) scale(0.96);
+  opacity: 0;
+  animation: smCardIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
+}
+
+html[data-theme="dark"] .sm-done-card {
+  color: #F9FAFB;
+  background: rgba(24, 16, 8, 0.92);
+  border-color: rgba(251, 191, 36, 0.22);
+}
+
+@keyframes smCardIn { to { transform: translateY(0) scale(1); opacity: 1; } }
+
+.sm-check {
+  width: 84px; height: 84px;
+  margin: 0 auto 20px;
+  display: block;
+}
+
+.sm-check circle {
+  fill: none;
+  stroke: #16A34A;
+  stroke-width: 4;
+  stroke-dasharray: 232;
+  stroke-dashoffset: 232;
+  animation: smDraw 0.8s ease-out 0.3s forwards;
+}
+
+.sm-check path {
+  fill: none;
+  stroke: #16A34A;
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 60;
+  stroke-dashoffset: 60;
+  animation: smDraw 0.45s ease-out 1s forwards;
+}
+
+@keyframes smDraw { to { stroke-dashoffset: 0; } }
+
+.sm-done-card h2 {
+  margin: 0 0 10px;
+  font-size: clamp(20px, 3.4vw, 28px);
+  letter-spacing: -0.4px;
+}
+
+.sm-done-card p { margin: 0 0 22px; line-height: 1.65; opacity: 0.82; font-size: 14px; }
+
+.sm-done-card .sm-close {
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 12px 26px;
+  border-radius: 999px;
+  cursor: pointer;
+  color: #fff;
+  background: #B91C1C;
+  border: 0;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.sm-done-card .sm-close:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(185, 28, 28, 0.32); }
+.sm-done-card .sm-close:focus-visible { outline: 2px solid #B45309; outline-offset: 3px; }
+
+.sm-progress {
+  height: 3px;
+  border-radius: 999px;
+  margin: 0 auto 24px;
+  max-width: 220px;
+  overflow: hidden;
+  background: rgba(120, 53, 15, 0.14);
+}
+
+.sm-progress i {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #D97706, #16A34A);
+  animation: smFill 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
+}
+
+@keyframes smFill { to { width: 100%; } }
+
+/* confetti-ish autumn sparks */
+.sm-spark {
+  position: absolute;
+  top: 12%;
+  width: 8px; height: 8px;
+  border-radius: 2px;
+  opacity: 0;
+  animation: smSpark 1.9s ease-out forwards;
+}
+
+@keyframes smSpark {
+  0%   { transform: translate3d(0, 0, 0) rotate(0deg) scale(0.4); opacity: 0; }
+  15%  { opacity: 1; }
+  100% { transform: translate3d(var(--dx, 40px), 70vh, 0) rotate(540deg) scale(1); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sm-banner, .sm-done, .sm-done-card, .sm-check circle, .sm-check path, .sm-progress i, .sm-spark { animation: none !important; transition: none !important; }
+  .sm-done-card { transform: none; opacity: 1; }
+  .sm-check circle, .sm-check path { stroke-dashoffset: 0; }
+  .sm-progress i { width: 100%; }
+  .sm-spark { display: none; }
+}

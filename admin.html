@@ -244,8 +244,11 @@
     /* ===== READABILITY FIXES ===== */
     [data-theme="dark"] { --nav-link: #F5D9BC; }
   </style>
+  <link rel="stylesheet" href="/assets/autumn.css">
+  <link rel="stylesheet" href="/assets/sitemode.css">
 </head>
 <body>
+  <div class="autumn-haze" aria-hidden="true"></div>
   <div class="toast-container" id="toastContainer"></div>
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal" id="modal"></div>
@@ -1155,5 +1158,6 @@
     checkAuth().then(ok => { if (ok) { loadApplications(); loadSiteMode(); } });
   </script>
 
+  <script src="/assets/sitemode.js" defer></script>
 </body>
 </html>

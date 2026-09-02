@@ -1,0 +1,86 @@
+/* ============================================================
+   AUTUMN MINIMAL — shared decorative layer (Swiss Airlines VA)
+   Soft falling leaves, warm hairlines, seasonal chip.
+   Purely decorative: pointer-events none, reduced-motion safe.
+   ============================================================ */
+
+.autumn-leaves {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.autumn-leaf {
+  position: absolute;
+  top: -8vh;
+  width: 14px;
+  height: 14px;
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: leafFall linear infinite;
+}
+
+.autumn-leaf svg { display: block; width: 100%; height: 100%; }
+
+@keyframes leafFall {
+  0%   { transform: translate3d(0, -10vh, 0) rotate(0deg);      opacity: 0; }
+  8%   { opacity: 0.85; }
+  50%  { transform: translate3d(28px, 52vh, 0) rotate(180deg);  opacity: 0.85; }
+  90%  { opacity: 0.5; }
+  100% { transform: translate3d(-22px, 112vh, 0) rotate(392deg); opacity: 0; }
+}
+
+/* thin warm hairline used to separate blocks */
+.autumn-rule {
+  height: 1px;
+  border: 0;
+  margin: 0;
+  background: linear-gradient(90deg, transparent, rgba(194, 96, 15, 0.35), transparent);
+}
+
+/* small seasonal chip */
+.autumn-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #9A3412;
+  background: rgba(255, 241, 227, 0.75);
+  border: 1px solid rgba(194, 96, 15, 0.28);
+  backdrop-filter: blur(6px);
+}
+
+html[data-theme="dark"] .autumn-chip {
+  color: #FBBF24;
+  background: rgba(42, 22, 8, 0.6);
+  border-color: rgba(251, 191, 36, 0.26);
+}
+
+/* warm vignette on the very top of the viewport */
+.autumn-haze {
+  position: fixed;
+  left: 0; right: 0; top: 0;
+  height: 180px;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(245, 158, 11, 0.14), transparent);
+}
+
+html[data-theme="dark"] .autumn-haze {
+  background: linear-gradient(180deg, rgba(210, 80, 15, 0.16), transparent);
+}
+
+@media (max-width: 720px) {
+  .autumn-leaf { width: 11px; height: 11px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .autumn-leaves { display: none; }
+}

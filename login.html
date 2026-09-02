@@ -183,9 +183,10 @@
 
     .controls-row {
       display: flex;
-      gap: 8px;
-      margin-top: 20px;
+      gap: 14px;
+      margin-top: 24px;
       justify-content: flex-end;
+      align-items: center;
     }
     .ctrl-btn {
       background: transparent;
@@ -200,6 +201,7 @@
       border-radius: 4px;
     }
     .ctrl-btn:hover { color: var(--text); border-color: var(--text); }
+    .ctrl-btn { min-width: 46px; text-align: center; line-height: 1.2; }
 
     @media (max-width: 480px) {
       .login-card { padding: 32px 24px; }
@@ -244,8 +246,11 @@
     /* ===== READABILITY FIXES ===== */
     [data-theme="dark"] { --nav-link: #F5D9BC; }
   </style>
+  <link rel="stylesheet" href="/assets/autumn.css">
+  <link rel="stylesheet" href="/assets/sitemode.css">
 </head>
 <body>
+  <div class="autumn-haze" aria-hidden="true"></div>
   <div class="login-card">
     <div class="logo-row">
       <div class="logo-cross">+</div>
@@ -429,5 +434,6 @@
   </script>
   <div class="autumn-strip" aria-hidden="true"></div>
 
+  <script src="/assets/sitemode.js" defer></script>
 </body>
 </html>

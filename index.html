@@ -1114,9 +1114,89 @@
     .nav a.active, .nav-link.active { color: #9A3412; }
     [data-theme="dark"] .nav a.active,
     [data-theme="dark"] .nav-link.active { color: var(--autumn-wheat); }
+
+    /* ===== AUTUMN MINIMAL v2 — quieter surfaces, warmer accents ===== */
+    .hero-label, .live-label, .section-label {
+      color: #9A3412;
+      letter-spacing: 3px;
+    }
+    html[data-theme="dark"] .hero-label,
+    html[data-theme="dark"] .live-label,
+    html[data-theme="dark"] .section-label { color: var(--autumn-wheat); }
+
+    .hero-season {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin: 0 auto 18px;
+      padding: 7px 15px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2.4px;
+      text-transform: uppercase;
+      color: #9A3412;
+      background: rgba(255, 244, 232, 0.72);
+      border: 1px solid rgba(194, 96, 15, 0.26);
+      backdrop-filter: blur(6px);
+      animation: seasonIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .hero-season i {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--autumn-pumpkin);
+      animation: seasonBlink 3.2s ease-in-out infinite;
+    }
+    html[data-theme="dark"] .hero-season {
+      color: var(--autumn-wheat);
+      background: rgba(42, 22, 8, 0.6);
+      border-color: rgba(251, 191, 36, 0.24);
+    }
+    @keyframes seasonIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+    @keyframes seasonBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+    /* softer, flatter cards — minimal look with a single warm hairline */
+    .live-card, .info-card, .gallery-card {
+      border-radius: 14px;
+      border-color: rgba(194, 96, 15, 0.16);
+      box-shadow: 0 10px 30px rgba(120, 53, 15, 0.07);
+      transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.45s ease, border-color 0.35s ease;
+    }
+    .live-card:hover, .info-card:hover, .gallery-card:hover {
+      border-color: rgba(194, 96, 15, 0.42);
+      box-shadow: 0 18px 46px rgba(120, 53, 15, 0.14);
+    }
+    html[data-theme="dark"] .live-card,
+    html[data-theme="dark"] .info-card,
+    html[data-theme="dark"] .gallery-card {
+      border-color: rgba(251, 191, 36, 0.14);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.34);
+    }
+
+    /* thin warm divider between sections */
+    section + section::before {
+      content: "";
+      display: block;
+      height: 1px;
+      max-width: 1100px;
+      margin: 0 auto 42px;
+      background: linear-gradient(90deg, transparent, rgba(194, 96, 15, 0.28), transparent);
+    }
+
+    /* header gets a warm frosted base */
+    header {
+      backdrop-filter: blur(14px) saturate(1.05);
+      border-bottom: 1px solid rgba(194, 96, 15, 0.14);
+    }
+    html[data-theme="dark"] header { border-bottom-color: rgba(251, 191, 36, 0.14); }
+
+    .feature-item .dot { background: var(--autumn-pumpkin); }
   </style>
+  <link rel="stylesheet" href="/assets/autumn.css">
+  <link rel="stylesheet" href="/assets/sitemode.css">
 </head>
 <body>
+  <div class="autumn-haze" aria-hidden="true"></div>
   <div class="preloader" id="preloader" role="status" aria-label="Loading">
     <div class="pre-alt">
       <svg class="pre-ring" viewBox="0 0 108 108" aria-hidden="true">
@@ -1151,6 +1231,7 @@
 
 
   <section class="hero">
+    <div class="hero-season"><i></i><span data-i18n="season-chip">Осенний сезон ✈ Набор открыт</span></div>
     <div class="hero-label" data-i18n="hero-label">Виртуальная авиакомпания</div>
     <h1 data-i18n="hero-title">Стань частью<br><span>Swiss Airlines</span></h1>
     <p class="hero-desc" data-i18n="hero-desc">
@@ -1702,7 +1783,7 @@
         'mail-title': '📬 Почта', 'mail-desc': 'Введите ваш ник в PTFS, чтобы узнать статус анкеты.', 'mail-ph': 'Ник в PTFS', 'mail-btn': 'Проверить', 'mail-close': 'Закрыть',
         'success-title': 'Анкета отправлена', 'success-desc': 'Мы получили твою заявку. Команда рассмотрит её в ближайшее время и свяжется через Telegram.', 'success-btn': 'Понятно',
         'nav-home': 'Главная', 'nav-fleet': 'Флот', 'nav-routes': 'Маршруты', 'nav-events': 'События', 'nav-history': 'История', 'nav-admin': 'Админ', 'nav-patent': 'Патент',
-        'footer-home': 'Главная', 'footer-fleet': 'Флот', 'footer-routes': 'Маршруты', 'footer-admin': 'Админ', 'footer-patent': 'Патент', 'footer-patent-text': 'Неофициальный виртуальный патент № SW-VA-001 от 10.08.26 01:33', 'footer-more': 'Подробнее →', 'footer-slogan': 'Fly Together. Fly Swiss.'
+        'footer-home': 'Главная', 'footer-fleet': 'Флот', 'footer-routes': 'Маршруты', 'footer-admin': 'Админ', 'footer-patent': 'Патент', 'footer-patent-text': 'Неофициальный виртуальный патент № SW-VA-001 от 10.08.26 01:33', 'footer-more': 'Подробнее →', 'footer-slogan': 'Fly Together. Fly Swiss.', 'season-chip': 'Осенний сезон ✈ Набор открыт'
       },
       en: {
         'hero-label': 'Virtual Airline', 'hero-title': 'Become part of<br><span>Swiss Airlines</span>', 'hero-desc': 'Fill out the application and take the first step towards a pilot career in our virtual airline. International routes, modern fleet and a friendly team.',
@@ -1737,7 +1818,7 @@
         'mail-title': '📬 Mail', 'mail-desc': 'Enter your PTFS nickname to check application status.', 'mail-ph': 'PTFS nickname', 'mail-btn': 'Check', 'mail-close': 'Close',
         'success-title': 'Application Sent', 'success-desc': 'We have received your application. The team will review it soon and contact you via Telegram.', 'success-btn': 'Got it',
         'nav-home': 'Home', 'nav-fleet': 'Fleet', 'nav-routes': 'Routes', 'nav-events': 'Events', 'nav-history': 'History', 'nav-admin': 'Admin', 'nav-patent': 'Patent',
-        'footer-home': 'Home', 'footer-fleet': 'Fleet', 'footer-routes': 'Routes', 'footer-admin': 'Admin', 'footer-patent': 'Patent', 'footer-patent-text': 'Unofficial virtual patent No. SW-VA-001 dated 10.08.26 01:33', 'footer-more': 'More →', 'footer-slogan': 'Fly Together. Fly Swiss.'
+        'footer-home': 'Home', 'footer-fleet': 'Fleet', 'footer-routes': 'Routes', 'footer-admin': 'Admin', 'footer-patent': 'Patent', 'footer-patent-text': 'Unofficial virtual patent No. SW-VA-001 dated 10.08.26 01:33', 'footer-more': 'More →', 'footer-slogan': 'Fly Together. Fly Swiss.', 'season-chip': 'Autumn season ✈ Recruitment open'
       }
     };
     function applyLang() {
@@ -1820,5 +1901,6 @@
   </script>
   <div class="autumn-strip" aria-hidden="true"></div>
 
+  <script src="/assets/sitemode.js" defer></script>
 </body>
 </html>

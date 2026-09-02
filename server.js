@@ -220,8 +220,8 @@ const STAT_KEYS = ['visits', 'pilots', 'flights', 'flight_hours', 'destinations'
 /* ============================================================
    SITE SETTINGS (site mode: live / maintenance / update)
    ============================================================ */
-const SETTING_KEYS = ['site_mode', 'maint_title', 'maint_message', 'maint_eta'];
-const SETTING_DEFAULTS = { site_mode: 'live', maint_title: '', maint_message: '', maint_eta: '' };
+const SETTING_KEYS = ['site_mode', 'maint_title', 'maint_message', 'maint_eta', 'maint_done', 'maint_done_at'];
+const SETTING_DEFAULTS = { site_mode: 'live', maint_title: '', maint_message: '', maint_eta: '', maint_done: '', maint_done_at: '' };
 const SITE_MODES = ['live', 'maintenance', 'update'];
 let siteSettings = Object.assign({}, SETTING_DEFAULTS);
 let siteSettingsAt = 0;
@@ -934,6 +934,8 @@ app.get('/api/site-mode', async (req, res) => {
     title: siteSettings.maint_title || '',
     message: siteSettings.maint_message || '',
     eta: siteSettings.maint_eta || '',
+    done: siteSettings.maint_done || '',
+    doneAt: siteSettings.maint_done_at || '',
     isAdmin: !!(req.session && req.session.isAdmin)
   });
 });
@@ -944,7 +946,16 @@ app.put('/api/admin/site-mode', requireAuth, requireDb, async (req, res) => {
     if (body.mode !== undefined) {
       const mode = String(body.mode);
       if (!SITE_MODES.includes(mode)) return res.status(400).json({ success: false, error: 'Invalid mode' });
+      const prev = siteSettings.site_mode || 'live';
       await settingsSet('site_mode', mode);
+      // Remember "work finished" so visitors get a completion animation once
+      if (mode === 'live' && prev !== 'live') {
+        await settingsSet('maint_done', prev);
+        await settingsSet('maint_done_at', String(Date.now()));
+      } else if (mode !== 'live') {
+        await settingsSet('maint_done', '');
+        await settingsSet('maint_done_at', '');
+      }
     }
     if (body.title !== undefined) await settingsSet('maint_title', body.title);
     if (body.message !== undefined) await settingsSet('maint_message', body.message);
@@ -956,7 +967,9 @@ app.put('/api/admin/site-mode', requireAuth, requireDb, async (req, res) => {
       mode: siteSettings.site_mode,
       title: siteSettings.maint_title,
       message: siteSettings.maint_message,
-      eta: siteSettings.maint_eta
+      eta: siteSettings.maint_eta,
+      done: siteSettings.maint_done || '',
+      doneAt: siteSettings.maint_done_at || ''
     });
   } catch (e) {
     console.error('[SETTINGS] save error:', e.message);
