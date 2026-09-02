@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="/assets/autumn.css">
   <link rel="stylesheet" href="/assets/sitemode.css">
   <style>
-    .hero { padding: 122px 48px 40px; max-width: 900px; }
+    .hero { padding-bottom: 84px; }
     .events-section { padding: 26px 48px 44px; max-width: 1240px; margin: 0 auto; }
     .events-block { max-width: 1240px; margin: 0 auto; transition: max-width 0.3s ease; }
     .events-block.block-narrow { max-width: 880px; }
@@ -73,7 +73,7 @@
 
     @media (max-width: 768px) {
       .events-section { padding: 22px 20px 40px; }
-      .hero { padding: 108px 20px 32px; }
+      .hero { padding-bottom: 44px; }
       .events-grid .event-card, .events-grid.grid-two .event-card, .events-grid.grid-one .event-card { flex: 1 1 100%; max-width: 100%; }
       .events-grid { gap: 18px; }
       .section-title { font-size: 24px; }
@@ -108,7 +108,6 @@
       <a href="events.html" class="active" data-i18n="nav-events">События</a>
       <a href="history.html" data-i18n="nav-history">История</a>
       <a href="https://discord.gg/6YA8t7GJr" target="_blank" rel="noopener">Discord</a>
-      <a href="login.html" class="nav-login-btn" data-i18n="nav-login">Вход</a>
     </nav>
     <div class="controls">
       <button class="lang-toggle" id="langToggle" onclick="toggleLang()">EN</button>
@@ -117,11 +116,25 @@
   </header>
 
   <section class="hero">
+    <div class="hero-plane" aria-hidden="true">✈</div>
     <div class="hero-season"><i></i><span data-i18n="season-chip">Осенние рейсы 🍂 Расписание</span></div>
-    <div class="hero-icon">📅</div>
     <div class="hero-label" data-i18n="hero-label">Swiss Airlines Virtual</div>
     <h1 data-i18n-html="hero-title">События и <span>групповые рейсы</span></h1>
     <p class="hero-desc" data-i18n="hero-desc">Групповые вылеты, тренировки и специальные акции Swiss Airlines VA. Присоединяйтесь — мест всегда хватает.</p>
+    <div class="features-strip">
+      <div class="feature-item" data-i18n="ev-feature-1"><div class="dot"></div>Групповые вылеты</div>
+      <div class="feature-item" data-i18n="ev-feature-2"><div class="dot"></div>Брифинг в Discord</div>
+      <div class="feature-item" data-i18n="ev-feature-3"><div class="dot"></div>Осенние маршруты</div>
+      <div class="feature-item" data-i18n="ev-feature-4"><div class="dot"></div>Открыто для всех</div>
+    </div>
+
+    <div class="hero-photo animate-on-scroll">
+      <img src="/assets/photos/gate-sunset.jpg" data-i18n-alt="alt-hero" alt="Борт Swiss Airlines VA у гейта на закате перед групповым вылетом" loading="lazy" width="1280" height="640">
+      <div class="hero-photo-cap">
+        <strong data-i18n="hero-photo-title">Вылет по расписанию</strong>
+        <span data-i18n="hero-photo-sub">Собираемся у гейта, брифинг — и вместе в осеннее небо PTFS.</span>
+      </div>
+    </div>
   </section>
 
   <section class="events-section">
@@ -188,6 +201,10 @@
         'hero-label': 'Swiss Airlines Virtual',
         'hero-title': 'События и <span>групповые рейсы</span>',
         'hero-desc': 'Групповые вылеты, тренировки и специальные акции Swiss Airlines VA. Присоединяйтесь — мест всегда хватает.',
+        'ev-feature-1': 'Групповые вылеты', 'ev-feature-2': 'Брифинг в Discord', 'ev-feature-3': 'Осенние маршруты', 'ev-feature-4': 'Открыто для всех',
+        'alt-hero': 'Борт Swiss Airlines VA у гейта на закате перед групповым вылетом',
+        'hero-photo-title': 'Вылет по расписанию',
+        'hero-photo-sub': 'Собираемся у гейта, брифинг — и вместе в осеннее небо PTFS.',
         'nav-home': 'Главная', 'nav-events': 'События', 'nav-history': 'История', 'nav-login': 'Вход', 'nav-admin': 'Админ',
         'loading': 'Загружаем расписание...',
         'error-title': 'Не удалось загрузить события',
@@ -210,6 +227,10 @@
         'hero-label': 'Swiss Airlines Virtual',
         'hero-title': 'Events & <span>Group Flights</span>',
         'hero-desc': 'Group departures, training sessions, and special Swiss Airlines VA activities. Join in — there is always a seat for you.',
+        'ev-feature-1': 'Group departures', 'ev-feature-2': 'Discord briefings', 'ev-feature-3': 'Autumn routes', 'ev-feature-4': 'Open to everyone',
+        'alt-hero': 'Swiss Airlines VA aircraft at the gate at sunset before a group flight',
+        'hero-photo-title': 'Departure on schedule',
+        'hero-photo-sub': 'We meet at the gate, run the briefing, and take off into the autumn PTFS sky together.',
         'nav-home': 'Home', 'nav-events': 'Events', 'nav-history': 'History', 'nav-login': 'Login', 'nav-admin': 'Admin',
         'loading': 'Loading schedule...',
         'error-title': 'Could not load events',
@@ -246,6 +267,10 @@
       document.querySelectorAll('[data-i18n-html]').forEach(el => {
         const v = t(el.getAttribute('data-i18n-html'));
         if (v) el.innerHTML = v;
+      });
+      document.querySelectorAll('[data-i18n-alt]').forEach(el => {
+        const v = t(el.getAttribute('data-i18n-alt'));
+        if (v) el.setAttribute('alt', v);
       });
       if (eventsCache) renderEvents(eventsCache);
     }

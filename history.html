@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="/assets/autumn.css">
   <link rel="stylesheet" href="/assets/sitemode.css">
   <style>
-    .hero { padding: 122px 48px 34px; max-width: 900px; }
+    .hero { padding-bottom: 84px; }
     .intro-section { padding: 18px 48px 6px; max-width: 780px; margin: 0 auto; text-align: center; }
     .intro-text { font-size: 18px; line-height: 1.85; color: var(--gray-700); }
     .intro-rule { height: 1px; border: 0; max-width: 520px; margin: 34px auto 0; background: linear-gradient(90deg, transparent, rgba(194,96,15,0.32), transparent); }
@@ -42,7 +42,7 @@
     .thanks-text { font-size: 15px; color: var(--gray-500); line-height: 1.75; }
 
     @media (max-width: 768px) {
-      .hero { padding: 108px 20px 26px; }
+      .hero { padding-bottom: 44px; }
       .intro-section { padding: 16px 20px 4px; }
       .timeline-section { padding: 34px 20px 30px; }
       .timeline { padding-left: 46px; }
@@ -79,7 +79,6 @@
       <a href="events.html" data-i18n="nav-events">События</a>
       <a href="history.html" class="active" data-i18n="nav-history">История</a>
       <a href="https://discord.gg/6YA8t7GJr" target="_blank" rel="noopener">Discord</a>
-      <a href="login.html" class="nav-login-btn" data-i18n="nav-login">Вход</a>
     </nav>
     <div class="controls">
       <button class="lang-toggle" id="langToggle" onclick="toggleLang()">EN</button>
@@ -88,11 +87,25 @@
   </header>
 
   <section class="hero">
+    <div class="hero-plane" aria-hidden="true">✈</div>
     <div class="hero-season"><i></i><span data-i18n="season-chip">Осенний сезон ✈ Наш путь</span></div>
-    <div class="hero-icon">🇨🇭</div>
     <div class="hero-label" data-i18n="hero-label">Swiss Airlines Virtual</div>
     <h1 data-i18n-html="hero-title">Наша <span>история</span></h1>
     <p class="hero-desc" data-i18n="hero-desc">Путь от маленькой идеи до виртуальной авиакомпании, объединяющей пилотов со всего мира.</p>
+    <div class="features-strip">
+      <div class="feature-item" data-i18n="hi-feature-1"><div class="dot"></div>Основано в 2024</div>
+      <div class="feature-item" data-i18n="hi-feature-2"><div class="dot"></div>Пилоты со всего мира</div>
+      <div class="feature-item" data-i18n="hi-feature-3"><div class="dot"></div>Швейцарская точность</div>
+      <div class="feature-item" data-i18n="hi-feature-4"><div class="dot"></div>Сообщество PTFS</div>
+    </div>
+
+    <div class="hero-photo animate-on-scroll">
+      <img src="/assets/photos/apron-night.jpg" data-i18n-alt="alt-hero" alt="Перрон Swiss Airlines VA ночью — борта готовятся к вылету" loading="lazy" width="1280" height="640">
+      <div class="hero-photo-cap">
+        <strong data-i18n="hero-photo-title">С первого вылета до сегодня</strong>
+        <span data-i18n="hero-photo-sub">Каждый рейс добавлял новую страницу в историю нашей авиакомпании.</span>
+      </div>
+    </div>
   </section>
 
   <section class="intro-section animate-on-scroll">
@@ -137,6 +150,13 @@
         'hero-label': 'Swiss Airlines Virtual',
         'hero-title': 'Наша <span>история</span>',
         'hero-desc': 'Путь от маленькой идеи до виртуальной авиакомпании, объединяющей пилотов со всего мира.',
+        'hi-feature-1': 'Основано в 2024',
+        'hi-feature-2': 'Пилоты со всего мира',
+        'hi-feature-3': 'Швейцарская точность',
+        'hi-feature-4': 'Сообщество PTFS',
+        'alt-hero': 'Перрон Swiss Airlines VA ночью — борта готовятся к вылету',
+        'hero-photo-title': 'С первого вылета до сегодня',
+        'hero-photo-sub': 'Каждый рейс добавлял новую страницу в историю нашей авиакомпании.',
         'intro-text': 'Swiss Airlines Virtual — это больше, чем просто VA. Это сообщество людей, которые любят авиацию, ценят швейцарскую точность и получают удовольствие от полётов в PTFS. Вот как всё начиналось.',
         'nav-home': 'Главная', 'nav-events': 'События', 'nav-history': 'История', 'nav-login': 'Вход', 'nav-admin': 'Админ',
         'thanks-title': 'Спасибо, что вы с нами',
@@ -149,6 +169,13 @@
         'hero-label': 'Swiss Airlines Virtual',
         'hero-title': 'Our <span>Story</span>',
         'hero-desc': 'From a small idea to a virtual airline uniting pilots from around the world.',
+        'hi-feature-1': 'Founded in 2024',
+        'hi-feature-2': 'Pilots worldwide',
+        'hi-feature-3': 'Swiss precision',
+        'hi-feature-4': 'PTFS community',
+        'alt-hero': 'Swiss Airlines VA apron at night — aircraft preparing for departure',
+        'hero-photo-title': 'From the first flight to today',
+        'hero-photo-sub': 'Every flight has added a new page to the story of our airline.',
         'intro-text': 'Swiss Airlines Virtual is more than just a VA. It\u2019s a community of people who love aviation, value Swiss precision, and enjoy flying in PTFS. Here\u2019s how it all began.',
         'nav-home': 'Home', 'nav-events': 'Events', 'nav-history': 'History', 'nav-login': 'Login', 'nav-admin': 'Admin',
         'thanks-title': 'Thank you for being with us',
@@ -185,6 +212,10 @@
       document.querySelectorAll('[data-i18n-html]').forEach(el => {
         const val = t(el.getAttribute('data-i18n-html'));
         if (val) el.innerHTML = val;
+      });
+      document.querySelectorAll('[data-i18n-alt]').forEach(el => {
+        const val = t(el.getAttribute('data-i18n-alt'));
+        if (val) el.setAttribute('alt', val);
       });
       renderTimeline();
     }

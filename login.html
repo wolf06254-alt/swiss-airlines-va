@@ -68,6 +68,7 @@
       padding: 48px;
       animation: fadeUp 0.8s ease-out;
       position: relative;
+      z-index: 5;
     }
     .login-card::before {
       content: '';
@@ -245,12 +246,66 @@
     }
     /* ===== READABILITY FIXES ===== */
     [data-theme="dark"] { --nav-link: #F5D9BC; }
+
+    /* ===== SHARED HEADER (как на главной) ===== */
+    :root { --header-bg: rgba(255,245,234,0.94); --header-text: var(--black); --nav-link: var(--gray-700); --nav-link-hover: var(--black); }
+    [data-theme="dark"] { --header-bg: rgba(30,20,8,0.92); --header-text: #F9E7D4; --nav-link-hover: #FFFFFF; }
+    .top-header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: var(--header-bg);
+      backdrop-filter: blur(14px) saturate(1.05);
+      -webkit-backdrop-filter: blur(14px) saturate(1.05);
+      border-bottom: 1px solid rgba(194, 96, 15, 0.14);
+      padding: 0 48px; height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      animation: fadeIn 0.6s ease;
+    }
+    html[data-theme="dark"] .top-header { border-bottom-color: rgba(251, 191, 36, 0.14); }
+    .top-header .logo { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 15px; letter-spacing: -0.3px; color: var(--header-text); text-decoration: none; transition: opacity 0.3s; }
+    .top-header .logo:hover { opacity: 0.7; }
+    .top-header .logo-cross { width: 28px; height: 28px; background: var(--swiss-red); display: flex; align-items: center; justify-content: center; font-size: 14px; color: #fff; font-weight: 700; }
+    .nav { display: flex; gap: 32px; align-items: center; }
+    .nav a { color: var(--nav-link); text-decoration: none; font-size: 13px; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; position: relative; padding: 4px 0; transition: color 0.3s; }
+    .nav a::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 1.5px; background: var(--swiss-red); transition: width 0.3s var(--transition); }
+    .nav a:hover { color: var(--nav-link-hover); }
+    .nav a:hover::after { width: 100%; }
+    .nav a.active { color: var(--swiss-red); }
+    html[data-theme="dark"] .nav a.active { color: var(--autumn-wheat); }
+    .controls { display: flex; gap: 12px; align-items: center; }
+    .lang-toggle, .theme-toggle { background: transparent; border: 1px solid var(--nav-link); color: var(--nav-link); padding: 6px 14px; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s; letter-spacing: 0.5px; border-radius: 4px; min-width: 46px; text-align: center; }
+    .lang-toggle:hover, .theme-toggle:hover { border-color: var(--swiss-red); color: var(--swiss-red); }
+    body { padding-top: 84px; padding-bottom: 40px; }
+    @media (max-width: 720px) {
+      .top-header { padding: 0 18px; height: 58px; gap: 10px; }
+      .nav { gap: 18px; }
+      .nav a { font-size: 11px; }
+      .top-header .logo div:last-child { display: none; }
+      body { padding-top: 74px; }
+    }
   </style>
   <link rel="stylesheet" href="/assets/autumn.css">
   <link rel="stylesheet" href="/assets/sitemode.css">
 </head>
 <body>
   <div class="autumn-haze" aria-hidden="true"></div>
+
+  <header class="top-header">
+    <a href="index.html" class="logo">
+      <div class="logo-cross">+</div>
+      <div>SWISS AIRLINES</div>
+    </a>
+    <nav class="nav">
+      <a href="index.html" data-i18n="nav-home">Главная</a>
+      <a href="events.html" data-i18n="nav-events">События</a>
+      <a href="history.html" data-i18n="nav-history">История</a>
+      <a href="https://discord.gg/6YA8t7GJr" target="_blank" rel="noopener">Discord</a>
+    </nav>
+    <div class="controls">
+      <button class="lang-toggle" id="langToggle" onclick="toggleLang()">EN</button>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙</button>
+    </div>
+  </header>
+
   <div class="login-card">
     <div class="logo-row">
       <div class="logo-cross">+</div>
@@ -290,10 +345,6 @@
       </div>
     </div>
 
-    <div class="controls-row">
-      <button class="ctrl-btn" id="langToggle" onclick="toggleLang()">EN</button>
-      <button class="ctrl-btn" id="themeToggle" onclick="toggleTheme()">🌙</button>
-    </div>
   </div>
 
   <script>
@@ -314,7 +365,10 @@
         'login-auth-error': '⚠️ Ошибка авторизации. Попробуйте снова.',
         'login-feat-1': 'Просмотр и управление анкетами',
         'login-feat-2': 'Управление событиями и рейсами',
-        'login-feat-3': 'Мониторинг статистики VA'
+        'login-feat-3': 'Мониторинг статистики VA',
+        'nav-home': 'Главная',
+        'nav-events': 'События',
+        'nav-history': 'История'
       },
       en: {
         'login-title': 'Login — Swiss Airlines VA',
@@ -332,7 +386,10 @@
         'login-auth-error': '⚠️ Authorization error. Please try again.',
         'login-feat-1': 'View and manage applications',
         'login-feat-2': 'Manage events and flights',
-        'login-feat-3': 'Monitor VA statistics'
+        'login-feat-3': 'Monitor VA statistics',
+        'nav-home': 'Home',
+        'nav-events': 'Events',
+        'nav-history': 'History'
       }
     };
 
