@@ -1,439 +1,127 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title data-i18n-title="login-title">Вход — Swiss Airlines VA</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --swiss-red: #D2500F;
-      --autumn-pumpkin: #EA6A0E;
-      --autumn-mustard: #F59E0B;
-      --autumn-wheat: #FBBF24;
-      --autumn-walnut: #4A2A12;
-      --autumn-rust: #B4460F;
-      --autumn-copper: #C2600F;
-      --swiss-red-dark: #9A3412;
-      --white: #FFFBF6;
-      --black: #2A1608;
-      --gray-100: #FFF1E3;
-      --gray-200: #FDEBD8;
-      --gray-300: #F5D9BC;
-      --gray-500: #8A6A4E;
-      --gray-700: #6B4526;
-      --gray-900: #171717;
-      --bg: var(--white);
-      --text: var(--gray-900);
-      --card: var(--white);
-      --border: var(--gray-300);
-      --transition: cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    [data-theme="dark"] {
-      --bg: #1E1408;
-      --text: #F9E7D4;
-      --card: #2C1E10;
-      --border: #553A22;
-      --black: #F9E7D4;
-      --gray-100: #2C1E10;
-      --gray-200: #2E241C;
-      --gray-300: #63432A;
-      --gray-500: #E5B98F;
-      --gray-700: #E8C6A4;
-      --gray-900: #F9E7D4;
-    }
-    [data-theme="dark"] .error-msg { color: var(--autumn-wheat); }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      transition: background 0.4s var(--transition), color 0.4s var(--transition);
-    }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes stripeMove { from { background-position: 0 0; } to { background-position: 40px 0; } }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SWISS Airlines — Вход</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✈️</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#121212;--bg2:#1a1a1a;--bg-card:#1e1e1e;--red:#E3000F;--red-dark:#b8000c;
+  --white:#fff;--text2:#a0a0a0;--text3:#666;--border:rgba(255,255,255,0.08);
+  --font:'Inter',sans-serif;--radius:12px;--radius-sm:8px;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--white);min-height:100vh;display:flex;align-items:center;justify-content:center;-webkit-font-smoothing:antialiased}
 
-    .login-card {
-      width: 100%;
-      max-width: 420px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      padding: 48px;
-      animation: fadeUp 0.8s ease-out;
-      position: relative;
-    }
-    .login-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 4px;
-      background: repeating-linear-gradient(90deg, var(--swiss-red) 0, var(--swiss-red) 25px, transparent 25px, transparent 35px);
-      background-size: 40px 4px;
-      animation: stripeMove 2s linear infinite;
-    }
+.login-wrapper{width:100%;max-width:420px;padding:24px}
 
-    .logo-row {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 36px;
-    }
-    .logo-cross {
-      width: 44px; height: 44px;
-      background: var(--swiss-red);
-      color: var(--white);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 24px; font-weight: 300;
-      line-height: 1;
-    }
-    .logo-text {
-      font-size: 15px; font-weight: 700;
-      letter-spacing: 1px;
-      color: var(--text);
-    }
+.login-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:48px 36px;position:relative;overflow:hidden}
 
-    .login-heading {
-      font-size: 22px; font-weight: 700;
-      letter-spacing: -0.5px;
-      margin-bottom: 8px;
-    }
-    .login-subheading {
-      font-size: 13px;
-      color: var(--gray-500);
-      margin-bottom: 32px;
-    }
+.login-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px;background:var(--red)}
 
-    .form-group {
-      margin-bottom: 20px;
-    }
-    .form-label {
-      display: block;
-      font-size: 12px; font-weight: 600;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      color: var(--gray-500);
-      margin-bottom: 8px;
-    }
-    .form-input {
-      width: 100%;
-      padding: 12px 16px;
-      border: 1px solid var(--border);
-      background: var(--gray-100);
-      font-family: inherit;
-      font-size: 14px;
-      color: var(--text);
-      border-radius: 4px;
-      transition: border-color 0.3s;
-      outline: none;
-    }
-    .form-input:focus {
-      border-color: var(--swiss-red);
-    }
-    .form-input::placeholder {
-      color: var(--gray-500);
-    }
+.login-logo{display:flex;align-items:center;gap:12px;margin-bottom:32px;font-size:20px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase}
 
-    .login-btn {
-      width: 100%;
-      padding: 14px;
-      background: var(--swiss-red);
-      color: var(--white);
-      border: none;
-      font-family: inherit;
-      font-size: 14px; font-weight: 700;
-      letter-spacing: 0.5px;
-      cursor: pointer;
-      transition: background 0.3s;
-      border-radius: 4px;
-      margin-top: 8px;
-    }
-    .login-btn:hover { background: var(--swiss-red-dark); }
-    .login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.login-logo .cross{width:32px;height:32px;position:relative}
+.login-logo .cross::before,.login-logo .cross::after{content:'';position:absolute;background:var(--red);border-radius:2px}
+.login-logo .cross::before{width:32px;height:8px;top:12px;left:0}
+.login-logo .cross::after{width:8px;height:32px;top:0;left:12px}
 
-    .error-msg {
-      display: none;
-      color: var(--swiss-red);
-      font-size: 13px;
-      margin-top: 12px;
-      text-align: center;
-    }
-    .error-msg.visible { display: block; }
+.login-title{font-size:24px;font-weight:600;margin-bottom:8px}
+.login-subtitle{font-size:14px;color:var(--text2);margin-bottom:32px}
 
-    .features {
-      margin-top: 40px;
-      padding-top: 24px;
-      border-top: 1px solid var(--gray-200);
-    }
-    .feature-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 13px;
-      color: var(--gray-500);
-      margin-bottom: 12px;
-    }
-    .feature-icon { font-size: 16px; flex-shrink: 0; }
+.form-group{margin-bottom:20px}
+.form-group label{display:block;font-size:13px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:var(--text2);margin-bottom:6px}
+.form-group input{width:100%;padding:12px 16px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--white);font-family:var(--font);font-size:14px;outline:none;transition:border-color 0.3s}
+.form-group input:focus{border-color:var(--red)}
 
-    .controls-row {
-      display: flex;
-      gap: 14px;
-      margin-top: 24px;
-      justify-content: flex-end;
-      align-items: center;
-    }
-    .ctrl-btn {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--gray-500);
-      padding: 6px 14px;
-      font-family: inherit;
-      font-size: 12px; font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-      letter-spacing: 0.5px;
-      border-radius: 4px;
-    }
-    .ctrl-btn:hover { color: var(--text); border-color: var(--text); }
-    .ctrl-btn { min-width: 46px; text-align: center; line-height: 1.2; }
+.login-btn{width:100%;padding:14px;background:var(--red);color:var(--white);font-size:14px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;border-radius:var(--radius-sm);cursor:pointer;border:none;transition:all 0.3s;margin-top:8px}
+.login-btn:hover{background:var(--red-dark)}
+.login-btn:disabled{opacity:0.5;cursor:not-allowed}
 
-    @media (max-width: 480px) {
-      .login-card { padding: 32px 24px; }
-      .login-heading { font-size: 18px; }
-    }
+.login-message{text-align:center;padding:12px;border-radius:var(--radius-sm);font-size:14px;margin-top:12px;display:none}
+.login-message.error{display:block;background:rgba(227,0,15,0.1);border:1px solid rgba(227,0,15,0.3);color:var(--red)}
+.login-message.success{display:block;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#22c55e}
 
-    /* ===== AUTUMN DECOR ===== */
-    .autumn-strip {
-      position: fixed;
-      left: 0; right: 0; bottom: 0;
-      height: 3px;
-      z-index: 6;
-      pointer-events: none;
-      background: linear-gradient(90deg, var(--autumn-rust), var(--autumn-pumpkin), var(--autumn-mustard), var(--autumn-copper), var(--autumn-walnut));
-      background-size: 200% 100%;
-      animation: autumnFlow 14s linear infinite;
-      opacity: 0.9;
-    }
-    @keyframes autumnFlow {
-      from { background-position: 0 0; }
-      to   { background-position: 200% 0; }
-    }
-    /* ===== AUTUMN BACKDROP ===== */
-    html {
-      background-color: #FFF2E6;
-      background-image:
-        radial-gradient(900px 560px at 10% -8%, rgba(245,158,11,0.30), transparent 70%),
-        radial-gradient(780px 500px at 100% 6%, rgba(234,106,14,0.24), transparent 72%),
-        radial-gradient(700px 460px at 46% 106%, rgba(194,96,15,0.20), transparent 70%),
-        linear-gradient(176deg, #FFF6EC 0%, #FFF0DF 48%, #FBDCBE 100%);
-      background-attachment: fixed;
-      background-repeat: no-repeat;
-    }
-    body { background: transparent; }
-    html[data-theme="dark"] {
-      background-color: #1E1408;
-      background-image:
-        radial-gradient(900px 560px at 10% -8%, rgba(210,80,15,0.20), transparent 70%),
-        radial-gradient(780px 500px at 100% 6%, rgba(180,70,15,0.18), transparent 72%),
-        linear-gradient(176deg, #2A1608 0%, #1E1408 52%, #180F06 100%);
-    }
-    /* ===== READABILITY FIXES ===== */
-    [data-theme="dark"] { --nav-link: #F5D9BC; }
-  </style>
-  <link rel="stylesheet" href="/assets/autumn.css">
-  <link rel="stylesheet" href="/assets/sitemode.css">
+.login-back{text-align:center;margin-top:20px;font-size:14px}
+.login-back a{color:var(--red);text-decoration:none}
+.login-back a:hover{text-decoration:underline}
+
+@media(max-width:480px){.login-card{padding:32px 24px}}
+</style>
 </head>
 <body>
-  <div class="autumn-haze" aria-hidden="true"></div>
+<div class="login-wrapper">
   <div class="login-card">
-    <div class="logo-row">
-      <div class="logo-cross">+</div>
-      <div class="logo-text">SWISS AIRLINES VA</div>
+    <div class="login-logo">
+      <div class="cross"></div>
+      <span>SWISS</span>
     </div>
-
-    <h2 class="login-heading" data-i18n="login-heading">Панель администратора</h2>
-    <p class="login-subheading" data-i18n="login-subheading">Войдите для управления анкетами и контентом</p>
-
+    <h1 class="login-title">Вход в панель</h1>
+    <p class="login-subtitle">Доступ только для администраторов</p>
+    
     <form id="loginForm" onsubmit="handleLogin(event)">
       <div class="form-group">
-        <label class="form-label" data-i18n="login-username-label">Логин</label>
-        <input type="text" class="form-input" id="username" data-i18n-placeholder="login-username-ph" placeholder="Имя пользователя" autocomplete="off">
+        <label>Логин</label>
+        <input type="text" name="username" required autocomplete="username" placeholder="Username">
       </div>
       <div class="form-group">
-        <label class="form-label" data-i18n="login-password-label">Пароль</label>
-        <input type="password" class="form-input" id="password" data-i18n-placeholder="login-password-ph" placeholder="••••••••">
+        <label>Пароль</label>
+        <input type="password" name="password" required autocomplete="current-password" placeholder="Password">
       </div>
-      <button type="submit" class="login-btn" id="loginBtn">
-        <span data-i18n="login-btn">Войти</span>
-      </button>
-      <div class="error-msg" id="errorMsg" data-i18n="login-error">Неверный логин или пароль</div>
+      <button type="submit" class="login-btn">Войти</button>
+      <div class="login-message" id="loginMsg"></div>
     </form>
-
-    <div class="features">
-      <div class="feature-row">
-        <span class="feature-icon">📋</span>
-        <span data-i18n="login-feat-1">Просмотр и управление анкетами</span>
-      </div>
-      <div class="feature-row">
-        <span class="feature-icon">🛫</span>
-        <span data-i18n="login-feat-2">Управление событиями и рейсами</span>
-      </div>
-      <div class="feature-row">
-        <span class="feature-icon">📊</span>
-        <span data-i18n="login-feat-3">Мониторинг статистики VA</span>
-      </div>
-    </div>
-
-    <div class="controls-row">
-      <button class="ctrl-btn" id="langToggle" onclick="toggleLang()">EN</button>
-      <button class="ctrl-btn" id="themeToggle" onclick="toggleTheme()">🌙</button>
-    </div>
+    
+    <div class="login-back"><a href="/">← На главную</a></div>
   </div>
+</div>
 
-  <script>
-    const i18n = {
-      ru: {
-        'login-title': 'Вход — Swiss Airlines VA',
-        'login-heading': 'Панель администратора',
-        'login-subheading': 'Войдите для управления анкетами и контентом',
-        'login-username-label': 'Логин',
-        'login-username-ph': 'Имя пользователя',
-        'login-password-label': 'Пароль',
-        'login-password-ph': '••••••••',
-        'login-btn': 'Войти',
-        'login-btn-loading': 'Входим…',
-        'login-error': 'Неверный логин или пароль',
-        'login-session-expired': '⏳ Сессия истекла. Пожалуйста, войдите заново.',
-        'login-not-admin': '🚫 Доступ запрещён. Требуются права администратора.',
-        'login-auth-error': '⚠️ Ошибка авторизации. Попробуйте снова.',
-        'login-feat-1': 'Просмотр и управление анкетами',
-        'login-feat-2': 'Управление событиями и рейсами',
-        'login-feat-3': 'Мониторинг статистики VA'
-      },
-      en: {
-        'login-title': 'Login — Swiss Airlines VA',
-        'login-heading': 'Admin Panel',
-        'login-subheading': 'Sign in to manage applications and content',
-        'login-username-label': 'Username',
-        'login-username-ph': 'Enter username',
-        'login-password-label': 'Password',
-        'login-password-ph': '••••••••',
-        'login-btn': 'Sign In',
-        'login-btn-loading': 'Signing in…',
-        'login-error': 'Invalid username or password',
-        'login-session-expired': '⏳ Session expired. Please sign in again.',
-        'login-not-admin': '🚫 Access denied. Admin rights required.',
-        'login-auth-error': '⚠️ Authorization error. Please try again.',
-        'login-feat-1': 'View and manage applications',
-        'login-feat-2': 'Manage events and flights',
-        'login-feat-3': 'Monitor VA statistics'
-      }
-    };
-
-    function t(key) {
-      const lang = document.documentElement.getAttribute('lang') || 'ru';
-      return (i18n[lang] && i18n[lang][key]) || (i18n.ru[key]) || key;
+<script>
+async function handleLogin(e) {
+  e.preventDefault();
+  const form = e.target;
+  const btn = form.querySelector('.login-btn');
+  const msg = document.getElementById('loginMsg');
+  
+  btn.disabled = true;
+  btn.textContent = 'Вход…';
+  msg.className = 'login-message';
+  msg.style.display = 'none';
+  
+  const body = {
+    username: form.username.value,
+    password: form.password.value
+  };
+  
+  try {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    
+    if (data.success) {
+      msg.className = 'login-message success';
+      msg.style.display = 'block';
+      msg.textContent = '✅ Вход выполнен! Перенаправление…';
+      setTimeout(() => window.location.href = '/admin.html', 800);
+    } else {
+      msg.className = 'login-message error';
+      msg.style.display = 'block';
+      msg.textContent = '❌ ' + (data.error || 'Ошибка входа');
     }
-
-    function applyLang() {
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        const val = t(key);
-        if (val) el.textContent = val;
-      });
-      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-        const key = el.getAttribute('data-i18n-placeholder');
-        const val = t(key);
-        if (val) el.placeholder = val;
-      });
-      document.title = t('login-title');
-    }
-
-    function toggleTheme() {
-      const current = document.documentElement.getAttribute('data-theme');
-      const next = current === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('swiss-theme', next);
-      const btn = document.getElementById('themeToggle');
-      if (btn) btn.textContent = next === 'dark' ? '☀️' : '🌙';
-    }
-    function toggleLang() {
-      const current = document.documentElement.getAttribute('lang') || 'ru';
-      const next = current === 'ru' ? 'en' : 'ru';
-      document.documentElement.setAttribute('lang', next);
-      localStorage.setItem('swiss-lang', next);
-      const btn = document.getElementById('langToggle');
-      if (btn) btn.textContent = next === 'ru' ? 'EN' : 'RU';
-      applyLang();
-    }
-    // Show session-expired / not-admin / error message based on ?reason= param
-    (function() {
-      const params = new URLSearchParams(window.location.search);
-      const reason = params.get('reason');
-      const errorEl = document.getElementById('errorMsg');
-      if (reason && errorEl) {
-        const keyMap = {
-          'session_expired': 'login-session-expired',
-          'not_auth': 'login-session-expired',
-          'not_admin': 'login-not-admin',
-          'error': 'login-auth-error'
-        };
-        const key = keyMap[reason] || 'login-session-expired';
-        errorEl.textContent = t(key);
-        errorEl.classList.add('visible');
-        // Clean URL so message doesn't persist on refresh
-        const cleanUrl = window.location.pathname;
-        window.history.replaceState({}, '', cleanUrl);
-      }
-    })();
-
-    const savedTheme = localStorage.getItem('swiss-theme');
-    if (savedTheme) { document.documentElement.setAttribute('data-theme', savedTheme); document.getElementById('themeToggle').textContent = savedTheme === 'dark' ? '☀️' : '🌙'; }
-    const savedLang = localStorage.getItem('swiss-lang');
-    if (savedLang) { document.documentElement.setAttribute('lang', savedLang); document.getElementById('langToggle').textContent = savedLang === 'ru' ? 'EN' : 'RU'; applyLang(); }
-
-    async function handleLogin(e) {
-      e.preventDefault();
-      const btn = document.getElementById('loginBtn');
-      const btnSpan = btn.querySelector('span');
-      const errorEl = document.getElementById('errorMsg');
-      const u = document.getElementById('username').value.trim();
-      const p = document.getElementById('password').value;
-      if (!u || !p) { errorEl.textContent = t('login-error'); errorEl.classList.add('visible'); return; }
-      btn.disabled = true;
-      btnSpan.textContent = t('login-btn-loading');
-      try {
-        const res = await fetch('/api/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: u, password: p })
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.success) {
-            window.location.href = 'admin.html';
-          }
-        } else {
-          errorEl.textContent = t('login-error');
-          errorEl.classList.add('visible');
-        }
-      } catch (err) {
-        errorEl.textContent = t('login-error');
-        errorEl.classList.add('visible');
-      } finally {
-        btn.disabled = false;
-        btnSpan.textContent = t('login-btn');
-      }
-    }
-  </script>
-  <div class="autumn-strip" aria-hidden="true"></div>
-
-  <script src="/assets/sitemode.js" defer></script>
+  } catch (err) {
+    msg.className = 'login-message error';
+    msg.style.display = 'block';
+    msg.textContent = '❌ Ошибка сети';
+  }
+  
+  btn.disabled = false;
+  btn.textContent = 'Войти';
+}
+</script>
 </body>
 </html>
