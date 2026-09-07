@@ -170,7 +170,16 @@ app.use((req, res, next) => {
   return res.status(503).sendFile(path.join(__dirname, 'maintenance.html'));
 });
 
-app.use(express.static(path.join(__dirname, '.')));
+// Static files — serve from project root so /assets/photos/*.png works
+app.use(express.static(path.join(__dirname, '.'), {
+  maxAge: '7d',                       // cache static assets 7 days
+  setHeaders: (res, filePath) => {
+    // Log every static asset request in production for debugging
+    if (process.env.NODE_ENV === 'production') {
+      console.log('[STATIC]', filePath);
+    }
+  }
+}));
 
 /* ============================================================
    SECURITY HEADERS
@@ -215,6 +224,11 @@ app.get('/maintenance.html', (req, res) => res.sendFile(path.join(__dirname, 'ma
 // Алиасы без .html (на случай чистых ссылок / внешних переходов)
 app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'login.html')));
 app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
+
+// Новые страницы-вкладки (вместо модальных окон)
+app.get('/events', (req, res) => res.sendFile(path.join(__dirname, 'events.html')));
+app.get('/history', (req, res) => res.sendFile(path.join(__dirname, 'history.html')));
+app.get('/apply', (req, res) => res.sendFile(path.join(__dirname, 'apply.html')));
 
 /* ============================================================
    LIVE STATS (BETA) — counter helpers
@@ -1424,6 +1438,18 @@ initDb().then(() => {
     console.log(`🔑 Default admin: ${ADMIN_USERNAME}`);
     console.log(`💡 To change credentials, set ADMIN_USERNAME and ADMIN_PASSWORD environment variables`);
     console.log(`🏥 Health check: http://localhost:${PORT}/api/health`);
+
+    // Verify static assets exist at startup
+    const fs = require('fs');
+    const photosDir = path.join(__dirname, 'assets', 'photos');
+    if (fs.existsSync(photosDir)) {
+      const photos = fs.readdirSync(photosDir);
+      console.log(`📁 Static assets: ${photos.length} photo(s) in assets/photos/`);
+      photos.forEach(f => console.log(`   ✓ ${f} (${(fs.statSync(path.join(photosDir, f)).size / 1024).toFixed(1)} KB)`));
+    } else {
+      console.error('❌ CRITICAL: assets/photos/ directory NOT FOUND! Photos will not load!');
+      console.error('❌ Make sure the assets/ folder is deployed alongside server.js');
+    }
   });
 
   /* ============================================================

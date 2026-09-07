@@ -1,469 +1,118 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="copyright" content="© 2026 Swiss Airlines VA. Все права защищены.">
-  <title>События — Swiss Airlines</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/pages.css">
-  <link rel="stylesheet" href="/assets/autumn.css">
-  <link rel="stylesheet" href="/assets/sitemode.css">
-  <style>
-    .hero { padding: 122px 48px 40px; max-width: 900px; }
-    .events-section { padding: 26px 48px 44px; max-width: 1240px; margin: 0 auto; }
-    .events-block { max-width: 1240px; margin: 0 auto; transition: max-width 0.3s ease; }
-    .events-block.block-narrow { max-width: 880px; }
-    .events-block.block-mid { max-width: 900px; }
-    .section-label { font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #9A3412; margin-bottom: 10px; }
-    html[data-theme="dark"] .section-label { color: var(--autumn-wheat); }
-    .section-title { font-size: 30px; font-weight: 800; letter-spacing: -0.9px; color: var(--black); margin-bottom: 28px; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Swiss Airlines — События</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:Inter,Helvetica,Arial,sans-serif;background:#080808;color:#fff;overflow-x:hidden}a{color:inherit;text-decoration:none}
 
-    .events-grid { display: flex; flex-wrap: wrap; justify-content: center; align-items: stretch; gap: 24px; }
-    .events-grid .event-card { flex: 1 1 320px; min-width: 0; max-width: 400px; }
+.nav{position:fixed;z-index:200;top:0;left:0;right:0;height:70px;display:flex;align-items:center;justify-content:space-between;padding:0 60px;background:rgba(8,8,8,.88);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.06)}
+.nav-logo{width:200px}.nav-logo img{width:100%;display:block}
+.nav-links{display:flex;gap:36px;list-style:none}.nav-links a{font-size:13px;font-weight:500;color:rgba(255,255,255,.7);padding:26px 0 18px;position:relative;transition:color .2s}.nav-links a::after{content:"";position:absolute;left:0;right:0;bottom:12px;height:2px;background:#df0018;transform:scaleX(0);transition:transform .25s}.nav-links a:hover::after,.nav-links a.active::after{transform:scaleX(1)}.nav-links a:hover,.nav-links a.active{color:#fff}
+.nav-login{background:#df0018;border:0;border-radius:24px;color:#fff;padding:9px 22px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:7px;transition:background .2s}.nav-login:hover{background:#c90015}
+.burger{display:none;background:none;border:0;color:#fff;font-size:24px}
 
-    /* мало карточек — центрируем и растягиваем аккуратно */
-    .events-grid.grid-two .event-card { max-width: 430px; }
-    .events-grid.grid-one { justify-content: center; }
-    .events-grid.grid-one .event-card { flex: 0 1 880px; max-width: 880px; flex-direction: row; }
-    .events-grid.grid-one .event-media { width: 42%; flex: 0 0 42%; height: auto; min-height: 260px; }
-    .events-grid.grid-one .event-body { padding: 26px 30px 28px; }
-    @media (max-width: 720px) {
-      .events-grid.grid-one .event-card { flex-direction: column; }
-      .events-grid.grid-one .event-media { width: 100%; flex: none; height: 168px; min-height: 0; }
-    }
+/* Page Hero */
+.page-hero{position:relative;margin-top:70px;height:320px;overflow:hidden}
+.page-hero-bg{position:absolute;inset:0;background:url('/assets/photos/card-events.png') center/cover no-repeat}
+.page-hero-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,8,.6) 0%,rgba(8,8,8,.9) 100%)}
+.page-hero-content{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:center;padding:0 80px}
+.page-hero .hero-brand{font-size:13px;font-weight:700;color:#df0018;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.page-hero h1{font-size:42px;font-weight:800;letter-spacing:-1px}
+.page-hero p{font-size:14px;color:rgba(255,255,255,.55);margin-top:10px;max-width:480px;line-height:1.6}
 
-    .event-card { background: var(--card); border: 1px solid rgba(194,96,15,0.16); border-radius: 14px; overflow: hidden; box-shadow: 0 10px 30px rgba(120,53,15,0.07); transition: transform 0.45s cubic-bezier(0.16,1,0.3,1), box-shadow 0.45s ease, border-color 0.35s ease, opacity 0.8s var(--transition); display: flex; flex-direction: column; }
-    html[data-theme="dark"] .event-card { border-color: rgba(251,191,36,0.14); box-shadow: 0 10px 30px rgba(0,0,0,0.34); }
-    .event-card:hover { transform: translateY(-5px); border-color: rgba(194,96,15,0.42); box-shadow: 0 18px 46px rgba(120,53,15,0.14); }
-    .event-media { height: 168px; background: linear-gradient(135deg, rgba(234,106,14,0.16), rgba(245,158,11,0.10)); display: flex; align-items: center; justify-content: center; font-size: 44px; position: relative; overflow: hidden; }
-    .event-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .event-body { padding: 20px 22px 22px; display: flex; flex-direction: column; flex: 1; }
-    .event-badge { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; padding: 5px 11px; border-radius: 999px; font-size: 10px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; margin-bottom: 12px; }
-    .badge-upcoming { color: #9A3412; background: rgba(245,158,11,0.16); border: 1px solid rgba(194,96,15,0.28); }
-    .badge-past { color: var(--gray-500); background: rgba(139,106,78,0.12); border: 1px solid rgba(139,106,78,0.22); }
-    html[data-theme="dark"] .badge-upcoming { color: var(--autumn-wheat); background: rgba(251,191,36,0.14); border-color: rgba(251,191,36,0.26); }
-    .event-title { font-size: 19px; font-weight: 700; letter-spacing: -0.3px; color: var(--black); margin-bottom: 9px; line-height: 1.35; }
-    .event-desc { font-size: 14px; color: var(--gray-500); line-height: 1.7; margin-bottom: 16px; flex: 1; }
-    .event-meta { display: flex; flex-direction: column; gap: 7px; font-size: 12.5px; color: var(--gray-700); border-top: 1px solid rgba(194,96,15,0.14); padding-top: 14px; }
-    html[data-theme="dark"] .event-meta { border-top-color: rgba(251,191,36,0.14); }
-    .event-meta div { display: flex; align-items: center; gap: 8px; }
-    .event-countdown { margin-top: 14px; padding: 10px 12px; border-radius: 10px; background: rgba(245,158,11,0.10); border: 1px solid rgba(194,96,15,0.18); font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #9A3412; text-align: center; }
-    html[data-theme="dark"] .event-countdown { background: rgba(251,191,36,0.10); border-color: rgba(251,191,36,0.20); color: var(--autumn-wheat); }
+/* Events List */
+.events-section{padding:50px 80px 80px}
+.events-list{display:flex;flex-direction:column;gap:16px;max-width:900px}
+.event-card{display:flex;align-items:stretch;gap:20px;padding:24px;background:#111;border:1px solid rgba(255,255,255,.07);border-radius:12px;transition:border-color .2s,transform .2s}.event-card:hover{border-color:rgba(223,0,24,.25);transform:translateY(-2px)}
+.event-date{min-width:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(223,0,24,.08);border-radius:10px;padding:12px 8px;flex-shrink:0}
+.event-date .day{font-size:24px;font-weight:800;line-height:1}.event-date .month{font-size:10px;font-weight:600;color:#df0018;text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+.event-body{flex:1}
+.event-body h3{font-size:16px;font-weight:700;margin-bottom:6px}.event-body p{font-size:13px;color:rgba(255,255,255,.5);line-height:1.6}
+.event-body .tag{display:inline-block;font-size:10px;color:#df0018;background:rgba(223,0,24,.1);padding:3px 10px;border-radius:10px;margin-top:8px;font-weight:600}
 
-    .past-block { margin-top: 46px; }
-    .past-block .event-card { opacity: 0.86; }
+.loading{text-align:center;padding:40px;color:rgba(255,255,255,.4);font-size:13px}
+.empty{text-align:center;padding:60px;color:rgba(255,255,255,.35);font-size:14px}
 
-    .state-box { text-align: center; padding: 48px 24px; color: var(--gray-500); }
-    .state-box .ic { font-size: 46px; margin-bottom: 14px; }
-    .state-box h3 { font-size: 19px; font-weight: 700; color: var(--black); margin-bottom: 8px; }
-    .state-box p { font-size: 14px; }
-    .spinner { width: 34px; height: 34px; border: 2px solid var(--border); border-top-color: var(--swiss-red); border-radius: 50%; margin: 0 auto 16px; animation: spin 0.9s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
+/* Footer */
+.footer{padding:28px 80px;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between}
+.footer-brand{font-size:13px;font-weight:700;letter-spacing:1px}.footer-copy{font-size:10px;color:#555;margin-top:4px}
+.footer-tagline{font-size:11px;color:rgba(255,255,255,.28);font-style:italic;letter-spacing:1px}
+.footer-links{display:flex;gap:20px}.footer-links a{font-size:12px;color:rgba(255,255,255,.45);transition:color .2s}.footer-links a:hover{color:#fff}
 
-    .cta-band { max-width: 900px; margin: 0 auto; padding: 0 48px 52px; }
-    .cta-inner { border: 1px solid rgba(194,96,15,0.18); border-radius: 16px; background: var(--card); padding: 38px 34px; text-align: center; position: relative; overflow: hidden; box-shadow: 0 12px 34px rgba(120,53,15,0.08); }
-    html[data-theme="dark"] .cta-inner { border-color: rgba(251,191,36,0.16); box-shadow: 0 12px 34px rgba(0,0,0,0.34); }
-    .cta-inner::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--autumn-rust), var(--autumn-pumpkin), var(--autumn-mustard)); }
-    .cta-inner h3 { font-size: 23px; font-weight: 700; color: var(--black); margin-bottom: 10px; }
-    .cta-inner p { font-size: 14.5px; color: var(--gray-500); margin-bottom: 20px; }
-    .cta-btn { display: inline-block; padding: 12px 26px; border-radius: 6px; background: var(--swiss-red); color: #fff; text-decoration: none; font-size: 13px; font-weight: 700; letter-spacing: 0.6px; transition: all 0.3s; }
-    .cta-btn:hover { background: var(--swiss-red-dark); transform: translateY(-2px); }
-
-    @media (max-width: 768px) {
-      .events-section { padding: 22px 20px 40px; }
-      .hero { padding: 108px 20px 32px; }
-      .events-grid .event-card, .events-grid.grid-two .event-card, .events-grid.grid-one .event-card { flex: 1 1 100%; max-width: 100%; }
-      .events-grid { gap: 18px; }
-      .section-title { font-size: 24px; }
-      .cta-band { padding: 0 20px 48px; }
-      .cta-inner { padding: 28px 20px; }
-    }
-  </style>
+@media(max-width:900px){
+.nav{padding:0 24px}.nav-logo{width:155px}.nav-links{display:none}.nav-login{display:none}.burger{display:block}
+.page-hero{height:240px}.page-hero-content{padding:0 30px}.page-hero h1{font-size:28px}
+.events-section{padding:30px 24px 60px}
+.event-card{flex-direction:column;gap:12px}
+.footer{padding:24px 24px;flex-direction:column;gap:14px;align-items:flex-start}
+}
+</style>
 </head>
 <body>
-  <div class="autumn-haze" aria-hidden="true"></div>
-  <div class="preloader" id="preloader" role="status" aria-label="Loading">
-    <div class="pre-alt">
-      <svg class="pre-ring" viewBox="0 0 108 108" aria-hidden="true">
-        <circle class="pre-track" cx="54" cy="54" r="50"></circle>
-        <circle class="pre-prog" id="preProg" cx="54" cy="54" r="50"></circle>
-      </svg>
-      <div class="pre-ticks" id="preTicks" aria-hidden="true"></div>
-      <div class="pre-needle" id="preNeedle"></div>
-      <div class="pre-hub"></div>
-      <div class="pre-num"><span id="prePct">0</span><i>%</i></div>
-    </div>
-    <div class="pre-label">SWISS AIRLINES<span>VA</span></div>
+
+<nav class="nav">
+  <a class="nav-logo" href="/"><img src="/assets/photos/nav-logo.png" alt="SWISS"></a>
+  <ul class="nav-links">
+    <li><a href="/">Главная</a></li>
+    <li><a href="/events" class="active">События</a></li>
+    <li><a href="/history">История</a></li>
+    <li><a href="/apply">Анкеты</a></li>
+    <li><a href="/#contacts">Контакты</a></li>
+  </ul>
+  <a class="nav-login" href="/login">Войти</a>
+  <button class="burger" onclick="document.querySelector('.nav-links').classList.toggle('show')">☰</button>
+</nav>
+
+<section class="page-hero">
+  <div class="page-hero-bg"></div>
+  <div class="page-hero-overlay"></div>
+  <div class="page-hero-content">
+    <div class="hero-brand">SWISS AIRLINES</div>
+    <h1>События</h1>
+    <p>Следите за важными новостями, мероприятиями и обновлениями нашей авиакомпании.</p>
   </div>
+</section>
 
-  <header class="top-header">
-    <a href="index.html" class="logo">
-      <div class="logo-cross">+</div>
-      <div>SWISS AIRLINES</div>
-    </a>
-    <nav class="nav">
-      <a href="index.html" data-i18n="nav-home">Главная</a>
-      <a href="events.html" class="active" data-i18n="nav-events">События</a>
-      <a href="history.html" data-i18n="nav-history">История</a>
-      <a href="https://discord.gg/6YA8t7GJr" target="_blank" rel="noopener">Discord</a>
-      <a href="login.html" class="nav-login-btn" data-i18n="nav-login">Вход</a>
-    </nav>
-    <div class="controls">
-      <button class="lang-toggle" id="langToggle" onclick="toggleLang()">EN</button>
-      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙</button>
-    </div>
-  </header>
+<div class="events-section">
+  <div class="events-list" id="eventsList">
+    <div class="loading">Загрузка событий…</div>
+  </div>
+</div>
 
-  <section class="hero">
-    <div class="hero-season"><i></i><span data-i18n="season-chip">Осенние рейсы 🍂 Расписание</span></div>
-    <div class="hero-icon">📅</div>
-    <div class="hero-label" data-i18n="hero-label">Swiss Airlines Virtual</div>
-    <h1 data-i18n-html="hero-title">События и <span>групповые рейсы</span></h1>
-    <p class="hero-desc" data-i18n="hero-desc">Групповые вылеты, тренировки и специальные акции Swiss Airlines VA. Присоединяйтесь — мест всегда хватает.</p>
-  </section>
+<footer class="footer">
+  <div><div class="footer-brand">SWISS AIRLINES</div><div class="footer-copy">© 2026 Swiss Airlines VA · PTFS</div></div>
+  <div class="footer-tagline">Together + further</div>
+  <div class="footer-links"><a href="https://discord.gg/6YA8t7GJr" target="_blank">Discord</a><a href="/login">Войти</a></div>
+</footer>
 
-  <section class="events-section">
-    <div id="loadingState" class="state-box">
-      <div class="spinner"></div>
-      <p data-i18n="loading">Загружаем расписание...</p>
-    </div>
-
-    <div id="errorState" class="state-box" style="display:none;">
-      <div class="ic">⚠️</div>
-      <h3 data-i18n="error-title">Не удалось загрузить события</h3>
-      <p data-i18n="error-desc">Попробуйте обновить страницу позже.</p>
-    </div>
-
-    <div id="emptyState" class="state-box" style="display:none;">
-      <div class="ic">🍃</div>
-      <h3 data-i18n="empty-title">Пока нет событий</h3>
-      <p data-i18n="empty-desc">Новые групповые рейсы появятся скоро — следите за Discord.</p>
-    </div>
-
-    <div id="upcomingBlock" class="events-block" style="display:none;">
-      <div class="section-label" data-i18n="upcoming-label">Скоро</div>
-      <h2 class="section-title" data-i18n="upcoming-title">Предстоящие события</h2>
-      <div class="events-grid" id="upcomingGrid"></div>
-    </div>
-
-    <div id="pastBlock" class="events-block past-block" style="display:none;">
-      <div class="section-label" data-i18n="past-label">Архив</div>
-      <h2 class="section-title" data-i18n="past-title">Прошедшие события</h2>
-      <div class="events-grid" id="pastGrid"></div>
-    </div>
-  </section>
-
-  <section class="cta-band">
-    <div class="cta-inner animate-on-scroll">
-      <h3 data-i18n="cta-title">Хотите летать с нами?</h3>
-      <p data-i18n="cta-desc">Присоединяйтесь к Discord-серверу, чтобы первым узнавать о групповых рейсах и событиях.</p>
-      <a class="cta-btn" href="https://discord.gg/6YA8t7GJr" target="_blank" rel="noopener" data-i18n="cta-btn">Войти в Discord</a>
-    </div>
-  </section>
-
-  <footer class="footer">
-    <div class="footer-logo">
-      <div class="footer-cross">+</div>
-      <div>SWISS AIRLINES</div>
-    </div>
-    <div class="footer-links">
-      <a href="index.html" data-i18n="nav-home">Главная</a>
-      <a href="events.html" data-i18n="nav-events">События</a>
-      <a href="history.html" data-i18n="nav-history">История</a>
-      <a href="https://discord.gg/6YA8t7GJr" target="_blank" rel="noopener">Discord</a>
-      <a href="login.html" data-i18n="nav-admin">Админ</a>
-    </div>
-    <div class="footer-right">
-      <div style="font-size:11px;color:#E8C6A4;margin-bottom:4px;"><span data-i18n="footer-patent-text">Неофициальный виртуальный патент № SW-VA-001 от 10.08.26</span></div>
-      <div><span data-i18n="footer-slogan">Fly Together. Fly Swiss.</span></div>
-    </div>
-  </footer>
-
-  <script>
-    const i18n = {
-      ru: {
-        'season-chip': 'Осенние рейсы 🍂 Расписание',
-        'hero-label': 'Swiss Airlines Virtual',
-        'hero-title': 'События и <span>групповые рейсы</span>',
-        'hero-desc': 'Групповые вылеты, тренировки и специальные акции Swiss Airlines VA. Присоединяйтесь — мест всегда хватает.',
-        'nav-home': 'Главная', 'nav-events': 'События', 'nav-history': 'История', 'nav-login': 'Вход', 'nav-admin': 'Админ',
-        'loading': 'Загружаем расписание...',
-        'error-title': 'Не удалось загрузить события',
-        'error-desc': 'Попробуйте обновить страницу позже.',
-        'empty-title': 'Пока нет событий',
-        'empty-desc': 'Новые групповые рейсы появятся скоро — следите за Discord.',
-        'upcoming-label': 'Скоро', 'upcoming-title': 'Предстоящие события',
-        'past-label': 'Архив', 'past-title': 'Прошедшие события',
-        'badge-upcoming': 'Предстоит', 'badge-past': 'Завершено',
-        'cta-title': 'Хотите летать с нами?',
-        'cta-desc': 'Присоединяйтесь к Discord-серверу, чтобы первым узнавать о групповых рейсах и событиях.',
-        'cta-btn': 'Войти в Discord',
-        'today': 'Сегодня!', 'tomorrow': 'Завтра',
-        'footer-patent-text': 'Неофициальный виртуальный патент № SW-VA-001 от 10.08.26',
-        'footer-slogan': 'Fly Together. Fly Swiss.',
-        months: ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря']
-      },
-      en: {
-        'season-chip': 'Autumn flights 🍂 Schedule',
-        'hero-label': 'Swiss Airlines Virtual',
-        'hero-title': 'Events & <span>Group Flights</span>',
-        'hero-desc': 'Group departures, training sessions, and special Swiss Airlines VA activities. Join in — there is always a seat for you.',
-        'nav-home': 'Home', 'nav-events': 'Events', 'nav-history': 'History', 'nav-login': 'Login', 'nav-admin': 'Admin',
-        'loading': 'Loading schedule...',
-        'error-title': 'Could not load events',
-        'error-desc': 'Please try refreshing the page later.',
-        'empty-title': 'No events yet',
-        'empty-desc': 'New group flights are coming soon — follow our Discord.',
-        'upcoming-label': 'Coming up', 'upcoming-title': 'Upcoming events',
-        'past-label': 'Archive', 'past-title': 'Past events',
-        'badge-upcoming': 'Upcoming', 'badge-past': 'Completed',
-        'cta-title': 'Want to fly with us?',
-        'cta-desc': 'Join our Discord server to be the first to know about group flights and events.',
-        'cta-btn': 'Join Discord',
-        'today': 'Today!', 'tomorrow': 'Tomorrow',
-        'footer-patent-text': 'Unofficial virtual patent No. SW-VA-001 dated 10.08.26',
-        'footer-slogan': 'Fly Together. Fly Swiss.',
-        months: ['January','February','March','April','May','June','July','August','September','October','November','December']
-      }
-    };
-
-    let eventsCache = null;
-
-    function curLang() { return document.documentElement.getAttribute('lang') || 'ru'; }
-    function t(key) { const l = curLang(); return (i18n[l] && i18n[l][key]) || i18n.ru[key] || key; }
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-    }, { threshold: 0.1 });
-
-    function applyLang() {
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        const v = t(el.getAttribute('data-i18n'));
-        if (v) el.textContent = v;
-      });
-      document.querySelectorAll('[data-i18n-html]').forEach(el => {
-        const v = t(el.getAttribute('data-i18n-html'));
-        if (v) el.innerHTML = v;
-      });
-      if (eventsCache) renderEvents(eventsCache);
-    }
-
-    function fmtDate(dateStr) {
-      const d = new Date(dateStr);
-      if (isNaN(d.getTime())) return dateStr || '';
-      const months = i18n[curLang()].months;
-      return curLang() === 'en'
-        ? months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear()
-        : d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
-    }
-
-    function daysLeft(dateStr) {
-      const d = new Date(dateStr);
-      if (isNaN(d.getTime())) return null;
-      const today = new Date(); today.setHours(0, 0, 0, 0);
-      d.setHours(0, 0, 0, 0);
-      return Math.round((d - today) / 86400000);
-    }
-
-    function countdownText(days) {
-      if (days === 0) return t('today');
-      if (days === 1) return t('tomorrow');
-      if (curLang() === 'en') return 'In ' + days + ' days';
-      const mod100 = days % 100, mod10 = days % 10;
-      let word = 'дней';
-      if (mod10 === 1 && mod100 !== 11) word = 'день';
-      else if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) word = 'дня';
-      return 'Через ' + days + ' ' + word;
-    }
-
-    function buildCard(ev, isPast) {
-      const card = document.createElement('div');
-      card.className = 'event-card animate-on-scroll';
-
-      const media = document.createElement('div');
-      media.className = 'event-media';
-      if (ev.image_url && /^https?:\/\//i.test(ev.image_url)) {
-        const img = document.createElement('img');
-        img.src = ev.image_url;
-        img.alt = ev.title || '';
-        img.loading = 'lazy';
-        img.onerror = function () { media.textContent = '✈️'; };
-        media.appendChild(img);
-      } else {
-        media.textContent = isPast ? '🍂' : '✈️';
-      }
-
-      const body = document.createElement('div');
-      body.className = 'event-body';
-
-      const badge = document.createElement('span');
-      badge.className = 'event-badge ' + (isPast ? 'badge-past' : 'badge-upcoming');
-      badge.textContent = isPast ? t('badge-past') : t('badge-upcoming');
-
-      const title = document.createElement('div');
-      title.className = 'event-title';
-      title.textContent = ev.title || '';
-
-      const desc = document.createElement('div');
-      desc.className = 'event-desc';
-      desc.textContent = ev.description || '';
-
-      const meta = document.createElement('div');
-      meta.className = 'event-meta';
-      const rows = [];
-      if (ev.date) rows.push(['📅', fmtDate(ev.date)]);
-      if (ev.time) rows.push(['🕐', String(ev.time)]);
-      if (ev.location) rows.push(['📍', String(ev.location)]);
-      rows.forEach(function (r) {
-        const line = document.createElement('div');
-        const ic = document.createElement('span'); ic.textContent = r[0];
-        const tx = document.createElement('span'); tx.textContent = r[1];
-        line.append(ic, tx);
-        meta.appendChild(line);
-      });
-
-      body.append(badge, title, desc, meta);
-
-      if (!isPast && ev.date) {
-        const d = daysLeft(ev.date);
-        if (d !== null && d >= 0) {
-          const cd = document.createElement('div');
-          cd.className = 'event-countdown';
-          cd.textContent = countdownText(d);
-          body.appendChild(cd);
-        }
-      }
-
-      card.append(media, body);
-      return card;
-    }
-
-    function fitGrid(grid, block, count) {
-      grid.classList.remove('grid-one', 'grid-two');
-      block.classList.remove('block-narrow', 'block-mid');
-      if (count === 1) { grid.classList.add('grid-one'); block.classList.add('block-narrow'); }
-      else if (count === 2) { grid.classList.add('grid-two'); block.classList.add('block-mid'); }
-    }
-
-    function renderEvents(list) {
-      const upGrid = document.getElementById('upcomingGrid');
-      const pastGrid = document.getElementById('pastGrid');
-      const upBlock = document.getElementById('upcomingBlock');
-      const pastBlock = document.getElementById('pastBlock');
-      upGrid.innerHTML = '';
-      pastGrid.innerHTML = '';
-
-      const today = new Date(); today.setHours(0, 0, 0, 0);
-      const upcoming = [], past = [];
-      list.forEach(function (ev) {
-        const status = (ev.status || '').toLowerCase();
-        const d = new Date(ev.date);
-        const isPast = status === 'past' || status === 'completed' || status === 'завершено' ||
-          (!isNaN(d.getTime()) && d.setHours(0, 0, 0, 0) < today.getTime());
-        (isPast ? past : upcoming).push(ev);
-      });
-
-      upcoming.sort(function (a, b) { return new Date(a.date) - new Date(b.date); });
-      past.sort(function (a, b) { return new Date(b.date) - new Date(a.date); });
-
-      upcoming.forEach(function (ev) { upGrid.appendChild(buildCard(ev, false)); });
-      past.forEach(function (ev) { pastGrid.appendChild(buildCard(ev, true)); });
-
-      fitGrid(upGrid, upBlock, upcoming.length);
-      fitGrid(pastGrid, pastBlock, past.length);
-
-      upBlock.style.display = upcoming.length ? 'block' : 'none';
-      pastBlock.style.display = past.length ? 'block' : 'none';
-      document.getElementById('emptyState').style.display = (!upcoming.length && !past.length) ? 'block' : 'none';
-
-      document.querySelectorAll('.animate-on-scroll').forEach(function (el) { observer.observe(el); });
-    }
-
-    async function loadEvents() {
-      const loading = document.getElementById('loadingState');
-      const error = document.getElementById('errorState');
-      try {
-        const res = await fetch('/api/events');
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        const data = await res.json();
-        eventsCache = Array.isArray(data.events) ? data.events : [];
-        loading.style.display = 'none';
-        error.style.display = 'none';
-        renderEvents(eventsCache);
-      } catch (e) {
-        loading.style.display = 'none';
-        error.style.display = 'block';
-      }
-    }
-
-    function toggleTheme() {
-      const cur = document.documentElement.getAttribute('data-theme');
-      const next = cur === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('swiss-theme', next);
-      document.getElementById('themeToggle').textContent = next === 'dark' ? '☀️' : '🌙';
-    }
-    function toggleLang() {
-      const next = curLang() === 'ru' ? 'en' : 'ru';
-      document.documentElement.setAttribute('lang', next);
-      localStorage.setItem('swiss-lang', next);
-      document.getElementById('langToggle').textContent = next === 'ru' ? 'EN' : 'RU';
-      applyLang();
-    }
-
-    (function () {
-      const savedTheme = localStorage.getItem('swiss-theme');
-      if (savedTheme) {
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        document.getElementById('themeToggle').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
-      }
-      const savedLang = localStorage.getItem('swiss-lang') || 'ru';
-      document.documentElement.setAttribute('lang', savedLang);
-      document.getElementById('langToggle').textContent = savedLang === 'ru' ? 'EN' : 'RU';
-      applyLang();
-      document.querySelectorAll('.animate-on-scroll').forEach(function (el) { observer.observe(el); });
-      loadEvents();
-    })();
-  </script>
-
-  <script>
-    /* ===== ALTIMETER PRELOADER ===== */
-    (function () {
-      var pre = document.getElementById('preloader');
-      if (!pre) return;
-      var ticks = document.getElementById('preTicks');
-      if (ticks) {
-        var html = '';
-        for (var i = 0; i < 12; i++) { html += '<i style="transform:rotate(' + (i * 30) + 'deg)"></i>'; }
-        ticks.innerHTML = html;
-      }
-      var prog = document.getElementById('preProg');
-      var needle = document.getElementById('preNeedle');
-      var pct = document.getElementById('prePct');
-      var C = 2 * Math.PI * 50;
-      if (prog) { prog.style.strokeDasharray = C; prog.style.strokeDashoffset = C; }
-      var v = 0, loaded = false, start = Date.now();
-      window.addEventListener('load', function () { loaded = true; });
-      setTimeout(function () { loaded = true; }, 4000);
-      function finish() {
-        pre.classList.add('pre-done');
-        setTimeout(function () { if (pre.parentNode) pre.parentNode.removeChild(pre); }, 700);
-      }
-      function frame() {
-        var cap = loaded ? 100 : 90;
-        v = Math.min(cap, v + (cap - v) * 0.09 + 0.7);
-        if (prog) prog.style.strokeDashoffset = C * (1 - v / 100);
-        if (needle) needle.style.transform = 'translate(-50%, -100%) rotate(' + (v * 3.6) + 'deg)';
-        if (pct) pct.textContent = Math.round(v);
-        if (v >= 99.5 && loaded && Date.now() - start > 650) { finish(); return; }
-        requestAnimationFrame(frame);
-      }
-      requestAnimationFrame(frame);
-    })();
-  </script>
-  <div class="autumn-strip" aria-hidden="true"></div>
-  <script src="/assets/sitemode.js" defer></script>
+<script>
+(async()=>{
+  try{
+    const r=await fetch('/api/events');
+    const data=await r.json();
+    const box=document.getElementById('eventsList');
+    if(!data.length){box.innerHTML='<div class="empty">Пока нет запланированных событий.</div>';return}
+    box.innerHTML=data.map(e=>{
+      const d=new Date(e.date||e.created_at);
+      const day=d.getDate()||'—';
+      const months=['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
+      const month=months[d.getMonth()]||'—';
+      return `<div class="event-card">
+        <div class="event-date"><span class="day">${day}</span><span class="month">${month}</span></div>
+        <div class="event-body">
+          <h3>${e.title||e.name||'Событие'}</h3>
+          <p>${e.description||e.text||''}</p>
+          ${e.type||e.category?`<span class="tag">${e.type||e.category}</span>`:''}
+        </div>
+      </div>`
+    }).join('')
+  }catch(e){document.getElementById('eventsList').innerHTML='<div class="empty">Не удалось загрузить события.</div>'}
+})();
+</script>
 </body>
 </html>

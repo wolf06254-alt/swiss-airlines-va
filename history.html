@@ -1,278 +1,113 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="copyright" content="© 2026 Swiss Airlines VA. Все права защищены.">
-  <title>История — Swiss Airlines</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/pages.css">
-  <link rel="stylesheet" href="/assets/autumn.css">
-  <link rel="stylesheet" href="/assets/sitemode.css">
-  <style>
-    .hero { padding: 122px 48px 34px; max-width: 900px; }
-    .intro-section { padding: 18px 48px 6px; max-width: 780px; margin: 0 auto; text-align: center; }
-    .intro-text { font-size: 18px; line-height: 1.85; color: var(--gray-700); }
-    .intro-rule { height: 1px; border: 0; max-width: 520px; margin: 34px auto 0; background: linear-gradient(90deg, transparent, rgba(194,96,15,0.32), transparent); }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Swiss Airlines — История</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:Inter,Helvetica,Arial,sans-serif;background:#080808;color:#fff;overflow-x:hidden}a{color:inherit;text-decoration:none}
 
-    .timeline-section { padding: 40px 48px 34px; max-width: 960px; margin: 0 auto; }
-    .timeline { position: relative; padding-left: 62px; }
-    .timeline::before { content: ''; position: absolute; left: 24px; top: 6px; bottom: 6px; width: 2px; background: linear-gradient(180deg, rgba(194,96,15,0.10), rgba(234,106,14,0.55), rgba(194,96,15,0.10)); }
+.nav{position:fixed;z-index:200;top:0;left:0;right:0;height:70px;display:flex;align-items:center;justify-content:space-between;padding:0 60px;background:rgba(8,8,8,.88);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.06)}
+.nav-logo{width:200px}.nav-logo img{width:100%;display:block}
+.nav-links{display:flex;gap:36px;list-style:none}.nav-links a{font-size:13px;font-weight:500;color:rgba(255,255,255,.7);padding:26px 0 18px;position:relative;transition:color .2s}.nav-links a::after{content:"";position:absolute;left:0;right:0;bottom:12px;height:2px;background:#df0018;transform:scaleX(0);transition:transform .25s}.nav-links a:hover::after,.nav-links a.active::after{transform:scaleX(1)}.nav-links a:hover,.nav-links a.active{color:#fff}
+.nav-login{background:#df0018;border:0;border-radius:24px;color:#fff;padding:9px 22px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:7px;transition:background .2s}.nav-login:hover{background:#c90015}
+.burger{display:none;background:none;border:0;color:#fff;font-size:24px}
 
-    .timeline-item { position: relative; margin-bottom: 34px; padding: 22px 26px; background: var(--card); border: 1px solid rgba(194,96,15,0.16); border-radius: 14px; box-shadow: 0 10px 30px rgba(120,53,15,0.07); transition: transform 0.45s cubic-bezier(0.16,1,0.3,1), box-shadow 0.45s ease, border-color 0.35s ease, opacity 0.8s var(--transition); }
-    html[data-theme="dark"] .timeline-item { border-color: rgba(251,191,36,0.14); box-shadow: 0 10px 30px rgba(0,0,0,0.34); }
-    .timeline-item:hover { transform: translateY(-4px); border-color: rgba(194,96,15,0.42); box-shadow: 0 18px 46px rgba(120,53,15,0.14); }
-    .timeline-item:last-child { margin-bottom: 0; }
-    .timeline-dot { position: absolute; left: -45px; top: 28px; width: 14px; height: 14px; border-radius: 50%; background: var(--autumn-pumpkin); border: 3px solid var(--bg); box-shadow: 0 0 0 0 rgba(234,106,14,0.28); transition: box-shadow 0.35s ease; }
-    .timeline-item:hover .timeline-dot { box-shadow: 0 0 0 7px rgba(234,106,14,0.18); }
-    .timeline-emoji { font-size: 26px; margin-bottom: 10px; display: inline-block; }
-    .timeline-date { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #9A3412; margin-bottom: 8px; }
-    html[data-theme="dark"] .timeline-date { color: var(--autumn-wheat); }
-    .timeline-title { font-size: 21px; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 8px; color: var(--black); }
-    .timeline-desc { font-size: 15px; color: var(--gray-500); line-height: 1.75; }
+/* Page Hero */
+.page-hero{position:relative;margin-top:70px;height:320px;overflow:hidden}
+.page-hero-bg{position:absolute;inset:0;background:url('/assets/photos/card-history.png') center/cover no-repeat}
+.page-hero-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,8,.6) 0%,rgba(8,8,8,.9) 100%)}
+.page-hero-content{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:center;padding:0 80px}
+.page-hero .hero-brand{font-size:13px;font-weight:700;color:#df0018;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.page-hero h1{font-size:42px;font-weight:800;letter-spacing:-1px}
+.page-hero p{font-size:14px;color:rgba(255,255,255,.55);margin-top:10px;max-width:480px;line-height:1.6}
 
-    .thanks-section { padding: 24px 48px 52px; text-align: center; }
-    .thanks-card { max-width: 640px; margin: 0 auto; padding: 44px 40px; border: 1px solid rgba(194,96,15,0.18); border-radius: 16px; background: var(--card); position: relative; overflow: hidden; box-shadow: 0 12px 34px rgba(120,53,15,0.08); transition: border-color 0.35s ease, transform 0.45s cubic-bezier(0.16,1,0.3,1); }
-    html[data-theme="dark"] .thanks-card { border-color: rgba(251,191,36,0.16); box-shadow: 0 12px 34px rgba(0,0,0,0.34); }
-    .thanks-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--autumn-rust), var(--autumn-pumpkin), var(--autumn-mustard)); }
-    .thanks-card:hover { border-color: rgba(194,96,15,0.42); transform: translateY(-3px); }
-    .thanks-icon { font-size: 44px; margin-bottom: 14px; }
-    .thanks-title { font-size: 24px; font-weight: 700; margin-bottom: 12px; color: var(--black); }
-    .thanks-text { font-size: 15px; color: var(--gray-500); line-height: 1.75; }
+/* Timeline */
+.timeline-section{padding:60px 80px 80px;max-width:900px}
+.timeline{position:relative;padding-left:40px}
+.timeline::before{content:"";position:absolute;left:15px;top:0;bottom:0;width:2px;background:rgba(255,255,255,.08)}
+.timeline-item{position:relative;padding:0 0 40px 32px}
+.timeline-item:last-child{padding-bottom:0}
+.timeline-dot{position:absolute;left:-32px;top:6px;width:14px;height:14px;border-radius:50%;background:#df0018;border:3px solid #080808;box-shadow:0 0 0 2px rgba(223,0,24,.3);z-index:2}
+.timeline-year{font-size:14px;font-weight:800;color:#df0018;margin-bottom:6px}
+.timeline-title{font-size:18px;font-weight:700;margin-bottom:8px}
+.timeline-text{font-size:13px;color:rgba(255,255,255,.5);line-height:1.7}
 
-    @media (max-width: 768px) {
-      .hero { padding: 108px 20px 26px; }
-      .intro-section { padding: 16px 20px 4px; }
-      .timeline-section { padding: 34px 20px 30px; }
-      .timeline { padding-left: 46px; }
-      .timeline::before { left: 16px; }
-      .timeline-dot { left: -37px; }
-      .thanks-section { padding: 20px 20px 48px; }
-      .thanks-card { padding: 32px 22px; }
-    }
-  </style>
+.loading{text-align:center;padding:40px;color:rgba(255,255,255,.4);font-size:13px}
+.empty{text-align:center;padding:60px;color:rgba(255,255,255,.35);font-size:14px}
+
+/* Footer */
+.footer{padding:28px 80px;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between}
+.footer-brand{font-size:13px;font-weight:700;letter-spacing:1px}.footer-copy{font-size:10px;color:#555;margin-top:4px}
+.footer-tagline{font-size:11px;color:rgba(255,255,255,.28);font-style:italic;letter-spacing:1px}
+.footer-links{display:flex;gap:20px}.footer-links a{font-size:12px;color:rgba(255,255,255,.45);transition:color .2s}.footer-links a:hover{color:#fff}
+
+@media(max-width:900px){
+.nav{padding:0 24px}.nav-logo{width:155px}.nav-links{display:none}.nav-login{display:none}.burger{display:block}
+.page-hero{height:240px}.page-hero-content{padding:0 30px}.page-hero h1{font-size:28px}
+.timeline-section{padding:30px 24px 60px}
+.timeline{padding-left:28px}
+.footer{padding:24px 24px;flex-direction:column;gap:14px;align-items:flex-start}
+}
+</style>
 </head>
 <body>
-  <div class="autumn-haze" aria-hidden="true"></div>
-  <div class="preloader" id="preloader" role="status" aria-label="Loading">
-    <div class="pre-alt">
-      <svg class="pre-ring" viewBox="0 0 108 108" aria-hidden="true">
-        <circle class="pre-track" cx="54" cy="54" r="50"></circle>
-        <circle class="pre-prog" id="preProg" cx="54" cy="54" r="50"></circle>
-      </svg>
-      <div class="pre-ticks" id="preTicks" aria-hidden="true"></div>
-      <div class="pre-needle" id="preNeedle"></div>
-      <div class="pre-hub"></div>
-      <div class="pre-num"><span id="prePct">0</span><i>%</i></div>
-    </div>
-    <div class="pre-label">SWISS AIRLINES<span>VA</span></div>
+
+<nav class="nav">
+  <a class="nav-logo" href="/"><img src="/assets/photos/nav-logo.png" alt="SWISS"></a>
+  <ul class="nav-links">
+    <li><a href="/">Главная</a></li>
+    <li><a href="/events">События</a></li>
+    <li><a href="/history" class="active">История</a></li>
+    <li><a href="/apply">Анкеты</a></li>
+    <li><a href="/#contacts">Контакты</a></li>
+  </ul>
+  <a class="nav-login" href="/login">Войти</a>
+  <button class="burger" onclick="document.querySelector('.nav-links').classList.toggle('show')">☰</button>
+</nav>
+
+<section class="page-hero">
+  <div class="page-hero-bg"></div>
+  <div class="page-hero-overlay"></div>
+  <div class="page-hero-content">
+    <div class="hero-brand">SWISS AIRLINES</div>
+    <h1>История</h1>
+    <p>Узнайте, как всё начиналось, и какой путь мы прошли вместе.</p>
   </div>
+</section>
 
-  <header class="top-header">
-    <a href="index.html" class="logo">
-      <div class="logo-cross">+</div>
-      <div>SWISS AIRLINES</div>
-    </a>
-    <nav class="nav">
-      <a href="index.html" data-i18n="nav-home">Главная</a>
-      <a href="events.html" data-i18n="nav-events">События</a>
-      <a href="history.html" class="active" data-i18n="nav-history">История</a>
-      <a href="https://discord.gg/6YA8t7GJr" target="_blank" rel="noopener">Discord</a>
-      <a href="login.html" class="nav-login-btn" data-i18n="nav-login">Вход</a>
-    </nav>
-    <div class="controls">
-      <button class="lang-toggle" id="langToggle" onclick="toggleLang()">EN</button>
-      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙</button>
-    </div>
-  </header>
+<div class="timeline-section">
+  <div class="timeline" id="timeline">
+    <div class="loading">Загрузка истории…</div>
+  </div>
+</div>
 
-  <section class="hero">
-    <div class="hero-season"><i></i><span data-i18n="season-chip">Осенний сезон ✈ Наш путь</span></div>
-    <div class="hero-icon">🇨🇭</div>
-    <div class="hero-label" data-i18n="hero-label">Swiss Airlines Virtual</div>
-    <h1 data-i18n-html="hero-title">Наша <span>история</span></h1>
-    <p class="hero-desc" data-i18n="hero-desc">Путь от маленькой идеи до виртуальной авиакомпании, объединяющей пилотов со всего мира.</p>
-  </section>
+<footer class="footer">
+  <div><div class="footer-brand">SWISS AIRLINES</div><div class="footer-copy">© 2026 Swiss Airlines VA · PTFS</div></div>
+  <div class="footer-tagline">Together + further</div>
+  <div class="footer-links"><a href="https://discord.gg/6YA8t7GJr" target="_blank">Discord</a><a href="/login">Войти</a></div>
+</footer>
 
-  <section class="intro-section animate-on-scroll">
-    <p class="intro-text" data-i18n="intro-text">Swiss Airlines Virtual — это больше, чем просто VA. Это сообщество людей, которые любят авиацию, ценят швейцарскую точность и получают удовольствие от полётов в PTFS. Вот как всё начиналось.</p>
-    <hr class="intro-rule">
-  </section>
-
-  <section class="timeline-section">
-    <div class="timeline" id="timeline-container"></div>
-  </section>
-
-  <section class="thanks-section animate-on-scroll">
-    <div class="thanks-card">
-      <div class="thanks-icon">❤️</div>
-      <div class="thanks-title" data-i18n="thanks-title">Спасибо, что вы с нами</div>
-      <div class="thanks-text" data-i18n="thanks-text">Каждый полёт, каждый участник, каждый момент — это история Swiss Airlines VA. Мы благодарны всем, кто делает эту виртуальную авиакомпанию настоящей. Летаем вместе. Летаем по-швейцарски.</div>
-    </div>
-  </section>
-
-  <footer class="footer">
-    <div class="footer-logo">
-      <div class="footer-cross">+</div>
-      <div>SWISS AIRLINES</div>
-    </div>
-    <div class="footer-links">
-      <a href="index.html" data-i18n="nav-home">Главная</a>
-      <a href="events.html" data-i18n="nav-events">События</a>
-      <a href="history.html" data-i18n="nav-history">История</a>
-      <a href="https://discord.gg/6YA8t7GJr" target="_blank" rel="noopener">Discord</a>
-      <a href="login.html" data-i18n="nav-admin">Админ</a>
-    </div>
-    <div class="footer-right">
-      <div style="font-size:11px;color:#E8C6A4;margin-bottom:4px;"><span data-i18n="footer-patent-text">Неофициальный виртуальный патент № SW-VA-001 от 10.08.26</span></div>
-      <div><span data-i18n="footer-slogan">Fly Together. Fly Swiss.</span></div>
-    </div>
-  </footer>
-
-  <script>
-    const i18n = {
-      ru: {
-        'season-chip': 'Осенний сезон ✈ Наш путь',
-        'hero-label': 'Swiss Airlines Virtual',
-        'hero-title': 'Наша <span>история</span>',
-        'hero-desc': 'Путь от маленькой идеи до виртуальной авиакомпании, объединяющей пилотов со всего мира.',
-        'intro-text': 'Swiss Airlines Virtual — это больше, чем просто VA. Это сообщество людей, которые любят авиацию, ценят швейцарскую точность и получают удовольствие от полётов в PTFS. Вот как всё начиналось.',
-        'nav-home': 'Главная', 'nav-events': 'События', 'nav-history': 'История', 'nav-login': 'Вход', 'nav-admin': 'Админ',
-        'thanks-title': 'Спасибо, что вы с нами',
-        'thanks-text': 'Каждый полёт, каждый участник, каждый момент — это история Swiss Airlines VA. Мы благодарны всем, кто делает эту виртуальную авиакомпанию настоящей. Летаем вместе. Летаем по-швейцарски.',
-        'footer-patent-text': 'Неофициальный виртуальный патент № SW-VA-001 от 10.08.26',
-        'footer-slogan': 'Fly Together. Fly Swiss.'
-      },
-      en: {
-        'season-chip': 'Autumn season ✈ Our journey',
-        'hero-label': 'Swiss Airlines Virtual',
-        'hero-title': 'Our <span>Story</span>',
-        'hero-desc': 'From a small idea to a virtual airline uniting pilots from around the world.',
-        'intro-text': 'Swiss Airlines Virtual is more than just a VA. It\u2019s a community of people who love aviation, value Swiss precision, and enjoy flying in PTFS. Here\u2019s how it all began.',
-        'nav-home': 'Home', 'nav-events': 'Events', 'nav-history': 'History', 'nav-login': 'Login', 'nav-admin': 'Admin',
-        'thanks-title': 'Thank you for being with us',
-        'thanks-text': 'Every flight, every member, every moment — this is the story of Swiss Airlines VA. We are grateful to everyone who makes this virtual airline real. Fly together. Fly Swiss.',
-        'footer-patent-text': 'Unofficial virtual patent No. SW-VA-001 dated 10.08.26',
-        'footer-slogan': 'Fly Together. Fly Swiss.'
-      }
-    };
-
-    const timelineData = [
-      { date_ru: 'Апрель 2026', date_en: 'April 2026', emoji: '✈️', title_ru: 'Начало: EasyJet VA', title_en: 'The Beginning: EasyJet VA', desc_ru: 'Всё началось с идеи. Gregory создал виртуальную авиакомпанию EasyJet в PTFS — маленький проект с большими амбициями. Первые рейсы, первые пилоты, первые мечты о небе.', desc_en: 'It all started with an idea. Gregory created the virtual airline EasyJet in PTFS — a small project with big ambitions. First flights, first pilots, first dreams of the sky.' },
-      { date_ru: 'Май 2026', date_en: 'May 2026', emoji: '🇨🇭', title_ru: 'Ребрендинг в Swiss Airlines', title_en: 'Rebranding to Swiss Airlines', desc_ru: 'Проект рос, и EasyJet перестал отражать дух компании. Gregory принял решение о ребрендинге — Swiss Airlines. Швейцарская точность, красный крест, минимализм. Новый бренд задал тон всему.', desc_en: 'The project grew, and EasyJet no longer reflected the spirit of the company. Gregory made the decision to rebrand — Swiss Airlines. Swiss precision, red cross, minimalism. The new brand set the tone for everything.' },
-      { date_ru: 'Июнь 2026', date_en: 'June 2026', emoji: '🦝', title_ru: 'Пришёл Енот', title_en: 'The Raccoon Arrived', desc_ru: 'К команде присоединился Енот — верный помощник и талисман. Он помогал с задачами, создавал аватарки и придавал проекту характер. С Енотом работа стала теплее и веселее.', desc_en: 'The Raccoon joined the team — a loyal helper and mascot. He helped with tasks, created avatars, and gave the project character. With the Raccoon, work became warmer and more fun.' },
-      { date_ru: 'Июнь 2026', date_en: 'June 2026', emoji: '🎬', title_ru: 'Полёты на видео', title_en: 'Flights on Video', desc_ru: 'Команда начала записывать и публиковать полёты. Видео принесли проекту узнаваемость — пилоты увидели Swiss Airlines в деле и захотели присоединиться.', desc_en: 'The team started recording and publishing flights. Videos brought the project recognition — pilots saw Swiss Airlines in action and wanted to join.' },
-      { date_ru: 'Июль 2026', date_en: 'July 2026', emoji: '📈', title_ru: 'Актив растёт', title_en: 'Activity is Growing', desc_ru: 'Количество пилотов, рейсов и маршрутов начало расти. Swiss Airlines VA стала заметной в сообществе PTFS. Появились регулярные рейсы, структура, дисциплина.', desc_en: 'The number of pilots, flights, and routes started growing. Swiss Airlines VA became noticeable in the PTFS community. Regular flights, structure, and discipline emerged.' },
-      { date_ru: 'Август 2026', date_en: 'August 2026', emoji: '🌐', title_ru: 'Новый сайт и патент', title_en: 'New Website and Patent', desc_ru: 'Запущен новый сайт с минималистичным швейцарским дизайном, поддержкой двух языков и тёмной темы. Получен неофициальный виртуальный патент № SW-VA-001. Swiss Airlines VA — на правильном пути.', desc_en: 'A new website launched with minimalist Swiss design, bilingual support, and dark theme. Unofficial virtual patent No. SW-VA-001 obtained. Swiss Airlines VA is on the right track.' },
-      { date_ru: 'Сентябрь 2026', date_en: 'September 2026', emoji: '🍂', title_ru: 'Осенний сезон', title_en: 'Autumn Season', desc_ru: 'Сайт получил тёплое осеннее оформление: мягкие оттенки, падающие листья и спокойные анимации. Набор пилотов открыт — самое время присоединиться.', desc_en: 'The website received a warm autumn look: soft tones, falling leaves, and calm animations. Pilot recruitment is open — the perfect time to join.' }
-    ];
-
-    function t(key) {
-      const lang = document.documentElement.getAttribute('lang') || 'ru';
-      return (i18n[lang] && i18n[lang][key]) || i18n.ru[key] || key;
-    }
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
-    }, { threshold: 0.1 });
-
-    function applyLang() {
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        const val = t(el.getAttribute('data-i18n'));
-        if (val) el.textContent = val;
-      });
-      document.querySelectorAll('[data-i18n-html]').forEach(el => {
-        const val = t(el.getAttribute('data-i18n-html'));
-        if (val) el.innerHTML = val;
-      });
-      renderTimeline();
-    }
-
-    function renderTimeline() {
-      const container = document.getElementById('timeline-container');
-      const lang = document.documentElement.getAttribute('lang') || 'ru';
-      container.innerHTML = '';
-      timelineData.forEach((item, idx) => {
-        const wrap = document.createElement('div');
-        wrap.className = 'timeline-item animate-on-scroll' + (idx % 3 === 1 ? ' delay-1' : idx % 3 === 2 ? ' delay-2' : '');
-        const dot = document.createElement('div'); dot.className = 'timeline-dot';
-        const emoji = document.createElement('div'); emoji.className = 'timeline-emoji'; emoji.textContent = item.emoji;
-        const date = document.createElement('div'); date.className = 'timeline-date'; date.textContent = lang === 'en' ? item.date_en : item.date_ru;
-        const title = document.createElement('div'); title.className = 'timeline-title'; title.textContent = lang === 'en' ? item.title_en : item.title_ru;
-        const desc = document.createElement('div'); desc.className = 'timeline-desc'; desc.textContent = lang === 'en' ? item.desc_en : item.desc_ru;
-        wrap.append(dot, emoji, date, title, desc);
-        container.appendChild(wrap);
-      });
-      document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
-    }
-
-    function toggleTheme() {
-      const current = document.documentElement.getAttribute('data-theme');
-      const next = current === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('swiss-theme', next);
-      document.getElementById('themeToggle').textContent = next === 'dark' ? '☀️' : '🌙';
-    }
-    function toggleLang() {
-      const current = document.documentElement.getAttribute('lang') || 'ru';
-      const next = current === 'ru' ? 'en' : 'ru';
-      document.documentElement.setAttribute('lang', next);
-      localStorage.setItem('swiss-lang', next);
-      document.getElementById('langToggle').textContent = next === 'ru' ? 'EN' : 'RU';
-      applyLang();
-    }
-
-    (function () {
-      const savedTheme = localStorage.getItem('swiss-theme');
-      if (savedTheme) {
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        document.getElementById('themeToggle').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
-      }
-      const savedLang = localStorage.getItem('swiss-lang') || 'ru';
-      document.documentElement.setAttribute('lang', savedLang);
-      document.getElementById('langToggle').textContent = savedLang === 'ru' ? 'EN' : 'RU';
-      applyLang();
-      document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
-    })();
-  </script>
-
-  <script>
-    /* ===== ALTIMETER PRELOADER ===== */
-    (function () {
-      var pre = document.getElementById('preloader');
-      if (!pre) return;
-      var ticks = document.getElementById('preTicks');
-      if (ticks) {
-        var html = '';
-        for (var i = 0; i < 12; i++) { html += '<i style="transform:rotate(' + (i * 30) + 'deg)"></i>'; }
-        ticks.innerHTML = html;
-      }
-      var prog = document.getElementById('preProg');
-      var needle = document.getElementById('preNeedle');
-      var pct = document.getElementById('prePct');
-      var C = 2 * Math.PI * 50;
-      if (prog) { prog.style.strokeDasharray = C; prog.style.strokeDashoffset = C; }
-      var v = 0, loaded = false, start = Date.now();
-      window.addEventListener('load', function () { loaded = true; });
-      setTimeout(function () { loaded = true; }, 4000);
-      function finish() {
-        pre.classList.add('pre-done');
-        setTimeout(function () { if (pre.parentNode) pre.parentNode.removeChild(pre); }, 700);
-      }
-      function frame() {
-        var cap = loaded ? 100 : 90;
-        v = Math.min(cap, v + (cap - v) * 0.09 + 0.7);
-        if (prog) prog.style.strokeDashoffset = C * (1 - v / 100);
-        if (needle) needle.style.transform = 'translate(-50%, -100%) rotate(' + (v * 3.6) + 'deg)';
-        if (pct) pct.textContent = Math.round(v);
-        if (v >= 99.5 && loaded && Date.now() - start > 650) { finish(); return; }
-        requestAnimationFrame(frame);
-      }
-      requestAnimationFrame(frame);
-    })();
-  </script>
-  <div class="autumn-strip" aria-hidden="true"></div>
-  <script src="/assets/sitemode.js" defer></script>
+<script>
+(async()=>{
+  try{
+    const r=await fetch('/api/history');
+    const data=await r.json();
+    const box=document.getElementById('timeline');
+    if(!data.length){box.innerHTML='<div class="empty">Пока нет записей в истории.</div>';return}
+    box.innerHTML=data.map(h=>`
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-year">${h.year||h.date||''}</div>
+        <div class="timeline-title">${h.title||h.name||'Событие'}</div>
+        <div class="timeline-text">${h.description||h.text||''}</div>
+      </div>
+    `).join('')
+  }catch(e){document.getElementById('timeline').innerHTML='<div class="empty">Не удалось загрузить историю.</div>'}
+})();
+</script>
 </body>
 </html>
