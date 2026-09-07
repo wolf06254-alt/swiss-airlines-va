@@ -1,12 +1,10 @@
-SWISS AIRLINES — Website
+SWISS AIRLINES — Website v5 (BULLETPROOF)
 
-ВАЖНО: запускать сервер из этой папки.
+Photos are embedded directly inside index.html as base64 data. The site does NOT depend on assets/photos.
+This fixes Render deployments where the assets directory is missing.
 
-1. Откройте Terminal.
-2. Перейдите в папку сайта.
-3. Выполните: npm install
-4. Затем: npm start
-5. Откройте: http://localhost:3000
+Deploy the whole project from the ZIP/repository.
+1. npm install
+2. npm start
 
-Все фотографии находятся в assets/photos/ и уже включены в архив.
-Не перемещайте index.html отдельно от папки assets.
+IMPORTANT: If Render still prints "assets/photos/ directory NOT FOUND", it is running an OLD server.js. Replace the deployed server.js with this version and redeploy.
