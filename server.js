@@ -17,8 +17,95 @@ app.use(session({
   cookie: { maxAge: 86400000 }
 }));
 
-// Serve static files (for login.html, admin.html etc)
-app.use(express.static(path.join(__dirname, 'public')));
+// ─── CRITICAL: Verify all HTML files exist on startup ───
+const REQUIRED_FILES = [
+  'index.html', 'events.html', 'history.html', 'apply.html',
+  'login.html', 'admin.html'
+];
+console.log('=== SWISS Airlines VA Startup Check ===');
+console.log('__dirname:', __dirname);
+console.log('Files in project root:');
+try {
+  const files = fs.readdirSync(__dirname);
+  files.forEach(f => console.log('  ', f));
+  // Check subdirs
+  ['views','public'].forEach(d => {
+    const dp = path.join(__dirname, d);
+    if (fs.existsSync(dp)) {
+      console.log(d + '/ contents:');
+      fs.readdirSync(dp).forEach(f => console.log('    ', f));
+    }
+  });
+} catch(e) { console.log('Could not list files:', e.message); }
+
+REQUIRED_FILES.forEach(f => {
+  const p1 = path.join(__dirname, f);
+  const p2 = path.join(__dirname, 'views', f);
+  const p3 = path.join(__dirname, 'public', f);
+  const exists = fs.existsSync(p1) || fs.existsSync(p2) || fs.existsSync(p3);
+  if (!exists) {
+    console.error('WARNING: File not found:', f, '(checked root, views/, public/)');
+  } else {
+    console.log('OK:', f);
+  }
+});
+console.log('=======================================');
+
+// ─── Helper: resolve file from any location ───
+function resolveFile(name) {
+  // Check root first, then views/, then public/
+  const candidates = [
+    path.join(__dirname, name),
+    path.join(__dirname, 'views', name),
+    path.join(__dirname, 'public', name)
+  ];
+  for (const p of candidates) {
+    if (fs.existsSync(p)) return p;
+  }
+  console.error('FILE NOT FOUND:', name, 'Checked:', candidates);
+  return null;
+}
+
+// Serve static files from root (fallback)
+app.use(express.static(__dirname));
+// Also serve from views and public if they exist
+const viewsDir = path.join(__dirname, 'views');
+const publicDir = path.join(__dirname, 'public');
+if (fs.existsSync(viewsDir)) app.use(express.static(viewsDir));
+if (fs.existsSync(publicDir)) app.use(express.static(publicDir));
+
+// ─── HTML Pages ───
+app.get('/', (req, res) => {
+  const f = resolveFile('index.html');
+  if (f) return res.sendFile(f);
+  res.status(404).send('index.html not found');
+});
+app.get('/events', (req, res) => {
+  const f = resolveFile('events.html');
+  if (f) return res.sendFile(f);
+  res.status(404).send('events.html not found');
+});
+app.get('/history', (req, res) => {
+  const f = resolveFile('history.html');
+  if (f) return res.sendFile(f);
+  res.status(404).send('history.html not found');
+});
+app.get('/apply', (req, res) => {
+  const f = resolveFile('apply.html');
+  if (f) return res.sendFile(f);
+  res.status(404).send('apply.html not found');
+});
+app.get('/login', (req, res) => {
+  const f = resolveFile('login.html');
+  if (f) return res.sendFile(f);
+  res.status(404).send('login.html not found');
+});
+app.get('/admin', (req, res) => {
+  if (!req.session.user || req.session.user.role !== 'admin') return res.redirect('/login');
+  const f = resolveFile('admin.html');
+  if (f) return res.sendFile(f);
+  res.status(404).send('admin.html not found');
+});
 
 // ─── Database (JSON file) ───
 const DB_PATH = path.join(__dirname, 'data', 'db.json');
@@ -33,14 +120,7 @@ function readDB() {
 }
 function writeDB(db) { fs.mkdirSync(path.dirname(DB_PATH), { recursive: true }); fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2)); }
 
-// ─── HTML Pages (from /views) ───
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'views', 'index.html')));
-app.get('/events', (req, res) => res.sendFile(path.join(__dirname, 'views', 'events.html')));
-app.get('/history', (req, res) => res.sendFile(path.join(__dirname, 'views', 'history.html')));
-app.get('/apply', (req, res) => res.sendFile(path.join(__dirname, 'views', 'apply.html')));
-
-// ─── Auth ───
-app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'public', 'login.html')));
+// ─── Auth API ───
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body;
   const db = readDB();
@@ -55,12 +135,6 @@ app.get('/api/logout', (req, res) => { req.session.destroy(); res.json({ ok: tru
 app.get('/api/me', (req, res) => {
   if (!req.session.user) return res.status(401).json({ error: 'Не авторизован' });
   res.json(req.session.user);
-});
-
-// ─── Admin ───
-app.get('/admin', (req, res) => {
-  if (!req.session.user || req.session.user.role !== 'admin') return res.redirect('/login');
-  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
 // ─── Events API ───
