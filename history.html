@@ -11,66 +11,38 @@
 *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:Inter,Helvetica,Arial,sans-serif;background:#080808;color:#fff;overflow-x:hidden}a{color:inherit;text-decoration:none}
 
 .nav{position:fixed;z-index:200;top:0;left:0;right:0;height:70px;display:flex;align-items:center;justify-content:space-between;padding:0 60px;background:rgba(8,8,8,.88);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.06)}
-.nav-logo{width:200px}.nav-logo img{width:100%;display:block}
-.nav-links{display:flex;gap:36px;list-style:none}.nav-links a{font-size:13px;font-weight:500;color:rgba(255,255,255,.7);padding:26px 0 18px;position:relative;transition:color .2s}.nav-links a::after{content:"";position:absolute;left:0;right:0;bottom:12px;height:2px;background:#df0018;transform:scaleX(0);transition:transform .25s}.nav-links a:hover::after,.nav-links a.active::after{transform:scaleX(1)}.nav-links a:hover,.nav-links a.active{color:#fff}
-.nav-login{background:#df0018;border:0;border-radius:24px;color:#fff;padding:9px 22px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:7px;transition:background .2s}.nav-login:hover{background:#c90015}
+.nav-logo{height:36px;width:auto}.nav-links{display:flex;gap:36px;list-style:none}.nav-links a{font-size:13px;font-weight:500;color:rgba(255,255,255,.7);padding:26px 0 18px;position:relative;transition:color .2s}.nav-links a::after{content:"";position:absolute;left:0;right:0;bottom:12px;height:2px;background:#df0018;transform:scaleX(0);transition:transform .25s}.nav-links a:hover::after,.nav-links a.active::after{transform:scaleX(1)}.nav-links a:hover,.nav-links a.active{color:#fff}
+.nav-login{background:#df0018;border:0;border-radius:24px;color:#fff;padding:9px 22px;font-size:13px;font-weight:600;transition:background .2s}.nav-login:hover{background:#c90015}
 .burger{display:none;background:none;border:0;color:#fff;font-size:24px}
 
-/* Page Hero */
+
 .page-hero{position:relative;margin-top:70px;height:320px;overflow:hidden}
-.page-hero-bg{position:absolute;inset:0;background:url('/assets/photos/card-history.png') center/cover no-repeat}
+.page-hero-bg{position:absolute;inset:0;background-size:cover;background-position:center}
 .page-hero-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,8,.6) 0%,rgba(8,8,8,.9) 100%)}
 .page-hero-content{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:center;padding:0 80px}
 .page-hero .hero-brand{font-size:13px;font-weight:700;color:#df0018;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
 .page-hero h1{font-size:42px;font-weight:800;letter-spacing:-1px}
 .page-hero p{font-size:14px;color:rgba(255,255,255,.55);margin-top:10px;max-width:480px;line-height:1.6}
 
-/* Timeline */
-.timeline-section{padding:60px 80px 80px;max-width:900px}
-.timeline{position:relative;padding-left:40px}
-.timeline::before{content:"";position:absolute;left:15px;top:0;bottom:0;width:2px;background:rgba(255,255,255,.08)}
-.timeline-item{position:relative;padding:0 0 40px 32px}
-.timeline-item:last-child{padding-bottom:0}
-.timeline-dot{position:absolute;left:-32px;top:6px;width:14px;height:14px;border-radius:50%;background:#df0018;border:3px solid #080808;box-shadow:0 0 0 2px rgba(223,0,24,.3);z-index:2}
-.timeline-year{font-size:14px;font-weight:800;color:#df0018;margin-bottom:6px}
-.timeline-title{font-size:18px;font-weight:700;margin-bottom:8px}
-.timeline-text{font-size:13px;color:rgba(255,255,255,.5);line-height:1.7}
+.timeline-section{padding:60px 80px 80px;max-width:900px}.timeline{position:relative;padding-left:40px}.timeline::before{content:"";position:absolute;left:15px;top:0;bottom:0;width:2px;background:rgba(255,255,255,.08)}.timeline-item{position:relative;padding:0 0 40px 32px}.timeline-item:last-child{padding-bottom:0}.timeline-dot{position:absolute;left:-32px;top:6px;width:14px;height:14px;border-radius:50%;background:#df0018;border:3px solid #080808;box-shadow:0 0 0 2px rgba(223,0,24,.3);z-index:2}.timeline-year{font-size:14px;font-weight:800;color:#df0018;margin-bottom:6px}.timeline-title{font-size:18px;font-weight:700;margin-bottom:8px}.timeline-text{font-size:13px;color:rgba(255,255,255,.5);line-height:1.7}.loading{text-align:center;padding:40px;color:rgba(255,255,255,.4);font-size:13px}.empty{text-align:center;padding:60px;color:rgba(255,255,255,.35);font-size:14px}
 
-.loading{text-align:center;padding:40px;color:rgba(255,255,255,.4);font-size:13px}
-.empty{text-align:center;padding:60px;color:rgba(255,255,255,.35);font-size:14px}
-
-/* Footer */
 .footer{padding:28px 80px;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between}
 .footer-brand{font-size:13px;font-weight:700;letter-spacing:1px}.footer-copy{font-size:10px;color:#555;margin-top:4px}
 .footer-tagline{font-size:11px;color:rgba(255,255,255,.28);font-style:italic;letter-spacing:1px}
 .footer-links{display:flex;gap:20px}.footer-links a{font-size:12px;color:rgba(255,255,255,.45);transition:color .2s}.footer-links a:hover{color:#fff}
 
-@media(max-width:900px){
-.nav{padding:0 24px}.nav-logo{width:155px}.nav-links{display:none}.nav-login{display:none}.burger{display:block}
-.page-hero{height:240px}.page-hero-content{padding:0 30px}.page-hero h1{font-size:28px}
-.timeline-section{padding:30px 24px 60px}
-.timeline{padding-left:28px}
-.footer{padding:24px 24px;flex-direction:column;gap:14px;align-items:flex-start}
-}
+@media(max-width:900px){.nav{padding:0 24px}.nav-links{display:none}.nav-login{display:none}.burger{display:block}.page-hero{height:240px}.page-hero-content{padding:0 30px}.page-hero h1{font-size:28px}.timeline-section{padding:30px 24px 60px}.timeline{padding-left:28px}.footer{padding:24px 24px;flex-direction:column;gap:14px;align-items:flex-start}}
 </style>
 </head>
 <body>
-
 <nav class="nav">
-  <a class="nav-logo" href="/"><img src="/assets/photos/nav-logo.png" alt="SWISS"></a>
-  <ul class="nav-links">
-    <li><a href="/">Главная</a></li>
-    <li><a href="/events">События</a></li>
-    <li><a href="/history" class="active">История</a></li>
-    <li><a href="/apply">Анкеты</a></li>
-    <li><a href="/#contacts">Контакты</a></li>
-  </ul>
+  <a href="/"><img class="nav-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAABQCAIAAAC4QrSbAAADGklEQVR4nO3dS27jMBRE0WyiE1lfp/e/yPbMyISxSNBStU7hruFw8gB+jPMyHdJSaq5p7d3S0tore31bv7b67u9o29t3ufsB/b1vH7dpHg9pLjXV1B3ZuaVKhX/PXl/bm1Os4dHZ3tFugu/l3uTsj763FVjAutCABSxgAStmwAIWsIAVM2ABC1jAihmwgAUsYMUMWMACFrBiBixgAQtYMQMWsIAFrJgBC1jAAlbMgAUsYAErZsACFrCAFTNgAQtYwIoZsIAFLGDFDFjAAhawYgaseLCGcb4d0lSqCsGld1NL52T0Yp3z3ejI6LPdkG7l9gvY3gNKYAHrQgELWMACVkzAAhawgBUTsIAFLGDFBCxgAQtYMQELWMACVkzAAhawgBUTsIAFLGDFBCxgAQtYMQELWMACVkzAAhawgBUTsIAFLGDFBCxgAQtYMQELWMACVkzAAhawgBUTsOLB+rrNwyGNpaoQXHo3tnRORi/W3K9zMvps3dtabr+A7T2gBBawLhSwgAUsYMUELGABC1gxAQtYwAJWTMACFrCAFROwgAUsYMUELGABC1gxAes/AGsaDmksdaupjrkdjS1VXsP+3qSXq/uh96Ua1qTdq+02bi33pnvXH23LAixgXShgAQtYwIoJWMACFrBiAhawgAWsmIAFLGABKyZgAQtYwIoJWMACFrBiAlY8WJ/D9HVIt1JVCHY/dr21dE5GL9bUr3My+mz3KexSbr+A7T2gBBawLhSwgAUsYMUELGABC1gxAQtYwAJWTMACFrCAFROwgAUsYMUELGABC1gxAQtYwAJWTMACFrCAFROwgAUsYMUELGABC1gxAQtYwAJWTMACFrCAFROwgAUsYMUELGABC1gxASserD9f0+chDaWqEJx7N7R0TkYv1tivczL6bNnbXG6/gO09oAQWsC4UsIAFLGDFBCxgAQtYMQELWMACVkzAAhawgBUTsIAFLGDFBCxgAQtYMQELWMACVkzAAhawgBUTsIAFLGDFBCxgAQtYMQELWMACVkzAAhawgBUTsIAFLGDFBCxgAQtYMQErHax/nRBPiSqkrSUAAAAASUVORK5CYII=" alt="SWISS"></a>
+  <ul class="nav-links"><li><a href="/">Главная</a></li><li><a href="/events">События</a></li><li><a href="/history" class="active">История</a></li><li><a href="/apply">Анкеты</a></li><li><a href="/#contacts">Контакты</a></li></ul>
   <a class="nav-login" href="/login">Войти</a>
   <button class="burger" onclick="document.querySelector('.nav-links').classList.toggle('show')">☰</button>
 </nav>
-
 <section class="page-hero">
-  <div class="page-hero-bg"></div>
+  <div class="page-hero-bg" style="background-image:url('data:image/png;base64,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')"></div>
   <div class="page-hero-overlay"></div>
   <div class="page-hero-content">
     <div class="hero-brand">SWISS AIRLINES</div>
@@ -78,19 +50,16 @@
     <p>Узнайте, как всё начиналось, и какой путь мы прошли вместе.</p>
   </div>
 </section>
-
 <div class="timeline-section">
   <div class="timeline" id="timeline">
     <div class="loading">Загрузка истории…</div>
   </div>
 </div>
-
 <footer class="footer">
   <div><div class="footer-brand">SWISS AIRLINES</div><div class="footer-copy">© 2026 Swiss Airlines VA · PTFS</div></div>
   <div class="footer-tagline">Together + further</div>
   <div class="footer-links"><a href="https://discord.gg/6YA8t7GJr" target="_blank">Discord</a><a href="/login">Войти</a></div>
 </footer>
-
 <script>
 (async()=>{
   try{

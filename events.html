@@ -11,65 +11,38 @@
 *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:Inter,Helvetica,Arial,sans-serif;background:#080808;color:#fff;overflow-x:hidden}a{color:inherit;text-decoration:none}
 
 .nav{position:fixed;z-index:200;top:0;left:0;right:0;height:70px;display:flex;align-items:center;justify-content:space-between;padding:0 60px;background:rgba(8,8,8,.88);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.06)}
-.nav-logo{width:200px}.nav-logo img{width:100%;display:block}
-.nav-links{display:flex;gap:36px;list-style:none}.nav-links a{font-size:13px;font-weight:500;color:rgba(255,255,255,.7);padding:26px 0 18px;position:relative;transition:color .2s}.nav-links a::after{content:"";position:absolute;left:0;right:0;bottom:12px;height:2px;background:#df0018;transform:scaleX(0);transition:transform .25s}.nav-links a:hover::after,.nav-links a.active::after{transform:scaleX(1)}.nav-links a:hover,.nav-links a.active{color:#fff}
-.nav-login{background:#df0018;border:0;border-radius:24px;color:#fff;padding:9px 22px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:7px;transition:background .2s}.nav-login:hover{background:#c90015}
+.nav-logo{height:36px;width:auto}.nav-links{display:flex;gap:36px;list-style:none}.nav-links a{font-size:13px;font-weight:500;color:rgba(255,255,255,.7);padding:26px 0 18px;position:relative;transition:color .2s}.nav-links a::after{content:"";position:absolute;left:0;right:0;bottom:12px;height:2px;background:#df0018;transform:scaleX(0);transition:transform .25s}.nav-links a:hover::after,.nav-links a.active::after{transform:scaleX(1)}.nav-links a:hover,.nav-links a.active{color:#fff}
+.nav-login{background:#df0018;border:0;border-radius:24px;color:#fff;padding:9px 22px;font-size:13px;font-weight:600;transition:background .2s}.nav-login:hover{background:#c90015}
 .burger{display:none;background:none;border:0;color:#fff;font-size:24px}
 
-/* Page Hero */
+
 .page-hero{position:relative;margin-top:70px;height:320px;overflow:hidden}
-.page-hero-bg{position:absolute;inset:0;background:url('/assets/photos/card-events.png') center/cover no-repeat}
+.page-hero-bg{position:absolute;inset:0;background-size:cover;background-position:center}
 .page-hero-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,8,.6) 0%,rgba(8,8,8,.9) 100%)}
 .page-hero-content{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:center;padding:0 80px}
 .page-hero .hero-brand{font-size:13px;font-weight:700;color:#df0018;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
 .page-hero h1{font-size:42px;font-weight:800;letter-spacing:-1px}
 .page-hero p{font-size:14px;color:rgba(255,255,255,.55);margin-top:10px;max-width:480px;line-height:1.6}
 
-/* Events List */
-.events-section{padding:50px 80px 80px}
-.events-list{display:flex;flex-direction:column;gap:16px;max-width:900px}
-.event-card{display:flex;align-items:stretch;gap:20px;padding:24px;background:#111;border:1px solid rgba(255,255,255,.07);border-radius:12px;transition:border-color .2s,transform .2s}.event-card:hover{border-color:rgba(223,0,24,.25);transform:translateY(-2px)}
-.event-date{min-width:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(223,0,24,.08);border-radius:10px;padding:12px 8px;flex-shrink:0}
-.event-date .day{font-size:24px;font-weight:800;line-height:1}.event-date .month{font-size:10px;font-weight:600;color:#df0018;text-transform:uppercase;letter-spacing:1px;margin-top:4px}
-.event-body{flex:1}
-.event-body h3{font-size:16px;font-weight:700;margin-bottom:6px}.event-body p{font-size:13px;color:rgba(255,255,255,.5);line-height:1.6}
-.event-body .tag{display:inline-block;font-size:10px;color:#df0018;background:rgba(223,0,24,.1);padding:3px 10px;border-radius:10px;margin-top:8px;font-weight:600}
+.events-section{padding:50px 80px 80px}.events-list{display:flex;flex-direction:column;gap:16px;max-width:900px}.event-card{display:flex;align-items:stretch;gap:20px;padding:24px;background:#111;border:1px solid rgba(255,255,255,.07);border-radius:12px;transition:border-color .2s,transform .2s}.event-card:hover{border-color:rgba(223,0,24,.25);transform:translateY(-2px)}.event-date{min-width:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(223,0,24,.08);border-radius:10px;padding:12px 8px;flex-shrink:0}.event-date .day{font-size:24px;font-weight:800;line-height:1}.event-date .month{font-size:10px;font-weight:600;color:#df0018;text-transform:uppercase;letter-spacing:1px;margin-top:4px}.event-body{flex:1}.event-body h3{font-size:16px;font-weight:700;margin-bottom:6px}.event-body p{font-size:13px;color:rgba(255,255,255,.5);line-height:1.6}.event-body .tag{display:inline-block;font-size:10px;color:#df0018;background:rgba(223,0,24,.1);padding:3px 10px;border-radius:10px;margin-top:8px;font-weight:600}.loading{text-align:center;padding:40px;color:rgba(255,255,255,.4);font-size:13px}.empty{text-align:center;padding:60px;color:rgba(255,255,255,.35);font-size:14px}
 
-.loading{text-align:center;padding:40px;color:rgba(255,255,255,.4);font-size:13px}
-.empty{text-align:center;padding:60px;color:rgba(255,255,255,.35);font-size:14px}
-
-/* Footer */
 .footer{padding:28px 80px;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between}
 .footer-brand{font-size:13px;font-weight:700;letter-spacing:1px}.footer-copy{font-size:10px;color:#555;margin-top:4px}
 .footer-tagline{font-size:11px;color:rgba(255,255,255,.28);font-style:italic;letter-spacing:1px}
 .footer-links{display:flex;gap:20px}.footer-links a{font-size:12px;color:rgba(255,255,255,.45);transition:color .2s}.footer-links a:hover{color:#fff}
 
-@media(max-width:900px){
-.nav{padding:0 24px}.nav-logo{width:155px}.nav-links{display:none}.nav-login{display:none}.burger{display:block}
-.page-hero{height:240px}.page-hero-content{padding:0 30px}.page-hero h1{font-size:28px}
-.events-section{padding:30px 24px 60px}
-.event-card{flex-direction:column;gap:12px}
-.footer{padding:24px 24px;flex-direction:column;gap:14px;align-items:flex-start}
-}
+@media(max-width:900px){.nav{padding:0 24px}.nav-links{display:none}.nav-login{display:none}.burger{display:block}.page-hero{height:240px}.page-hero-content{padding:0 30px}.page-hero h1{font-size:28px}.events-section{padding:30px 24px 60px}.event-card{flex-direction:column;gap:12px}.footer{padding:24px 24px;flex-direction:column;gap:14px;align-items:flex-start}}
 </style>
 </head>
 <body>
-
 <nav class="nav">
-  <a class="nav-logo" href="/"><img src="/assets/photos/nav-logo.png" alt="SWISS"></a>
-  <ul class="nav-links">
-    <li><a href="/">Главная</a></li>
-    <li><a href="/events" class="active">События</a></li>
-    <li><a href="/history">История</a></li>
-    <li><a href="/apply">Анкеты</a></li>
-    <li><a href="/#contacts">Контакты</a></li>
-  </ul>
+  <a href="/"><img class="nav-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAABQCAIAAAC4QrSbAAADGklEQVR4nO3dS27jMBRE0WyiE1lfp/e/yPbMyISxSNBStU7hruFw8gB+jPMyHdJSaq5p7d3S0tore31bv7b67u9o29t3ufsB/b1vH7dpHg9pLjXV1B3ZuaVKhX/PXl/bm1Os4dHZ3tFugu/l3uTsj763FVjAutCABSxgAStmwAIWsIAVM2ABC1jAihmwgAUsYMUMWMACFrBiBixgAQtYMQMWsIAFrJgBC1jAAlbMgAUsYAErZsACFrCAFTNgAQtYwIoZsIAFLGDFDFjAAhawYgaseLCGcb4d0lSqCsGld1NL52T0Yp3z3ejI6LPdkG7l9gvY3gNKYAHrQgELWMACVkzAAhawgBUTsIAFLGDFBCxgAQtYMQELWMACVkzAAhawgBUTsIAFLGDFBCxgAQtYMQELWMACVkzAAhawgBUTsIAFLGDFBCxgAQtYMQELWMACVkzAAhawgBUTsOLB+rrNwyGNpaoQXHo3tnRORi/W3K9zMvps3dtabr+A7T2gBBawLhSwgAUsYMUELGABC1gxAQtYwAJWTMACFrCAFROwgAUsYMUELGABC1gxAes/AGsaDmksdaupjrkdjS1VXsP+3qSXq/uh96Ua1qTdq+02bi33pnvXH23LAixgXShgAQtYwIoJWMACFrBiAhawgAWsmIAFLGABKyZgAQtYwIoJWMACFrBiAlY8WJ/D9HVIt1JVCHY/dr21dE5GL9bUr3My+mz3KexSbr+A7T2gBBawLhSwgAUsYMUELGABC1gxAQtYwAJWTMACFrCAFROwgAUsYMUELGABC1gxAQtYwAJWTMACFrCAFROwgAUsYMUELGABC1gxAQtYwAJWTMACFrCAFROwgAUsYMUELGABC1gxASserD9f0+chDaWqEJx7N7R0TkYv1tivczL6bNnbXG6/gO09oAQWsC4UsIAFLGDFBCxgAQtYMQELWMACVkzAAhawgBUTsIAFLGDFBCxgAQtYMQELWMACVkzAAhawgBUTsIAFLGDFBCxgAQtYMQELWMACVkzAAhawgBUTsIAFLGDFBCxgAQtYMQErHax/nRBPiSqkrSUAAAAASUVORK5CYII=" alt="SWISS"></a>
+  <ul class="nav-links"><li><a href="/">Главная</a></li><li><a href="/events" class="active">События</a></li><li><a href="/history">История</a></li><li><a href="/apply">Анкеты</a></li><li><a href="/#contacts">Контакты</a></li></ul>
   <a class="nav-login" href="/login">Войти</a>
   <button class="burger" onclick="document.querySelector('.nav-links').classList.toggle('show')">☰</button>
 </nav>
-
 <section class="page-hero">
-  <div class="page-hero-bg"></div>
+  <div class="page-hero-bg" style="background-image:url('data:image/png;base64,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')"></div>
   <div class="page-hero-overlay"></div>
   <div class="page-hero-content">
     <div class="hero-brand">SWISS AIRLINES</div>
@@ -77,19 +50,16 @@
     <p>Следите за важными новостями, мероприятиями и обновлениями нашей авиакомпании.</p>
   </div>
 </section>
-
 <div class="events-section">
   <div class="events-list" id="eventsList">
     <div class="loading">Загрузка событий…</div>
   </div>
 </div>
-
 <footer class="footer">
   <div><div class="footer-brand">SWISS AIRLINES</div><div class="footer-copy">© 2026 Swiss Airlines VA · PTFS</div></div>
   <div class="footer-tagline">Together + further</div>
   <div class="footer-links"><a href="https://discord.gg/6YA8t7GJr" target="_blank">Discord</a><a href="/login">Войти</a></div>
 </footer>
-
 <script>
 (async()=>{
   try{

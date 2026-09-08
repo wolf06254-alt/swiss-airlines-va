@@ -1,1020 +1,132 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Админ-панель — Swiss Airlines</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --swiss-red: #E3000F;
-      --swiss-red-dark: #b8000c;
-      --black: #121212;
-      --gray-900: #1a1a1a;
-      --gray-700: #2a2a2a;
-      --gray-500: #888;
-      --gray-300: rgba(255,255,255,0.08);
-      --gray-100: #1e1e1e;
-      --white: #ffffff;
-      --bg: #1a1a1a;
-      --text: #ffffff;
-      --card: #1e1e1e;
-      --border: rgba(255,255,255,0.08);
-      --transition: cubic-bezier(0.4, 0, 0.2, 1);
-      --header-bg: #121212;
-      --header-text: #ffffff;
-      --header-link: #a0a0a0;
-      --header-border: rgba(255,255,255,0.08);
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--gray-100); color: var(--text); line-height: 1.6; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes planeFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-    @keyframes stripeMove { from { background-position: 0 0; } to { background-position: 40px 0; } }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    @keyframes slideToast { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-
-    .animate-on-scroll { opacity: 0; transform: translateY(20px); transition: opacity 0.6s var(--transition), transform 0.6s var(--transition); }
-    .animate-on-scroll.visible { opacity: 1; transform: translateY(0); }
-
-    /* ===== HEADER ===== */
-    .admin-header { background: var(--header-bg); padding: 0 40px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; overflow: hidden; }
-    .admin-header::before { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: repeating-linear-gradient(90deg, var(--swiss-red) 0, var(--swiss-red) 25px, transparent 25px, transparent 35px); opacity: 0.5; animation: stripeMove 2s linear infinite; }
-    .header-left { display: flex; align-items: center; gap: 16px; }
-    .header-logo { display: flex; align-items: center; gap: 10px; color: var(--header-text); font-weight: 700; font-size: 14px; letter-spacing: -0.3px; text-decoration: none; }
-    .header-cross { width: 24px; height: 24px; background: var(--swiss-red); display: flex; align-items: center; justify-content: center; font-size: 12px; color: white; font-weight: 700; }
-    .header-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(227,0,15,0.15); color: var(--swiss-red); padding: 4px 10px; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
-    .header-right { display: flex; align-items: center; gap: 12px; }
-    .user-greeting { display: flex; align-items: center; gap: 8px; color: var(--gray-500); font-size: 13px; font-weight: 500; }
-    .user-avatar { width: 28px; height: 28px; background: var(--swiss-red); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 700; }
-    .header-link { color: var(--header-link); text-decoration: none; font-size: 12px; font-weight: 500; padding: 6px 12px; border: 1px solid var(--header-border); transition: all 0.3s; display: inline-flex; align-items: center; gap: 6px; }
-    .header-link:hover { color: var(--header-text); border-color: var(--header-text); }
-    .theme-toggle, .lang-toggle { background: transparent; border: 1px solid var(--header-border); color: var(--header-link); padding: 6px 14px; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s; letter-spacing: 0.5px; border-radius: 4px; }
-    .theme-toggle:hover, .lang-toggle:hover { color: var(--header-text); border-color: var(--header-text); }
-
-    /* ===== PAGE ===== */
-    .page-title-bar { background: var(--bg); padding: 32px 40px; border-bottom: 1px solid var(--gray-300); display: flex; align-items: center; justify-content: space-between; position: relative; overflow: hidden; }
-    .page-title-bar::before { content: ''; position: absolute; bottom: 0; left: 0; width: 60px; height: 2px; background: var(--swiss-red); }
-    .page-title { display: flex; align-items: center; gap: 12px; }
-    .page-title h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
-    .page-title .plane-icon { font-size: 28px; opacity: 0.7; animation: planeFloat 4s ease-in-out infinite; }
-    .page-subtitle { font-size: 13px; color: var(--gray-500); margin-top: 4px; }
-
-    /* ===== TABS ===== */
-    .tabs-bar { padding: 0 40px; border-bottom: 1px solid var(--gray-300); background: var(--bg); display: flex; gap: 0; }
-    .tab-btn { padding: 14px 20px; font-size: 13px; font-weight: 600; border: none; border-bottom: 2px solid transparent; background: transparent; color: var(--gray-500); cursor: pointer; transition: all 0.2s; letter-spacing: 0.3px; }
-    .tab-btn:hover { color: var(--gray-700); }
-    .tab-btn.active { color: var(--swiss-red); border-bottom-color: var(--swiss-red); }
-    .tab-content { display: none; padding: 24px 40px 40px; max-width: 1400px; margin: 0 auto; }
-    .tab-content.active { display: block; }
-
-    /* ===== TOOLBAR ===== */
-    .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
-    .btn-add { background: var(--swiss-red); color: white; border: none; padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 6px; }
-    .btn-add:hover { background: var(--swiss-red-dark); transform: translateY(-1px); }
-    .btn-export { background: var(--gray-900); color: var(--white); border: none; padding: 7px 16px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 6px; }
-    .btn-export:hover { background: var(--black); }
-
-    /* ===== TABLE ===== */
-    .table-wrapper { background: var(--bg); border: 1px solid var(--gray-300); overflow: hidden; }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th { background: var(--gray-100); padding: 12px 14px; text-align: left; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gray-500); border-bottom: 1px solid var(--gray-300); white-space: nowrap; }
-    td { padding: 12px 14px; border-bottom: 1px solid var(--gray-100); vertical-align: top; }
-    tr:hover td { background: rgba(227,0,15,0.02); }
-    .cell-name { font-weight: 600; color: var(--black); }
-    .cell-muted { color: var(--gray-500); font-size: 12px; }
-    .cell-small { font-size: 12px; }
-    .cell-actions { display: flex; gap: 6px; }
-    .action-btn { background: none; border: 1px solid var(--gray-300); padding: 4px 10px; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s; color: var(--gray-700); }
-    .action-btn:hover { border-color: var(--swiss-red); color: var(--swiss-red); }
-    .action-btn.delete:hover { border-color: #991b1b; color: #991b1b; }
-    .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px; font-size: 11px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
-    .status-new { background: rgba(59,130,246,0.12); color: #3b82f6; }
-    .status-review { background: rgba(251,191,36,0.12); color: #fbbf24; }
-    .status-upcoming { background: rgba(59,130,246,0.12); color: #3b82f6; }
-    .status-accepted { background: rgba(34,197,94,0.12); color: #22c55e; }
-    .status-rejected { background: rgba(239,68,68,0.12); color: #ef4444; }
-    .status-past { background: rgba(107,114,128,0.15); color: #9ca3af; }
-    .status-active { background: rgba(34,197,94,0.12); color: #22c55e; }
-    .status-inactive { background: rgba(239,68,68,0.12); color: #ef4444; }
-    .status-badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
-
-    /* ===== MODAL ===== */
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
-    .modal-overlay.open { display: flex; }
-    .modal { background: var(--bg); width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; border: 1px solid var(--gray-300); box-shadow: 0 20px 60px rgba(0,0,0,0.2); animation: fadeUp 0.3s var(--transition); }
-    .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--gray-300); display: flex; justify-content: space-between; align-items: center; }
-    .modal-header h3 { font-size: 16px; font-weight: 700; }
-    .modal-close { background: none; border: none; font-size: 20px; color: var(--gray-500); cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; transition: color 0.2s; }
-    .modal-close:hover { color: var(--swiss-red); }
-    .modal-body { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
-    .form-row { display: flex; flex-direction: column; gap: 6px; }
-    .form-row label { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--gray-500); }
-    .form-row input, .form-row textarea, .form-row select { padding: 10px 12px; font-family: inherit; font-size: 14px; border: 1px solid var(--gray-300); background: var(--bg); color: var(--text); transition: border-color 0.2s; }
-    .form-row input:focus, .form-row textarea:focus, .form-row select:focus { outline: none; border-color: var(--swiss-red); }
-    .form-row textarea { min-height: 80px; resize: vertical; }
-    .form-row.half { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .form-row.half > div { display: flex; flex-direction: column; gap: 6px; }
-    .modal-footer { padding: 16px 24px; border-top: 1px solid var(--gray-300); display: flex; justify-content: flex-end; gap: 10px; }
-    .btn-save { background: var(--swiss-red); color: white; border: none; padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
-    .btn-save:hover { background: var(--swiss-red-dark); }
-    .btn-cancel { background: transparent; color: var(--gray-700); border: 1px solid var(--gray-300); padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
-    .btn-cancel:hover { border-color: var(--gray-700); }
-
-    /* ===== SITE MODE ===== */
-    .mode-banner { max-width: 1400px; margin: 0 auto 18px; padding: 14px 18px; border-radius: 12px; border: 1px solid var(--swiss-red); background: rgba(227,0,15,0.10); font-size: 13px; line-height: 1.6; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; animation: fadeUp 0.4s var(--transition); }
-    .mode-banner .mb-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--swiss-red); animation: mbPulse 1.4s ease-in-out infinite; flex-shrink: 0; }
-    @keyframes mbPulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .3; transform: scale(.7); } }
-    .mode-banner b { color: var(--swiss-red); }
-    .mode-banner .mb-btn { margin-left: auto; background: var(--swiss-red); color: #fff; border: none; padding: 7px 15px; font-size: 12px; font-weight: 700; border-radius: 8px; cursor: pointer; transition: all .3s; }
-    .mode-banner .mb-btn:hover { background: var(--swiss-red-dark); transform: translateY(-1px); }
-
-    .mode-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
-    .mode-card { position: relative; border: 2px solid var(--gray-300); border-radius: 14px; padding: 18px 16px; cursor: pointer; background: var(--bg); transition: all .28s var(--transition); text-align: left; }
-    .mode-card:hover { border-color: var(--swiss-red); transform: translateY(-3px); box-shadow: 0 14px 30px -18px rgba(227,0,15,.6); }
-    .mode-card.selected { border-color: var(--swiss-red); background: rgba(227,0,15,0.07); box-shadow: 0 14px 30px -20px rgba(227,0,15,.7); }
-    .mode-card .mc-icon { font-size: 26px; line-height: 1; display: block; margin-bottom: 10px; }
-    .mode-card .mc-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
-    .mode-card .mc-desc { font-size: 12px; color: var(--gray-500); line-height: 1.5; }
-    .mode-card .mc-check { position: absolute; top: 12px; right: 12px; width: 20px; height: 20px; border-radius: 50%; background: var(--swiss-red); color: #fff; font-size: 12px; display: none; align-items: center; justify-content: center; }
-    .mode-card.selected .mc-check { display: flex; }
-    .mode-live-pill { display: inline-flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 5px 12px; border-radius: 100px; border: 1px solid var(--gray-300); color: var(--gray-500); }
-
-    /* ===== LOADING / EMPTY ===== */
-    .loading { text-align: center; padding: 60px; color: var(--gray-500); font-size: 14px; }
-    .loading::after { content: ''; display: inline-block; width: 16px; height: 16px; border: 2px solid var(--gray-300); border-top-color: var(--swiss-red); border-radius: 50%; margin-left: 10px; animation: spin 0.8s linear infinite; }
-    .empty-state { text-align: center; padding: 60px 40px; color: var(--gray-500); }
-    .empty-state h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; color: var(--gray-700); }
-
-    /* ===== TOAST ===== */
-    .toast-container { position: fixed; top: 24px; right: 24px; z-index: 1000; display: flex; flex-direction: column; gap: 12px; }
-    .toast { background: var(--bg); padding: 14px 22px; min-width: 300px; font-size: 13px; font-weight: 500; box-shadow: 0 8px 32px rgba(0,0,0,0.12); animation: slideToast 0.4s var(--transition); display: flex; align-items: center; gap: 10px; border-left: 3px solid var(--swiss-red); }
-    .toast.success { border-left-color: #22c55e; }
-    .toast.error { border-left-color: var(--swiss-red); }
-
-    /* ===== STATS ===== */
-    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 24px 40px; max-width: 1400px; margin: 0 auto; }
-    .stat-card { background: var(--bg); border: 1px solid var(--gray-300); padding: 24px; transition: all 0.3s var(--transition); position: relative; overflow: hidden; }
-    .stat-card:hover { border-color: var(--swiss-red); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
-    .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 0; background: var(--swiss-red); transition: height 0.4s var(--transition); }
-    .stat-card:hover::before { height: 100%; }
-    .stat-icon { font-size: 24px; margin-bottom: 12px; display: block; }
-    .stat-value { font-size: 32px; font-weight: 800; letter-spacing: -1px; color: var(--black); }
-    .stat-label { font-size: 12px; color: var(--gray-500); font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 4px; }
-
-    .filters-bar { padding: 0 40px 20px; max-width: 1400px; margin: 0 auto; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-    .filter-btn { padding: 7px 14px; font-size: 12px; font-weight: 500; border: 1px solid var(--gray-300); background: var(--bg); color: var(--gray-700); cursor: pointer; transition: all 0.3s var(--transition); display: inline-flex; align-items: center; gap: 6px; }
-    .filter-btn:hover, .filter-btn.active { border-color: var(--swiss-red); color: var(--swiss-red); background: rgba(227,0,15,0.04); }
-
-    /* ===== EXPAND ===== */
-    .expand-btn { background: none; border: 1px solid var(--gray-300); width: 22px; height: 22px; cursor: pointer; font-size: 10px; color: var(--gray-500); transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
-    .expand-btn:hover { border-color: var(--swiss-red); color: var(--swiss-red); }
-    .status-action-btns { display: flex; gap: 8px; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--gray-300); }
-    .status-action-btn { padding: 8px 16px; font-size: 12px; font-weight: 600; border: 1px solid var(--gray-300); cursor: pointer; transition: all 0.3s; font-family: inherit; display: inline-flex; align-items: center; gap: 6px; }
-    .status-action-btn:hover { transform: translateY(-1px); }
-    .status-action-btn.btn-review { background: rgba(251,191,36,0.12); color: #fbbf24; border-color: rgba(251,191,36,0.3); }
-    .status-action-btn.btn-review:hover { background: rgba(251,191,36,0.2); }
-    .status-action-btn.btn-accept { background: rgba(52,211,153,0.12); color: #34d399; border-color: rgba(52,211,153,0.3); }
-    .status-action-btn.btn-accept:hover { background: rgba(52,211,153,0.2); }
-    .status-action-btn.btn-reject { background: rgba(239,68,68,0.12); color: #ef4444; border-color: rgba(239,68,68,0.3); }
-    .status-action-btn.btn-reject:hover { background: rgba(239,68,68,0.2); }
-    .status-action-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-
-    @media (max-width: 1024px) {
-      .stats-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 768px) {
-      .admin-header { padding: 0 16px; }
-      .page-title-bar { padding: 20px 16px; flex-direction: column; align-items: flex-start; gap: 12px; }
-      .tabs-bar { padding: 0 16px; overflow-x: auto; }
-      .tab-content { padding: 16px; }
-      .stats-grid { grid-template-columns: 1fr; padding: 16px; }
-      .filters-bar { padding: 0 16px 16px; }
-      .toolbar { flex-direction: column; align-items: flex-start; }
-      .form-row.half { grid-template-columns: 1fr; }
-    }
-
-    /* ===== SWISS DARK DECOR ===== */
-    html { background-color: #121212; background-attachment: fixed; }
-    body { background: #121212; }
-  </style>
-
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Swiss Airlines — Админ-панель</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:Inter,sans-serif;background:#080808;color:#fff}a{color:inherit;text-decoration:none}
+.topbar{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;border-bottom:1px solid rgba(255,255,255,.06);background:#0a0a0a}
+.topbar-brand{font-size:14px;font-weight:800;letter-spacing:1px}
+.topbar-right{display:flex;align-items:center;gap:16px}
+.topbar-user{font-size:12px;color:#888}
+.topbar-logout{font-size:12px;color:#df0018;cursor:pointer}.topbar-logout:hover{color:#fff}
+.main{display:flex;min-height:calc(100vh - 56px)}
+.sidebar{width:220px;padding:24px 0;border-right:1px solid rgba(255,255,255,.06);background:#0a0a0a;flex-shrink:0}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:10px 24px;font-size:13px;color:rgba(255,255,255,.55);cursor:pointer;transition:all .15s;border-left:3px solid transparent}
+.sidebar-item:hover{color:#fff;background:rgba(255,255,255,.03)}.sidebar-item.active{color:#fff;border-left-color:#df0018;background:rgba(223,0,24,.05)}
+.sidebar-item svg{width:18px;height:18px}
+.content{flex:1;padding:32px;overflow-y:auto}
+.section-title{font-size:22px;font-weight:800;margin-bottom:20px;letter-spacing:-.5px}
+.red-btn{background:#df0018;border:0;color:#fff;padding:9px 20px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;transition:background .2s}.red-btn:hover{background:#c90015}
+.ghost-btn{background:transparent;border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6);padding:9px 20px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s}.ghost-btn:hover{border-color:rgba(255,255,255,.25);color:#fff}
+.add-form{background:#111;border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:24px;margin-bottom:24px;display:none}.add-form.open{display:block}
+.form-group{margin-bottom:14px}.form-group label{display:block;font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.8px;font-weight:600;margin-bottom:6px}
+.form-group input,.form-group textarea,.form-group select{width:100%;background:#0a0a0a;color:#fff;border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:9px 12px;outline:none;font:inherit;transition:border-color .2s}
+.form-group input:focus,.form-group textarea:focus{border-color:#df0018}
+.form-group textarea{min-height:60px;resize:vertical}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn-row{display:flex;gap:10px;margin-top:14px}
+.list-table{width:100%;border-collapse:collapse}
+.list-table th{text-align:left;font-size:10px;color:#555;text-transform:uppercase;letter-spacing:1px;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.06)}
+.list-table td{padding:10px 12px;font-size:13px;border-bottom:1px solid rgba(255,255,255,.03)}
+.list-table tr:hover td{background:rgba(255,255,255,.02)}
+.status-badge{display:inline-block;font-size:10px;padding:3px 10px;border-radius:10px;font-weight:600}
+.status-badge.pending{background:rgba(234,179,8,.1);color:#eab308}
+.status-badge.accepted{background:rgba(34,197,94,.1);color:#22c55e}
+.status-badge.rejected{background:rgba(239,68,68,.1);color:#ef4444}
+.del-btn{background:none;border:0;color:#555;cursor:pointer;font-size:14px;transition:color .2s}.del-btn:hover{color:#df0018}
+.empty-msg{text-align:center;padding:40px;color:rgba(255,255,255,.3);font-size:13px}
+.panel{display:none}.panel.active{display:block}
+@media(max-width:768px){.sidebar{display:none}.content{padding:20px}.form-row{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
-
-  <div class="toast-container" id="toastContainer"></div>
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal" id="modal"></div>
+<div class="topbar">
+  <div class="topbar-brand">SWISS AIRLINES</div>
+  <div class="topbar-right">
+    <span class="topbar-user" id="topUser"></span>
+    <span class="topbar-logout" onclick="fetch('/api/logout').then(()=>location='/login')">Выйти</span>
   </div>
-
-  <header class="admin-header">
-    <div class="header-left">
-      <a href="index.html" class="header-logo">
-        <div class="header-cross">+</div>
-        <div>SWISS AIRLINES</div>
-      </a>
-      <div class="header-badge">🛡 <span data-i18n="admin-badge">Админ-панель</span></div>
+</div>
+<div class="main">
+  <div class="sidebar">
+    <div class="sidebar-item active" data-panel="events" onclick="switchPanel('events')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      События
     </div>
-    <div class="header-right">
-      <div class="user-greeting"><div class="user-avatar" id="userAvatar">A</div><span id="userName">Администратор</span></div>
-      <a href="index.html" class="header-link"><span data-i18n="btn-home">🏠 Главная</span></a>
-      <a href="#" class="header-link" onclick="logout(); return false;"><span data-i18n="btn-logout">↪ Выйти</span></a>
-      <button class="lang-toggle" id="langToggle" onclick="toggleLang()">EN</button>
-      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" style="opacity:.4;cursor:default;">🌙</button>
+    <div class="sidebar-item" data-panel="history" onclick="switchPanel('history')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+      История
     </div>
-  </header>
-
-  <div class="page-title-bar">
-    <div class="page-title">
-      <span class="plane-icon">✈</span>
-      <div>
-        <h1 data-i18n="admin-title">Админ-панель</h1>
-        <div class="page-subtitle" data-i18n="admin-subtitle">Управление контентом сайта Swiss Airlines</div>
+    <div class="sidebar-item" data-panel="apps" onclick="switchPanel('apps')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Анкеты
+    </div>
+  </div>
+  <div class="content">
+    <div class="panel active" id="panel-events">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div class="section-title">События</div>
+        <button class="red-btn" onclick="toggleForm('evForm')">+ Добавить</button>
       </div>
-    </div>
-    <div class="page-actions" style="display:flex;gap:10px;">
-      <button class="btn-export" onclick="exportCSV()">📥 <span data-i18n="btn-csv">Экспорт CSV</span></button>
-      <button class="btn-export" onclick="window.open('https://discord.gg/6YA8t7GJr','_blank')">🎮 Discord</button>
-    </div>
-  </div>
-
-  <div id="modeBanner" class="mode-banner" style="display:none;"></div>
-
-  <div class="tabs-bar">
-    <button class="tab-btn active" onclick="switchTab('applications')" data-tab="applications" data-i18n="tab-applications">📋 Анкеты</button>
-    <button class="tab-btn" onclick="switchTab('events')" data-tab="events" data-i18n="tab-events">📅 События</button>
-    <button class="tab-btn" onclick="switchTab('timeline')" data-tab="timeline" data-i18n="tab-timeline">📜 История</button>
-    <button class="tab-btn" onclick="switchTab('sitestats')" data-tab="sitestats" data-i18n="tab-sitestats">📊 Статистика</button>
-    <button class="tab-btn" onclick="switchTab('sitemode')" data-tab="sitemode" data-i18n="tab-sitemode">🚧 Режим сайта</button>
-  </div>
-
-  <!-- ANKETY -->
-  <div class="tab-content active" id="tab-applications">
-    <div class="stats-grid" id="statsGrid">
-      <div class="stat-card"><span class="stat-icon">📋</span><div class="stat-value" id="totalCount">0</div><div class="stat-label" data-i18n="stat-total">Всего анкет</div></div>
-      <div class="stat-card"><span class="stat-icon">🆕</span><div class="stat-value" id="newCount">0</div><div class="stat-label" data-i18n="stat-new">Новые</div></div>
-      <div class="stat-card"><span class="stat-icon">✅</span><div class="stat-value" id="acceptedCount">0</div><div class="stat-label" data-i18n="stat-accepted">Принято</div></div>
-      <div class="stat-card"><span class="stat-icon">❌</span><div class="stat-value" id="rejectedCount">0</div><div class="stat-label" data-i18n="stat-rejected">Отклонено</div></div>
-      <div class="stat-card"><span class="stat-icon">🔍</span><div class="stat-value" id="reviewCount">0</div><div class="stat-label" data-i18n="stat-review">На рассмотрении</div></div>
-    </div>
-    <div id="dbWarnBanner" style="display:none;max-width:1400px;margin:0 auto 16px;padding:14px 18px;border-radius:12px;border:1px solid #E3000F;background:rgba(227,0,15,0.08);color:#fff;font-size:13px;line-height:1.6;"></div>
-    <div class="filters-bar">
-      <span class="filter-btn active" data-filter="all" onclick="setAppFilter('all')" data-i18n="filter-all">Все</span>
-      <span class="filter-btn" data-filter="new" onclick="setAppFilter('new')" data-i18n="filter-new">🆕 Новые</span>
-      <span class="filter-btn" data-filter="review" onclick="setAppFilter('review')" data-i18n="filter-review">🔍 На рассмотрении</span>
-      <span class="filter-btn" data-filter="accepted" onclick="setAppFilter('accepted')" data-i18n="filter-accepted">✅ Принято</span>
-      <span class="filter-btn" data-filter="rejected" onclick="setAppFilter('rejected')" data-i18n="filter-rejected">❌ Отклонено</span>
-      <button class="filter-btn" style="margin-left:auto;background:#E3000F;color:#fff;border:none;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:12px;" onclick="checkDbStatus()" title="Проверить состояние базы данных">🔍 DB Status</button>
-    </div>
-    <div class="table-wrapper">
-      <div class="loading" id="appsLoading" data-i18n="loading-apps">Загрузка анкет...</div>
-      <table id="appsTable" style="display:none;">
-        <thead><tr><th></th><th data-i18n="th-roblox">Roblox</th><th data-i18n="th-telegram">Telegram</th><th data-i18n="th-age">Возраст</th><th data-i18n="th-role">Роль</th><th data-i18n="th-status">Статус</th><th data-i18n="th-date">Дата</th></tr></thead>
-        <tbody id="appsBody"></tbody>
-      </table>
-      <div class="empty-state" id="appsEmpty" style="display:none;"><h3 data-i18n="empty-apps-title">Нет анкет</h3><p data-i18n="empty-apps-desc">Пока никто не отправил заявку</p></div>
-    </div>
-  </div>
-
-  <!-- EVENTS -->
-  <div class="tab-content" id="tab-events">
-    <div class="toolbar"><h3 style="font-size:16px;font-weight:700;" data-i18n="tab-events">События</h3><button class="btn-add" onclick="openEventModal()" data-i18n="btn-add">+ Добавить событие</button></div>
-    <div class="table-wrapper">
-      <div class="loading" id="eventsLoading" data-i18n="loading-events">Загрузка событий...</div>
-      <table id="eventsTable" style="display:none;">
-        <thead><tr><th data-i18n="th-title">Название</th><th data-i18n="th-date">Дата</th><th data-i18n="th-time">Время</th><th data-i18n="th-location">Локация</th><th data-i18n="th-image">Фото</th><th data-i18n="th-status">Статус</th><th data-i18n="th-actions">Действия</th></tr></thead>
-        <tbody id="eventsBody"></tbody>
-      </table>
-      <div class="empty-state" id="eventsEmpty" style="display:none;"><h3 data-i18n="empty-events-title">Нет событий</h3><p data-i18n="empty-events-desc">Добавьте первое событие</p></div>
-    </div>
-  </div>
-
-  <!-- TIMELINE -->
-  <div class="tab-content" id="tab-timeline">
-    <div class="toolbar"><h3 style="font-size:16px;font-weight:700;" data-i18n="tab-timeline">История</h3></div>
-    <div class="table-wrapper">
-      <div class="loading" id="timelineLoading" data-i18n="loading-timeline">Загрузка истории...</div>
-      <table id="timelineTable" style="display:none;">
-        <thead><tr><th data-i18n="th-year">Год</th><th data-i18n="th-title">Название</th><th data-i18n="th-description">Описание</th><th data-i18n="th-icon">Иконка</th></tr></thead>
-        <tbody id="timelineBody"></tbody>
-      </table>
-      <div class="empty-state" id="timelineEmpty" style="display:none;"><h3 data-i18n="empty-timeline-title">Нет записей</h3><p data-i18n="empty-timeline-desc">Записи загружаются из базы данных</p></div>
-    </div>
-  </div>
-
-  <!-- SITE STATS (BETA) -->
-  <div class="tab-content" id="tab-sitestats">
-    <div class="toolbar">
-      <h3 style="font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px;">
-        <span data-i18n="stats-title">Живая статистика</span>
-        <span style="background:#E3000F;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.5px;">BETA</span>
-      </h3>
-      <button class="btn-add" onclick="loadSiteStats()" data-i18n="btn-stats-refresh">↻ Обновить</button>
-    </div>
-    <div class="loading" id="siteStatsLoading" data-i18n="loading-stats">Загрузка статистики...</div>
-    <div id="siteStatsWrap" style="display:none;">
-      <div class="stats-grid" id="siteStatsLive"></div>
-      <div class="table-wrapper" style="padding:20px;margin-top:20px;">
-        <h4 style="font-size:14px;font-weight:700;margin:0 0 6px;" data-i18n="stats-editor-title">Ручные счётчики</h4>
-        <p style="font-size:12px;color:var(--gray-500);margin:0 0 16px;" data-i18n="stats-editor-hint">Эти значения показываются на главной странице. Пустое поле — значение не меняется.</p>
-        <div id="siteStatsForm" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;"></div>
-        <div style="margin-top:18px;">
-          <button class="btn-save" onclick="saveSiteStats()" data-i18n="btn-stats-save">Сохранить счётчики</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- SITE MODE -->
-  <div class="tab-content" id="tab-sitemode">
-    <div class="toolbar">
-      <h3 style="font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px;">
-        <span data-i18n="mode-title">Режим работы сайта</span>
-        <span class="mode-live-pill" id="modeNowPill">—</span>
-      </h3>
-      <button class="btn-add" onclick="loadSiteMode()" data-i18n="btn-mode-refresh">↻ Обновить</button>
-    </div>
-
-    <div class="table-wrapper" style="padding:20px;">
-      <p style="font-size:12px;color:var(--gray-500);margin:0 0 16px;line-height:1.7;" data-i18n="mode-hint">Выберите режим. В режимах «Технические работы» и «Обновление» посетители увидят красивую страницу-заглушку, а вы как администратор продолжите пользоваться сайтом как обычно.</p>
-
-      <div class="mode-grid">
-        <div class="mode-card" id="modeCard-live" onclick="selectMode('live')">
-          <span class="mc-check">✓</span>
-          <span class="mc-icon">🟢</span>
-          <div class="mc-name" data-i18n="mode-live-name">Сайт работает</div>
-          <div class="mc-desc" data-i18n="mode-live-desc">Всё доступно всем посетителям</div>
-        </div>
-        <div class="mode-card" id="modeCard-maintenance" onclick="selectMode('maintenance')">
-          <span class="mc-check">✓</span>
-          <span class="mc-icon">⚙️</span>
-          <div class="mc-name" data-i18n="mode-maint-name">Технические работы</div>
-          <div class="mc-desc" data-i18n="mode-maint-desc">Посетители видят заглушку, админ — сайт</div>
-        </div>
-        <div class="mode-card" id="modeCard-update" onclick="selectMode('update')">
-          <span class="mc-check">✓</span>
-          <span class="mc-icon">🚀</span>
-          <div class="mc-name" data-i18n="mode-update-name">Обновление</div>
-          <div class="mc-desc" data-i18n="mode-update-desc">То же, но с текстом про новые возможности</div>
-        </div>
-      </div>
-
-      <h4 style="font-size:14px;font-weight:700;margin:26px 0 6px;" data-i18n="mode-text-title">Текст на странице-заглушке</h4>
-      <p style="font-size:12px;color:var(--gray-500);margin:0 0 16px;" data-i18n="mode-text-hint">Все поля необязательны — если оставить пустыми, покажется текст по умолчанию.</p>
-
-      <div style="display:flex;flex-direction:column;gap:14px;max-width:640px;">
+      <div class="add-form" id="evForm">
         <div class="form-row">
-          <label data-i18n="mode-field-title">Заголовок</label>
-          <input type="text" id="modeTitle" maxlength="500" placeholder="Сайт на техническом обслуживании">
+          <div class="form-group"><label>Название</label><input id="evTitle"></div>
+          <div class="form-group"><label>Дата</label><input type="date" id="evDate"></div>
         </div>
-        <div class="form-row">
-          <label data-i18n="mode-field-message">Сообщение</label>
-          <textarea id="modeMessage" maxlength="500" placeholder="Скоро вернёмся в небо!"></textarea>
-        </div>
-        <div class="form-row">
-          <label data-i18n="mode-field-eta">Ожидаемое время возвращения</label>
-          <input type="text" id="modeEta" maxlength="500" placeholder="например: сегодня в 20:00 МСК">
+        <div class="form-group"><label>Описание</label><textarea id="evDesc"></textarea></div>
+        <div class="form-group"><label>Категория</label><input id="evCat" placeholder="Групповой полёт"></div>
+        <div class="btn-row">
+          <button class="ghost-btn" onclick="toggleForm('evForm')">Отмена</button>
+          <button class="red-btn" onclick="addEvent()">Сохранить</button>
         </div>
       </div>
-
-      <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-        <button class="btn-save" onclick="saveSiteMode()" data-i18n="btn-mode-save">Сохранить режим</button>
-        <button class="btn-cancel" onclick="window.open('maintenance.html','_blank')" data-i18n="btn-mode-preview">👁 Предпросмотр</button>
+      <div id="eventsTable"></div>
+    </div>
+    <div class="panel" id="panel-history">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div class="section-title">История</div>
+        <button class="red-btn" onclick="toggleForm('histForm')">+ Добавить</button>
       </div>
+      <div class="add-form" id="histForm">
+        <div class="form-row">
+          <div class="form-group"><label>Год</label><input id="histYear"></div>
+          <div class="form-group"><label>Заголовок</label><input id="histTitle"></div>
+        </div>
+        <div class="form-group"><label>Описание</label><textarea id="histDesc"></textarea></div>
+        <div class="btn-row">
+          <button class="ghost-btn" onclick="toggleForm('histForm')">Отмена</button>
+          <button class="red-btn" onclick="addHistory()">Сохранить</button>
+        </div>
+      </div>
+      <div id="historyTable"></div>
+    </div>
+    <div class="panel" id="panel-apps">
+      <div class="section-title">Анкеты</div>
+      <div id="appsTable"></div>
     </div>
   </div>
+</div>
+<script>
+(async()=>{try{const r=await fetch('/api/me');if(!r.ok)return location='/login';const u=await r.json();document.getElementById('topUser').textContent=u.username}catch(e){location='/login'}})();
 
-  <script>
-    let currentTab = 'applications';
-    let allData = [];
-    let appFilter = 'all';
-    let eventsData = [];
-    let timelineData = [];
-    let siteModeData = null;
-    let selectedMode = 'live';
+function switchPanel(n){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.sidebar-item').forEach(s=>s.classList.remove('active'));document.getElementById('panel-'+n).classList.add('active');document.querySelector('[data-panel="'+n+'"]').classList.add('active');if(n==='events')loadEvents();if(n==='history')loadHistory();if(n==='apps')loadApps()}
+function toggleForm(id){document.getElementById(id).classList.toggle('open')}
 
-    /* ===== i18n ===== */
-    const i18n = {
-      ru: {
-        'admin-badge': 'Админ-панель', 'admin-title': 'Админ-панель', 'admin-subtitle': 'Управление контентом сайта Swiss Airlines',
-        'btn-home': '🏠 Главная', 'btn-logout': '↪ Выйти', 'btn-csv': 'Экспорт CSV',
-        'tab-applications': '📋 Анкеты', 'tab-events': '📅 События', 'tab-timeline': '📜 История',
-        'stat-total': 'Всего анкет', 'stat-new': 'Новые', 'stat-accepted': 'Принято', 'stat-rejected': 'Отклонено',
-        'filter-all': 'Все', 'filter-new': '🆕 Новые', 'filter-review': '🔍 На рассмотрении', 'filter-accepted': '✅ Принято', 'filter-rejected': '❌ Отклонено',
-        'loading-apps': 'Загрузка анкет...', 'loading-events': 'Загрузка событий...', 'loading-timeline': 'Загрузка истории...',
-        'th-roblox': 'Roblox', 'th-telegram': 'Telegram', 'th-age': 'Возраст', 'th-role': 'Роль', 'th-status': 'Статус', 'th-date': 'Дата',
-        'th-title': 'Название', 'th-time': 'Время', 'th-location': 'Локация', 'th-image': 'Фото', 'th-actions': 'Действия',
-        'th-year': 'Год', 'th-description': 'Описание', 'th-icon': 'Иконка',
-        'empty-apps-title': 'Нет анкет', 'empty-apps-desc': 'Пока никто не отправил заявку',
-        'empty-events-title': 'Нет событий', 'empty-events-desc': 'Добавьте первое событие',
-        'empty-timeline-title': 'Нет записей', 'empty-timeline-desc': 'Записи загружаются из базы данных',
-        'btn-add': '+ Добавить событие',
-        'label-image-url': 'URL изображения', 'btn-ai-image': '🤎 AI-генерация фото', 'ai-generating': 'Генерация изображения...', 'ai-generated': 'Изображение сгенерировано!', 'ai-error': 'Ошибка генерации изображения',
-        'modal-add-title': 'Новое событие', 'modal-edit-title': 'Редактировать событие',
-        'label-title': 'Название', 'label-date': 'Дата', 'label-time': 'Время', 'label-location': 'Локация', 'label-description': 'Описание', 'label-status': 'Статус',
-        'btn-save': 'Сохранить', 'btn-cancel': 'Отмена',
-        'status-new': 'Новая', 'status-review': 'На рассмотрении', 'status-accepted': 'Принято', 'status-rejected': 'Отклонено',
-        'status-upcoming': 'Предстоит', 'status-past': 'Прошло', 'status-active': 'Активен', 'status-inactive': 'Неактивен',
-        'toast-added': 'Событие добавлено', 'toast-updated': 'Событие обновлено', 'toast-deleted': 'Событие удалено',
-        'error-required': 'Название и дата обязательны', 'error-connection': 'Ошибка соединения',
-        'csv-downloaded': 'CSV файл загружен',
-        'app-detail-name': 'Имя', 'app-detail-char-age': 'Возраст персонажа', 'app-detail-real-age': 'Реальный возраст',
-        'app-detail-role': 'Роль', 'app-detail-online': 'Время онлайн', 'app-detail-flights': 'Налёт',
-        'app-detail-experience': 'Опыт', 'app-detail-why': 'Почему Swiss', 'app-detail-about': 'О себе',
-        'btn-edit': 'Изменить', 'btn-delete': 'Удалить', 'confirm-delete': 'Удалить событие?',
-        'error-load': 'Ошибка загрузки',
-        'btn-status-review': '🔍 На рассмотрении', 'btn-status-accepted': '✅ Принять', 'btn-status-rejected': '❌ Отклонить',
-        'toast-status-review': 'Статус изменён: На рассмотрении', 'toast-status-accepted': 'Статус изменён: Принято', 'toast-status-rejected': 'Статус изменён: Отклонено',
-        'toast-status-error': 'Ошибка смены статуса', 'stat-review': 'На рассмотрении',
-        'tab-sitestats': '📊 Статистика',
-        'stats-title': 'Живая статистика', 'loading-stats': 'Загрузка статистики...', 'btn-stats-refresh': '↻ Обновить',
-        'stats-editor-title': 'Ручные счётчики', 'stats-editor-hint': 'Эти значения показываются на главной странице в блоке «Живая статистика».', 'btn-stats-save': 'Сохранить счётчики',
-        'stat-online': 'Сейчас на сайте', 'stat-visits': 'Посещений', 'stat-pilots': 'Пилотов', 'stat-flights': 'Рейсов', 'stat-flight-hours': 'Часов в воздухе', 'stat-destinations': 'Направлений',
-        'toast-stats-saved': 'Счётчики обновлены', 'toast-stats-error': 'Не удалось сохранить счётчики',
-        'tab-sitemode': '🚧 Режим сайта',
-        'mode-title': 'Режим работы сайта', 'btn-mode-refresh': '↻ Обновить',
-        'mode-hint': 'Выберите режим. В режимах «Технические работы» и «Обновление» посетители увидят красивую страницу-заглушку, а вы как администратор продолжите пользоваться сайтом как обычно.',
-        'mode-live-name': 'Сайт работает', 'mode-live-desc': 'Всё доступно всем посетителям',
-        'mode-maint-name': 'Технические работы', 'mode-maint-desc': 'Посетители видят заглушку, админ — сайт',
-        'mode-update-name': 'Обновление', 'mode-update-desc': 'То же, но с текстом про новые возможности',
-        'mode-text-title': 'Текст на странице-заглушке', 'mode-text-hint': 'Все поля необязательны — если оставить пустыми, покажется текст по умолчанию.',
-        'mode-field-title': 'Заголовок', 'mode-field-message': 'Сообщение', 'mode-field-eta': 'Ожидаемое время возвращения',
-        'btn-mode-save': 'Сохранить режим', 'btn-mode-preview': '👁 Предпросмотр',
-        'mode-now-live': 'Сайт работает', 'mode-now-maintenance': 'Технические работы', 'mode-now-update': 'Обновление',
-        'banner-maint': 'Сайт закрыт на технические работы. Обычные посетители видят страницу-заглушку.',
-        'banner-update': 'Сайт в режиме обновления. Обычные посетители видят страницу-заглушку.',
-        'banner-btn': 'Включить сайт',
-        'toast-mode-saved': 'Режим сайта обновлён', 'toast-mode-error': 'Не удалось сохранить режим',
-      },
-      en: {
-        'admin-badge': 'Admin Panel', 'admin-title': 'Admin Panel', 'admin-subtitle': 'Swiss Airlines website content management',
-        'btn-home': '🏠 Home', 'btn-logout': '↪ Logout', 'btn-csv': 'Export CSV',
-        'tab-applications': '📋 Applications', 'tab-events': '📅 Events', 'tab-timeline': '📜 Timeline',
-        'stat-total': 'Total applications', 'stat-new': 'New', 'stat-accepted': 'Accepted', 'stat-rejected': 'Rejected',
-        'filter-all': 'All', 'filter-new': '🆕 New', 'filter-review': '🔍 Under review', 'filter-accepted': '✅ Accepted', 'filter-rejected': '❌ Rejected',
-        'loading-apps': 'Loading applications...', 'loading-events': 'Loading events...', 'loading-timeline': 'Loading timeline...',
-        'th-roblox': 'Roblox', 'th-telegram': 'Telegram', 'th-age': 'Age', 'th-role': 'Role', 'th-status': 'Status', 'th-date': 'Date',
-        'th-title': 'Title', 'th-time': 'Time', 'th-location': 'Location', 'th-image': 'Image', 'th-actions': 'Actions',
-        'th-year': 'Year', 'th-description': 'Description', 'th-icon': 'Icon',
-        'empty-apps-title': 'No applications', 'empty-apps-desc': 'No one has submitted an application yet',
-        'empty-events-title': 'No events', 'empty-events-desc': 'Add your first event',
-        'empty-timeline-title': 'No records', 'empty-timeline-desc': 'Records are loaded from the database',
-        'btn-add': '+ Add Event',
-        'label-image-url': 'Image URL', 'btn-ai-image': '🤎 AI Generate Photo', 'ai-generating': 'Generating image...', 'ai-generated': 'Image generated!', 'ai-error': 'Image generation error',
-        'modal-add-title': 'New Event', 'modal-edit-title': 'Edit Event',
-        'label-title': 'Title', 'label-date': 'Date', 'label-time': 'Time', 'label-location': 'Location', 'label-description': 'Description', 'label-status': 'Status',
-        'btn-save': 'Save', 'btn-cancel': 'Cancel',
-        'status-new': 'New', 'status-review': 'Under review', 'status-accepted': 'Accepted', 'status-rejected': 'Rejected',
-        'status-upcoming': 'Upcoming', 'status-past': 'Past', 'status-active': 'Active', 'status-inactive': 'Inactive',
-        'toast-added': 'Event added', 'toast-updated': 'Event updated', 'toast-deleted': 'Event deleted',
-        'error-required': 'Title and date are required', 'error-connection': 'Connection error',
-        'csv-downloaded': 'CSV file downloaded',
-        'app-detail-name': 'Name', 'app-detail-char-age': 'Character age', 'app-detail-real-age': 'Real age',
-        'app-detail-role': 'Role', 'app-detail-online': 'Online time', 'app-detail-flights': 'Flight time',
-        'app-detail-experience': 'Experience', 'app-detail-why': 'Why Swiss', 'app-detail-about': 'About',
-        'btn-edit': 'Edit', 'btn-delete': 'Delete', 'confirm-delete': 'Delete event?',
-        'error-load': 'Loading error',
-        'btn-status-review': '🔍 Under review', 'btn-status-accepted': '✅ Accept', 'btn-status-rejected': '❌ Reject',
-        'toast-status-review': 'Status changed: Under review', 'toast-status-accepted': 'Status changed: Accepted', 'toast-status-rejected': 'Status changed: Rejected',
-        'toast-status-error': 'Error changing status', 'stat-review': 'Under review',
-        'tab-sitestats': '📊 Statistics',
-        'stats-title': 'Live Statistics', 'loading-stats': 'Loading statistics...', 'btn-stats-refresh': '↻ Refresh',
-        'stats-editor-title': 'Manual counters', 'stats-editor-hint': 'These values are shown on the homepage in the Live Statistics block.', 'btn-stats-save': 'Save counters',
-        'stat-online': 'Online now', 'stat-visits': 'Visits', 'stat-pilots': 'Pilots', 'stat-flights': 'Flights', 'stat-flight-hours': 'Flight hours', 'stat-destinations': 'Destinations',
-        'toast-stats-saved': 'Counters updated', 'toast-stats-error': 'Failed to save counters',
-        'tab-sitemode': '🚧 Site mode',
-        'mode-title': 'Site operating mode', 'btn-mode-refresh': '↻ Refresh',
-        'mode-hint': 'Pick a mode. In Maintenance and Update modes visitors see a nice holding page, while you as administrator keep browsing the site as usual.',
-        'mode-live-name': 'Site is live', 'mode-live-desc': 'Everything is available to all visitors',
-        'mode-maint-name': 'Maintenance', 'mode-maint-desc': 'Visitors see the holding page, admin sees the site',
-        'mode-update-name': 'Update', 'mode-update-desc': 'Same, but worded around new features',
-        'mode-text-title': 'Text on the holding page', 'mode-text-hint': 'All fields are optional — leave them empty to use the default text.',
-        'mode-field-title': 'Heading', 'mode-field-message': 'Message', 'mode-field-eta': 'Estimated time back',
-        'btn-mode-save': 'Save mode', 'btn-mode-preview': '👁 Preview',
-        'mode-now-live': 'Live', 'mode-now-maintenance': 'Maintenance', 'mode-now-update': 'Update',
-        'banner-maint': 'The site is closed for maintenance. Regular visitors see the holding page.',
-        'banner-update': 'The site is in update mode. Regular visitors see the holding page.',
-        'banner-btn': 'Go live',
-        'toast-mode-saved': 'Site mode updated', 'toast-mode-error': 'Failed to save the mode',
-      }
-    };
+async function loadEvents(){const r=await fetch('/api/events');const d=await r.json();const b=document.getElementById('eventsTable');if(!d.length){b.innerHTML='<div class="empty-msg">Нет событий</div>';return}b.innerHTML='<table class="list-table"><tr><th>Дата</th><th>Название</th><th>Категория</th><th></th></tr>'+d.map(e=>'<tr><td>'+((e.date||'').slice(0,10))+'</td><td>'+(e.title||'')+'</td><td>'+(e.type||'')+'</td><td><button class="del-btn" onclick="delEvent('+e.id+')">✕</button></td></tr>').join('')+'</table>'}
+async function addEvent(){const t=document.getElementById('evTitle'),d=document.getElementById('evDate'),desc=document.getElementById('evDesc'),c=document.getElementById('evCat');await fetch('/api/events',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:t.value,date:d.value,description:desc.value,type:c.value})});t.value=d.value=desc.value=c.value='';toggleForm('evForm');loadEvents()}
+async function delEvent(id){await fetch('/api/events/'+id,{method:'DELETE'});loadEvents()}
 
-    function t(key) {
-      const lang = document.documentElement.getAttribute('lang') || 'ru';
-      return (i18n[lang] && i18n[lang][key]) || (i18n.ru[key]) || key;
-    }
+async function loadHistory(){const r=await fetch('/api/history');const d=await r.json();const b=document.getElementById('historyTable');if(!d.length){b.innerHTML='<div class="empty-msg">Нет записей</div>';return}b.innerHTML='<table class="list-table"><tr><th>Год</th><th>Заголовок</th><th></th></tr>'+d.map(h=>'<tr><td>'+(h.year||'')+'</td><td>'+(h.title||'')+'</td><td><button class="del-btn" onclick="delHist('+h.id+')">✕</button></td></tr>').join('')+'</table>'}
+async function addHistory(){const y=document.getElementById('histYear'),t=document.getElementById('histTitle'),d=document.getElementById('histDesc');await fetch('/api/history',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({year:y.value,title:t.value,description:d.value})});y.value=t.value=d.value='';toggleForm('histForm');loadHistory()}
+async function delHist(id){await fetch('/api/history/'+id,{method:'DELETE'});loadHistory()}
 
-    function applyLang() {
-      const lang = document.documentElement.getAttribute('lang') || 'ru';
-      const dict = i18n[lang] || i18n.ru;
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.dataset.i18n;
-        if (dict[key]) el.textContent = dict[key];
-      });
-      // Re-render active tab content with new language
-      if (currentTab === 'applications' && allData.length >= 0) renderApps();
-      if (currentTab === 'events' && eventsData.length >= 0) renderEvents();
-      if (currentTab === 'timeline' && timelineData.length >= 0) renderTimeline();
-      if (currentTab === 'sitestats' && siteStatsData) renderSiteStats();
-      if (siteModeData) renderSiteMode();
-      renderAppStats();
-    }
+async function loadApps(){const r=await fetch('/api/applications');const d=await r.json();const b=document.getElementById('appsTable');if(!d.length){b.innerHTML='<div class="empty-msg">Нет анкет</div>';return}const roles={pilot:'Пилот',cabin:'Бортпроводник',ground:'Наземный',tech:'Технический'};b.innerHTML='<table class="list-table"><tr><th>Ник</th><th>Роль</th><th>Возраст</th><th>Статус</th><th></th></tr>'+d.map(a=>'<tr><td>'+(a.roblox_username||'')+'</td><td>'+(roles[a.desired_role]||a.desired_role||'')+'</td><td>'+(a.age||'')+'</td><td><span class="status-badge '+(a.status||'pending')+'">'+(a.status==='accepted'?'Одобрено':a.status==='rejected'?'Отклонено':'Ожидает')+'</span></td><td><button class="ghost-btn" style="padding:4px 10px;font-size:10px;margin-right:4px" onclick="setApp('+a.id+',\'accepted\')">✓</button><button class="ghost-btn" style="padding:4px 10px;font-size:10px" onclick="setApp('+a.id+',\'rejected\')">✕</button></td></tr>').join('')+'</table>'}
+async function setApp(id,s){await fetch('/api/applications/'+id,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:s})});loadApps()}
 
-    function showToast(message, type='info') {
-      const c = document.getElementById('toastContainer');
-      const toast = document.createElement('div'); toast.className='toast '+type;
-      const icons = {success:'✓',error:'✕',info:'ℹ'};
-      toast.innerHTML = '<span style="font-size:16px;">'+icons[type]+'</span> '+message;
-      c.appendChild(toast);
-      setTimeout(()=>{ toast.style.opacity='0'; toast.style.transform='translateX(120%)'; toast.style.transition='all 0.4s ease'; setTimeout(()=>toast.remove(),400); },4000);
-    }
-    function escapeHtml(str){ if(!str) return str; return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
-    function formatDate(d){ if(!d) return '—'; return new Date(d).toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
-    function getStatusText(s){ const m={new:t('status-new'),review:t('status-review'),accepted:t('status-accepted'),rejected:t('status-rejected'),upcoming:t('status-upcoming'),past:t('status-past'),active:t('status-active'),inactive:t('status-inactive')}; return m[s]||s; }
-
-    function switchTab(tab) {
-      currentTab = tab;
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.id === 'tab-' + tab));
-      if (tab === 'events' && eventsData.length === 0) loadEvents();
-      if (tab === 'timeline' && timelineData.length === 0) loadTimeline();
-      if (tab === 'sitestats' && !siteStatsData) loadSiteStats();
-      if (tab === 'sitemode' && !siteModeData) loadSiteMode();
-    }
-
-    // ============ MODAL ============
-    function openModal(title, fields, onSave, values) {
-      const modal = document.getElementById('modal');
-      let html = '<div class="modal-header"><h3>'+escapeHtml(title)+'</h3><button class="modal-close" onclick="closeModal()">×</button></div><div class="modal-body">';
-      fields.forEach(f => {
-        const val = values && values[f.name] !== undefined ? escapeHtml(values[f.name]) : '';
-        if (f.type === 'textarea') {
-          html += '<div class="form-row"><label>'+f.label+'</label><textarea id="field-'+f.name+'" rows="3">'+val+'</textarea></div>';
-        } else if (f.type === 'select') {
-          html += '<div class="form-row"><label>'+f.label+'</label><select id="field-'+f.name+'">' + f.options.map(o => '<option value="'+o.value+'"'+(val===o.value?' selected':'')+'>'+o.label+'</option>').join('') + '</select></div>';
-        } else {
-          html += '<div class="form-row"><label>'+f.label+'</label><input type="'+(f.type||'text')+'" id="field-'+f.name+'" value="'+val+'"'+(f.placeholder?' placeholder="'+f.placeholder+'"':'')+'>'+(f.extra||'')+'</div>';
-        }
-      });
-      html += '</div><div class="modal-footer"><button class="btn-cancel" onclick="closeModal()">'+t('btn-cancel')+'</button><button class="btn-save" onclick="modalSave()">'+t('btn-save')+'</button></div>';
-      modal.innerHTML = html;
-      document.getElementById('modalOverlay').classList.add('open');
-      window._modalSave = onSave;
-    }
-    function closeModal(){ document.getElementById('modalOverlay').classList.remove('open'); window._modalSave = null; }
-    function modalSave(){ if(!window._modalSave) return; window._modalSave(); }
-    function getField(name){ return document.getElementById('field-'+name).value.trim(); }
-
-    // ============ APPLICATIONS ============
-    let loadAppsRetries = 0;
-    async function loadApplications() {
-      try {
-        const r = await fetch('/api/applications');
-        if (!r.ok) {
-          if (r.status===401) {
-            // Session expired — redirect to login with message
-            window.location='login.html?reason=session_expired';
-            return;
-          }
-          if (r.status===503) {
-            loadAppsRetries++;
-            if (loadAppsRetries > 10) {
-              document.getElementById('appsLoading').innerHTML='❌ База данных недоступна. <button onclick="loadAppsRetries=0;loadApplications()" style="background:#E3000F;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">Повторить</button> <button onclick="checkDbStatus()" style="background:#333;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">🔍 Диагностика</button>';
-              return;
-            }
-            document.getElementById('appsLoading').textContent='⏳ База данных подключается... Попытка ' + loadAppsRetries + '/10';
-            setTimeout(loadApplications, 5000);
-            return;
-          }
-          if (r.status===500) {
-            const errData = await r.json().catch(()=>({}));
-            if (errData.retry) {
-              loadAppsRetries++;
-              if (loadAppsRetries > 5) {
-                document.getElementById('appsLoading').innerHTML='❌ Ошибка БД: ' + (errData.error||'Unknown') + '. <button onclick="loadAppsRetries=0;loadApplications()" style="background:#E3000F;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">Повторить</button> <button onclick="checkDbStatus()" style="background:#333;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">🔍 Диагностика</button>';
-                return;
-              }
-              document.getElementById('appsLoading').textContent='⚠️ Ошибка БД, переподключение... Попытка ' + loadAppsRetries + '/5';
-              setTimeout(loadApplications, 3000);
-              return;
-            }
-          }
-          throw new Error('Failed: ' + r.status);
-        }
-        loadAppsRetries = 0;
-        const data = await r.json();
-        console.log('[ADMIN] Loaded', (data.applications||[]).length, 'applications');
-        if (data.user) { document.getElementById('userName').textContent = data.user.username || t('admin-badge'); document.getElementById('userAvatar').textContent = (data.user.username || 'A').charAt(0).toUpperCase(); }
-        allData = data.applications || [];
-        document.getElementById('appsLoading').style.display='none';
-        renderAppStats(); renderApps(); checkStoragePersistence();
-      } catch(e) { document.getElementById('appsLoading').innerHTML=t('error-load') + ' (' + e.message + ') <button onclick="loadApplications()" style="background:#E3000F;color:#fff;border:none;padding:4px 12px;border-radius:6px;cursor:pointer;">Повторить</button>'; }
-    }
-    // ============ STORAGE PERSISTENCE CHECK ============
-    let storageChecked = false;
-    async function checkStoragePersistence() {
-      if (storageChecked) return;
-      storageChecked = true;
-      try {
-        const r = await fetch('/api/db-status');
-        if (!r.ok) return;
-        const d = await r.json();
-        const el = document.getElementById('dbWarnBanner');
-        if (!el) return;
-        if (d.persistent) { el.style.display = 'none'; return; }
-        const ru = (document.documentElement.getAttribute('lang') || 'ru') !== 'en';
-        el.innerHTML = ru
-          ? '<strong>⚠️ Анкеты сохраняются во временное хранилище (SQLite)</strong><br>'
-            + 'Переменная <code>DATABASE_URL</code> не задана, поэтому база живёт в файле на диске сервера и обнуляется при каждом рестарте или деплое. '
-            + 'Отправленные заявки могут пропадать, а сессии сбрасываться.<br>'
-            + 'Решение: подключите PostgreSQL и укажите <code>DATABASE_URL</code> — пошаговая инструкция в <code>RENDER_SETUP.md</code>.'
-          : '<strong>⚠️ Applications are stored in ephemeral storage (SQLite)</strong><br>'
-            + '<code>DATABASE_URL</code> is not set, so the database is a local file that is wiped on every restart or deploy. '
-            + 'Submitted applications may vanish and sessions will reset.<br>'
-            + 'Fix: attach a PostgreSQL instance and set <code>DATABASE_URL</code> — step-by-step guide in <code>RENDER_SETUP.md</code>.';
-        el.style.display = 'block';
-      } catch (e) { /* non-critical */ }
-    }
-
-    // ============ DB STATUS DIAGNOSTICS ============
-    async function checkDbStatus() {
-      const modal = document.createElement('div');
-      modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:10000;display:flex;align-items:center;justify-content:center;';
-      modal.innerHTML = '<div style="background:#1a1a1a;border:1px solid #E3000F;border-radius:8px;padding:24px;max-width:500px;width:90%;color:#fff;font-family:system-ui;"><h3 style="color:#E3000F;margin:0 0 16px;">🔍 Диагностика базы данных</h3><div id="dbStatusContent" style="font-size:14px;">⏳ Загрузка...</div><button onclick="this.closest(\'div[style]\').parentElement.remove()" style="margin-top:16px;background:#E3000F;color:#fff;border:none;padding:8px 24px;border-radius:8px;cursor:pointer;">Закрыть</button></div>';
-      document.body.appendChild(modal);
-      try {
-        const r = await fetch('/api/db-status');
-        if (!r.ok) {
-          document.getElementById('dbStatusContent').innerHTML = '❌ Ошибка: HTTP ' + r.status;
-          return;
-        }
-        const data = await r.json();
-        let html = '<div style="margin-bottom:12px;"><strong>Тип БД:</strong> ' + data.dbType + '</div>';
-        html += '<div style="margin-bottom:12px;"><strong>Хранилище:</strong> <span style="color:' + (data.persistent?'#0f0':'#f00') + '">' + (data.persistent ? 'постоянное (PostgreSQL)' : 'ВРЕМЕННОЕ — данные теряются при рестарте') + '</span></div>';
-        html += '<div style="margin-bottom:12px;"><strong>DATABASE_URL:</strong> <span style="color:' + (data.databaseUrlSet?'#0f0':'#f00') + '">' + (data.databaseUrlSet ? 'задана' : 'не задана') + '</span></div>';
-        html += '<div style="margin-bottom:12px;"><strong>Сессии:</strong> ' + (data.sessionStore === 'postgres' ? 'в БД (сохраняются)' : 'в памяти (сбрасываются)') + '</div>';
-        html += '<div style="margin-bottom:12px;"><strong>DB Ready:</strong> <span style="color:' + (data.dbReady?'#0f0':'#f00') + '">' + data.dbReady + '</span></div>';
-        html += '<div style="margin-bottom:12px;"><strong>Reconnect attempts:</strong> ' + data.pgReconnectAttempts + '</div>';
-        html += '<div style="margin-bottom:16px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px;"><strong>📊 Количество записей:</strong><br>';
-        for (const [table, count] of Object.entries(data.counts || {})) {
-          const color = typeof count === 'number' ? (count > 0 ? '#0f0' : '#ff0') : '#f00';
-          html += '&nbsp;&nbsp;' + table + ': <span style="color:' + color + '">' + count + '</span><br>';
-        }
-        html += '</div>';
-        if (data.latestApplication) {
-          html += '<div style="margin-bottom:8px;padding:8px;background:rgba(227,0,15,0.1);border-radius:8px;"><strong>📋 Последняя анкета:</strong><br>ID: ' + data.latestApplication.id + ' | ' + data.latestApplication.roblox_name + ' | ' + data.latestApplication.status + ' | ' + data.latestApplication.created_at + '</div>';
-        } else {
-          html += '<div style="color:#ff0;">⚠️ Нет анкет в базе данных</div>';
-        }
-        html += '<div style="margin-top:8px;font-size:12px;color:#888;">Время: ' + data.timestamp + '</div>';
-        document.getElementById('dbStatusContent').innerHTML = html;
-      } catch(e) {
-        document.getElementById('dbStatusContent').innerHTML = '❌ Ошибка: ' + e.message;
-      }
-    }
-    function renderAppStats() {
-      document.getElementById('totalCount').textContent = allData.length;
-      document.getElementById('newCount').textContent = allData.filter(a=>(a.status||'new')==='new').length;
-      document.getElementById('acceptedCount').textContent = allData.filter(a=>a.status==='accepted').length;
-      document.getElementById('rejectedCount').textContent = allData.filter(a=>a.status==='rejected').length;
-      const revEl = document.getElementById('reviewCount'); if(revEl) revEl.textContent = allData.filter(a=>a.status==='review').length;
-    }
-    function setAppFilter(f){ appFilter=f; document.querySelectorAll('.filters-bar .filter-btn[data-filter]').forEach(b=>b.classList.toggle('active',b.dataset.filter===f)); renderApps(); }
-    function renderApps() {
-      const filtered = allData.filter(a => (appFilter==='all' || (a.status||'new')===appFilter));
-      const tbody = document.getElementById('appsBody');
-      if (!filtered.length) { document.getElementById('appsTable').style.display='none'; document.getElementById('appsEmpty').style.display='block'; return; }
-      document.getElementById('appsTable').style.display='table'; document.getElementById('appsEmpty').style.display='none';
-      tbody.innerHTML = filtered.map(a => `
-        <tr>
-          <td><button class="expand-btn" onclick="toggleAppDetail(${a.id})">▶</button></td>
-          <td><div class="cell-name">${escapeHtml(a.roblox_name)||'—'}</div></td>
-          <td><div class="cell-muted">${escapeHtml(a.telegram)||'—'}</div></td>
-          <td class="cell-small">${escapeHtml(a.real_age)||'—'}</td>
-          <td class="cell-small">${escapeHtml(a.role)||'—'}</td>
-          <td><span class="status-badge status-${a.status||'new'}">${getStatusText(a.status)}</span></td>
-          <td class="cell-small">${formatDate(a.created_at)}</td>
-        </tr>
-        <tr class="detail-row" id="app-detail-${a.id}" style="display:none;">
-          <td colspan="7" style="background:var(--gray-100);padding:16px 24px;">
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;font-size:12px;">
-              <div><strong style="color:var(--gray-500)">${t('app-detail-name')}:</strong> ${escapeHtml(a.roblox_name)||'—'}</div>
-              <div><strong style="color:var(--gray-500)">${t('app-detail-char-age')}:</strong> ${escapeHtml(a.char_age)||'—'}</div>
-              <div><strong style="color:var(--gray-500)">${t('app-detail-real-age')}:</strong> ${escapeHtml(a.real_age)||'—'}</div>
-              <div><strong style="color:var(--gray-500)">${t('app-detail-role')}:</strong> ${escapeHtml(a.role)||'—'}</div>
-              <div><strong style="color:var(--gray-500)">${t('app-detail-online')}:</strong> ${escapeHtml(a.online_time)||'—'}</div>
-              <div><strong style="color:var(--gray-500)">${t('app-detail-flights')}:</strong> ${escapeHtml(a.flight_minutes)||'—'}</div>
-              <div style="grid-column:span 3"><strong style="color:var(--gray-500)">${t('app-detail-experience')}:</strong><br>${escapeHtml(a.experience)||'—'}</div>
-              <div style="grid-column:span 3"><strong style="color:var(--gray-500)">${t('app-detail-why')}:</strong><br>${escapeHtml(a.why_swiss)||'—'}</div>
-              <div style="grid-column:span 3"><strong style="color:var(--gray-500)">${t('app-detail-about')}:</strong><br>${escapeHtml(a.about)||'—'}</div>
-            </div>
-            <div class="status-action-btns">
-              <button class="status-action-btn btn-review" onclick="updateAppStatus(${a.id},'review')"${a.status==='review'?' disabled':''}>${t('btn-status-review')}</button>
-              <button class="status-action-btn btn-accept" onclick="updateAppStatus(${a.id},'accepted')"${a.status==='accepted'?' disabled':''}>${t('btn-status-accepted')}</button>
-              <button class="status-action-btn btn-reject" onclick="updateAppStatus(${a.id},'rejected')"${a.status==='rejected'?' disabled':''}>${t('btn-status-rejected')}</button>
-            </div>
-          </td>
-        </tr>
-      `).join('');
-    }
-    function toggleAppDetail(id){ const row=document.getElementById('app-detail-'+id); row.style.display = row.style.display==='none'?'table-row':'none'; }
-
-    async function updateAppStatus(id, newStatus) {
-      try {
-        const r = await fetch('/api/applications/' + id, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ status: newStatus })
-        });
-        if (r.ok) {
-          const app = allData.find(a => a.id === id);
-          if (app) app.status = newStatus;
-          renderAppStats(); renderApps();
-          const toastKey = 'toast-status-' + newStatus;
-          showToast(t(toastKey) || ('Status: ' + newStatus), 'success');
-        } else {
-          showToast(t('toast-status-error'), 'error');
-        }
-      } catch(e) {
-        showToast(t('toast-status-error'), 'error');
-      }
-    }
-
-    // ============ SITE STATS (BETA) ============
-    let siteStatsData = null;
-    const STAT_FIELDS = ['visits','pilots','flights','flight_hours','destinations'];
-
-    async function loadSiteStats() {
-      const loading = document.getElementById('siteStatsLoading');
-      const wrap = document.getElementById('siteStatsWrap');
-      loading.style.display = 'block';
-      loading.textContent = t('loading-stats');
-      try {
-        const r = await fetch('/api/admin/site-stats');
-        if (r.status === 401) { window.location.href = 'login.html'; return; }
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        siteStatsData = await r.json();
-        loading.style.display = 'none';
-        wrap.style.display = 'block';
-        renderSiteStats();
-      } catch (e) {
-        loading.style.display = 'block';
-        loading.textContent = t('error-load') + ' (' + e.message + ')';
-      }
-    }
-
-    function renderSiteStats() {
-      if (!siteStatsData) return;
-      const s = siteStatsData.stats || {};
-      const icons = { visits:'\ud83d\udc41\ufe0f', pilots:'\ud83d\udc68\u200d\u2708\ufe0f', flights:'\u2708\ufe0f', flight_hours:'\u23f1\ufe0f', destinations:'\ud83d\uddfa\ufe0f' };
-      const live = document.getElementById('siteStatsLive');
-      live.innerHTML =
-        '<div class="stat-card"><span class="stat-icon">\ud83d\udfe2</span><div class="stat-value">' + (siteStatsData.online || 0) + '</div><div class="stat-label">' + t('stat-online') + '</div></div>' +
-        STAT_FIELDS.map(function(k){
-          return '<div class="stat-card"><span class="stat-icon">' + icons[k] + '</span><div class="stat-value">' + (s[k] || 0) + '</div><div class="stat-label">' + t('stat-' + k.replace('_','-')) + '</div></div>';
-        }).join('');
-
-      document.getElementById('siteStatsForm').innerHTML = STAT_FIELDS.map(function(k){
-        return '<div class="form-row"><label>' + icons[k] + ' ' + t('stat-' + k.replace('_','-')) + '</label>' +
-               '<input type="number" min="0" id="stat-field-' + k + '" value="' + (s[k] !== undefined && s[k] !== null ? s[k] : 0) + '"></div>';
-      }).join('');
-
-    }
-
-    async function saveSiteStats() {
-      const payload = {};
-      STAT_FIELDS.forEach(function(k){
-        const el = document.getElementById('stat-field-' + k);
-        if (el && el.value !== '') payload[k] = parseInt(el.value, 10) || 0;
-      });
-      try {
-        const r = await fetch('/api/admin/site-stats', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        if (r.status === 401) { window.location.href = 'login.html'; return; }
-        const d = await r.json();
-        if (r.ok && d.success) {
-          if (siteStatsData) siteStatsData.stats = d.stats || siteStatsData.stats;
-          renderSiteStats();
-          showToast(t('toast-stats-saved'), 'success');
-        } else {
-          showToast(t('toast-stats-error'), 'error');
-        }
-      } catch (e) {
-        showToast(t('toast-stats-error'), 'error');
-      }
-    }
-
-
-    // ============ EVENTS ============
-    async function loadEvents() {
-      try { const r=await fetch('/api/admin/events'); if(r.status===401){window.location.href='login.html';return;} const d=await r.json(); eventsData=d.events||[]; document.getElementById('eventsLoading').style.display='none'; renderEvents(); } catch(e){ document.getElementById('eventsLoading').textContent=t('error-load'); }
-    }
-    function renderEvents() {
-      const tbody=document.getElementById('eventsBody');
-      if(!eventsData.length){ document.getElementById('eventsTable').style.display='none'; document.getElementById('eventsEmpty').style.display='block'; return; }
-      document.getElementById('eventsTable').style.display='table'; document.getElementById('eventsEmpty').style.display='none';
-      tbody.innerHTML = eventsData.map(e => `
-        <tr>
-          <td><div class="cell-name">${escapeHtml(e.title)}</div><div class="cell-muted">${escapeHtml(e.description||'').substring(0,60)}</div></td>
-          <td class="cell-small">${escapeHtml(e.date)}</td>
-          <td class="cell-small">${escapeHtml(e.time)||'—'}</td>
-          <td class="cell-small">${escapeHtml(e.location)||'—'}</td>
-          <td>${e.image_url ? '<img src="'+e.image_url+'" style="max-width:60px;max-height:40px;border-radius:4px;object-fit:cover" onerror="this.style.display=\'none\'">' : '—'}</td>
-          <td><span class="status-badge status-${e.status||'upcoming'}">${getStatusText(e.status)}</span></td>
-          <td><div class="cell-actions"><button class="action-btn" onclick="editEvent(${e.id})">${t('btn-edit')}</button><button class="action-btn delete" onclick="deleteEvent(${e.id})">${t('btn-delete')}</button></div></td>
-        </tr>
-      `).join('');
-    }
-    async function generateEventImage() {
-      const title = getField('title');
-      const desc = getField('description');
-      const location = getField('location');
-      if(!title) { showToast(t('error-required'),'error'); return; }
-      const btn = document.getElementById('aiImageBtn');
-      if(btn) { btn.disabled=true; btn.textContent=t('ai-generating'); }
-      try {
-        const prompt = `Aviation event banner: ${title}${location ? ', location: '+location : ''}${desc ? ', '+desc.substring(0,100) : ''}, Swiss Airlines virtual airline, red and white Swiss branding, professional aviation photography style, scenic airport or sky background, high quality, 16:9 aspect`;
-        const r = await fetch('/api/admin/generate-event-image',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
-        const d = await r.json();
-        if(r.ok && d.image_url) { document.getElementById('field-image_url').value = d.image_url; showToast(t('ai-generated'),'success'); }
-        else showToast(d.error||t('ai-error'),'error');
-      } catch(e){ showToast(t('ai-error'),'error'); }
-      if(btn) { btn.disabled=false; btn.textContent=t('btn-ai-image'); }
-    }
-    function openEventModal(id){
-      const e = id ? eventsData.find(x=>x.id===id) : null;
-      openModal(id?t('modal-edit-title'):t('modal-add-title'), [
-        {name:'title',label:t('label-title'),type:'text'},{name:'date',label:t('label-date'),type:'text',placeholder:'2026-08-20'},
-        {name:'time',label:t('label-time'),type:'text',placeholder:'19:00'},{name:'location',label:t('label-location'),type:'text'},
-        {name:'status',label:t('label-status'),type:'select',options:[{value:'upcoming',label:t('status-upcoming')},{value:'past',label:t('status-past')}]},
-        {name:'description',label:t('label-description'),type:'textarea'},{name:'image_url',label:t('label-image-url'),type:'text',extra:`<button id="aiImageBtn" type="button" onclick="generateEventImage()" style="margin-top:4px;padding:6px 14px;background:var(--swiss-red);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;">${t('btn-ai-image')}</button>`}
-      ], async ()=>{
-        const payload = {title:getField('title'),date:getField('date'),time:getField('time'),location:getField('location'),status:getField('status'),description:getField('description'),image_url:getField('image_url')};
-        if(!payload.title||!payload.date){ showToast(t('error-required'),'error'); return; }
-        try { const r=await fetch('/api/admin/events'+(id?'/'+id:''),{method:id?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); const d=await r.json(); if(r.ok&&d.success){ showToast(id?t('toast-updated'):t('toast-added'),'success'); closeModal(); loadEvents(); } else showToast(d.error||'Error','error'); } catch(e){ showToast(t('error-connection'),'error'); }
-      }, e||{});
-    }
-    function editEvent(id){ openEventModal(id); }
-    async function deleteEvent(id){ if(!confirm(t('confirm-delete'))) return; try { const r=await fetch('/api/admin/events/'+id,{method:'DELETE'}); const d=await r.json(); if(r.ok&&d.success){ showToast(t('toast-deleted'),'success'); loadEvents(); } else showToast(d.error||'Error','error'); } catch(e){ showToast(t('error-connection'),'error'); } }
-
-    // ============ TIMELINE (read-only) ============
-    async function loadTimeline() {
-      try { const r=await fetch('/api/admin/timeline'); const d=await r.json(); timelineData=d.timeline||[]; document.getElementById('timelineLoading').style.display='none'; renderTimeline(); } catch(e){ document.getElementById('timelineLoading').textContent=t('error-load'); }
-    }
-    function renderTimeline() {
-      const tbody=document.getElementById('timelineBody');
-      if(!timelineData.length){ document.getElementById('timelineTable').style.display='none'; document.getElementById('timelineEmpty').style.display='block'; return; }
-      document.getElementById('timelineTable').style.display='table'; document.getElementById('timelineEmpty').style.display='none';
-      tbody.innerHTML = timelineData.map(tl => `
-        <tr>
-          <td class="cell-name">${escapeHtml(tl.year)}</td>
-          <td><div class="cell-name">${escapeHtml(tl.title)}</div></td>
-          <td class="cell-small">${escapeHtml(tl.description)||'—'}</td>
-          <td class="cell-small">${escapeHtml(tl.icon)||'—'}</td>
-        </tr>
-      `).join('');
-    }
-
-    // ============ EXPORT / UTILS ============
-    function exportCSV() {
-      const headers = ['ID','Roblox Name','Char Age','Real Age','Experience','Role','Online Time','Why Swiss','Rules','FRO','Flight Minutes','Telegram','About','Status','Date'];
-      const rows = allData.map(a => [a.id, a.roblox_name, a.char_age, a.real_age, a.experience, a.role, a.online_time, a.why_swiss, a.rules, a.fro, a.flight_minutes, a.telegram, a.about, getStatusText(a.status), a.created_at]);
-      let csv = '\uFEFF' + headers.join(',') + '\n';
-      rows.forEach(r => { csv += r.map(v => '"'+String(v||'').replace(/"/g,'""')+'"').join(',') + '\n'; });
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = 'swiss_airlines_'+new Date().toISOString().slice(0,10)+'.csv'; a.click(); URL.revokeObjectURL(url);
-      showToast(t('csv-downloaded'), 'success');
-    }
-    async function logout() { try { await fetch('/api/logout',{method:'POST'}); } catch(e){} window.location='login.html'; }
-    function toggleTheme() { /* always dark */ }
-    function toggleLang() { const c=document.documentElement.getAttribute('lang') || 'ru'; const n=c==='ru'?'en':'ru'; document.documentElement.setAttribute('lang',n); localStorage.setItem('swiss-lang',n); document.getElementById('langToggle').textContent=n==='ru'?'EN':'RU'; applyLang(); }
-
-    // ============ INIT ============
-    document.documentElement.setAttribute('data-theme','dark');
-    const savedLang=localStorage.getItem('swiss-lang'); if(savedLang){ document.documentElement.setAttribute('lang',savedLang); document.getElementById('langToggle').textContent=savedLang==='ru'?'EN':'RU'; }
-    // ============ SITE MODE ============
-    function selectMode(mode) {
-      selectedMode = mode;
-      ['live','maintenance','update'].forEach(function(m){
-        var c = document.getElementById('modeCard-' + m);
-        if (c) c.classList.toggle('selected', m === mode);
-      });
-    }
-
-    function renderModeBanner() {
-      var banner = document.getElementById('modeBanner');
-      if (!banner) return;
-      var mode = siteModeData ? siteModeData.mode : 'live';
-      if (mode === 'live') { banner.style.display = 'none'; banner.innerHTML = ''; return; }
-      var txt = mode === 'update' ? t('banner-update') : t('banner-maint');
-      banner.innerHTML = '<span class=\"mb-dot\"></span><span>' + (mode === 'update' ? '\uD83D\uDE80' : '\u2699\uFE0F') +
-        ' <b>' + escapeHtml(t(mode === 'update' ? 'mode-now-update' : 'mode-now-maintenance')) + '.</b> ' +
-        escapeHtml(txt) + '</span>' +
-        '<button class=\"mb-btn\" onclick=\"quickGoLive()\">' + escapeHtml(t('banner-btn')) + '</button>';
-      banner.style.display = 'flex';
-    }
-
-    function renderSiteMode() {
-      if (!siteModeData) return;
-      selectMode(siteModeData.mode || 'live');
-      var ti = document.getElementById('modeTitle');
-      var me = document.getElementById('modeMessage');
-      var et = document.getElementById('modeEta');
-      if (ti) ti.value = siteModeData.title || '';
-      if (me) me.value = siteModeData.message || '';
-      if (et) et.value = siteModeData.eta || '';
-      var pill = document.getElementById('modeNowPill');
-      if (pill) {
-        var m = siteModeData.mode || 'live';
-        pill.textContent = (m === 'live' ? '\uD83D\uDFE2 ' : m === 'update' ? '\uD83D\uDE80 ' : '\u2699\uFE0F ') + t('mode-now-' + m);
-        pill.style.color = m === 'live' ? '' : 'var(--swiss-red)';
-        pill.style.borderColor = m === 'live' ? '' : 'var(--swiss-red)';
-      }
-      renderModeBanner();
-    }
-
-    async function loadSiteMode() {
-      try {
-        var r = await fetch('/api/site-mode', { cache: 'no-store' });
-        var d = await r.json();
-        siteModeData = {
-          mode: d.mode || 'live',
-          title: d.title || '',
-          message: d.message || '',
-          eta: d.eta || ''
-        };
-        renderSiteMode();
-      } catch (e) {
-        console.error('loadSiteMode error:', e);
-        showToast(t('error-load'), 'error');
-      }
-    }
-
-    async function putSiteMode(payload) {
-      var r = await fetch('/api/admin/site-mode', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      var d = await r.json().catch(function(){ return {}; });
-      if (!r.ok || !d.success) throw new Error(d.error || 'save failed');
-      siteModeData = { mode: d.mode, title: d.title || '', message: d.message || '', eta: d.eta || '' };
-      renderSiteMode();
-      return d;
-    }
-
-    async function saveSiteMode() {
-      try {
-        await putSiteMode({
-          mode: selectedMode,
-          title: (document.getElementById('modeTitle') || {}).value || '',
-          message: (document.getElementById('modeMessage') || {}).value || '',
-          eta: (document.getElementById('modeEta') || {}).value || ''
-        });
-        showToast(t('toast-mode-saved'), 'success');
-      } catch (e) {
-        console.error('saveSiteMode error:', e);
-        showToast(t('toast-mode-error'), 'error');
-      }
-    }
-
-    async function quickGoLive() {
-      try {
-        await putSiteMode({ mode: 'live' });
-        showToast(t('toast-mode-saved'), 'success');
-      } catch (e) {
-        showToast(t('toast-mode-error'), 'error');
-      }
-    }
-
-    async function checkAuth() {
-      try {
-        const r = await fetch('/api/me');
-        if (!r.ok) { window.location.href = 'login.html?reason=not_auth'; return false; }
-        const d = await r.json();
-        if (!d.isAdmin) { window.location.href = 'login.html?reason=not_admin'; return false; }
-        const avatar = document.getElementById('userAvatar');
-        const nameEl = document.getElementById('userName');
-        if (d.username && avatar) avatar.textContent = d.username.charAt(0).toUpperCase();
-        if (d.username && nameEl) nameEl.textContent = d.username;
-        return true;
-      } catch(e) {
-        console.error('checkAuth error:', e);
-        window.location.href = 'login.html?reason=error';
-        return false;
-      }
-    }
-    checkAuth().then(ok => { if (ok) { loadApplications(); loadSiteMode(); } });
-  </script>
-
-
-  <div style="position:fixed;left:0;right:0;bottom:0;height:3px;z-index:6;pointer-events:none;background:linear-gradient(90deg,#E3000F,#b8000c,#E3000F);background-size:200% 100%;animation:swissBar 10s linear infinite;"></div>
-  <style>@keyframes swissBar{from{background-position:0 0}to{background-position:200% 0}}</style>
+loadEvents();
+</script>
 </body>
 </html>

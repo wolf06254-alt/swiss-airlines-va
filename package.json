@@ -1,23 +1,17 @@
 {
-  "name": "swiss-airlines-site",
-  "version": "1.1.0",
-  "description": "Swiss Airlines - Virtual Airline Application System",
+  "name": "swiss-airlines-va",
+  "version": "1.0.0",
+  "description": "Swiss Airlines Virtual Airline Website",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "start": "node server.js"
   },
-  "keywords": ["swiss-airlines", "virtual-airline", "ptfs"],
-  "author": "Swiss Airlines",
-  "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2",
-    "express-session": "^1.17.3",
-    "dotenv": "^16.3.1",
-    "body-parser": "^1.20.2",
-    "sqlite3": "^5.1.6",
-    "bcryptjs": "^2.4.3",
-    "pg": "^8.11.3",
-    "connect-pg-simple": "^9.0.1"
+    "express": "^4.21.0",
+    "express-session": "^1.18.0",
+    "bcrypt": "^5.1.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
