@@ -113,12 +113,32 @@ function readDB() {
   try {
     if (!fs.existsSync(DB_PATH)) {
       fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
-      fs.writeFileSync(DB_PATH, JSON.stringify({ events: [], history: [], applications: [], users: [{ username: 'Gregory', password: bcrypt.hashSync('123789', 10), role: 'admin' }] }));
+      fs.writeFileSync(DB_PATH, JSON.stringify({
+        events: [], history: [], applications: [], flights: [],
+        siteBinding: { url: '', enabled: false, updated_at: null },
+        users: [{ username: 'Gregory', password: bcrypt.hashSync('123789', 10), role: 'admin' }]
+      }));
     }
-    return JSON.parse(fs.readFileSync(DB_PATH, 'utf8'));
-  } catch(e) { return { events: [], history: [], applications: [], users: [{ username: 'Gregory', password: bcrypt.hashSync('123789', 10), role: 'admin' }] }; }
+    const db = JSON.parse(fs.readFileSync(DB_PATH, 'utf8'));
+    if (!Array.isArray(db.flights)) db.flights = [];
+    if (!db.siteBinding) db.siteBinding = { url: '', enabled: false, updated_at: null };
+    return db;
+  } catch(e) {
+    return {
+      events: [], history: [], applications: [], flights: [],
+      siteBinding: { url: '', enabled: false, updated_at: null },
+      users: [{ username: 'Gregory', password: bcrypt.hashSync('123789', 10), role: 'admin' }]
+    };
+  }
 }
 function writeDB(db) { fs.mkdirSync(path.dirname(DB_PATH), { recursive: true }); fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2)); }
+function isAdmin(req) { return req.session.user && req.session.user.role === 'admin'; }
+function validateHttpUrl(value) {
+  try {
+    const url = new URL(String(value).trim());
+    return (url.protocol === 'http:' || url.protocol === 'https:') && !url.username && !url.password;
+  } catch (e) { return false; }
+}
 
 // ─── Auth API ───
 app.post('/api/login', (req, res) => {
@@ -193,6 +213,86 @@ app.patch('/api/applications/:id', (req, res) => {
   db.applications[idx] = { ...db.applications[idx], ...req.body };
   writeDB(db);
   res.json(db.applications[idx]);
+});
+
+// ─── Flight status binding API ───
+const FLIGHT_STATUSES = ['skyboard', 'approaching', 'takeoff', 'preparing_landing', 'check_in', 'boarding', 'departed', 'landed', 'cancelled'];
+
+app.get('/api/site-binding', (req, res) => {
+  if (!isAdmin(req)) return res.status(403).json({ error: 'Доступ запрещён' });
+  const { url, enabled, updated_at } = readDB().siteBinding;
+  res.json({ url, enabled, updated_at });
+});
+app.put('/api/site-binding', (req, res) => {
+  if (!isAdmin(req)) return res.status(403).json({ error: 'Доступ запрещён' });
+  const url = String(req.body.url || '').trim();
+  const enabled = req.body.enabled !== false;
+  if (!validateHttpUrl(url)) {
+    return res.status(400).json({ error: 'Укажите корректную ссылку с протоколом http:// или https://' });
+  }
+  const db = readDB();
+  db.siteBinding = { url, enabled, updated_at: new Date().toISOString() };
+  writeDB(db);
+  res.json(db.siteBinding);
+});
+
+// Public, read-only contract for the linked site to poll.
+app.get('/api/flights/statuses', (req, res) => {
+  const db = readDB();
+  res.json({
+    updated_at: new Date().toISOString(),
+    binding: db.siteBinding.enabled ? { url: db.siteBinding.url } : null,
+    statuses: db.siteBinding.enabled ? db.flights : []
+  });
+});
+app.get('/api/flight-statuses', (req, res) => res.redirect(308, '/api/flights/statuses'));
+
+app.get('/api/flights', (req, res) => {
+  if (!isAdmin(req)) return res.status(403).json({ error: 'Доступ запрещён' });
+  res.json(readDB().flights);
+});
+app.post('/api/flights', (req, res) => {
+  if (!isAdmin(req)) return res.status(403).json({ error: 'Доступ запрещён' });
+  const flightNumber = String(req.body.flight_number || '').trim();
+  const status = String(req.body.status || '').trim();
+  if (!flightNumber || !FLIGHT_STATUSES.includes(status)) {
+    return res.status(400).json({ error: 'Номер рейса и допустимый статус обязательны' });
+  }
+  const db = readDB();
+  const flight = {
+    id: Date.now(),
+    flight_number: flightNumber,
+    departure: String(req.body.departure || '').trim(),
+    arrival: String(req.body.arrival || '').trim(),
+    status,
+    updated_at: new Date().toISOString()
+  };
+  db.flights.push(flight);
+  writeDB(db);
+  res.status(201).json(flight);
+});
+app.patch('/api/flights/:id', (req, res) => {
+  if (!isAdmin(req)) return res.status(403).json({ error: 'Доступ запрещён' });
+  const db = readDB();
+  const idx = db.flights.findIndex(f => f.id == req.params.id);
+  if (idx < 0) return res.status(404).json({ error: 'Рейс не найден' });
+  if (req.body.status !== undefined && !FLIGHT_STATUSES.includes(req.body.status)) {
+    return res.status(400).json({ error: 'Недопустимый статус рейса' });
+  }
+  db.flights[idx] = {
+    ...db.flights[idx],
+    ...req.body,
+    updated_at: new Date().toISOString()
+  };
+  writeDB(db);
+  res.json(db.flights[idx]);
+});
+app.delete('/api/flights/:id', (req, res) => {
+  if (!isAdmin(req)) return res.status(403).json({ error: 'Доступ запрещён' });
+  const db = readDB();
+  db.flights = db.flights.filter(f => f.id != req.params.id);
+  writeDB(db);
+  res.json({ ok: true });
 });
 
 // ─── Start ───

@@ -39,6 +39,9 @@
 .del-btn{background:none;border:0;color:#555;cursor:pointer;font-size:14px;transition:color .2s}.del-btn:hover{color:#df0018}
 .empty-msg{text-align:center;padding:40px;color:rgba(255,255,255,.3);font-size:13px}
 .panel{display:none}.panel.active{display:block}
+.hint{font-size:12px;color:#888;line-height:1.6;margin:8px 0 18px}.feed-url{display:block;background:#0a0a0a;border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:10px 12px;color:#df0018;font:12px monospace;word-break:break-all;margin:8px 0 20px}
+.form-message{font-size:12px;margin-top:12px;min-height:18px}.form-message.success{color:#22c55e}.form-message.error{color:#ef4444}
+.binding-card{background:#111;border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:24px;margin-bottom:24px;max-width:760px}
 @media(max-width:768px){.sidebar{display:none}.content{padding:20px}.form-row{grid-template-columns:1fr}}
 </style>
 </head>
@@ -63,6 +66,10 @@
     <div class="sidebar-item" data-panel="apps" onclick="switchPanel('apps')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
       Анкеты
+    </div>
+    <div class="sidebar-item" data-panel="binding" onclick="switchPanel('binding')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 13a5 5 0 007.54.54l2-2a5 5 0 00-7.07-7.07l-1.14 1.14"/><path d="M14 11a5 5 0 00-7.54-.54l-2 2a5 5 0 007.07 7.07l1.14-1.14"/></svg>
+      Привязка
     </div>
   </div>
   <div class="content">
@@ -107,12 +114,35 @@
       <div class="section-title">Анкеты</div>
       <div id="appsTable"></div>
     </div>
+    <div class="panel" id="panel-binding">
+      <div class="section-title">Привязка сайта к рейсам</div>
+      <div class="binding-card">
+        <div class="hint">Укажите адрес сайта или его API, который связан с этой системой. Система выдаёт актуальные статусы рейсов в JSON и не отправляет запросы на внешний адрес автоматически.</div>
+        <div class="form-group"><label for="bindingUrl">Ссылка на сайт / API</label><input id="bindingUrl" type="url" placeholder="https://example.com/api/flights"></div>
+        <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#aaa"><input id="bindingEnabled" type="checkbox"> Включить выдачу статусов</label>
+        <div class="btn-row"><button class="red-btn" onclick="saveBinding()">Сохранить привязку</button></div>
+        <div id="bindingMessage" class="form-message"></div>
+        <div class="hint" style="margin-top:22px">Endpoint для сайта (только чтение):</div>
+        <code class="feed-url" id="feedUrl"></code>
+        <div class="hint">Ответ содержит <code>statuses</code> с полями <code>flight_number</code>, <code>departure</code>, <code>arrival</code>, <code>status</code>, <code>updated_at</code>. Опросите endpoint с интервалом 15–60 секунд.</div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div class="section-title" style="font-size:18px;margin:0">Статусы рейсов</div>
+        <button class="red-btn" onclick="toggleForm('flightForm')">+ Добавить рейс</button>
+      </div>
+      <div class="add-form" id="flightForm">
+        <div class="form-row"><div class="form-group"><label>Номер рейса</label><input id="flightNumber" placeholder="SWR-101"></div><div class="form-group"><label>Статус</label><select id="flightStatus"></select></div></div>
+        <div class="form-row"><div class="form-group"><label>Вылет</label><input id="flightDeparture" placeholder="ZRH"></div><div class="form-group"><label>Прилёт</label><input id="flightArrival" placeholder="GVA"></div></div>
+        <div class="btn-row"><button class="ghost-btn" onclick="toggleForm('flightForm')">Отмена</button><button class="red-btn" onclick="addFlight()">Сохранить</button></div>
+      </div>
+      <div id="flightsTable"></div>
+    </div>
   </div>
 </div>
 <script>
 (async()=>{try{const r=await fetch('/api/me');if(!r.ok)return location='/login';const u=await r.json();document.getElementById('topUser').textContent=u.username}catch(e){location='/login'}})();
 
-function switchPanel(n){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.sidebar-item').forEach(s=>s.classList.remove('active'));document.getElementById('panel-'+n).classList.add('active');document.querySelector('[data-panel="'+n+'"]').classList.add('active');if(n==='events')loadEvents();if(n==='history')loadHistory();if(n==='apps')loadApps()}
+function switchPanel(n){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.sidebar-item').forEach(s=>s.classList.remove('active'));document.getElementById('panel-'+n).classList.add('active');document.querySelector('[data-panel="'+n+'"]').classList.add('active');if(n==='events')loadEvents();if(n==='history')loadHistory();if(n==='apps')loadApps();if(n==='binding'){loadBinding();loadFlights()}}
 function toggleForm(id){document.getElementById(id).classList.toggle('open')}
 
 async function loadEvents(){const r=await fetch('/api/events');const d=await r.json();const b=document.getElementById('eventsTable');if(!d.length){b.innerHTML='<div class="empty-msg">Нет событий</div>';return}b.innerHTML='<table class="list-table"><tr><th>Дата</th><th>Название</th><th>Категория</th><th></th></tr>'+d.map(e=>'<tr><td>'+((e.date||'').slice(0,10))+'</td><td>'+(e.title||'')+'</td><td>'+(e.type||'')+'</td><td><button class="del-btn" onclick="delEvent('+e.id+')">✕</button></td></tr>').join('')+'</table>'}
@@ -125,6 +155,15 @@ async function delHist(id){await fetch('/api/history/'+id,{method:'DELETE'});loa
 
 async function loadApps(){const r=await fetch('/api/applications');const d=await r.json();const b=document.getElementById('appsTable');if(!d.length){b.innerHTML='<div class="empty-msg">Нет анкет</div>';return}const roles={pilot:'Пилот',cabin:'Бортпроводник',ground:'Наземный',tech:'Технический'};b.innerHTML='<table class="list-table"><tr><th>Ник</th><th>Роль</th><th>Возраст</th><th>Статус</th><th></th></tr>'+d.map(a=>'<tr><td>'+(a.roblox_username||'')+'</td><td>'+(roles[a.desired_role]||a.desired_role||'')+'</td><td>'+(a.age||'')+'</td><td><span class="status-badge '+(a.status||'pending')+'">'+(a.status==='accepted'?'Одобрено':a.status==='rejected'?'Отклонено':'Ожидает')+'</span></td><td><button class="ghost-btn" style="padding:4px 10px;font-size:10px;margin-right:4px" onclick="setApp('+a.id+',\'accepted\')">✓</button><button class="ghost-btn" style="padding:4px 10px;font-size:10px" onclick="setApp('+a.id+',\'rejected\')">✕</button></td></tr>').join('')+'</table>'}
 async function setApp(id,s){await fetch('/api/applications/'+id,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:s})});loadApps()}
+
+const flightStatuses={skyboard:'Табличка в небе',approaching:'Подлетает',takeoff:'Взлёт',preparing_landing:'Готовится к посадке',check_in:'Регистрация',boarding:'Посадка',departed:'Вылетел',landed:'Приземлился',cancelled:'Отменён'};
+document.getElementById('flightStatus').innerHTML=Object.entries(flightStatuses).map(([value,label])=>'<option value="'+value+'">'+label+'</option>').join('');
+async function loadBinding(){const r=await fetch('/api/site-binding');if(!r.ok)return;const b=await r.json();document.getElementById('bindingUrl').value=b.url||'';document.getElementById('bindingEnabled').checked=Boolean(b.enabled);document.getElementById('feedUrl').textContent=location.origin+'/api/flights/statuses'}
+async function saveBinding(){const msg=document.getElementById('bindingMessage');const url=document.getElementById('bindingUrl').value.trim();if(!/^https?:\/\/[^\\s]+$/i.test(url)){msg.className='form-message error';msg.textContent='Введите корректную ссылку с http:// или https://';return}const r=await fetch('/api/site-binding',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({url,enabled:document.getElementById('bindingEnabled').checked})});const d=await r.json();msg.className='form-message '+(r.ok?'success':'error');msg.textContent=r.ok?'Привязка сохранена':(d.error||'Не удалось сохранить');}
+async function loadFlights(){const r=await fetch('/api/flights');const d=await r.json();const b=document.getElementById('flightsTable');if(!d.length){b.innerHTML='<div class="empty-msg">Рейсы ещё не добавлены</div>';return}b.innerHTML='<table class="list-table"><tr><th>Рейс</th><th>Маршрут</th><th>Статус</th><th></th></tr>'+d.map(f=>'<tr><td>'+esc(f.flight_number)+'</td><td>'+esc(f.departure)+' → '+esc(f.arrival)+'</td><td><span class="status-badge pending">'+(flightStatuses[f.status]||esc(f.status))+'</span></td><td><button class="del-btn" onclick="delFlight('+f.id+')">✕</button></td></tr>').join('')+'</table>'}
+async function addFlight(){const payload={flight_number:document.getElementById('flightNumber').value.trim(),status:document.getElementById('flightStatus').value,departure:document.getElementById('flightDeparture').value.trim(),arrival:document.getElementById('flightArrival').value.trim()};const r=await fetch('/api/flights',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});if(!r.ok){const d=await r.json();alert(d.error||'Ошибка');return}['flightNumber','flightDeparture','flightArrival'].forEach(id=>document.getElementById(id).value='');toggleForm('flightForm');loadFlights()}
+async function delFlight(id){await fetch('/api/flights/'+id,{method:'DELETE'});loadFlights()}
+function esc(value){return String(value||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 
 loadEvents();
 </script>
